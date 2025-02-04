@@ -1,0 +1,19 @@
+"""
+Theseed
+
+The monorepo of Theseed
+"""
+
+module(name = "theseed", version = "1.0")
+
+# Go
+
+bazel_dep(
+    name = "rules_go",
+    version = "0.39.1",
+)
+
+bazel_dep(
+    name = "gazelle",
+    version = "0.31.0",
+)
