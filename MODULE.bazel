@@ -18,6 +18,9 @@ bazel_dep(name = "gazelle", version = "0.38.0")
 go_sdk = use_extension("@rules_go//go:extensions.bzl", "go_sdk")
 go_sdk.download(version = "1.19.13")
 
+go_deps = use_extension("@gazelle//:extensions.bzl", "go_deps")
+go_deps.from_file(go_mod = "//:go.mod")
+
 # Pkg
 
 bazel_dep(name = "rules_pkg", version = "1.0.1")

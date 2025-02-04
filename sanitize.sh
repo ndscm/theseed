@@ -20,5 +20,14 @@ cd $(dirname "${BASH_SOURCE[0]}")
 
 
 
+# Go
+# Must tidy go mod after all packages
+go mod tidy --go 1.19
+
+# Gazelle
+# Must run gazelle build file generator after all generators
+bazel run //:gazelle
+
 # Bazel
+# Must tidy bazel mods after gazelle
 bazel mod tidy
