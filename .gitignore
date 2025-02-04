@@ -1,0 +1,5 @@
+# Bazel
+bazel-bin
+bazel-dev
+bazel-out
+bazel-testlogs
