@@ -1,6 +1,11 @@
 load("@gazelle//:def.bzl", "gazelle")
+load("@npm//:defs.bzl", "npm_link_all_packages")
 
 # Go
 
 # gazelle:exclude **/*pb
 gazelle(name = "gazelle")
+
+# Node
+
+npm_link_all_packages()
