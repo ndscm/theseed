@@ -1,0 +1,12 @@
+load("@rules_go//go:def.bzl", "go_library")
+
+package(
+    default_visibility = ["//visibility:private"],
+)
+
+go_library(
+    name = "dummy",
+    srcs = ["dummy.go"],
+    importpath = "github.com/ndscm/theseed/seed/devprod/go/dummy",
+    deps = ["@com_connectrpc_connect//:connect"],
+)
