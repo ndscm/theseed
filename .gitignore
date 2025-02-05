@@ -3,3 +3,6 @@
 /bazel-out
 /bazel-testlogs
 /bazel-*
+
+# Node
+node_modules
