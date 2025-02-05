@@ -1,3 +1,61 @@
 {
-    "editor.formatOnSave": true
+  "clang-format.fallbackStyle": "Google",
+  "clang-format.language.c.style": "Google",
+  "clang-format.language.java.style": "Google",
+  "clang-format.style": "Google",
+  "editor.formatOnSave": true,
+  "editor.renderWhitespace": "all",
+  "editor.detectIndentation": false,
+  "files.associations": {
+    "*.uvprojx": "plaintext"
+  },
+  "files.autoSave": "afterDelay",
+  "files.watcherExclude": {
+    "**/tmproots/**": true
+  },
+  "git.showActionButton": {
+    "sync": false
+  },
+  "go.toolsManagement.autoUpdate": true,
+  "prettier.proseWrap": "always",
+  "prettier.semi": false,
+  "scm.showHistoryGraph": false,
+  "scm.showOutgoingChanges": "never",
+  "typescript.updateImportsOnFileMove.enabled": "always",
+  "xml.format.enforceQuoteStyle": "preferred",
+  "xml.format.splitAttributes": "splitNewLine",
+
+  "[c]": {
+    "editor.defaultFormatter": "xaver.clang-format"
+  },
+  "[html]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[java]": {
+    "editor.defaultFormatter": "xaver.clang-format"
+  },
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[json]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[jsonc]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[proto3]": {
+    "editor.defaultFormatter": "zxh404.vscode-proto3"
+  },
+  "[shellscript]": {
+    "editor.defaultFormatter": "foxundermoon.shell-format"
+  },
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[typescriptreact]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[xml]": {
+    "editor.defaultFormatter": "redhat.vscode-xml"
+  }
 }
