@@ -24,3 +24,8 @@ go_deps.from_file(go_mod = "//:go.mod")
 # Pkg
 
 bazel_dep(name = "rules_pkg", version = "1.0.1")
+
+# Proto
+
+bazel_dep(name = "rules_proto", version = "6.0.2")
+bazel_dep(name = "protobuf", version = "27.3")
