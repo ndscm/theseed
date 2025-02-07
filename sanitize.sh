@@ -29,6 +29,9 @@ cd $(dirname "${BASH_SOURCE[0]}")
 # Must tidy go mod after all packages
 go mod tidy --go 1.19
 
+# TypeScript
+prettier --write .
+
 # Gazelle
 # Must run gazelle build file generator after all generators
 bazel run //:gazelle
