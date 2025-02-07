@@ -1,0 +1,16 @@
+load("@rules_go//go:def.bzl", "go_binary", "go_library")
+
+package(
+    default_visibility = ["//visibility:private"],
+)
+
+go_library(
+    name = "httpdump_lib",
+    srcs = ["main.go"],
+    importpath = "github.com/ndscm/theseed/seed/devprod/httpdump",
+)
+
+go_binary(
+    name = "httpdump",
+    embed = [":httpdump_lib"],
+)
