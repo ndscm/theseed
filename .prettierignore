@@ -1,2 +1,8 @@
 .clang-format
 pnpm-lock.yaml
+
+# Proto
+*_pb.js
+*_pb.d.ts
+*_connect.js
+*_connect.d.ts
