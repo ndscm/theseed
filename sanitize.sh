@@ -27,7 +27,7 @@ cd $(dirname "${BASH_SOURCE[0]}")
 
 # Go
 # Must tidy go mod after all packages
-go mod tidy --go 1.19
+bazel run @rules_go//go -- mod tidy --go 1.19
 
 # TypeScript
 prettier --write .
