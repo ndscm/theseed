@@ -1,4 +1,5 @@
 .clang-format
+dist
 pnpm-lock.yaml
 
 # Proto
