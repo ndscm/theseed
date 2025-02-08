@@ -30,7 +30,8 @@ cd $(dirname "${BASH_SOURCE[0]}")
 bazel run @rules_go//go -- mod tidy --go 1.19
 
 # TypeScript
-prettier --write .
+bazel build //:node_modules/prettier
+./bazel-bin/node_modules/prettier/bin/prettier.cjs --write .
 
 # Gazelle
 # Must run gazelle build file generator after all generators
