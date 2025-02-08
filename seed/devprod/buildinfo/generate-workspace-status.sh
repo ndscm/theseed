@@ -20,3 +20,15 @@ echo STABLE_BUILD_BRANCH ${branch}
 echo STABLE_BUILD_DIRTY ${dirty}
 echo STABLE_BUILD_BRIEF ${brief}
 echo STABLE_GIT_COMMIT $(git rev-parse HEAD)
+
+
+
+
+
+
+
+
+fi
+
+
+fi
