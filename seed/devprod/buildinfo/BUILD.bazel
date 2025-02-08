@@ -1,0 +1,21 @@
+load("@rules_go//go:def.bzl", "go_library")
+
+package(
+    default_visibility = [
+
+    ],
+)
+
+genrule(
+    name = "buildinfo_go",
+    outs = ["buildinfo.go"],
+    cmd = "./$(location buildinfo_go.sh) > $@",
+    stamp = 1,
+    tools = ["buildinfo_go.sh"],
+)
+
+go_library(
+    name = "buildinfo_go_lib",
+    srcs = ["buildinfo.go"],
+    importpath = "github.com/ndscm/theseed/seed/devprod/buildinfo",
+)
