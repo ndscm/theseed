@@ -4,6 +4,9 @@ load("@npm//:defs.bzl", "npm_link_all_packages")
 # Go
 
 # gazelle:exclude **/*pb
+# gazelle:exclude **/*pbconnect
+
+
 gazelle(name = "gazelle")
 
 # Node
