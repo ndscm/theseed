@@ -1,0 +1,16 @@
+services:
+  wpad:
+    container_name: "wpad"
+    build: .
+    environment:
+      - WPAD_TARGET
+    ports:
+      - 9723:9723
+    networks:
+      - kaede
+    restart: unless-stopped
+
+networks:
+  kaede:
+    name: kaede
+    external: true
