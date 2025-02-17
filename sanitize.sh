@@ -16,6 +16,8 @@ cd $(dirname "${BASH_SOURCE[0]}")
 # during the sanitizing rebase process. And carefully apply it (with rebase
 # fixup) to the proper commit.
 
+./bootstrap.sh
+
 # Go
 # Must tidy go mod after all packages
 bazel run @rules_go//go -- mod tidy --go 1.19
