@@ -19,7 +19,7 @@ var server = http.createServer(function (request, response) {
     } else {
       content = content.replace(
         /^var[ ]proxy[ ][=].*/,
-        'var proxy = "' + process.env["WPAD_TARGET"] + '";'
+        'var proxy = "' + process.env["WPAD_TARGET"] + '";',
       )
       response.writeHead(200, {
         "Content-Type": "application/x-ns-proxy-autoconfig",
