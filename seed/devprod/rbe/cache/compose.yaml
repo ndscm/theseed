@@ -1,0 +1,16 @@
+services:
+  rbe-cache:
+    container_name: "rbe-cache"
+    build: .
+    volumes:
+      - /mnt/data/rbe/cache:/var/www
+    ports:
+      - 22243:22243/tcp
+    networks:
+      - kaede
+    restart: unless-stopped
+
+networks:
+  kaede:
+    name: kaede
+    external: true
