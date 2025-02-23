@@ -1,4 +1,4 @@
-#/usr/bin/env bash
+#!/usr/bin/env bash
 # Copy this script to /etc/cron.daily
 set -eux
 set -o pipefail
