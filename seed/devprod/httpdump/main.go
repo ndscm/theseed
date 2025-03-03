@@ -65,6 +65,7 @@ func dump(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
+	flag.Parse()
 	http.HandleFunc("/", dump)
 	log.Printf("Listening to %#v", *flagListen)
 	err := http.ListenAndServe(*flagListen, nil)
