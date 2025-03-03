@@ -2,12 +2,14 @@ package main
 
 import (
 	"bytes"
+	"crypto/tls"
 	"flag"
 	"io"
 	"log"
 	"net/http"
 )
 
+var flagHttps = flag.Bool("https", false, "https")
 var flagListen = flag.String("listen", "0.0.0.0:8000", "listen server port")
 var flagTarget = flag.String("target", "127.0.0.1:9000", "target server port")
 
@@ -27,7 +29,18 @@ func dump(w http.ResponseWriter, r *http.Request) {
 	log.Printf("Body (bytes): %#v", requestBody)
 	log.Printf("Body (string): %#v", string(requestBody))
 	log.Println()
+	client := &http.Client{
+		Transport: &http.Transport{
+			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+		},
+		CheckRedirect: func(req *http.Request, via []*http.Request) error {
+			return http.ErrUseLastResponse
+		},
+	}
 	r.URL.Scheme = "http"
+	if *flagHttps {
+		r.URL.Scheme = "https"
+	}
 	r.URL.Host = *flagTarget
 	log.Printf("Forward to %#v", (r.URL.String()))
 	proxyRequest, err := http.NewRequest(r.Method, r.URL.String(), bytes.NewReader(requestBody))
@@ -36,7 +49,7 @@ func dump(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	proxyRequest.Header = r.Header
-	proxyResponse, err := http.DefaultClient.Do(proxyRequest)
+	proxyResponse, err := client.Do(proxyRequest)
 	if err != nil {
 		http.Error(w, "Proxy Do Error: "+err.Error(), http.StatusBadRequest)
 		return
