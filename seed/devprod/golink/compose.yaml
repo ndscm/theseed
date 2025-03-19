@@ -6,7 +6,7 @@ services:
     volumes:
       - /mnt/data/golink:/home/nonroot
     networks:
-      - kaede
+      - mbiz
     ports:
       - 6846:6846/tcp
     command:
@@ -20,6 +20,6 @@ services:
     restart: unless-stopped
 
 networks:
-  kaede:
-    name: kaede
+  mbiz:
+    name: mbiz
     external: true
