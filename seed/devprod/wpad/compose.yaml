@@ -7,10 +7,10 @@ services:
     ports:
       - 9723:9723
     networks:
-      - kaede
+      - mbiz
     restart: unless-stopped
 
 networks:
-  kaede:
-    name: kaede
+  mbiz:
+    name: mbiz
     external: true
