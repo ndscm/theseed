@@ -7,10 +7,10 @@ services:
     ports:
       - 22243:22243/tcp
     networks:
-      - kaede
+      - mbiz
     restart: unless-stopped
 
 networks:
-  kaede:
-    name: kaede
+  mbiz:
+    name: mbiz
     external: true
