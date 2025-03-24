@@ -293,9 +293,10 @@ if [[ ${oslike} == "debian" ]]; then
 
   cat <<EOF >>${HOME}/.managed_profile
 # # Monorepo
-export SEED_MONOREPO="\${HOME}/theseed"
-export SEED_MAIN_HOME="\$SEED_MONOREPO/main"
-export SEED_DEV_HOME="\$SEED_MONOREPO/dev"
+export SEED_MONOREPO_HOME="\${HOME}/theseed"
+export SEED_MONOREPO_GIT_DIR="\$SEED_MONOREPO_HOME/theseed.git"
+export SEED_MAIN_HOME="\$SEED_MONOREPO_HOME/main"
+export SEED_DEV_HOME="\$SEED_MONOREPO_HOME/dev"
 EOF
 
   cd ${HOME}/theseed/main
