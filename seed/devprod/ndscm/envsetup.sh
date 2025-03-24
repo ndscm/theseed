@@ -6,6 +6,20 @@ if [[ -z "${ND_MONOREPO_HOME+x}" &&
   export ND_MONOREPO_GIT_DIR=$(realpath "${ND_MONOREPO_GIT_DIR}/")
 fi
 
+if [[ -z "${NDSCM_HOME+x}" ]]; then
+  # Guess NDSCM_HOME from source file location
+  if [[ ! -z "${BASH_SOURCE+x}" ]]; then
+    script_location="${BASH_SOURCE[0]}"
+  else
+    script_location="${0}"
+  fi
+  export NDSCM_HOME=$(realpath $(dirname "${script_location}"))
+fi
+if [[ ! -d "${NDSCM_HOME}" || ! -f "${NDSCM_HOME}/envsetup.sh" ]]; then
+  echo -e "\e[31mNDSCM_HOME (${NDSCM_HOME}) is not valid\e[0m"
+  return 1
+fi
+
 function nd-quick-verify-monorepo {
   if [[ -z "${ND_MONOREPO_HOME+x}" ]]; then
     echo -e "\e[31mND_MONOREPO_HOME is not set\e[0m"
