@@ -1,0 +1,33 @@
+FROM ubuntu:latest
+
+RUN echo 'APT::Keep-Downloaded-Packages "true";' > /etc/apt/apt.conf.d/99-keep-debs
+RUN echo 'Binary::apt::APT::Keep-Downloaded-Packages "true";' > /etc/apt/apt.conf.d/99-keep-debs
+RUN rm /etc/apt/apt.conf.d/docker-clean
+RUN apt update -y
+RUN apt install -y git
+RUN apt install -y sudo
+
+RUN echo "ubuntu:unsecure" | chpasswd
+RUN usermod -aG sudo ubuntu
+
+USER "ubuntu"
+
+ADD . /home/ubuntu/ndscm
+
+RUN git init --initial-branch main /home/ubuntu/upstream
+RUN echo "# Monorepo" > /home/ubuntu/upstream/README.md
+RUN cd /home/ubuntu/upstream && git add README.md && git -c user.name="Nagi" -c user.email="nagi@ndscm.com" commit -m "initial commit"
+
+RUN mkdir /home/ubuntu/monorepo
+RUN git clone --bare --single-branch \
+  --config "core.logallrefupdates=true" \
+  --config "remote.origin.fetch=+refs/heads/*:refs/remotes/origin/*" \
+  /home/ubuntu/upstream \
+  /home/ubuntu/monorepo/monorepo.git
+
+ENV ND_MONOREPO_HOME="/home/ubuntu/monorepo"
+ENV ND_MONOREPO_GIT_DIR="/home/ubuntu/monorepo/monorepo.git"
+
+RUN git --git-dir ${ND_MONOREPO_GIT_DIR} worktree add -B main ${ND_MONOREPO_HOME}/main origin/main
+RUN git --git-dir ${ND_MONOREPO_GIT_DIR} worktree add -B dev ${ND_MONOREPO_HOME}/dev main
+RUN git --git-dir ${ND_MONOREPO_GIT_DIR} branch --set-upstream-to main dev

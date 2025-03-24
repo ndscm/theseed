@@ -65,6 +65,9 @@ function nd {
     echo "nd is not distributed source code manager"
   elif [[ "$#" -ge 1 ]]; then
     case "${1}" in
+    "cut")
+      ${NDSCM_HOME}/nd-cut.sh ${@:2}
+      ;;
     "dev")
       nd-dev ${@:2}
       ;;
