@@ -73,6 +73,9 @@ function nd {
     "dev")
       nd-dev ${@:2}
       ;;
+    "sync")
+      ${NDSCM_HOME}/nd-sync.sh ${@:2}
+      ;;
     *)
       echo -e "\e[31mUnknown command ${1}\e[0m"
       ;;
