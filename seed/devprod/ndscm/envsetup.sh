@@ -1,17 +1,17 @@
-if [[ -z "${ND_MONOREPO_HOME}" &&
+if [[ -z "${ND_MONOREPO_HOME+x}" &&
   -d "${ND_MONOREPO_HOME}/" &&
-  -z "${ND_MONOREPO_GIT_DIR}" &&
+  -z "${ND_MONOREPO_GIT_DIR+x}" &&
   -d "${ND_MONOREPO_GIT_DIR}/" ]]; then
   export ND_MONOREPO_HOME=$(realpath "${ND_MONOREPO_HOME}/")
   export ND_MONOREPO_GIT_DIR=$(realpath "${ND_MONOREPO_GIT_DIR}/")
 fi
 
 function nd-quick-verify-monorepo {
-  if [[ -z "${ND_MONOREPO_HOME}" ]]; then
+  if [[ -z "${ND_MONOREPO_HOME+x}" ]]; then
     echo -e "\e[31mND_MONOREPO_HOME is not set\e[0m"
     return 1
   fi
-  if [[ -z "${ND_MONOREPO_GIT_DIR}" ]]; then
+  if [[ -z "${ND_MONOREPO_GIT_DIR+x}" ]]; then
     echo -e "\e[31mND_MONOREPO_GIT_DIR is not set\e[0m"
     return 1
   fi
