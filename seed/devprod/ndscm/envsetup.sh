@@ -51,8 +51,9 @@ function nd-dev {
     if [[ -d "${ND_MONOREPO_HOME}/${worktree_name}" ]]; then
       cd "${ND_MONOREPO_HOME}/${worktree_name}"
     else
-      git --git-dir "${ND_MONOREPO_GIT_DIR}" worktree add -B "${worktree_name}" "${ND_MONOREPO_HOME}/${worktree_name}" main
-      git --git-dir "${ND_MONOREPO_GIT_DIR}" branch --set-upstream-to main "${worktree_name}"
+      git --git-dir "${ND_MONOREPO_GIT_DIR}" branch --track=direct "base/${worktree_name}" origin/main
+      git --git-dir "${ND_MONOREPO_GIT_DIR}" branch --track=direct "${worktree_name}" "base/${worktree_name}"
+      git --git-dir "${ND_MONOREPO_GIT_DIR}" worktree add -B "${worktree_name}" "${ND_MONOREPO_HOME}/${worktree_name}"
       cd "${ND_MONOREPO_HOME}/${worktree_name}"
     fi
   else
