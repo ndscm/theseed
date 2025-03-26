@@ -5,12 +5,12 @@ set -o pipefail
 if [[ -z "${ND_USER_HANDLE+x}" ]]; then
   read -p "Enter nd user handle (username before @ndscm.com): " ND_USER_HANDLE
 fi
-echo -e "\e[33mUsername: ${ND_USER_HANDLE}\e[0m"
+printf "\e[33mUsername: ${ND_USER_HANDLE}\e[0m\n"
 export ND_USER_HANDLE
 if [[ -z "${ND_USER_DISPLAY_NAME+x}" ]]; then
   read -p "Enter user display name: " ND_USER_DISPLAY_NAME
 fi
-echo -e "\e[33mDisplay Name: ${ND_USER_DISPLAY_NAME}\e[0m"
+printf "\e[33mDisplay Name: ${ND_USER_DISPLAY_NAME}\e[0m\n"
 export ND_USER_DISPLAY_NAME
 
 # # Prepare
@@ -27,9 +27,9 @@ if [[ -f /etc/os-release ]]; then
 fi
 
 if [[ "${distro}" == "ubuntu" && "${oslike}" == "debian" ]]; then
-  echo -e "\e[33mSystem Distro: ${distro}\nPackage Manager: ${oslike}\e[0m"
+  printf "\e[33mSystem Distro: ${distro}\nPackage Manager: ${oslike}\e[0m\n"
 else
-  echo -e "\e[31mUnsupported system: ${distro} (${oslike})\e[0m"
+  printf "\e[31mUnsupported system: ${distro} (${oslike})\e[0m\n"
   exit 1
 fi
 
@@ -46,9 +46,9 @@ fi
 
 
 
-echo -e "\e[34mChecking basic packages...\e[0m"
+printf "\e[34mChecking basic packages...\e[0m\n"
 
-if [[ ${oslike} == "debian" ]]; then
+if [[ "${oslike}" == "debian" ]]; then
   sudo apt update -y
   sudo apt upgrade -y
   sudo apt install -y git
@@ -56,46 +56,46 @@ if [[ ${oslike} == "debian" ]]; then
   sudo apt install -y ssh
 fi
 
-echo -e "\e[32mCheck basic packages done.\e[0m"
+printf "\e[32mCheck basic packages done.\e[0m\n"
 
 # # SSH
 
-echo -e "\e[34mChecking ssh key pair...\e[0m"
+printf "\e[34mChecking ssh key pair...\e[0m\n"
 
-if [[ ${oslike} == "debian" ]]; then
+if [[ "${oslike}" == "debian" ]]; then
   if [[ -f "${HOME}/.ssh/id_ed25519" ]]; then
-    echo -e "\e[33mFound .ssh/ed25519, skip regeneration.\e[0m"
+    printf "\e[33mFound .ssh/ed25519, skip regeneration.\e[0m\n"
   else
-    echo -e "\e[34mGenerating ssh key pair for ${ND_USER_HANDLE}@ndscm.com with ed25519 algorithm.\e[0m"
+    printf "\e[34mGenerating ssh key pair for ${ND_USER_HANDLE}@ndscm.com with ed25519 algorithm.\e[0m\n"
     read -p "Enter workstation tag (e.g. t14wsl): " workstation_tag
     ssh-keygen -t ed25519 -C "${ND_USER_HANDLE}+${workstation_tag}@ndscm.com"
     public_key=$(cat ${HOME}/.ssh/id_ed25519.pub)
-    echo -e "\e[33mCopy your public key to your github account:\n    ${public_key}\e[0m"
+    printf "\e[33mCopy your public key to your github account:\n    ${public_key}\e[0m\n"
     read -p "Press <Enter> to continue..."
   fi
 fi
 
-echo -e "\e[32mCheck ssh key pair done.\e[0m"
+printf "\e[32mCheck ssh key pair done.\e[0m\n"
 
 # # Shell
 
-echo -e "\e[34mChecking zsh shell...\e[0m"
+printf "\e[34mChecking zsh shell...\e[0m\n"
 
-if [[ ${oslike} == "debian" ]]; then
+if [[ "${oslike}" == "debian" ]]; then
   sudo apt install -y zsh
   if [[ ! -d ${HOME}/.oh-my-zsh ]]; then
     bash -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" -- --unattended
   fi
   cp ${HOME}/.oh-my-zsh/templates/zshrc.zsh-template ${HOME}/.zshrc
   sed -i 's/ZSH_THEME=".*"/ZSH_THEME="agnoster"/' ${HOME}/.zshrc
-  echo 'unsetopt SHARE_HISTORY' >>${HOME}/.zshrc
+  printf 'unsetopt SHARE_HISTORY\n' >>${HOME}/.zshrc
 fi
 
-echo -e "\e[32mCheck zsh shell done.\e[0m"
+printf "\e[32mCheck zsh shell done.\e[0m\n"
 
-echo -e "\e[34mChecking powerline fonts...\e[0m"
+printf "\e[34mChecking powerline fonts...\e[0m\n"
 
-if [[ ${oslike} == "debian" ]]; then
+if [[ "${oslike}" == "debian" ]]; then
   if ! ${wsl}; then
     mkdir -p ${HOME}/github/powerline
     curl -o ${HOME}/github/powerline/fonts.tar.gz -L https://github.com/powerline/fonts/archive/refs/heads/master.tar.gz
@@ -108,13 +108,13 @@ if [[ ${oslike} == "debian" ]]; then
   fi
 fi
 
-echo -e "\e[32mCheck powerline fonts done.\e[0m"
+printf "\e[32mCheck powerline fonts done.\e[0m\n"
 
 # # Enviornment
 
-echo -e "\e[34mChecking seed managed profile...\e[0m"
+printf "\e[34mChecking seed managed profile...\e[0m\n"
 
-if [[ ${oslike} == "debian" ]]; then
+if [[ "${oslike}" == "debian" ]]; then
   cat <<EOF >${HOME}/.managed_profile
 # # User
 export ND_USER_HANDLE="${ND_USER_HANDLE}"
@@ -145,7 +145,7 @@ EOF
   fi
 fi
 
-if [[ ${oslike} == "debian" ]]; then
+if [[ "${oslike}" == "debian" ]]; then
   if ${wsl}; then
     cat <<EOF >>${HOME}/.managed_profile
 # # WSL
@@ -155,13 +155,13 @@ EOF
   fi
 fi
 
-echo -e "\e[32mCheck seed managed profile done.\e[0m"
+printf "\e[32mCheck seed managed profile done.\e[0m\n"
 
 # # Proxy
 
 
 
-if [[ ${oslike} == "debian" ]]; then
+if [[ "${oslike}" == "debian" ]]; then
   cat <<EOF >>${HOME}/.managed_profile
 # # Proxy
 
@@ -173,9 +173,9 @@ if [[ ${oslike} == "debian" ]]; then
 EOF
 fi
 
-if [[ ${oslike} == "debian" ]]; then
+if [[ "${oslike}" == "debian" ]]; then
   if grep -o -P -z "Host github.com[\n]?[\s]*ProxyCommand.*[\n]?" ${HOME}/.ssh/config; then
-    echo -e "\e[33mFound ssh proxy to github.com for git, skip.\e[0m"
+    printf "\e[33mFound ssh proxy to github.com for git, skip.\e[0m\n"
   else
 
 
@@ -188,9 +188,9 @@ fi
 
 # ## System Packages
 
-echo -e "\e[34mChecking system packages...\e[0m"
+printf "\e[34mChecking system packages...\e[0m\n"
 
-if [[ ${oslike} == "debian" ]]; then
+if [[ "${oslike}" == "debian" ]]; then
   sudo apt install -y clang
   sudo apt install -y clang-format
   sudo apt install -y default-jdk
@@ -205,20 +205,20 @@ if [[ ${oslike} == "debian" ]]; then
   sudo apt install -y rsync
 fi
 
-echo -e "\e[32mCheck system packages done.\e[0m"
+printf "\e[32mCheck system packages done.\e[0m\n"
 
 # ## Snap
 
-echo -e "\e[34mChecking snap tools...\e[0m"
+printf "\e[34mChecking snap tools...\e[0m\n"
 
-if [[ ${oslike} == "debian" ]]; then
+if [[ "${oslike}" == "debian" ]]; then
   cat <<EOF >>${HOME}/.managed_profile
 # # Snap
 export PATH="/snap/bin:\$PATH"
 EOF
 fi
 
-echo -e "\e[32mCheck snap tools done.\e[0m"
+printf "\e[32mCheck snap tools done.\e[0m\n"
 
 # ## Git
 
@@ -241,9 +241,9 @@ git config --global mergetool.keepBackup "false"
 
 # ## Golang
 
-echo -e "\e[34mChecking golang tools...\e[0m"
+printf "\e[34mChecking golang tools...\e[0m\n"
 
-if [[ ${oslike} == "debian" ]]; then
+if [[ "${oslike}" == "debian" ]]; then
   sudo snap install --classic go
   cat <<EOF >>${HOME}/.managed_profile
 # # Golang
@@ -252,13 +252,13 @@ EOF
   go install github.com/bazelbuild/buildtools/buildifier@latest
 fi
 
-echo -e "\e[32mCheck golang tools done.\e[0m"
+printf "\e[32mCheck golang tools done.\e[0m\n"
 
 # ## Nvm
 
-echo -e "\e[34mChecking nvm tools...\e[0m"
+printf "\e[34mChecking nvm tools...\e[0m\n"
 
-if [[ ${oslike} == "debian" ]]; then
+if [[ "${oslike}" == "debian" ]]; then
   set +eux
   bash -c "$(curl -fsSL https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.0/install.sh)"
   # Manually load NVM
@@ -270,48 +270,48 @@ if [[ ${oslike} == "debian" ]]; then
   corepack enable
 fi
 
-echo -e "\e[32mCheck nvm tools done.\e[0m"
+printf "\e[32mCheck nvm tools done.\e[0m\n"
 
 # ## Bazel
 
-echo -e "\e[34mChecking bazelisk...\e[0m"
+printf "\e[34mChecking bazelisk...\e[0m\n"
 
-if [[ ${oslike} == "debian" ]]; then
+if [[ "${oslike}" == "debian" ]]; then
   npm list --global @bazel/bazelisk || npm install --global @bazel/bazelisk
 fi
 
-echo -e "\e[34mCheck bazelisk done.\e[0m"
+printf "\e[34mCheck bazelisk done.\e[0m\n"
 
 # ## Node Tools
 
-echo -e "\e[34mChecking node tools...\e[0m"
+printf "\e[34mChecking node tools...\e[0m\n"
 
-if [[ ${oslike} == "debian" ]]; then
+if [[ "${oslike}" == "debian" ]]; then
   npm list --global prettier || npm install --global prettier
   npm list --global typescript || npm install --global typescript
 fi
 
-echo -e "\e[32mCheck node tools done.\e[0m"
+printf "\e[32mCheck node tools done.\e[0m\n"
 
 # Monorepo
 
-echo -e "\e[34mChecking theseed monorepo...\e[0m"
+printf "\e[34mChecking theseed monorepo...\e[0m\n"
 
-if [[ ${oslike} == "debian" ]]; then
+if [[ "${oslike}" == "debian" ]]; then
   mkdir -p ${HOME}/theseed
 
   if [[ -d ${HOME}/theseed/theseed.git && -d ${HOME}/theseed/main && -d ${HOME}/theseed/dev ]]; then
-    echo -e "\e[33mFound existing theseed monorepo, skip clone.\e[0m"
+    printf "\e[33mFound existing theseed monorepo, skip clone.\e[0m\n"
   else
     if [[ -d ${HOME}/theseed/theseed.git || -d ${HOME}/theseed/main || -d ${HOME}/theseed/dev ]]; then
-      echo "\e[31mFound old theseed monorepo, please backup and remove it:\e[33m
+      printf "\e[31mFound old theseed monorepo, please backup and remove it:\e[33m
     rm -rf ${HOME}/theseed/dev
     rm -rf ${HOME}/theseed/main
     rm -rf ${HOME}/theseed/theseed.git
-\e[0m"
+\e[0m\n"
       exit 1
     fi
-    echo -e "\e[34mCloning theseed monorepo...\e[0m"
+    printf "\e[34mCloning theseed monorepo...\e[0m\n"
     git clone --bare --single-branch \
       --config "core.logallrefupdates=true" \
       --config "remote.origin.fetch=+refs/heads/*:refs/remotes/origin/*" \
@@ -338,11 +338,11 @@ EOF
   git rebase origin/main
 fi
 
-echo -e "\e[34mCheck theseed monorepo done.\e[0m"
+printf "\e[34mCheck theseed monorepo done.\e[0m\n"
 
 # # Shortcuts
 
-if [[ ${oslike} == "debian" ]]; then
+if [[ "${oslike}" == "debian" ]]; then
   cat <<EOF >>${HOME}/.managed_profile
 # # Shortcuts
 function main { cd \$SEED_MAIN_HOME; }
@@ -350,7 +350,7 @@ function dev { cd \$SEED_DEV_HOME; }
 EOF
 fi
 
-if [[ ${oslike} == "debian" ]]; then
+if [[ "${oslike}" == "debian" ]]; then
   cat <<EOF >>${HOME}/.managed_profile
 # # Personal Profile
 if [ -f ~/.personal_profile ]; then
@@ -359,4 +359,4 @@ fi
 EOF
 fi
 
-echo -e "\e[32mDone. Please restart the terminal to load new enviornments.\e[0m"
+printf "\e[32mDone. Please restart the terminal to load new enviornments.\e[0m\n"
