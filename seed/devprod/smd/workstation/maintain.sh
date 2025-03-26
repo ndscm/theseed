@@ -87,7 +87,7 @@ if [[ "${oslike}" == "debian" ]]; then
     bash -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" -- --unattended
   fi
   cp ${HOME}/.oh-my-zsh/templates/zshrc.zsh-template ${HOME}/.zshrc
-  sed -i 's/ZSH_THEME=".*"/ZSH_THEME="agnoster"/' ${HOME}/.zshrc
+  sed -i.bak 's/ZSH_THEME=".*"/ZSH_THEME="agnoster"/' ${HOME}/.zshrc
   printf 'unsetopt SHARE_HISTORY\n' >>${HOME}/.zshrc
 fi
 
