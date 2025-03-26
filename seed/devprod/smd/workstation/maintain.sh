@@ -15,18 +15,26 @@ export ND_USER_DISPLAY_NAME
 
 # # Prepare
 
+uname="$(uname)"
 distro="unknown"
 oslike="unknown"
 
-if [[ -f /etc/os-release ]]; then
-  . /etc/os-release
-  if [[ "${ID}" == "ubuntu" ]]; then
-    distro="ubuntu"
-    oslike="debian"
+if [[ "${uname}" == "Linux" ]]; then
+  if [[ -f /etc/os-release ]]; then
+    . /etc/os-release
+    if [[ "${ID}" == "ubuntu" ]]; then
+      distro="ubuntu"
+      oslike="debian"
+    fi
   fi
+elif [[ "${uname}" == "Darwin" ]]; then
+  distro="darwin"
+  oslike="darwin"
 fi
 
-if [[ "${distro}" == "ubuntu" && "${oslike}" == "debian" ]]; then
+if [[ "${uname}" == "Linux" && "${distro}" == "ubuntu" && "${oslike}" == "debian" ]]; then
+  printf "\e[33mSystem Distro: ${distro}\nPackage Manager: ${oslike}\e[0m\n"
+elif [[ "${uname}" == "Darwin" && "${distro}" == "darwin" && "${oslike}" == "darwin" ]]; then
   printf "\e[33mSystem Distro: ${distro}\nPackage Manager: ${oslike}\e[0m\n"
 else
   printf "\e[31mUnsupported system: ${distro} (${oslike})\e[0m\n"
@@ -54,6 +62,15 @@ if [[ "${oslike}" == "debian" ]]; then
   sudo apt install -y git
   sudo apt install -y netcat-openbsd
   sudo apt install -y ssh
+elif [[ "${oslike}" == "darwin" ]]; then
+  xcode-select --install || true
+  sudo xcodebuild -license accept
+  /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+  if ! grep -F -x 'eval "$(/opt/homebrew/bin/brew shellenv)"' ${HOME}/.zprofile; then
+    printf '\neval "$(/opt/homebrew/bin/brew shellenv)"\n' >>${HOME}/.zprofile
+  fi
+  eval "$(/opt/homebrew/bin/brew shellenv)"
+  brew install socat
 fi
 
 printf "\e[32mCheck basic packages done.\e[0m\n"
@@ -62,7 +79,7 @@ printf "\e[32mCheck basic packages done.\e[0m\n"
 
 printf "\e[34mChecking ssh key pair...\e[0m\n"
 
-if [[ "${oslike}" == "debian" ]]; then
+if [[ "${oslike}" == "debian" || "${oslike}" == "darwin" ]]; then
   if [[ -f "${HOME}/.ssh/id_ed25519" ]]; then
     printf "\e[33mFound .ssh/ed25519, skip regeneration.\e[0m\n"
   else
@@ -83,19 +100,22 @@ printf "\e[34mChecking zsh shell...\e[0m\n"
 
 if [[ "${oslike}" == "debian" ]]; then
   sudo apt install -y zsh
+fi
+
+if [[ "${oslike}" == "debian" || "${oslike}" == "darwin" ]]; then
   if [[ ! -d ${HOME}/.oh-my-zsh ]]; then
     bash -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" -- --unattended
   fi
   cp ${HOME}/.oh-my-zsh/templates/zshrc.zsh-template ${HOME}/.zshrc
   sed -i.bak 's/ZSH_THEME=".*"/ZSH_THEME="agnoster"/' ${HOME}/.zshrc
-  printf 'unsetopt SHARE_HISTORY\n' >>${HOME}/.zshrc
+  printf '\nunsetopt SHARE_HISTORY\n' >>${HOME}/.zshrc
 fi
 
 printf "\e[32mCheck zsh shell done.\e[0m\n"
 
 printf "\e[34mChecking powerline fonts...\e[0m\n"
 
-if [[ "${oslike}" == "debian" ]]; then
+if [[ "${oslike}" == "debian" || "${oslike}" == "darwin" ]]; then
   if ! ${wsl}; then
     mkdir -p ${HOME}/github/powerline
     curl -o ${HOME}/github/powerline/fonts.tar.gz -L https://github.com/powerline/fonts/archive/refs/heads/master.tar.gz
@@ -114,7 +134,7 @@ printf "\e[32mCheck powerline fonts done.\e[0m\n"
 
 printf "\e[34mChecking seed managed profile...\e[0m\n"
 
-if [[ "${oslike}" == "debian" ]]; then
+if [[ "${oslike}" == "debian" || "${oslike}" == "darwin" ]]; then
   cat <<EOF >${HOME}/.managed_profile
 # # User
 export ND_USER_HANDLE="${ND_USER_HANDLE}"
@@ -161,7 +181,7 @@ printf "\e[32mCheck seed managed profile done.\e[0m\n"
 
 
 
-if [[ "${oslike}" == "debian" ]]; then
+if [[ "${oslike}" == "debian" || "${oslike}" == "darwin" ]]; then
   cat <<EOF >>${HOME}/.managed_profile
 # # Proxy
 
@@ -173,12 +193,16 @@ if [[ "${oslike}" == "debian" ]]; then
 EOF
 fi
 
-if [[ "${oslike}" == "debian" ]]; then
+if [[ "${oslike}" == "debian" || "${oslike}" == "darwin" ]]; then
   if [[ ! -z "$(sed '/Host github.com/{N;/ProxyCommand/p;}' ${HOME}/.ssh/config)" ]]; then
     printf "\e[33mFound ssh proxy to github.com for git, skip.\e[0m\n"
   else
 
+    if [[ "${oslike}" == "debian" ]]; then
 
+    elif [[ "${oslike}" == "darwin" ]]; then
+
+    fi
   fi
 fi
 
@@ -203,6 +227,15 @@ if [[ "${oslike}" == "debian" ]]; then
   sudo apt install -y python3
   sudo apt install -y python3-pip
   sudo apt install -y rsync
+elif [[ "${oslike}" == "darwin" ]]; then
+  brew install clang-format
+  brew install gitg
+  brew install go
+  brew install --cask iterm2
+  brew install --cask p4v
+  brew install --cask visual-studio-code
+  brew install --no-quarantine chromium
+  defaults write NSGlobalDomain ApplePressAndHoldEnabled -bool false
 fi
 
 printf "\e[32mCheck system packages done.\e[0m\n"
@@ -245,6 +278,8 @@ printf "\e[34mChecking golang tools...\e[0m\n"
 
 if [[ "${oslike}" == "debian" ]]; then
   sudo snap install --classic go
+fi
+if [[ "${oslike}" == "debian" || "${oslike}" == "darwin" ]]; then
   cat <<EOF >>${HOME}/.managed_profile
 # # Golang
 export PATH="\$HOME/go/bin:\$PATH"
@@ -258,7 +293,7 @@ printf "\e[32mCheck golang tools done.\e[0m\n"
 
 printf "\e[34mChecking nvm tools...\e[0m\n"
 
-if [[ "${oslike}" == "debian" ]]; then
+if [[ "${oslike}" == "debian" || "${oslike}" == "darwin" ]]; then
   set +eux
   bash -c "$(curl -fsSL https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.0/install.sh)"
   # Manually load NVM
@@ -276,7 +311,7 @@ printf "\e[32mCheck nvm tools done.\e[0m\n"
 
 printf "\e[34mChecking bazelisk...\e[0m\n"
 
-if [[ "${oslike}" == "debian" ]]; then
+if [[ "${oslike}" == "debian" || "${oslike}" == "darwin" ]]; then
   npm list --global @bazel/bazelisk || npm install --global @bazel/bazelisk
 fi
 
@@ -286,7 +321,7 @@ printf "\e[34mCheck bazelisk done.\e[0m\n"
 
 printf "\e[34mChecking node tools...\e[0m\n"
 
-if [[ "${oslike}" == "debian" ]]; then
+if [[ "${oslike}" == "debian" || "${oslike}" == "darwin" ]]; then
   npm list --global prettier || npm install --global prettier
   npm list --global typescript || npm install --global typescript
 fi
@@ -297,7 +332,7 @@ printf "\e[32mCheck node tools done.\e[0m\n"
 
 printf "\e[34mChecking theseed monorepo...\e[0m\n"
 
-if [[ "${oslike}" == "debian" ]]; then
+if [[ "${oslike}" == "debian" || "${oslike}" == "darwin" ]]; then
   mkdir -p ${HOME}/theseed
 
   if [[ -d ${HOME}/theseed/theseed.git && -d ${HOME}/theseed/main && -d ${HOME}/theseed/dev ]]; then
@@ -342,15 +377,15 @@ printf "\e[34mCheck theseed monorepo done.\e[0m\n"
 
 # # Shortcuts
 
-if [[ "${oslike}" == "debian" ]]; then
-  cat <<EOF >>${HOME}/.managed_profile
+if [[ "${oslike}" == "debian" || "${oslike}" == "darwin" ]]; then
+  cat <<EOF >>${HOME}/.managed_shrc
 # # Shortcuts
 function main { cd \$SEED_MAIN_HOME; }
 function dev { cd \$SEED_DEV_HOME; }
 EOF
 fi
 
-if [[ "${oslike}" == "debian" ]]; then
+if [[ "${oslike}" == "debian" || "${oslike}" == "darwin" ]]; then
   cat <<EOF >>${HOME}/.managed_profile
 # # Personal Profile
 if [ -f ~/.personal_profile ]; then
