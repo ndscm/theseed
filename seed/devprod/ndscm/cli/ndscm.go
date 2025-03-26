@@ -20,6 +20,11 @@ func main() {
 		if err != nil {
 			log.Fatalf("\x1b[31mERROR: %v\x1b[0m", err)
 		}
+	case "shell":
+		err := NdShell(flag.Args(), ndConfig)
+		if err != nil {
+			log.Fatalf("\x1b[31mERROR: %v\x1b[0m", err)
+		}
 	default:
 		flag.PrintDefaults()
 		os.Exit(1)
