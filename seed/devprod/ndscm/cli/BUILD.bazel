@@ -1,0 +1,23 @@
+load("@rules_go//go:def.bzl", "go_binary", "go_library")
+
+alias(
+    name = "cli",
+    actual = ":ndscm",
+)
+
+go_binary(
+    name = "ndscm",
+    embed = [":cli_lib"],
+    visibility = ["//visibility:public"],
+)
+
+go_library(
+    name = "cli_lib",
+    srcs = [
+        "dev.go",
+        "ndscm.go",
+    ],
+    importpath = "github.com/ndscm/theseed/seed/devprod/ndscm/cli",
+    visibility = ["//visibility:private"],
+    deps = ["//seed/devprod/ndscm/common"],
+)
