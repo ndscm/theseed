@@ -33,9 +33,10 @@ else
   exit 1
 fi
 
-if [ -n "${WSL_DISTRO_NAME}" ]; then
+wsl=false
+if [[ ! -z "${WSL_DISTRO_NAME+x}" ]]; then
   wsl=true
-  echo -e "\e[33mWSL: true\e[0m"
+  printf "\e[33mWSL: true\e[0m\n"
 fi
 
 
