@@ -121,14 +121,26 @@ export ND_USER_DISPLAY_NAME="${ND_USER_DISPLAY_NAME}"
 # # Editor
 export EDITOR="vim"
 EOF
-  if ! grep -F -x 'source $HOME/.managed_profile' ${HOME}/.bashrc; then
-    echo 'source $HOME/.managed_profile' >>${HOME}/.bashrc
-  fi
-  if ! grep -F -x 'source $HOME/.managed_profile' ${HOME}/.zshrc; then
-    echo 'source $HOME/.managed_profile' >>${HOME}/.zshrc
-  fi
+  cat <<EOF >${HOME}/.managed_shrc
+# # User
+function me {
+  printf "\$ND_USER_HANDLE"
+}
+EOF
   if ! grep -F -x 'source $HOME/.managed_profile' ${HOME}/.profile; then
-    echo 'source $HOME/.managed_profile' >>${HOME}/.profile
+    printf '\nsource $HOME/.managed_profile\n' >>${HOME}/.profile
+  fi
+  if ! grep -F -x 'source $HOME/.managed_profile' ${HOME}/.bash_profile; then
+    printf '\nsource $HOME/.managed_profile\n' >>${HOME}/.bash_profile
+  fi
+  if ! grep -F -x 'source $HOME/.managed_profile' ${HOME}/.zprofile; then
+    printf '\nsource $HOME/.managed_profile\n' >>${HOME}/.zprofile
+  fi
+  if ! grep -F -x 'source $HOME/.managed_shrc' ${HOME}/.bashrc; then
+    printf '\nsource $HOME/.managed_shrc\n' >>${HOME}/.bashrc
+  fi
+  if ! grep -F -x 'source $HOME/.managed_shrc' ${HOME}/.zshrc; then
+    printf '\nsource $HOME/.managed_shrc\n' >>${HOME}/.zshrc
   fi
 fi
 
