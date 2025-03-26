@@ -103,7 +103,7 @@ if [[ ${oslike} == "debian" ]]; then
     fi
     mkdir -p ${HOME}/github/powerline/fonts
     tar -z -x -v --strip-components 1 -f ${HOME}/github/powerline/fonts.tar.gz -C ${HOME}/github/powerline/fonts/
-    ${HOME}/github/powerline/install.sh
+    ${HOME}/github/powerline/fonts/install.sh
   fi
 fi
 
