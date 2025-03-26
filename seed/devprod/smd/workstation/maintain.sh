@@ -174,7 +174,7 @@ EOF
 fi
 
 if [[ "${oslike}" == "debian" ]]; then
-  if grep -o -P -z "Host github.com[\n]?[\s]*ProxyCommand.*[\n]?" ${HOME}/.ssh/config; then
+  if [[ ! -z "$(sed '/Host github.com/{N;/ProxyCommand/p;}' ${HOME}/.ssh/config)" ]]; then
     printf "\e[33mFound ssh proxy to github.com for git, skip.\e[0m\n"
   else
 
