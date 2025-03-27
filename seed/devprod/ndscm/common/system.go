@@ -28,3 +28,17 @@ func ShellRun(dry bool, shellEval bool, name string, arg ...string) error {
 	}
 	return nil
 }
+
+func ShellOutput(dry bool, name string, arg ...string) ([]byte, error) {
+	if dry {
+		log.Printf("Dry mode skip: %v, %v", name, arg)
+		return []byte{}, nil
+	}
+	cmd := exec.Command(name, arg...)
+	cmd.Stderr = os.Stderr
+	outputBytes, err := cmd.Output()
+	if err != nil {
+		return outputBytes, WrapTrace(err)
+	}
+	return outputBytes, nil
+}
