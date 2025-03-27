@@ -241,7 +241,7 @@ elif [[ "${oslike}" == "darwin" ]]; then
   brew install --cask iterm2
   brew install --cask p4v
   brew install --cask visual-studio-code
-  brew install --no-quarantine chromium
+  brew install --cask --no-quarantine chromium
   defaults write NSGlobalDomain ApplePressAndHoldEnabled -bool false
 fi
 
