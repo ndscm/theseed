@@ -149,6 +149,7 @@ export PATH=\$HOME/bin:\$HOME/.local/bin:/usr/local/bin:\$PATH
 export EDITOR="vim"
 EOF
   cat <<EOF >${HOME}/.managed_shrc
+source \$HOME/.managed_profile
 # # User
 function me {
   printf "\$ND_USER_HANDLE"
