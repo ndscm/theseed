@@ -47,6 +47,11 @@ func main() {
 		if err != nil {
 			log.Fatalf("\x1b[31mERROR: %v\x1b[0m", err)
 		}
+	case "setup":
+		err := NdSetup(args, ndConfig)
+		if err != nil {
+			log.Fatalf("\x1b[31mERROR: %v\x1b[0m", err)
+		}
 	case "shell":
 		err := NdShell(args, ndConfig)
 		if err != nil {
