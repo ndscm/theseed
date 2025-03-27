@@ -3,15 +3,19 @@ set -eux
 set -o pipefail
 cd $(dirname "${BASH_SOURCE[0]}")/../../../..
 
-docker run --interactive --rm --tty --volume "/tmp/nd_test_apt_cache:/var/cache/apt/archives" $(
-  docker build --quiet --file ./devprod/ndscm/integration/Dockerfile.ubuntu ./devprod/ndscm/.
-) bash -c "$(
+bazel build //devprod/ndscm/cli:ndscm
+cp -f ./bazel-bin/devprod/ndscm/cli/ndscm_/ndscm ./devprod/ndscm/integration/ndscm
+
+image=$(docker build --quiet --file ./devprod/ndscm/integration/Dockerfile.ubuntu ./devprod/ndscm/.)
+(($?)) && exit $?
+
+docker run --interactive --rm --tty --volume "/tmp/nd_test_apt_cache:/var/cache/apt/archives" "${image}" bash -c "$(
   cat <<TEST_ND_CUT_SUCCESS
 set -eux -o pipefail
 
 # # Setup
 
-source /home/ubuntu/ndscm/envsetup.sh
+eval "\$(ndscm --shell-eval shell)"
 nd dev
 git config user.name Nagi
 git config user.email nagi@ndscm.com
@@ -35,21 +39,19 @@ nd cut pending HEAD^^ && result=0 || result=\$?
 
 [[ "\${result}" -eq 0 ]] && true || false
 [[ "\$(git rev-parse --abbrev-ref --symbolic-full-name dev@{upstream})" == "change/pending" ]] && true || false
-[[ "\$(git rev-parse --abbrev-ref --symbolic-full-name change/pending@{upstream})" == "main" ]] && true || false
+[[ "\$(git rev-parse --abbrev-ref --symbolic-full-name change/pending@{upstream})" == "base/dev" ]] && true || false
 [[ "\$(git rev-parse change/pending)" == "\$(git rev-parse HEAD^^)" ]] && true || false
 
 TEST_ND_CUT_SUCCESS
 )"
 
-docker run --interactive --rm --tty --volume "/tmp/nd_test_apt_cache:/var/cache/apt/archives" $(
-  docker build --quiet --file ./devprod/ndscm/integration/Dockerfile.ubuntu ./devprod/ndscm/.
-) bash -c "$(
+docker run --interactive --rm --tty --volume "/tmp/nd_test_apt_cache:/var/cache/apt/archives" "${image}" bash -c "$(
   cat <<TEST_ND_CUT_ON_DIRTY_FAIL
 set -eux -o pipefail
 
 # # Setup
 
-source /home/ubuntu/ndscm/envsetup.sh
+eval "\$(ndscm --shell-eval shell)"
 nd dev
 git config user.name Nagi
 git config user.email nagi@ndscm.com
@@ -77,15 +79,13 @@ nd cut pending HEAD^^ && result=0 || result=\$?
 TEST_ND_CUT_ON_DIRTY_FAIL
 )"
 
-docker run --interactive --rm --tty --volume "/tmp/nd_test_apt_cache:/var/cache/apt/archives" $(
-  docker build --quiet --file ./devprod/ndscm/integration/Dockerfile.ubuntu ./devprod/ndscm/.
-) bash -c "$(
+docker run --interactive --rm --tty --volume "/tmp/nd_test_apt_cache:/var/cache/apt/archives" "${image}" bash -c "$(
   cat <<TEST_ND_CUT_ON_DEV_2_SUCCESS
 set -eux -o pipefail
 
 # # Setup
 
-source /home/ubuntu/ndscm/envsetup.sh
+eval "\$(ndscm --shell-eval shell)"
 nd dev
 git config user.name Nagi
 git config user.email nagi@ndscm.com
@@ -110,21 +110,19 @@ nd cut pending HEAD^^ && result=0 || result=\$?
 
 [[ "\${result}" -eq 0 ]] && true || false
 [[ "\$(git rev-parse --abbrev-ref --symbolic-full-name dev-2@{upstream})" == "change/pending" ]] && true || false
-[[ "\$(git rev-parse --abbrev-ref --symbolic-full-name change/pending@{upstream})" == "main" ]] && true || false
+[[ "\$(git rev-parse --abbrev-ref --symbolic-full-name change/pending@{upstream})" == "base/dev-2" ]] && true || false
 [[ "\$(git rev-parse change/pending)" == "\$(git rev-parse HEAD^^)" ]] && true || false
 
 TEST_ND_CUT_ON_DEV_2_SUCCESS
 )"
 
-docker run --interactive --rm --tty --volume "/tmp/nd_test_apt_cache:/var/cache/apt/archives" $(
-  docker build --quiet --file ./devprod/ndscm/integration/Dockerfile.ubuntu ./devprod/ndscm/.
-) bash -c "$(
+docker run --interactive --rm --tty --volume "/tmp/nd_test_apt_cache:/var/cache/apt/archives" "${image}" bash -c "$(
   cat <<TEST_ND_CUT_ON_MAIN_FAIL
 set -eux -o pipefail
 
 # # Setup
 
-source /home/ubuntu/ndscm/envsetup.sh
+eval "\$(ndscm --shell-eval shell)"
 nd dev
 git config user.name Nagi
 git config user.email nagi@ndscm.com
@@ -152,15 +150,13 @@ nd cut pending HEAD^^ && result=0 || result=\$?
 TEST_ND_CUT_ON_MAIN_FAIL
 )"
 
-docker run --interactive --rm --tty --volume "/tmp/nd_test_apt_cache:/var/cache/apt/archives" $(
-  docker build --quiet --file ./devprod/ndscm/integration/Dockerfile.ubuntu ./devprod/ndscm/.
-) bash -c "$(
+docker run --interactive --rm --tty --volume "/tmp/nd_test_apt_cache:/var/cache/apt/archives" "${image}" bash -c "$(
   cat <<TEST_ND_CUT_NOT_ON_DEV_BRANCH_FAIL
 set -eux -o pipefail
 
 # # Setup
 
-source /home/ubuntu/ndscm/envsetup.sh
+eval "\$(ndscm --shell-eval shell)"
 nd dev
 git config user.name Nagi
 git config user.email nagi@ndscm.com
@@ -188,15 +184,13 @@ nd cut pending HEAD^^ && result=0 || result=\$?
 TEST_ND_CUT_NOT_ON_DEV_BRANCH_FAIL
 )"
 
-docker run --interactive --rm --tty --volume "/tmp/nd_test_apt_cache:/var/cache/apt/archives" $(
-  docker build --quiet --file ./devprod/ndscm/integration/Dockerfile.ubuntu ./devprod/ndscm/.
-) bash -c "$(
+docker run --interactive --rm --tty --volume "/tmp/nd_test_apt_cache:/var/cache/apt/archives" "${image}" bash -c "$(
   cat <<TEST_ND_CUT_NO_TRACKING_UPSTREAM_FAIL
 set -eux -o pipefail
 
 # # Setup
 
-source /home/ubuntu/ndscm/envsetup.sh
+eval "\$(ndscm --shell-eval shell)"
 nd dev
 git config user.name Nagi
 git config user.email nagi@ndscm.com
@@ -224,15 +218,13 @@ nd cut pending HEAD^^ && result=0 || result=\$?
 TEST_ND_CUT_NO_TRACKING_UPSTREAM_FAIL
 )"
 
-docker run --interactive --rm --tty --volume "/tmp/nd_test_apt_cache:/var/cache/apt/archives" $(
-  docker build --quiet --file ./devprod/ndscm/integration/Dockerfile.ubuntu ./devprod/ndscm/.
-) bash -c "$(
+docker run --interactive --rm --tty --volume "/tmp/nd_test_apt_cache:/var/cache/apt/archives" "${image}" bash -c "$(
   cat <<TEST_ND_CUT_CONTAIN_MERGE_FAIL
 set -eux -o pipefail
 
 # # Setup
 
-source /home/ubuntu/ndscm/envsetup.sh
+eval "\$(ndscm --shell-eval shell)"
 nd dev
 git config user.name Nagi
 git config user.email nagi@ndscm.com
@@ -262,15 +254,13 @@ nd cut pending HEAD && result=0 || result=\$?
 TEST_ND_CUT_CONTAIN_MERGE_FAIL
 )"
 
-docker run --interactive --rm --tty --volume "/tmp/nd_test_apt_cache:/var/cache/apt/archives" $(
-  docker build --quiet --file ./devprod/ndscm/integration/Dockerfile.ubuntu ./devprod/ndscm/.
-) bash -c "$(
+docker run --interactive --rm --tty --volume "/tmp/nd_test_apt_cache:/var/cache/apt/archives" "${image}" bash -c "$(
   cat <<TEST_ND_CUT_TARGET_NOT_ON_DEV_FAIL
 set -eux -o pipefail
 
 # # Setup
 
-source /home/ubuntu/ndscm/envsetup.sh
+eval "\$(ndscm --shell-eval shell)"
 nd dev
 git config user.name Nagi
 git config user.email nagi@ndscm.com
@@ -299,15 +289,13 @@ nd cut pending extra && result=0 || result=\$?
 TEST_ND_CUT_TARGET_NOT_ON_DEV_FAIL
 )"
 
-docker run --interactive --rm --tty --volume "/tmp/nd_test_apt_cache:/var/cache/apt/archives" $(
-  docker build --quiet --file ./devprod/ndscm/integration/Dockerfile.ubuntu ./devprod/ndscm/.
-) bash -c "$(
+docker run --interactive --rm --tty --volume "/tmp/nd_test_apt_cache:/var/cache/apt/archives" "${image}" bash -c "$(
   cat <<TEST_ND_CUT_ALREADY_EXIST_FAIL
 set -eux -o pipefail
 
 # # Setup
 
-source /home/ubuntu/ndscm/envsetup.sh
+eval "\$(ndscm --shell-eval shell)"
 nd dev
 git config user.name Nagi
 git config user.email nagi@ndscm.com
