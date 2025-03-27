@@ -65,7 +65,11 @@ if [[ "${oslike}" == "debian" ]]; then
 elif [[ "${oslike}" == "darwin" ]]; then
   xcode-select --install || true
   sudo xcodebuild -license accept
-  /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+  if brew --version; then
+    printf "\e[33mFound brew, skip install homebrew.\e[0m\n"
+  else
+    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+  fi
   if ! grep -F -x 'eval "$(/opt/homebrew/bin/brew shellenv)"' ${HOME}/.zprofile; then
     printf '\neval "$(/opt/homebrew/bin/brew shellenv)"\n' >>${HOME}/.zprofile
   fi
