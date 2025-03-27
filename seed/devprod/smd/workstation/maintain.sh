@@ -411,8 +411,14 @@ fi
 if [[ "${oslike}" == "debian" || "${oslike}" == "darwin" ]]; then
   cat <<EOF >>${HOME}/.managed_profile
 # # Personal Profile
-if [ -f ~/.personal_profile ]; then
+if [ -f \$HOME/.personal_profile ]; then
   source \$HOME/.personal_profile
+fi
+EOF
+  cat <<EOF >>${HOME}/.managed_shrc
+# # Personal shrc
+if [ -f \$HOME/.personal_shrc ]; then
+  source \$HOME/.personal_shrc
 fi
 EOF
 fi
