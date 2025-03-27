@@ -18,6 +18,7 @@ go_library(
         "dev.go",
         "ndscm.go",
         "shell.go",
+        "sync.go",
     ],
     importpath = "github.com/ndscm/theseed/seed/devprod/ndscm/cli",
     visibility = ["//visibility:private"],

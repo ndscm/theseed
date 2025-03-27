@@ -3,6 +3,9 @@ set -eux
 set -o pipefail
 cd $(dirname "${BASH_SOURCE[0]}")/../../../..
 
+bazel build //devprod/ndscm/cli:ndscm
+cp -f ./bazel-bin/devprod/ndscm/cli/ndscm_/ndscm ./devprod/ndscm/integration/ndscm
+
 image=$(docker build --quiet --file ./devprod/ndscm/integration/Dockerfile.ubuntu ./devprod/ndscm/.)
 (($?)) && exit $?
 
@@ -12,7 +15,7 @@ set -eux -o pipefail
 
 # # Setup
 
-source /home/ubuntu/ndscm/envsetup.sh
+eval "\$(ndscm --shell-eval shell)"
 nd dev
 git config user.name Nagi
 git config user.email nagi@ndscm.com
