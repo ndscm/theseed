@@ -143,6 +143,8 @@ if [[ "${oslike}" == "debian" || "${oslike}" == "darwin" ]]; then
 # # User
 export ND_USER_HANDLE="${ND_USER_HANDLE}"
 export ND_USER_DISPLAY_NAME="${ND_USER_DISPLAY_NAME}"
+# # Path
+export PATH=\$HOME/bin:\$HOME/.local/bin:/usr/local/bin:\$PATH
 # # Editor
 export EDITOR="vim"
 EOF
