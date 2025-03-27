@@ -390,6 +390,14 @@ fi
 
 printf "\e[34mCheck theseed monorepo done.\e[0m\n"
 
+# # Ndscm
+
+cat <<EOF >>${HOME}/.managed_profile
+# # Ndscm
+export ND_MONOREPO_HOME="\$SEED_MONOREPO_HOME"
+export ND_MONOREPO_GIT_DIR="\$SEED_MONOREPO_GIT_DIR"
+EOF
+
 # # Shortcuts
 
 if [[ "${oslike}" == "debian" || "${oslike}" == "darwin" ]]; then
