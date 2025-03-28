@@ -17,6 +17,7 @@ go_library(
         "cut.go",
         "dev.go",
         "ndscm.go",
+        "review.go",
         "setup.go",
         "shell.go",
         "sync.go",
