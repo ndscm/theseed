@@ -59,5 +59,14 @@ func LoadConfig() (*NdConfig, error) {
 	ndConfig.Dry = *flagDry
 	ndConfig.Scm = *flagScm
 	ndConfig.ShellEval = *flagShellEval
+	if len(ndConfig.MonorepoHome) == 0 {
+		return nil, WrapTrace(fmt.Errorf("ND_MONOREPO_HOME is not set, please set it in %v", configPath))
+	}
+	if len(ndConfig.MonorepoGitDir) == 0 {
+		return nil, WrapTrace(fmt.Errorf("ND_MONOREPO_GIT_DIR is not set, please set it in %v", configPath))
+	}
+	if len(ndConfig.UserHandle) == 0 {
+		return nil, WrapTrace(fmt.Errorf("ND_USER_HANDLE is not set, please set it in %v", configPath))
+	}
 	return ndConfig, nil
 }
