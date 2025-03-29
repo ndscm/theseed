@@ -72,22 +72,22 @@ func NdSync(args []string, ndConfig *common.NdConfig) error {
 		}
 		// # Rebase dev branch
 		log.Printf("\x1b[34mRebasing: %v\x1b[0m", chain)
+		incomingCommits := []string{}
 		incomingCommitsOutput, err := common.ShellOutput(false, "git", "rev-list", "base/"+devBranch+"..origin/main")
 		if err != nil {
 			return err
+		}
+		for _, commitHash := range strings.Split(string(incomingCommitsOutput), "\n") {
+			commitHash = strings.TrimSpace(commitHash)
+			if commitHash != "" {
+				incomingCommits = append(incomingCommits, commitHash)
+			}
 		}
 		baseCommitHashOutput, err := common.ShellOutput(false, "git", "rev-parse", "base/"+devBranch)
 		if err != nil {
 			return err
 		}
-		incomingCommits := strings.Split(
-			strings.TrimSpace(string(incomingCommitsOutput))+
-				"\n"+
-				strings.TrimSpace(string(baseCommitHashOutput)),
-			"\n")
-		for i, commitHash := range incomingCommits {
-			incomingCommits[i] = strings.TrimSpace(commitHash)
-		}
+		incomingCommits = append(incomingCommits, strings.TrimSpace(string(baseCommitHashOutput)))
 		for i := len(incomingCommits) - 1; i >= 0; i-- {
 			// Reverse iteration
 			incommingCommitHash := incomingCommits[i]
