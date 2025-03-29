@@ -31,6 +31,7 @@ RUN git clone --bare --single-branch \
 
 ENV ND_MONOREPO_HOME="/home/ubuntu/monorepo"
 ENV ND_MONOREPO_GIT_DIR="/home/ubuntu/monorepo/monorepo.git"
+ENV ND_USER_HANDLE="ubuntu"
 
 RUN git --git-dir ${ND_MONOREPO_GIT_DIR} worktree add -B main ${ND_MONOREPO_HOME}/main origin/main
 # TODO(nagi): create dev worktree with ndscm and cleanup initialization here
