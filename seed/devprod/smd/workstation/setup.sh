@@ -58,7 +58,6 @@ else
     git@github.com:ndscm/theseed.git \
     ${HOME}/theseed/theseed.git
   git --git-dir ${HOME}/theseed/theseed.git worktree add -B main ${HOME}/theseed/main origin/main
-  git --git-dir ${HOME}/theseed/theseed.git worktree add -B dev ${HOME}/theseed/dev origin/main
 fi
 
 cd ${HOME}/theseed/main
