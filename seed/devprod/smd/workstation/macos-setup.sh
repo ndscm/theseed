@@ -47,14 +47,6 @@ mkdir -p ${HOME}/theseed
 if [[ -d ${HOME}/theseed/theseed.git && -d ${HOME}/theseed/main && -d ${HOME}/theseed/dev ]]; then
   printf "\e[33mFound existing theseed monorepo, skip clone.\e[0m\n"
 else
-  if [[ -d ${HOME}/theseed/theseed.git || -d ${HOME}/theseed/main || -d ${HOME}/theseed/dev ]]; then
-    printf "\e[31mFound old theseed monorepo, please backup and remove it:\e[33m
-    rm -rf ${HOME}/theseed/dev
-    rm -rf ${HOME}/theseed/main
-    rm -rf ${HOME}/theseed/theseed.git
-\e[0m"
-    exit 1
-  fi
   printf "\e[34mCloning theseed monorepo...\e[0m\n"
   git clone --bare --single-branch \
     --config "core.logallrefupdates=true" \
