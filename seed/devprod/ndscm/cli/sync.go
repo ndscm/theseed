@@ -80,7 +80,11 @@ func NdSync(args []string, ndConfig *common.NdConfig) error {
 		if err != nil {
 			return err
 		}
-		incomingCommits := strings.Split(strings.TrimSpace(string(incomingCommitsOutput)+"\n"+string(baseCommitHashOutput)), "\n")
+		incomingCommits := strings.Split(
+			strings.TrimSpace(string(incomingCommitsOutput))+
+				"\n"+
+				strings.TrimSpace(string(baseCommitHashOutput)),
+			"\n")
 		for i, commitHash := range incomingCommits {
 			incomingCommits[i] = strings.TrimSpace(commitHash)
 		}
