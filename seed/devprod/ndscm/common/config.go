@@ -20,6 +20,7 @@ type NdConfig struct {
 	MountHome      string // Reserved for single mount point
 	Scm            string
 	ShellEval      bool
+	UserHandle     string
 }
 
 func LoadConfig() (*NdConfig, error) {
@@ -53,6 +54,7 @@ func LoadConfig() (*NdConfig, error) {
 		MonorepoGitDir: os.Getenv("ND_MONOREPO_GIT_DIR"),
 		Scm:            "",
 		ShellEval:      false,
+		UserHandle:     os.Getenv("ND_USER_HANDLE"),
 	}
 	ndConfig.Dry = *flagDry
 	ndConfig.Scm = *flagScm
