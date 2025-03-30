@@ -350,7 +350,7 @@ printf "\e[34mChecking theseed monorepo...\e[0m\n"
 if [[ "${oslike}" == "debian" || "${oslike}" == "darwin" ]]; then
   mkdir -p ${HOME}/theseed
 
-  if [[ -d ${HOME}/theseed/theseed.git && -d ${HOME}/theseed/main && -d ${HOME}/theseed/dev ]]; then
+  if [[ -d ${HOME}/theseed/theseed.git && -d ${HOME}/theseed/main ]]; then
     printf "\e[33mFound existing theseed monorepo, skip clone.\e[0m\n"
   else
     printf "\e[34mCloning theseed monorepo...\e[0m\n"
