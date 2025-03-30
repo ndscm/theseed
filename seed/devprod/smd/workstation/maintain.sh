@@ -385,6 +385,7 @@ cat <<EOF >>${HOME}/.managed_profile
 # # Ndscm
 export ND_MONOREPO_HOME="\$SEED_MONOREPO_HOME"
 export ND_MONOREPO_GIT_DIR="\$SEED_MONOREPO_GIT_DIR"
+export ND_USER_HANDLE="\$ND_USER_HANDLE"
 EOF
 
 # # Shortcuts
