@@ -35,11 +35,11 @@ func NdDev(args []string, ndConfig *common.NdConfig) error {
 			return common.WrapTrace(fmt.Errorf("worktree %v exists and is not a dir", worktreePath))
 		}
 		if os.IsNotExist(err) {
-			err = common.ShellRun(ndConfig.Dry, ndConfig.ShellEval, "git", "--git-dir", ndConfig.MonorepoGitDir, "branch", "--track=direct", "base/"+worktreeName, "origin/main")
+			err = common.ShellRun(ndConfig.Dry, ndConfig.ShellEval, "git", "--git-dir", ndConfig.MonorepoGitDir, "branch", "--track", "base/"+worktreeName, "origin/main")
 			if err != nil {
 				return err
 			}
-			err = common.ShellRun(ndConfig.Dry, ndConfig.ShellEval, "git", "--git-dir", ndConfig.MonorepoGitDir, "branch", "--track=direct", worktreeName, "base/"+worktreeName)
+			err = common.ShellRun(ndConfig.Dry, ndConfig.ShellEval, "git", "--git-dir", ndConfig.MonorepoGitDir, "branch", "--track", worktreeName, "base/"+worktreeName)
 			if err != nil {
 				return err
 			}
