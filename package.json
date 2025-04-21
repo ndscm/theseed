@@ -1,4 +1,10 @@
 {
+  "name": "@theseed/monorepo",
+  "description": "Theseed Monorepo",
+  "version": "25.4.22",
+  "author": "ndscm",
+  "license": "UNLICENSED",
+  "private": true,
   "dependencies": {
     "@bufbuild/protobuf": "^1.10.0",
     "@bufbuild/protoc-gen-es": "^1.10.0",
@@ -7,10 +13,8 @@
     "@connectrpc/protoc-gen-connect-es": "^1.4.0",
     "@connectrpc/protoc-gen-connect-query": "^1.4.1",
     "@types/node": "^22.4.1",
+    "prettier": "^3.3.3",
     "typescript": "^5.5.4"
-  },
-  "devDependencies": {
-    "prettier": "^3.3.3"
   },
   "packageManager": "pnpm@8.6.7"
 }
