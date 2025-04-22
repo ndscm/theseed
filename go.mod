@@ -4,10 +4,12 @@ go 1.19
 
 require (
 	connectrpc.com/connect v1.16.2
+	connectrpc.com/cors v0.1.0
 	github.com/emersion/go-imap/v2 v2.0.0-beta.5
 	github.com/emersion/go-message v0.18.1
 	github.com/emersion/go-webdav v0.6.0
 	github.com/joho/godotenv v1.5.1
+	github.com/rs/cors v1.11.1
 
 
 
