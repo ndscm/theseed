@@ -9,6 +9,19 @@ module(
     version = "1.0",
 )
 
+# Container
+
+bazel_dep(name = "rules_oci", version = "2.2.6")
+
+oci = use_extension("@rules_oci//oci:extensions.bzl", "oci")
+oci.pull(
+    name = "debian_12_slim",
+    image = "docker.io/library/debian",
+    platforms = ["linux/amd64"],
+    tag = "12-slim",
+)
+use_repo(oci, "debian_12_slim", "debian_12_slim_linux_amd64")
+
 # Go
 
 bazel_dep(name = "rules_go", version = "0.53.0")
