@@ -1,6 +1,6 @@
 module github.com/ndscm/theseed
 
-go 1.19
+go 1.24
 
 require (
 	connectrpc.com/connect v1.16.2
