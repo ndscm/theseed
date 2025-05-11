@@ -1,8 +1,17 @@
-load("@rules_go//go:def.bzl", "go_library")
+load("@rules_go//go:def.bzl", "go_library", "go_test")
 
 go_library(
     name = "common",
-    srcs = ["error.go"],
+    srcs = [
+        "download.go",
+        "error.go",
+    ],
     importpath = "github.com/ndscm/theseed/seed/devprod/go/common",
     visibility = ["//visibility:public"],
+)
+
+go_test(
+    name = "common_test",
+    srcs = ["download_test.go"],
+    deps = [":common"],
 )
