@@ -346,6 +346,22 @@ fi
 
 printf "\e[32mCheck node tools done.\e[0m\n"
 
+
+
+
+
+if [[ "${oslike}" == "debian" ]]; then
+
+
+
+
+
+
+
+fi
+
+
+
 # Monorepo
 
 printf "\e[34mChecking theseed monorepo...\e[0m\n"
