@@ -18,6 +18,7 @@
     "sync": false
   },
   "go.toolsManagement.autoUpdate": true,
+  "isort.args": ["--profile", "black"],
   "prettier.proseWrap": "always",
   "prettier.semi": false,
   "scm.showHistoryGraph": false,
@@ -48,7 +49,10 @@
     "editor.defaultFormatter": "zxh404.vscode-proto3"
   },
   "[python]": {
-    "editor.defaultFormatter": "ms-python.black-formatter"
+    "editor.defaultFormatter": "ms-python.black-formatter",
+    "editor.codeActionsOnSave": {
+      "source.organizeImports": "explicit"
+    }
   },
   "[shellscript]": {
     "editor.defaultFormatter": "foxundermoon.shell-format"
