@@ -1,0 +1,15 @@
+{
+  "name": "@theseed/newtype-playwright-proxy",
+  "version": "25.5.29",
+  "description": "",
+  "license": "UNLICENSED",
+  "private": true,
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "http-proxy": "^1.18.1"
+  },
+  "packageManager": "pnpm@8.6.7"
+}
