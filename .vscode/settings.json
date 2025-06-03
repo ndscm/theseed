@@ -21,6 +21,7 @@
   "isort.args": ["--profile", "black"],
   "prettier.proseWrap": "always",
   "prettier.semi": false,
+  "python.defaultInterpreterPath": ".venv/bin/python",
   "scm.showHistoryGraph": false,
   "scm.showOutgoingChanges": "never",
   "typescript.updateImportsOnFileMove.enabled": "always",
