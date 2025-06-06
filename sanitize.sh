@@ -22,6 +22,9 @@ cd $(dirname "${BASH_SOURCE[0]}")
 # Must tidy go mod after all packages
 bazel run @rules_go//go -- mod tidy
 
+# Python
+uv pip freeze >./requirements.txt
+
 # TypeScript
 bazel build //:node_modules/prettier
 ./bazel-bin/node_modules/prettier/bin/prettier.cjs --write .
