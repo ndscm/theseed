@@ -52,6 +52,9 @@ use_repo(
     "org_golang_x_net",
 )
 
+# Grpc
+bazel_dep(name = "grpc", version = "1.72.0")
+
 # JavaScript and TypeScript
 
 bazel_dep(name = "aspect_bazel_lib", version = "2.17.1")
