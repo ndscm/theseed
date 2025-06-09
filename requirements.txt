@@ -14,6 +14,8 @@ fastmcp==2.7.0
 filelock==3.18.0
 fsspec==2025.5.1
 greenlet==3.2.3
+grpcio==1.72.1
+grpcio-tools==1.72.1
 h11==0.16.0
 httpcore==1.0.9
 httpx==0.28.1
@@ -46,6 +48,7 @@ openai==1.84.0
 openapi-pydantic==0.5.1
 pillow==11.2.1
 playwright==1.52.0
+protobuf==6.31.1
 pyautogui==0.9.54
 pycparser==2.22
 pydantic==2.11.5
