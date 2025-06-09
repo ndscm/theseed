@@ -54,8 +54,8 @@ use_repo(
 
 # JavaScript and TypeScript
 
-bazel_dep(name = "aspect_bazel_lib", version = "2.9.0")
-bazel_dep(name = "aspect_rules_js", version = "1.42.3")
+bazel_dep(name = "aspect_bazel_lib", version = "2.17.1")
+bazel_dep(name = "aspect_rules_js", version = "2.3.7")
 
 npm = use_extension("@aspect_rules_js//npm:extensions.bzl", "npm", dev_dependency = True)
 npm.npm_translate_lock(
@@ -68,7 +68,7 @@ use_repo(npm, "npm")
 pnpm = use_extension("@aspect_rules_js//npm:extensions.bzl", "pnpm")
 use_repo(pnpm, "pnpm")
 
-bazel_dep(name = "aspect_rules_ts", version = "2.4.2")
+bazel_dep(name = "aspect_rules_ts", version = "3.6.0")
 
 rules_ts_ext = use_extension("@aspect_rules_ts//ts:extensions.bzl", "ext", dev_dependency = True)
 rules_ts_ext.deps()
