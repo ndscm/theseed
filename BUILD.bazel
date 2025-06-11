@@ -39,6 +39,7 @@ gazelle_binary(
 # gazelle:exclude **/*_pb2.pyi
 # gazelle:exclude **/*pb
 # gazelle:exclude **/*pbconnect
+# gazelle:exclude **/node_modules
 
 # gazelle:python_generation_mode file
 
