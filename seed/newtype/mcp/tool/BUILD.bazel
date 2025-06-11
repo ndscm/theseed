@@ -7,6 +7,7 @@ package(
 py_binary(
     name = "list_tools",
     srcs = ["list_tools.py"],
+    visibility = ["//:__subpackages__"],
     deps = [
         "@pypi//fastmcp",
     ],
