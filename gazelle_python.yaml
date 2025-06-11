@@ -1,0 +1,98 @@
+# GENERATED FILE - DO NOT EDIT!
+#
+# To update this file, run:
+#   bazel run //:gazelle_python_manifest.update
+
+---
+manifest:
+  modules_mapping:
+    PIL: pillow
+    Xlib: python3_xlib
+    annotated_types: annotated_types
+    anyio: anyio
+    authlib: authlib
+    certifi: certifi
+    cffi: cffi
+    charset_normalizer: charset_normalizer
+    click: click
+    confluent_kafka: confluent_kafka
+    cryptography: cryptography
+    distro: distro
+    dotenv: python_dotenv
+    exceptiongroup: exceptiongroup
+    fastapi: fastapi
+    fastmcp: fastmcp
+    filelock: filelock
+    fsspec: fsspec
+    functorch: torch
+    google.protobuf: protobuf
+    greenlet: greenlet
+    grpc: grpcio
+    grpc_tools: grpcio_tools
+    h11: h11
+    httpcore: httpcore
+    httpx: httpx
+    httpx_sse: httpx_sse
+    idna: idna
+    isympy: sympy
+    jinja2: jinja2
+    jiter: jiter
+    markdown_it: markdown_it_py
+    markupsafe: MarkupSafe
+    mcp: mcp
+    mdurl: mdurl
+    mouseinfo: MouseInfo
+    mpmath: mpmath
+    multipart: python_multipart
+    networkx: networkx
+    nvidia: nvidia_nvtx_cu12
+    nvidia.cublas: nvidia_cublas_cu12
+    nvidia.cuda_cupti: nvidia_cuda_cupti_cu12
+    nvidia.cuda_nvrtc: nvidia_cuda_nvrtc_cu12
+    nvidia.cuda_runtime: nvidia_cuda_runtime_cu12
+    nvidia.cudnn: nvidia_cudnn_cu12
+    nvidia.cufft: nvidia_cufft_cu12
+    nvidia.cufile: nvidia_cufile_cu12
+    nvidia.curand: nvidia_curand_cu12
+    nvidia.cusolver: nvidia_cusolver_cu12
+    nvidia.cusparse: nvidia_cusparse_cu12
+    nvidia.nccl: nvidia_nccl_cu12
+    nvidia.nvjitlink: nvidia_nvjitlink_cu12
+    openai: openai
+    openapi_pydantic: openapi_pydantic
+    pkg_resources: setuptools
+    playwright: playwright
+    pyautogui: pyautogui
+    pycparser: pycparser
+    pydantic: pydantic
+    pydantic_core: pydantic_core
+    pydantic_settings: pydantic_settings
+    pyee: pyee
+    pygetwindow: PyGetWindow
+    pygments: pygments
+    pymsgbox: pymsgbox
+    pyperclip: pyperclip
+    pyrect: PyRect
+    pyscreeze: pyscreeze
+    python_multipart: python_multipart
+    pytweening: pytweening
+    requests: requests
+    rich: rich
+    setuptools: setuptools
+    shellingham: shellingham
+    sniffio: sniffio
+    sse_starlette: sse_starlette
+    starlette: starlette
+    sympy: sympy
+    torch: torch
+    torchgen: torch
+    tqdm: tqdm
+    triton: triton
+    typer: typer
+    typing_extensions: typing_extensions
+    typing_inspection: typing_inspection
+    urllib3: urllib3
+    uvicorn: uvicorn
+  pip_repository:
+    name: pypi
+integrity: d3180457f175237acc9e781bfbdf23dc38e60132c0c6641a85639373c946621a

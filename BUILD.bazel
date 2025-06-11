@@ -1,15 +1,55 @@
-load("@gazelle//:def.bzl", "gazelle")
+load("@gazelle//:def.bzl", "gazelle", "gazelle_binary")
 load("@npm//:defs.bzl", "npm_link_all_packages")
-
-# Go
-
-# gazelle:exclude **/*pb
-# gazelle:exclude **/*pbconnect
-
-
-
-gazelle(name = "gazelle")
+load("@pypi//:requirements.bzl", "all_whl_requirements")
+load("@rules_python_gazelle_plugin//manifest:defs.bzl", "gazelle_python_manifest")
+load("@rules_python_gazelle_plugin//modules_mapping:def.bzl", "modules_mapping")
 
 # Node
 
 npm_link_all_packages()
+
+# Python
+
+modules_mapping(
+    name = "modules_map",
+    wheels = all_whl_requirements,
+)
+
+gazelle_python_manifest(
+    name = "gazelle_python_manifest",
+    modules_mapping = ":modules_map",
+    pip_repository_name = "pypi",
+    requirements = "//:requirements.txt",
+)
+
+# Gazelle
+
+gazelle_binary(
+    name = "gazelle_extend",
+    languages = [
+        "@gazelle//language/go",  # built-in
+        "@gazelle//language/proto",  # built-in
+        # Other languages
+        "@rules_python_gazelle_plugin//python",
+    ],
+)
+
+# gazelle:exclude **/*_pb2_grpc.py
+# gazelle:exclude **/*_pb2.py
+# gazelle:exclude **/*_pb2.pyi
+# gazelle:exclude **/*pb
+# gazelle:exclude **/*pbconnect
+
+# gazelle:python_generation_mode file
+
+
+
+# gazelle:resolve py infra.grpc.python.client //infra/grpc/python/client
+
+
+
+
+gazelle(
+    name = "gazelle",
+    gazelle = ":gazelle_extend",
+)
