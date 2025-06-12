@@ -45,7 +45,6 @@ gazelle_binary(
 
 
 
-# gazelle:resolve py infra.grpc.python.client //infra/grpc/python/client
 
 
 
