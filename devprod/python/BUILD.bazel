@@ -4,6 +4,7 @@ package(default_visibility = [
     "//devprod/python:__subpackages__",
     "//seed/infra/llm/client/python:__subpackages__",
     "//seed/infra/mcp/client/python:__subpackages__",
+    "//seed/infra/vlm/client/python:__subpackages__",
 
 ])
 
