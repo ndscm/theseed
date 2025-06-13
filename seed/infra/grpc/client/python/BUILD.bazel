@@ -16,7 +16,6 @@ py_library(
 py_library(
     name = "grpc_client",
     srcs = ["grpc_client.py"],
-    visibility = ["//:__subpackages__"],
     deps = [
         "@pypi//grpcio",
     ],

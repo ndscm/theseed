@@ -1,13 +1,10 @@
 load("@rules_python//python:py_binary.bzl", "py_binary")
 
-package(
-    default_visibility = ["//visibility:private"],
-)
+package(default_visibility = ["//visibility:private"])
 
 py_binary(
     name = "list_tools",
     srcs = ["list_tools.py"],
-    visibility = ["//:__subpackages__"],
     deps = [
         "@pypi//fastmcp",
     ],
