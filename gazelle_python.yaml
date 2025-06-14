@@ -45,21 +45,9 @@ manifest:
     mpmath: mpmath
     multipart: python_multipart
     networkx: networkx
-    nvidia: nvidia_nvtx_cu12
-    nvidia.cublas: nvidia_cublas_cu12
-    nvidia.cuda_cupti: nvidia_cuda_cupti_cu12
-    nvidia.cuda_nvrtc: nvidia_cuda_nvrtc_cu12
-    nvidia.cuda_runtime: nvidia_cuda_runtime_cu12
-    nvidia.cudnn: nvidia_cudnn_cu12
-    nvidia.cufft: nvidia_cufft_cu12
-    nvidia.cufile: nvidia_cufile_cu12
-    nvidia.curand: nvidia_curand_cu12
-    nvidia.cusolver: nvidia_cusolver_cu12
-    nvidia.cusparse: nvidia_cusparse_cu12
-    nvidia.nccl: nvidia_nccl_cu12
-    nvidia.nvjitlink: nvidia_nvjitlink_cu12
     openai: openai
     openapi_pydantic: openapi_pydantic
+    pillow.libs.libopenjp2-05423b53: pillow
     pkg_resources: setuptools
     playwright: playwright
     pyautogui: pyautogui
@@ -87,7 +75,6 @@ manifest:
     torch: torch
     torchgen: torch
     tqdm: tqdm
-    triton: triton
     typer: typer
     typing_extensions: typing_extensions
     typing_inspection: typing_inspection
@@ -95,4 +82,4 @@ manifest:
     uvicorn: uvicorn
   pip_repository:
     name: pypi
-integrity: d3180457f175237acc9e781bfbdf23dc38e60132c0c6641a85639373c946621a
+integrity: 4475cf558da41469dc637130d2b2415a8ce47dac8930e28b51a58150265b3926
