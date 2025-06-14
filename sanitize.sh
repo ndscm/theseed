@@ -23,7 +23,8 @@ cd $(dirname "${BASH_SOURCE[0]}")
 bazel run @rules_go//go -- mod tidy
 
 # Python
-uv pip freeze >./requirements.txt
+printf -- "--find-links https://download.pytorch.org/whl/torch\n" >./requirements.txt
+uv pip freeze >>./requirements.txt
 
 # TypeScript
 bazel build //:node_modules/prettier
