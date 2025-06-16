@@ -10,7 +10,7 @@ class VlmClient:
     sever: str
     model: str
     api_key: str
-    _client: openai.OpenAI
+    _client: openai.AsyncOpenAI
 
     total_prompt_tokens = 0
     total_completion_tokens = 0
@@ -41,7 +41,7 @@ class VlmClient:
             api_key_file_path = os.path.expanduser(api_key_file_path)
             with open(api_key_file_path, "r", encoding="utf-8") as f:
                 self.api_key = f.read().strip()
-        self._client = openai.OpenAI(
+        self._client = openai.AsyncOpenAI(
             api_key=self.api_key,
             base_url=self.server,
         )
@@ -63,7 +63,7 @@ class VlmClient:
                 json_schema=response_schema,
             )
             extra_kwargs["response_format"] = response_format
-        response = self._client.chat.completions.create(
+        response = await self._client.chat.completions.create(
             model=self.model,
             messages=[
                 {
@@ -88,6 +88,7 @@ class VlmClient:
             ],
             temperature=0,
             stream=False,
+            timeout=10,
             **extra_kwargs,
         )
         if response.usage:
