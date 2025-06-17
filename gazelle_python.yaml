@@ -80,6 +80,7 @@ manifest:
     typing_inspection: typing_inspection
     urllib3: urllib3
     uvicorn: uvicorn
+    yaml: PyYAML
   pip_repository:
     name: pypi
-integrity: 4475cf558da41469dc637130d2b2415a8ce47dac8930e28b51a58150265b3926
+integrity: 48c08d1f9c231f5ecf98fa4a096745de9f477b9594fe6a82e436131e965371d9
