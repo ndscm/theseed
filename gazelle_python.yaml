@@ -7,7 +7,7 @@
 manifest:
   modules_mapping:
     PIL: pillow
-    Xlib: python3_xlib
+    Xlib: python_xlib
     annotated_types: annotated_types
     anyio: anyio
     authlib: authlib
@@ -19,6 +19,7 @@ manifest:
     cryptography: cryptography
     distro: distro
     dotenv: python_dotenv
+    evdev: evdev
     exceptiongroup: exceptiongroup
     fastapi: fastapi
     fastmcp: fastmcp
@@ -59,6 +60,7 @@ manifest:
     pygetwindow: PyGetWindow
     pygments: pygments
     pymsgbox: pymsgbox
+    pynput: pynput
     pyperclip: pyperclip
     pyrect: PyRect
     pyscreeze: pyscreeze
@@ -68,6 +70,7 @@ manifest:
     rich: rich
     setuptools: setuptools
     shellingham: shellingham
+    six: six
     sniffio: sniffio
     sse_starlette: sse_starlette
     starlette: starlette
@@ -83,4 +86,4 @@ manifest:
     yaml: PyYAML
   pip_repository:
     name: pypi
-integrity: 48c08d1f9c231f5ecf98fa4a096745de9f477b9594fe6a82e436131e965371d9
+integrity: fe07f0b6649ee3bf033dd8de668b8525634f84eb93f9c1f2c15bb6e7372f517b
