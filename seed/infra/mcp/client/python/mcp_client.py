@@ -4,7 +4,7 @@ import fastmcp
 
 
 class McpClient:
-    sever: str
+    server: str
     service_name: str
     _client: fastmcp.Client
 
