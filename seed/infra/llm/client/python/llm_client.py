@@ -1,8 +1,9 @@
 import json
 import os
+from typing import Any
 
 import openai
-from openai.types.shared_params import response_format_json_schema
+import openai.types.shared_params.response_format_json_schema as response_format_json_schema
 
 
 class LlmClient:
@@ -50,7 +51,7 @@ class LlmClient:
         prompt: str,
         system_prompt: str = "",
         response_schema: response_format_json_schema.JSONSchema | None = None,
-    ):
+    ) -> tuple[Any, str]:
         print(f"[llm] prompt: {prompt}")
         extra_kwargs = {}
         if response_schema:
@@ -99,4 +100,4 @@ class LlmClient:
         if response_content.startswith("```json") and response_content.endswith("```"):
             response_content = response_content[len("```json") : -len("```")].strip()
         response_json = json.loads(response_content)
-        return response_json
+        return response_json, response_content
