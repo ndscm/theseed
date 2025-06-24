@@ -1,17 +1,21 @@
-import argparse
 import asyncio
 import os
 
 import fastmcp
+import pydantic_settings
+
+import seed.infra.python.seed_flag as seed_flag
+import seed.infra.python.seed_init as seed_init
+
+arg_service = seed_flag.define("service", pydantic_settings.CliPositionalArg[str], "")
 
 
 async def main():
-    parser = argparse.ArgumentParser()
-    parser.add_argument("service", type=str, nargs="?", default="")
-    args = parser.parse_args()
+    seed_init.initialize()
+    service = arg_service.get()
     client = fastmcp.Client(
         os.environ.get("NEWTYPE_MCP_SERVER", "http://127.0.0.1:4364")
-        + (f"/{args.service}" if args.service else "")
+        + (f"/{service}" if service else "")
         + "/mcp/"
     )
     async with client:
