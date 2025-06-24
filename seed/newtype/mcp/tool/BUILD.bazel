@@ -6,6 +6,9 @@ py_binary(
     name = "list_tools",
     srcs = ["list_tools.py"],
     deps = [
+        "//seed/infra/python:seed_flag",
+        "//seed/infra/python:seed_init",
         "@pypi//fastmcp",
+        "@pypi//pydantic_settings",
     ],
 )
