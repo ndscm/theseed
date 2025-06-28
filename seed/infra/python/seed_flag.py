@@ -1,7 +1,10 @@
+import logging
 import types
 from typing import Any, Generic, Type, TypeVar
 
 import pydantic_settings
+
+logger = logging.getLogger(__name__)
 
 
 class ConfigStore:
@@ -36,7 +39,8 @@ class ConfigStore:
             ),
         )
         self._settings = DynamicSettings()
-        print(self._settings)
+        if self._settings:
+            logger.info(f"MPT Configs: {self._settings.model_dump_json(indent=2)}")
         return self
 
     def get(self, name: str) -> Any:
