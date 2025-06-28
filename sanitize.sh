@@ -25,6 +25,7 @@ bazel run @rules_go//go -- mod tidy
 # Python
 printf -- "--find-links https://download.pytorch.org/whl/torch\n" >./requirements.txt
 uv pip freeze >>./requirements.txt
+bazel run //:gazelle_python_manifest.update
 
 # TypeScript
 bazel build //:node_modules/prettier
