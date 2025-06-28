@@ -58,6 +58,12 @@ class MptLoggingFormatter(logging.Formatter):
 
 
 def initialize() -> seed_flag.ConfigStore:
+    def _excepthook(exc_type, exc_value, exc_traceback):
+        sys.__excepthook__(exc_type, exc_value, exc_traceback)
+        logger.critical(exc_value)
+
+    sys.excepthook = _excepthook
+
     logging.basicConfig(force=True, level=logging.INFO)
     flag_verbose = seed_flag.define("verbose", bool, False)
     for handler in logging.root.handlers:
