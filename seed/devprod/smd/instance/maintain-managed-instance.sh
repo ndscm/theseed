@@ -84,21 +84,21 @@ fi
 
 # # Install podman
 
-if [[ "${oslike}" == "fedora" ]]; then
-  sudo dnf install -y podman
-  if [[ ! "$(getent group podman)" ]]; then
-    sudo groupadd --system podman
-  fi
-  sudo mkdir -p /etc/systemd/system/podman.socket.d
-  cat <<EOF | sudo tee /etc/systemd/system/podman.socket.d/override.conf
-[Socket]
-SocketUser=root
-SocketGroup=podman
-EOF
-  sudo systemctl daemon-reload
-  sudo systemctl enable --now podman.socket
-  sudo chown root:podman /run/podman
-  sudo chmod 0750 /run/podman
-fi
+# if [[ "${oslike}" == "fedora" ]]; then
+#   sudo dnf install -y podman
+#   if [[ ! "$(getent group podman)" ]]; then
+#     sudo groupadd --system podman
+#   fi
+#   sudo mkdir -p /etc/systemd/system/podman.socket.d
+#   cat <<EOF | sudo tee /etc/systemd/system/podman.socket.d/override.conf
+# [Socket]
+# SocketUser=root
+# SocketGroup=podman
+# EOF
+#   sudo systemctl daemon-reload
+#   sudo systemctl enable --now podman.socket
+#   sudo chown root:podman /run/podman
+#   sudo chmod 0750 /run/podman
+# fi
 
-sudo usermod -a -G podman $(whoami)
+# sudo usermod -a -G podman $(whoami)
