@@ -60,6 +60,18 @@ EOF
   fi
 fi
 
+# ## Sshd
+
+if [[ "${oslike}" == "fedora" ]]; then
+  extra_sshd_config="/etc/ssh/sshd_config.d/90-theseed-${USER}.conf"
+  if [[ ! -f "${extra_sshd_config}" ]]; then
+    cat <<EOF | sudo tee "${extra_sshd_config}"
+Match User ${USER}
+       GatewayPorts clientspecified
+EOF
+  fi
+fi
+
 # ## Over commit
 
 if [[ "${oslike}" == "fedora" ]]; then
