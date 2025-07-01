@@ -8,5 +8,6 @@ go_library(
     importpath = "github.com/ndscm/theseed/seed/infra/init/go/seedinit",
     deps = [
         "//seed/infra/flag/go/seedflag",
+        "//seed/infra/log/go/seedlog",
     ],
 )

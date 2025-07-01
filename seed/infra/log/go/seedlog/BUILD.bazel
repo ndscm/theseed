@@ -1,0 +1,8 @@
+load("@rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "seedlog",
+    srcs = ["logger.go"],
+    importpath = "github.com/ndscm/theseed/seed/infra/log/go/seedlog",
+    visibility = ["//visibility:public"],
+)
