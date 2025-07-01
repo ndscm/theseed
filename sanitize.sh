@@ -23,7 +23,11 @@ cd $(dirname "${BASH_SOURCE[0]}")
 bazel run @rules_go//go -- mod tidy
 
 # Python
-uv pip freeze >./requirements.txt
+if [[ "$(uname)" == "Darwin" ]]; then
+  uv pip freeze >./requirements_darwin.txt
+else
+  uv pip freeze >./requirements.txt
+fi
 bazel run //:gazelle_python_manifest.update
 
 # TypeScript
