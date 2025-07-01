@@ -1,0 +1,12 @@
+load("@rules_go//go:def.bzl", "go_library")
+
+package(default_visibility = ["//visibility:public"])
+
+go_library(
+    name = "seedinit",
+    srcs = ["initialize.go"],
+    importpath = "github.com/ndscm/theseed/seed/infra/init/go/seedinit",
+    deps = [
+        "//seed/infra/flag/go/seedflag",
+    ],
+)
