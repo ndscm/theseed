@@ -1,13 +1,11 @@
 load("@rules_go//go:def.bzl", "go_library", "go_test")
 
-package(
-    default_visibility = ["//visibility:private"],
-)
+package(default_visibility = ["//visibility:private"])
 
 go_library(
     name = "seederr",
     srcs = ["wrap.go"],
-    importpath = "github.com/ndscm/theseed/seed/devprod/go/mpterrors",
+    importpath = "github.com/ndscm/theseed/seed/infra/error/go/seederr",
     visibility = ["//visibility:public"],
 )
 
