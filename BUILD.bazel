@@ -17,7 +17,7 @@ modules_mapping(
 
 gazelle_python_manifest(
     name = "gazelle_python_manifest",
-    modules_mapping = ":modules_map",
+    modules_mapping = "//seed/devprod/python/modules_mapping",
     pip_repository_name = "pypi",
     requirements = "//:requirements.txt",
 )
