@@ -1,0 +1,29 @@
+load("@pypi//:requirements.bzl", "all_whl_requirements")
+load("@rules_python//python:defs.bzl", "py_binary")
+load("@rules_python_gazelle_plugin//modules_mapping:def.bzl", "modules_mapping")
+
+modules_mapping(
+    name = "local_modules_mapping_json",
+    modules_mapping_name = "local_modules_mapping.json",
+    wheels = all_whl_requirements,
+)
+
+py_binary(
+    name = "generate",
+    srcs = ["generate.py"],
+    data = [
+        ":local_modules_mapping_json",
+    ],
+    deps = [
+        "//seed/infra/python:seed_flag",
+        "//seed/infra/python:seed_init",
+    ],
+)
+
+genrule(
+    name = "modules_mapping",
+    srcs = ["modules_mapping_linux.json"],
+    outs = ["modules_mapping.json"],
+    cmd_bash = "cp $(location :modules_mapping_linux.json) $@",
+    visibility = ["//visibility:public"],
+)
