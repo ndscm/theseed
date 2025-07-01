@@ -6,7 +6,24 @@
 ---
 manifest:
   modules_mapping:
+    AppKit: pyobjc_framework_cocoa
+    ApplicationServices: pyobjc_framework_applicationservices
+    Cocoa: pyobjc_framework_cocoa
+    CoreFoundation: pyobjc_framework_cocoa
+    CoreText: pyobjc_framework_coretext
+    Foundation: pyobjc_framework_cocoa
+    HIServices: pyobjc_framework_applicationservices
     PIL: pillow
+    PrintCore: pyobjc_framework_applicationservices
+    PyObjCTools.AppCategories: pyobjc_framework_cocoa
+    PyObjCTools.AppHelper: pyobjc_framework_cocoa
+    PyObjCTools.Conversion: pyobjc_framework_cocoa
+    PyObjCTools.FndCategories: pyobjc_framework_cocoa
+    PyObjCTools.KeyValueCoding: pyobjc_core
+    PyObjCTools.MachSignals: pyobjc_core
+    PyObjCTools.Signals: pyobjc_core
+    PyObjCTools.TestSupport: pyobjc_core
+    Quartz: pyobjc_framework_quartz
     Xlib: python_xlib
     annotated_types: annotated_types
     anyio: anyio
@@ -59,6 +76,7 @@ manifest:
     nvidia.cusparse: nvidia_cusparse_cu12
     nvidia.nccl: nvidia_nccl_cu12
     nvidia.nvjitlink: nvidia_nvjitlink_cu12
+    objc: pyobjc_core
     openai: openai
     openapi_pydantic: openapi_pydantic
     pkg_resources: setuptools
@@ -80,6 +98,7 @@ manifest:
     pytweening: pytweening
     requests: requests
     rich: rich
+    rubicon.objc: rubicon_objc
     setuptools: setuptools
     shellingham: shellingham
     six: six
@@ -99,4 +118,4 @@ manifest:
     yaml: PyYAML
   pip_repository:
     name: pypi
-integrity: 95b1a2fe1d343cd8b3a6cb41092cf154a519a902e7a6cdbb7d5e66447898002e
+integrity: bebdf8f3a6bfc6a64985c5633c7aad6e9dbc29c333db80c6c7ea8047c831397e
