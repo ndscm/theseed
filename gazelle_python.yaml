@@ -118,4 +118,4 @@ manifest:
     yaml: PyYAML
   pip_repository:
     name: pypi
-integrity: bebdf8f3a6bfc6a64985c5633c7aad6e9dbc29c333db80c6c7ea8047c831397e
+integrity: 149a8e5d91aa909a60781eb448d1db62ec1c85b9358a38560edd9b14a1a898b5

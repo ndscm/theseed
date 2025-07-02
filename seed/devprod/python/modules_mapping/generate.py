@@ -25,6 +25,7 @@ async def main():
         raise ValueError(f"not supported platform: {platform.system()}")
     with open(output, "w") as f:
         json.dump(mapping, f, indent=2)
+        f.write("\n")
 
 
 if __name__ == "__main__":
