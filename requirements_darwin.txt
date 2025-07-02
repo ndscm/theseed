@@ -14,8 +14,8 @@ fastmcp==2.9.2
 filelock==3.18.0
 fsspec==2025.5.1
 greenlet==3.2.3
-grpcio==1.73.1
-grpcio-tools==1.73.1
+grpcio==1.67.1
+grpcio-tools==1.67.1
 h11==0.16.0
 httpcore==1.0.9
 httpx==0.28.1
@@ -28,14 +28,17 @@ markdown-it-py==3.0.0
 markupsafe==2.1.5
 mcp==1.9.4
 mdurl==0.1.2
+milvus-lite==2.5.1
 mouseinfo==0.1.3
 mpmath==1.3.0
 networkx==3.5
+numpy==2.3.1
 openai==1.93.0
 openapi-pydantic==0.5.1
+pandas==2.3.0
 pillow==11.3.0
 playwright==1.53.0
-protobuf==6.31.1
+protobuf==5.29.5
 pyautogui==0.9.54
 pycparser==2.22
 pydantic==2.11.7
@@ -45,6 +48,7 @@ pydub==0.25.1
 pyee==13.0.0
 pygetwindow==0.0.9
 pygments==2.19.2
+pymilvus==2.5.12
 pymsgbox==1.0.9
 pynput==1.8.1
 pyobjc-core==11.1
@@ -55,9 +59,11 @@ pyobjc-framework-quartz==11.1
 pyperclip==1.9.0
 pyrect==0.2.0
 pyscreeze==1.0.1
+python-dateutil==2.9.0.post0
 python-dotenv==1.1.1
 python-multipart==0.0.20
 pytweening==1.2.0
+pytz==2025.2
 pyyaml==6.0.2
 requests==2.32.4
 rich==14.0.0
@@ -76,5 +82,7 @@ tqdm==4.67.1
 typer==0.16.0
 typing-extensions==4.14.0
 typing-inspection==0.4.1
+tzdata==2025.2
+ujson==5.10.0
 urllib3==2.5.0
 uvicorn==0.35.0

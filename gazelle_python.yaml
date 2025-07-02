@@ -34,6 +34,7 @@ manifest:
     click: click
     confluent_kafka: confluent_kafka
     cryptography: cryptography
+    dateutil: python_dateutil
     distro: distro
     dotenv: python_dotenv
     evdev: evdev
@@ -60,10 +61,12 @@ manifest:
     markupsafe: MarkupSafe
     mcp: mcp
     mdurl: mdurl
+    milvus_lite: milvus_lite
     mouseinfo: MouseInfo
     mpmath: mpmath
     multipart: python_multipart
     networkx: networkx
+    numpy: numpy
     nvidia: nvidia_nvtx_cu12
     nvidia.cublas: nvidia_cublas_cu12
     nvidia.cuda_cupti: nvidia_cuda_cupti_cu12
@@ -80,6 +83,7 @@ manifest:
     objc: pyobjc_core
     openai: openai
     openapi_pydantic: openapi_pydantic
+    pandas: pandas
     pkg_resources: setuptools
     playwright: playwright
     pyautogui: pyautogui
@@ -91,6 +95,7 @@ manifest:
     pyee: pyee
     pygetwindow: PyGetWindow
     pygments: pygments
+    pymilvus: pymilvus
     pymsgbox: pymsgbox
     pynput: pynput
     pyperclip: pyperclip
@@ -98,6 +103,7 @@ manifest:
     pyscreeze: pyscreeze
     python_multipart: python_multipart
     pytweening: pytweening
+    pytz: pytz
     requests: requests
     rich: rich
     rubicon.objc: rubicon_objc
@@ -118,9 +124,11 @@ manifest:
     typer: typer
     typing_extensions: typing_extensions
     typing_inspection: typing_inspection
+    tzdata: tzdata
+    ujson: ujson
     urllib3: urllib3
     uvicorn: uvicorn
     yaml: PyYAML
   pip_repository:
     name: pypi
-integrity: 5ce08290251f35de4f1518b3298070d26dea017df75c377a3117df1b29d80621
+integrity: ac9dcd1469ac222d5ed2da91d5489d47cf8ec11f6e9b48dadbeee4572f1daafe
