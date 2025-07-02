@@ -28,6 +28,7 @@ if [[ "$(uname)" == "Darwin" ]]; then
 else
   uv pip freeze >./requirements.txt
 fi
+bazel run //seed/devprod/python/modules_mapping:generate
 bazel run //:gazelle_python_manifest.update
 
 # TypeScript
