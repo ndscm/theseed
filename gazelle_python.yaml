@@ -52,6 +52,7 @@ manifest:
     httpx: httpx
     httpx_sse: httpx_sse
     idna: idna
+    intervaltree: intervaltree
     isympy: sympy
     jinja2: jinja2
     jiter: jiter
@@ -86,6 +87,7 @@ manifest:
     pydantic: pydantic
     pydantic_core: pydantic_core
     pydantic_settings: pydantic_settings
+    pydub: pydub
     pyee: pyee
     pygetwindow: PyGetWindow
     pygments: pygments
@@ -103,6 +105,9 @@ manifest:
     shellingham: shellingham
     six: six
     sniffio: sniffio
+    sortedcontainers: sortedcontainers
+    srt: srt
+    srt_tools: srt
     sse_starlette: sse_starlette
     starlette: starlette
     sympy: sympy
@@ -118,4 +123,4 @@ manifest:
     yaml: PyYAML
   pip_repository:
     name: pypi
-integrity: 149a8e5d91aa909a60781eb448d1db62ec1c85b9358a38560edd9b14a1a898b5
+integrity: 5ce08290251f35de4f1518b3298070d26dea017df75c377a3117df1b29d80621
