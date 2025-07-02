@@ -5,9 +5,6 @@ package(default_visibility = ["//visibility:public"])
 py_library(
     name = "seed_flag",
     srcs = ["seed_flag.py"],
-    deps = [
-        "@pypi//pydantic_settings",
-    ],
 )
 
 py_library(

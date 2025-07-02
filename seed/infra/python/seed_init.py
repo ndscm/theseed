@@ -7,6 +7,8 @@ import seed.infra.python.seed_flag as seed_flag
 
 logger = logging.getLogger(__name__)
 
+flag_verbose = seed_flag.define_bool("verbose", False)
+
 
 class MptInitializer:
     _module_initializers: list[Callable[[], None]] = []
@@ -65,7 +67,6 @@ def initialize() -> seed_flag.ConfigStore:
     sys.excepthook = _excepthook
 
     logging.basicConfig(force=True, level=logging.INFO)
-    flag_verbose = seed_flag.define("verbose", bool, False)
     for handler in logging.root.handlers:
         handler.setFormatter(MptLoggingFormatter())
     logger.info(f"MPT Init: {os.path.basename(sys.argv[0])}")

@@ -1,18 +1,14 @@
 import asyncio
 import json
+import os
 import platform
 
-import seed.infra.python.seed_flag as seed_flag
 import seed.infra.python.seed_init as seed_init
-
-flag_build_workspace_directory = seed_flag.define(
-    "build_workspace_directory", str, ""
-)
 
 
 async def main():
     seed_init.initialize()
-    build_workspace_directory = flag_build_workspace_directory.get().strip()
+    build_workspace_directory = os.getenv("BUILD_WORKSPACE_DIRECTORY", "").strip()
     if not build_workspace_directory:
         raise ValueError("must run with bazel")
     with open("seed/devprod/python/modules_mapping/local_modules_mapping.json", "r") as f:

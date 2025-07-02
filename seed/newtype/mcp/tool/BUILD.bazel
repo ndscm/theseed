@@ -9,6 +9,5 @@ py_binary(
         "//seed/infra/python:seed_flag",
         "//seed/infra/python:seed_init",
         "@pypi//fastmcp",
-        "@pypi//pydantic_settings",
     ],
 )
