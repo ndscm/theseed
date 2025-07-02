@@ -19,7 +19,10 @@ gazelle_python_manifest(
     name = "gazelle_python_manifest",
     modules_mapping = "//seed/devprod/python/modules_mapping",
     pip_repository_name = "pypi",
-    requirements = "//:requirements.txt",
+    requirements = [
+        "//:requirements_darwin.txt",
+        "//:requirements.txt",
+    ],
 )
 
 # Gazelle
