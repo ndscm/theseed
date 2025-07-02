@@ -14,9 +14,9 @@ py_library(
     ],
     deps = [
         ":llm_client",
-        "//devprod/python:seed_typing",
         "//seed/infra/python:seed_flag",
         "//seed/infra/python:seed_init",
+        "//seed/infra/python:seed_typing",
         "@pypi//pydantic",
     ],
 )

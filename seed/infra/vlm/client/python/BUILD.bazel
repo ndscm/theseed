@@ -10,7 +10,7 @@ py_library(
     ],
     deps = [
         ":vlm_client",
-        "//devprod/python:seed_typing",
+        "//seed/infra/python:seed_typing",
     ],
 )
 

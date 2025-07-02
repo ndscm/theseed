@@ -1,9 +1,9 @@
 import pydantic
 
-import seed.infra.python.seed_typing as seed_typing
 import seed.infra.llm.client.python.llm_client as llm_client
 import seed.infra.python.seed_flag as seed_flag
 import seed.infra.python.seed_init as seed_init
+import seed.infra.python.seed_typing as seed_typing
 
 llm_server = seed_flag.define(
     "llm_server", str, "https://ark.cn-beijing.volces.com/api/v3"

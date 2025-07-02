@@ -17,3 +17,8 @@ py_library(
         ":seed_flag",
     ],
 )
+
+py_library(
+    name = "seed_typing",
+    srcs = ["seed_typing.py"],
+)
