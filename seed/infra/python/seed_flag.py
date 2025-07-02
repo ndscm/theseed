@@ -1,77 +1,225 @@
+import abc
+import argparse
+import json
 import logging
-import types
-from typing import Any, Generic, Type, TypeVar
-
-import pydantic_settings
+import os
+import typing
 
 logger = logging.getLogger(__name__)
 
 
-class ConfigStore:
-    _types: dict[str, Any] = {}
-    _entries: dict[str, Any] = {}
-    _settings: pydantic_settings.BaseSettings | None = None
+class ConfigHolder(abc.ABC):
+    """Base class for configuration items."""
 
-    def define(self, name: str, config_type: Any, config_value: Any):
-        if self._settings is not None:
-            raise RuntimeError("Cannot define new config after parsing settings.")
-        if name in self._entries:
-            raise ValueError(f"Config item '{name}' is already defined.")
-        self._types[name] = config_type
-        self._entries[name] = config_value
+    _parsed: bool
+
+    def __init__(self):
+        super().__init__()
+        self._parsed = False
+
+    @abc.abstractmethod
+    def get(self) -> typing.Any:
+        pass
+
+    @abc.abstractmethod
+    def set(self, value: typing.Any) -> None:
+        pass
+
+    def finalize(self) -> None:
+        self._parsed = True
+
+    def check(self) -> None:
+        if not self._parsed:
+            raise RuntimeError("config is used before being parsed")
+
+
+_bool_map = {
+    "true": True,
+    "t": True,
+    "1": True,
+    "yes": True,
+    "on": True,
+    "false": False,
+    "f": False,
+    "0": False,
+    "no": False,
+    "off": False,
+}
+
+
+class BoolConfigHolder(ConfigHolder):
+    value: bool
+    default: bool
+
+    def __init__(self, default: bool = False):
+        super().__init__()
+        self.default = default
+        self.value = default
+
+    def get(self) -> bool:
+        super().check()
+        return self.value
+
+    def set(self, value) -> None:
+        if isinstance(value, bool):
+            self.value = value
+            return
+        if isinstance(value, str):
+            self.value = _bool_map.get(value.lower(), self.default)
+            return
+        raise ValueError(f"expected a boolean value")
+
+
+class StringConfigHolder(ConfigHolder):
+    value: str
+
+    def __init__(self, default: str = ""):
+        super().__init__()
+        self.value = default
+
+    def get(self) -> str:
+        super().check()
+        return self.value
+
+    def set(self, value) -> None:
+        if isinstance(value, str):
+            self.value = value
+            return
+        raise ValueError(f"expected a string value")
+
+
+class StringListConfigHolder(ConfigHolder):
+    value: list[str]
+
+    def __init__(self, default: list[str] | None = None):
+        super().__init__()
+        self.value = default or []
+
+    def get(self) -> list[str]:
+        super().check()
+        return self.value
+
+    def set(self, value) -> None:
+        if isinstance(value, list):
+            self.value = [v for v in value if isinstance(v, str)]
+            return
+        if isinstance(value, str):
+            self.value = value.split(",")
+            return
+        raise ValueError(f"expected a list of strings")
+
+
+class ConfigStore:
+    _parser: argparse.ArgumentParser
+    _configs: dict[str, ConfigHolder]
+
+    def __init__(self):
+        self._parser = argparse.ArgumentParser()
+        self._configs = {}
+
+    def define(self, name: str, holder: ConfigHolder, *args, **kwargs):
+        self._configs[name] = holder
+        self._parser.add_argument(*args, **kwargs)
 
     def parse(self):
-        DynamicSettings = types.new_class(
-            "DynamicSettings",
-            (pydantic_settings.BaseSettings,),
-            exec_body=lambda ns: ns.update(
-                {
-                    "__annotations__": self._types,
-                    "__module__": __name__,
-                    "__qualname__": "DynamicSettings",
-                    "model_config": pydantic_settings.SettingsConfigDict(
-                        cli_avoid_json=True,
-                        cli_implicit_flags=True,
-                        cli_parse_args=True,
-                    ),
-                    **self._entries,
-                },
-            ),
+        for k, v in os.environ.items():
+            k = k.lower()
+            if k in self._configs:
+                self._configs[k].set(v)
+        parsed_args = self._parser.parse_args()
+        for k, v in vars(parsed_args).items():
+            if k in self._configs:
+                self._configs[k].set(v)
+        for holder in self._configs.values():
+            holder.finalize()
+        simplified = {k: v.get() for k, v in self._configs.items()}
+        logger.info(
+            f"MPT Configs: {json.dumps(simplified, indent=2, ensure_ascii=False)}"
         )
-        self._settings = DynamicSettings()
-        if self._settings:
-            logger.info(f"MPT Configs: {self._settings.model_dump_json(indent=2)}")
         return self
-
-    def get(self, name: str) -> Any:
-        if self._settings is None:
-            raise RuntimeError("Settings have not been parsed yet.")
-        return getattr(self._settings, name, None)
 
 
 _store = ConfigStore()
 
 
-_T = TypeVar("_T")
+def define_bool(name: str, default: bool = False, help: str = "") -> BoolConfigHolder:
+    holder = BoolConfigHolder(
+        default=default,
+    )
+    _store.define(
+        name,
+        holder,
+        f"--{name}",
+        action=argparse.BooleanOptionalAction,
+        default=default,
+        help=help,
+    )
+    return holder
 
 
-class ConfigItemHolder(Generic[_T]):
-    _store: ConfigStore
-    _name: str
+def define_string(name: str, default: str = "", help: str = "") -> StringConfigHolder:
+    holder = StringConfigHolder(
+        default=default,
+    )
+    _store.define(
+        name,
+        holder,
+        f"--{name}",
+        default=default,
+        help=help,
+    )
+    return holder
 
-    def __init__(
-        self, store: ConfigStore, name: str, config_type: Type, config_value: _T
-    ):
-        self._store = store
-        self._name = name
-        self._store.define(name, config_type, config_value)
 
-    def get(self) -> _T:
-        return self._store.get(self._name)
+def define_list(
+    name: str, default: list[str] | None = None, help: str = ""
+) -> StringListConfigHolder:
+    holder = StringListConfigHolder(
+        default=default,
+    )
+    _store.define(
+        name,
+        holder,
+        f"--{name}",
+        action="append",
+        default=default or [],
+        help=help,
+    )
+    return holder
 
 
-def define(name: str, config_type: Type, config_field: _T) -> ConfigItemHolder[_T]:
-    return ConfigItemHolder(_store, name, config_type, config_field)
+def define_positional(
+    name: str, default: str = "", help: str = ""
+) -> StringConfigHolder:
+    holder = StringConfigHolder(
+        default=default,
+    )
+    _store.define(
+        name,
+        holder,
+        f"{name}",
+        default=default,
+        help=help,
+        nargs="?",
+    )
+    return holder
+
+
+def define_positional_list(
+    name: str, default: list[str] | None = None, help: str = ""
+) -> StringListConfigHolder:
+    holder = StringListConfigHolder(
+        default=default,
+    )
+    _store.define(
+        name,
+        holder,
+        f"{name}",
+        default=default or [],
+        help=help,
+        nargs="*",
+    )
+    return holder
 
 
 def parse() -> ConfigStore:

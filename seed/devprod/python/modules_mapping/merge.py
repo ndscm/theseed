@@ -1,12 +1,10 @@
 import asyncio
 import json
 
-import pydantic_settings
-
 import seed.infra.python.seed_flag as seed_flag
 import seed.infra.python.seed_init as seed_init
 
-arg_srcs = seed_flag.define("srcs", pydantic_settings.CliPositionalArg[list[str]], [])
+arg_srcs = seed_flag.define_positional_list("srcs", [])
 
 
 async def main():

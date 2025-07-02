@@ -14,10 +14,7 @@ py_binary(
     data = [
         ":local_modules_mapping_json",
     ],
-    deps = [
-        "//seed/infra/python:seed_flag",
-        "//seed/infra/python:seed_init",
-    ],
+    deps = ["//seed/infra/python:seed_init"],
 )
 
 py_binary(
@@ -26,7 +23,6 @@ py_binary(
     deps = [
         "//seed/infra/python:seed_flag",
         "//seed/infra/python:seed_init",
-        "@pypi//pydantic_settings",
     ],
 )
 

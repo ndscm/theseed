@@ -2,12 +2,11 @@ import asyncio
 import os
 
 import fastmcp
-import pydantic_settings
 
 import seed.infra.python.seed_flag as seed_flag
 import seed.infra.python.seed_init as seed_init
 
-arg_service = seed_flag.define("service", pydantic_settings.CliPositionalArg[str], "")
+arg_service = seed_flag.define_positional("service", "")
 
 
 async def main():
