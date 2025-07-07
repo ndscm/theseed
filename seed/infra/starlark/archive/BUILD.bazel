@@ -1,0 +1,32 @@
+load("@rules_python//python:defs.bzl", "py_binary")
+
+package(default_visibility = ["//visibility:public"])
+
+exports_files(glob(["*.bzl"]))
+
+py_binary(
+    name = "create_tar_gz",
+    srcs = ["create_tar_gz.py"],
+    deps = [
+        "//seed/infra/python:seed_flag",
+        "//seed/infra/python:seed_init",
+    ],
+)
+
+py_binary(
+    name = "create_zip",
+    srcs = ["create_zip.py"],
+    deps = [
+        "//seed/infra/python:seed_flag",
+        "//seed/infra/python:seed_init",
+    ],
+)
+
+py_binary(
+    name = "extract_tar",
+    srcs = ["extract_tar.py"],
+    deps = [
+        "//seed/infra/python:seed_flag",
+        "//seed/infra/python:seed_init",
+    ],
+)
