@@ -28,6 +28,7 @@ manifest:
     annotated_types: annotated_types
     anyio: anyio
     authlib: authlib
+    bson: pymongo
     certifi: certifi
     cffi: cffi
     charset_normalizer: charset_normalizer
@@ -36,6 +37,7 @@ manifest:
     cryptography: cryptography
     dateutil: python_dateutil
     distro: distro
+    dns: dnspython
     dotenv: python_dotenv
     evdev: evdev
     exceptiongroup: exceptiongroup
@@ -46,6 +48,7 @@ manifest:
     functorch: torch
     google.protobuf: protobuf
     greenlet: greenlet
+    gridfs: pymongo
     grpc: grpcio
     grpc_tools: grpcio_tools
     h11: h11
@@ -96,6 +99,7 @@ manifest:
     pygetwindow: PyGetWindow
     pygments: pygments
     pymilvus: pymilvus
+    pymongo: pymongo
     pymsgbox: pymsgbox
     pynput: pynput
     pyperclip: pyperclip
@@ -131,4 +135,4 @@ manifest:
     yaml: PyYAML
   pip_repository:
     name: pypi
-integrity: ac9dcd1469ac222d5ed2da91d5489d47cf8ec11f6e9b48dadbeee4572f1daafe
+integrity: d4c9023f8ac3d69e2c966c33d439b00534a95a4b3f5ce30a06559a57c27fb90b
