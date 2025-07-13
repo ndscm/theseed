@@ -1,9 +1,14 @@
 import base64
 import json
+import logging
 import os
 
 import openai
 import openai.types.shared_params.response_format_json_schema as json_schema
+
+import seed.infra.billing.python.llm_bill as llm_bill
+
+logger = logging.getLogger(__name__)
 
 
 class VlmClient:
@@ -12,8 +17,7 @@ class VlmClient:
     api_key: str
     _client: openai.AsyncOpenAI
 
-    total_prompt_tokens = 0
-    total_completion_tokens = 0
+    _bill: llm_bill.LlmBill
 
     def __init__(
         self,
@@ -21,6 +25,7 @@ class VlmClient:
         model: str = "",
         api_key: str = "",
         api_key_file_path: str = "",
+        price: llm_bill.LlmPrice | None = None,
     ):
         self.server = server
         if not self.server:
@@ -45,6 +50,10 @@ class VlmClient:
             api_key=self.api_key,
             base_url=self.server,
         )
+        self._bill = llm_bill.LlmBill(
+            title=f"{self.model} ({self.server})",
+            price=price or llm_bill.LlmPrice(),
+        )
 
     async def request(
         self,
@@ -53,7 +62,7 @@ class VlmClient:
         system_prompt: str = "",
         response_schema: json_schema.JSONSchema | None = None,
     ):
-        print(f"[vlm] prompt: {prompt}")
+        logger.debug(f"prompt: {prompt}")
         image_png_base64 = base64.b64encode(image_png).decode("utf-8")
         image_data_url = f"data:image/png;base64,{image_png_base64}"
         extra_kwargs = {}
@@ -92,22 +101,20 @@ class VlmClient:
             **extra_kwargs,
         )
         if response.usage:
-            prompt_tokens = response.usage.prompt_tokens
-            completion_tokens = response.usage.completion_tokens
-            self.total_prompt_tokens += prompt_tokens
-            self.total_completion_tokens += completion_tokens
-            print(
-                f"[vlm] usage: \x1b[1;36m[in] {prompt_tokens} [out] {completion_tokens}\x1b[0m"
-            )
-            print(
-                f"[vlm] total: \x1b[1;36m[in] {self.total_prompt_tokens} [out] {self.total_completion_tokens}\x1b[0m"
+            self._bill.append_usage(response.usage)
+            bill_summary = self._bill.summary()
+            logger.debug(
+                f"bill: \x1b[1;36m[in] {bill_summary.total_prompt_tokens} [out] {bill_summary.total_completion_tokens} [cost] {bill_summary.total_cost}\x1b[0m"
             )
         if not response.choices or not response.choices[0].message:
             raise ValueError("No valid response from LLM")
         response_content = response.choices[0].message.content or ""
         response_content = response_content.strip()
-        print(f"[vlm] response: {response_content}")
+        logger.debug(f"response: {response_content}")
         if response_content.startswith("```json") and response_content.endswith("```"):
             response_content = response_content[len("```json") : -len("```")].strip()
         response_json = json.loads(response_content)
         return response_json
+
+    def bill(self):
+        return self._bill.summary()
