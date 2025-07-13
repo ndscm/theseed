@@ -1,19 +1,16 @@
 load("@rules_python//python:py_library.bzl", "py_library")
 
-package(default_visibility = ["//seed/infra/llm/client/python:__subpackages__"])
+package(default_visibility = [
+    "//seed/infra/llm/client/python:__subpackages__",
+
+])
 
 py_library(
     name = "client",
     srcs = ["__init__.py"],
-    visibility = [
-
-
-
-
-
-    ],
     deps = [
         ":llm_client",
+        "//seed/infra/billing/python:llm_bill",
         "//seed/infra/python:seed_flag",
         "//seed/infra/python:seed_init",
         "//seed/infra/python:seed_typing",
@@ -24,6 +21,7 @@ py_library(
     name = "llm_client",
     srcs = ["llm_client.py"],
     deps = [
+        "//seed/infra/billing/python:llm_bill",
         "@pypi//openai",
     ],
 )

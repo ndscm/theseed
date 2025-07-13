@@ -1,0 +1,15 @@
+load("@rules_python//python:py_library.bzl", "py_library")
+
+package(default_visibility = [
+    "//seed/infra/llm/client/python:__subpackages__",
+    "//seed/infra/vlm/client/python:__subpackages__",
+])
+
+py_library(
+    name = "llm_bill",
+    srcs = ["llm_bill.py"],
+    deps = [
+        "@pypi//openai",
+        "@pypi//pydantic",
+    ],
+)
