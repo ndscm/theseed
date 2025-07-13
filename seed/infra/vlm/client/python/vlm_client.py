@@ -1,6 +1,7 @@
 import base64
 import json
 import logging
+import mimetypes
 import os
 
 import openai
@@ -57,14 +58,41 @@ class VlmClient:
 
     async def request(
         self,
-        image_png: bytes,
-        prompt: str,
         system_prompt: str = "",
+        image_format: str = "",
+        image_bytes: bytes = b"",
+        image_path: str = "",
+        prompt: str = "",
         response_schema: json_schema.JSONSchema | None = None,
     ):
         logger.debug(f"prompt: {prompt}")
-        image_png_base64 = base64.b64encode(image_png).decode("utf-8")
-        image_data_url = f"data:image/png;base64,{image_png_base64}"
+
+        image_mime_type, _ = mimetypes.guess_type(f"image.{image_format}")
+        if image_path and image_bytes:
+            raise ValueError("Cannot provide both image_path and image_bytes")
+        if not image_path and not image_bytes:
+            raise ValueError("Must provide either image_path or image_bytes")
+        if image_path:
+            if not os.path.exists(image_path):
+                raise FileNotFoundError(f"image file not found: {image_path}")
+            with open(image_path, "rb") as f:
+                image_bytes = f.read()
+            path_mime_type, _ = mimetypes.guess_type(image_path)
+            if image_mime_type and image_mime_type != path_mime_type:
+                raise ValueError(f"image format {image_format} mismatch: {image_path}")
+            image_mime_type = path_mime_type
+        if image_mime_type not in [
+            "image/bmp",
+            "image/gif",
+            "image/jpeg",
+            "image/png",
+            "image/webp",
+            "image/x-icon",
+        ]:
+            raise ValueError(f"unsupported image format: {image_mime_type}")
+
+        image_base64 = base64.b64encode(image_bytes).decode("utf-8")
+        image_data_url = f"data:{image_mime_type};base64,{image_base64}"
         extra_kwargs = {}
         if response_schema:
             response_format = json_schema.ResponseFormatJSONSchema(
