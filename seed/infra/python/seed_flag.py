@@ -117,8 +117,17 @@ class ConfigStore:
         self._parser = argparse.ArgumentParser()
         self._configs = {}
 
-    def define(self, name: str, holder: ConfigHolder, *args, **kwargs):
+    def define(
+        self,
+        name: str,
+        holder: ConfigHolder,
+        *args,
+        default: typing.Any = None,
+        **kwargs,
+    ):
         self._configs[name] = holder
+        if default is not None:
+            holder.set(default)
         self._parser.add_argument(*args, **kwargs)
 
     def parse(self):
@@ -128,7 +137,7 @@ class ConfigStore:
                 self._configs[k].set(v)
         parsed_args = self._parser.parse_args()
         for k, v in vars(parsed_args).items():
-            if k in self._configs:
+            if k in self._configs and v is not None:
                 self._configs[k].set(v)
         for holder in self._configs.values():
             holder.finalize()
