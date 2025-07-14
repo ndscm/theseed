@@ -49,3 +49,33 @@ def load():
         logging.getLogger("__main__").setLevel(logging.DEBUG)
         for logger_name in debugging_loggers:
             logging.getLogger(logger_name).setLevel(logging.DEBUG)
+
+
+class Lazy:
+    generator: typing.Callable[[], str]
+
+    def __init__(self, generator: typing.Callable[[], str]):
+        self.generator = generator
+
+    def __str__(self):
+        return self.generator()
+
+
+class LazyList:
+    object_list: list
+
+    def __init__(self, object_list: list):
+        self.object_list = object_list
+
+    def __str__(self):
+        return "\n".join([str(obj) for obj in self.object_list])
+
+
+class LazyJson:
+    json_object: typing.Any
+
+    def __init__(self, json_object: typing.Any):
+        self.json_object = json_object
+
+    def __str__(self):
+        return json.dumps(self.json_object, indent=2, ensure_ascii=False)
