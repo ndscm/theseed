@@ -22,6 +22,12 @@ def _parse_json_response(response_content: str):
     return response_json
 
 
+def _parse_python_response(response_content: str):
+    if response_content.startswith("```python") and response_content.endswith("```"):
+        response_content = response_content[len("```python") : -len("```")].strip()
+    return response_content
+
+
 PydanticModel = typing.TypeVar("PydanticModel", bound=pydantic.BaseModel)
 
 
@@ -174,6 +180,19 @@ class LlmClient:
             response_pydantic_item_type(**item) for item in response_json
         ]
         return response_pydantic, response_content
+
+    async def request_expect_python(
+        self,
+        prompt: str,
+        *,
+        system_prompt: str = "",
+        task: str = "",
+    ) -> tuple[str, str]:
+        response_content: str = await self.request(
+            prompt, system_prompt=system_prompt, task=task
+        )
+        response_python = _parse_python_response(response_content)
+        return response_python, response_content
 
     def bill(self):
         return self._bill.summary()
