@@ -44,5 +44,20 @@ async def request(*args, **kwargs):
     return await _client.request(*args, **kwargs)
 
 
+@seed_typing.unbind_callable_type(LlmClient.request_expect_pydantic)
+async def request_expect_pydantic(*args, **kwargs):
+    return await _client.request_expect_pydantic(*args, **kwargs)
+
+
+@seed_typing.unbind_callable_type(LlmClient.request_expect_list)
+async def request_expect_list(*args, **kwargs):
+    return await _client.request_expect_list(*args, **kwargs)
+
+
+@seed_typing.unbind_callable_type(LlmClient.request_expect_pydantic_list)
+async def request_expect_pydantic_list(*args, **kwargs):
+    return await _client.request_expect_pydantic_list(*args, **kwargs)
+
+
 def bill():
     return _client.bill()

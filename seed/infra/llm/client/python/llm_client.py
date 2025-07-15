@@ -1,18 +1,32 @@
 import json
 import logging
 import os
-from typing import Any
+import typing
 
 import openai
 import openai.types.shared_params.response_format_json_schema as response_format_json_schema
+import pydantic
 
 import seed.infra.billing.python.llm_bill as llm_bill
+import seed.infra.python.seed_log as seed_log
 
 logger = logging.getLogger(__name__)
 
 
+def _parse_json_response(response_content: str):
+    if response_content.startswith("```json") and response_content.endswith("```"):
+        response_content = response_content[len("```json") : -len("```")].strip()
+    response_json = json.loads(response_content)
+    if "error" in response_json:
+        raise RuntimeError(response_json["error"])
+    return response_json
+
+
+PydanticModel = typing.TypeVar("PydanticModel", bound=pydantic.BaseModel)
+
+
 class LlmClient:
-    sever: str
+    server: str
     model: str
     api_key: str
     _client: openai.AsyncOpenAI
@@ -58,10 +72,14 @@ class LlmClient:
     async def request(
         self,
         prompt: str,
+        *,
         system_prompt: str = "",
         response_schema: response_format_json_schema.JSONSchema | None = None,
-    ) -> tuple[Any, str]:
-        logger.debug(f"prompt: {prompt}")
+        task: str = "",
+    ) -> str:
+        logger.debug(
+            "%s system prompt:\n%s\nprompt:\n%s", task or "llm", system_prompt, prompt
+        )
         extra_kwargs = {}
         if response_schema:
             response_format = response_format_json_schema.ResponseFormatJSONSchema(
@@ -92,19 +110,70 @@ class LlmClient:
         )
         if response.usage:
             self._bill.append_usage(response.usage)
-            bill_summary = self._bill.summary()
             logger.debug(
-                f"bill: \x1b[1;36m[in] {bill_summary.total_prompt_tokens} [out] {bill_summary.total_completion_tokens} [cost] {bill_summary.total_cost}\x1b[0m"
+                "bill: \x1b[1;36m%s\x1b[0m",
+                seed_log.Lazy(
+                    lambda: (
+                        s := self._bill.summary(),
+                        f"[in] {s.total_prompt_tokens} [out] {s.total_completion_tokens} [cost] {s.total_cost}",
+                    )[-1]
+                ),
             )
         if not response.choices or not response.choices[0].message:
             raise ValueError("No valid response from LLM")
         response_content = response.choices[0].message.content or ""
         response_content = response_content.strip()
-        logger.debug(f"response: {response_content}")
-        if response_content.startswith("```json") and response_content.endswith("```"):
-            response_content = response_content[len("```json") : -len("```")].strip()
-        response_json = json.loads(response_content)
+        logger.debug("%s response:\n%s", task or "llm", response_content)
+        return response_content
+
+    async def request_expect_pydantic(
+        self,
+        prompt: str,
+        *,
+        system_prompt: str = "",
+        response_pydantic_type: typing.Type[PydanticModel],
+        task: str = "",
+    ) -> tuple[PydanticModel, str]:
+        response_content: str = await self.request(
+            prompt, system_prompt=system_prompt, task=task
+        )
+        response_json = _parse_json_response(response_content)
+        response_pydantic = response_pydantic_type(**response_json)
+        return response_pydantic, response_content
+
+    async def request_expect_list(
+        self,
+        prompt: str,
+        *,
+        system_prompt: str = "",
+        task: str = "",
+    ) -> tuple[list, str]:
+        response_content: str = await self.request(
+            prompt, system_prompt=system_prompt, task=task
+        )
+        response_json = _parse_json_response(response_content)
+        if not response_json or not isinstance(response_json, list):
+            raise ValueError(f"invalid list: {response_content}")
         return response_json, response_content
+
+    async def request_expect_pydantic_list(
+        self,
+        prompt: str,
+        *,
+        system_prompt: str = "",
+        response_pydantic_item_type: typing.Type[PydanticModel],
+        task: str = "",
+    ) -> tuple[list[PydanticModel], str]:
+        response_content: str = await self.request(
+            prompt, system_prompt=system_prompt, task=task
+        )
+        response_json = _parse_json_response(response_content)
+        if not response_json or not isinstance(response_json, list):
+            raise ValueError(f"invalid list: {response_content}")
+        response_pydantic = [
+            response_pydantic_item_type(**item) for item in response_json
+        ]
+        return response_pydantic, response_content
 
     def bill(self):
         return self._bill.summary()
