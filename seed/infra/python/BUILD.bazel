@@ -12,6 +12,15 @@ py_library(
     srcs = ["seed_init.py"],
     deps = [
         ":seed_flag",
+        ":seed_log",
+    ],
+)
+
+py_library(
+    name = "seed_log",
+    srcs = ["seed_log.py"],
+    deps = [
+        ":seed_flag",
     ],
 )
 
