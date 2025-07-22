@@ -5,6 +5,8 @@ import (
 	"os"
 	"strconv"
 	"strings"
+
+	"github.com/ndscm/theseed/seed/infra/log/go/seedlog"
 )
 
 type ConfigDefinition interface {
@@ -106,5 +108,6 @@ func Parse() error {
 		flag.Var(item, name, item.Usage())
 	}
 	flag.Parse()
+	seedlog.Infof("MPT Configs: %+v", configs)
 	return nil
 }

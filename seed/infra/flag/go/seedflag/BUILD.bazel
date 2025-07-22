@@ -6,4 +6,7 @@ go_library(
     name = "seedflag",
     srcs = ["parse.go"],
     importpath = "github.com/ndscm/theseed/seed/infra/flag/go/seedflag",
+    deps = [
+        "//seed/infra/log/go/seedlog",
+    ],
 )
