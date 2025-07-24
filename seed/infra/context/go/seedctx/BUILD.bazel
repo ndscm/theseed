@@ -1,0 +1,12 @@
+load("@rules_go//go:def.bzl", "go_library")
+
+package(default_visibility = ["//visibility:public"])
+
+go_library(
+    name = "seedctx",
+    srcs = ["performer.go"],
+    importpath = "github.com/ndscm/theseed/seed/infra/context/go/seedctx",
+    deps = [
+        "//seed/infra/error/go/seederr",
+    ],
+)
