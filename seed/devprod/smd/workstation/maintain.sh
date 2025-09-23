@@ -224,6 +224,7 @@ printf "\e[34mChecking system packages...\e[0m\n"
 if [[ "${oslike}" == "debian" ]]; then
   sudo apt install -y clang
   sudo apt install -y clang-format
+  sudo apt install -y curl
   sudo apt install -y davfs2
   sudo apt install -y default-jdk
   sudo apt install -y g++
