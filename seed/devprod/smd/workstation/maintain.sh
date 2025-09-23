@@ -139,6 +139,9 @@ printf "\e[32mCheck powerline fonts done.\e[0m\n"
 printf "\e[34mChecking seed managed profile...\e[0m\n"
 
 if [[ "${oslike}" == "debian" || "${oslike}" == "darwin" ]]; then
+  mkdir -m 0700 -p ${HOME}/.local
+  mkdir -m 0700 -p ${HOME}/.local/bin
+  mkdir -m 0700 -p ${HOME}/.local/lib
   cat <<EOF >${HOME}/.managed_profile
 # # User
 export ND_USER_HANDLE="${ND_USER_HANDLE}"
