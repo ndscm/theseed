@@ -113,6 +113,9 @@ if [[ "${oslike}" == "debian" || "${oslike}" == "darwin" ]]; then
   cp ${HOME}/.oh-my-zsh/templates/zshrc.zsh-template ${HOME}/.zshrc
   sed -i.bak 's/ZSH_THEME=".*"/ZSH_THEME="agnoster"/' ${HOME}/.zshrc
   printf '\nunsetopt SHARE_HISTORY\n' >>${HOME}/.zshrc
+  if [[ "${SHELL}" != "/bin/zsh" ]]; then
+    chsh -s /bin/zsh
+  fi
 fi
 
 printf "\e[32mCheck zsh shell done.\e[0m\n"
