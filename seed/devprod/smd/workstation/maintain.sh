@@ -430,7 +430,7 @@ EOF
   cat <<EOF | sudo tee /usr/lib/systemd/system/mnt-theseed-drive.mount
 [Unit]
 Description=Mount Theseed Monodrive
-After=network-online.target
+After=network-online.target remote-fs.target
 Wants=network-online.target
 
 [Mount]
