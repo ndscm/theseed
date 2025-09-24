@@ -238,6 +238,7 @@ if [[ "${oslike}" == "debian" ]]; then
   sudo apt install -y git
   sudo apt install -y gitg
   sudo apt install -y jq
+  sudo apt install -y libxcb-cursor0
   sudo apt install -y p7zip-full
   sudo apt install -y p7zip-rar
   sudo apt install -y python3
