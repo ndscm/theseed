@@ -354,6 +354,16 @@ fi
 
 printf "\e[32mCheck node tools done.\e[0m\n"
 
+# ## Python Tools
+
+printf "\e[34mChecking python tools...\e[0m\n"
+
+if [[ "${oslike}" == "debian" || "${oslike}" == "darwin" ]]; then
+  curl -LsSf https://astral.sh/uv/install.sh | sh
+fi
+
+printf "\e[32mCheck node tools done.\e[0m\n"
+
 
 
 
