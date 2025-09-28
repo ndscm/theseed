@@ -454,6 +454,8 @@ EOF
   sudo systemctl daemon-reload
   sudo systemctl enable mnt-theseed-drive.mount
   sudo systemctl start mnt-theseed-drive.mount
+
+  ln -s -f -n ${ND_MONOREPO_SECRET_HOME}/${ND_USER_HANDLE} ${ND_USER_SECRET_HOME}
 fi
 
 printf "\e[34mCheck theseed monodrive done.\e[0m\n"
