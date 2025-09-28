@@ -123,7 +123,7 @@ printf "\e[32mCheck zsh shell done.\e[0m\n"
 printf "\e[34mChecking powerline fonts...\e[0m\n"
 
 if [[ "${oslike}" == "debian" || "${oslike}" == "darwin" ]]; then
-  if ! ${wsl}; then
+  if [[ ! ${wsl} && ! -d ${HOME}/github/powerline ]]; then
     mkdir -p ${HOME}/github/powerline
     curl -o ${HOME}/github/powerline/fonts.tar.gz -L https://github.com/powerline/fonts/archive/refs/heads/master.tar.gz
     if [[ -d ${HOME}/github/powerline/fonts ]]; then
