@@ -502,4 +502,8 @@ fi
 EOF
 fi
 
+if [[ "${oslike}" == "debian" || "${oslike}" == "darwin" ]]; then
+  ln -s -f -n ${HOME}/theseed/main/seed/devprod/setproxy.sh ${HOME}/.local/bin/setproxy
+fi
+
 printf "\e[32mDone. Please restart the terminal to load new enviornments.\e[0m\n"
