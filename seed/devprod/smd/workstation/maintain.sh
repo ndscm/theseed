@@ -364,6 +364,13 @@ fi
 
 printf "\e[32mCheck node tools done.\e[0m\n"
 
+# ## Docker
+
+cat <<EOF >>${HOME}/.managed_profile
+# # Docker
+export COMPOSE_MENU="0"
+EOF
+
 # Monorepo
 
 printf "\e[34mChecking theseed monorepo...\e[0m\n"
