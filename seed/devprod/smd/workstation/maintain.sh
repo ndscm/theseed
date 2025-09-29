@@ -145,7 +145,7 @@ if [[ "${oslike}" == "debian" || "${oslike}" == "darwin" ]]; then
   mkdir -m 0700 -p ${HOME}/.local
   mkdir -m 0700 -p ${HOME}/.local/bin
   mkdir -m 0700 -p ${HOME}/.local/lib
-  cat <<EOF >${HOME}/.managed_profile
+  cat <<EOF >${HOME}/.managed_profile.tmp
 # # User
 export ND_USER_HANDLE="${ND_USER_HANDLE}"
 export ND_USER_DISPLAY_NAME="${ND_USER_DISPLAY_NAME}"
@@ -154,7 +154,7 @@ export PATH=\$HOME/bin:\$HOME/.local/bin:/usr/local/bin:\$PATH
 # # Editor
 export EDITOR="vim"
 EOF
-  cat <<EOF >${HOME}/.managed_shrc
+  cat <<EOF >${HOME}/.managed_shrc.tmp
 source \$HOME/.managed_profile
 # # User
 function me {
@@ -180,7 +180,7 @@ fi
 
 if [[ "${oslike}" == "debian" ]]; then
   if ${wsl}; then
-    cat <<EOF >>${HOME}/.managed_profile
+    cat <<EOF >>${HOME}/.managed_profile.tmp
 # # WSL
 export WINDOWS_HOST=$(ip route show | grep -i default | awk "{ print \$3 }")
 alias open="wslview"
@@ -195,7 +195,7 @@ printf "\e[32mCheck seed managed profile done.\e[0m\n"
 
 
 if [[ "${oslike}" == "debian" || "${oslike}" == "darwin" ]]; then
-  cat <<EOF >>${HOME}/.managed_profile
+  cat <<EOF >>${HOME}/.managed_profile.tmp
 # # Proxy
 
 
@@ -262,7 +262,7 @@ printf "\e[32mCheck system packages done.\e[0m\n"
 printf "\e[34mChecking snap tools...\e[0m\n"
 
 if [[ "${oslike}" == "debian" ]]; then
-  cat <<EOF >>${HOME}/.managed_profile
+  cat <<EOF >>${HOME}/.managed_profile.tmp
 # # Snap
 export PATH="/snap/bin:\$PATH"
 EOF
@@ -297,7 +297,7 @@ if [[ "${oslike}" == "debian" ]]; then
   sudo snap install --classic go
 fi
 if [[ "${oslike}" == "debian" || "${oslike}" == "darwin" ]]; then
-  cat <<EOF >>${HOME}/.managed_profile
+  cat <<EOF >>${HOME}/.managed_profile.tmp
 # # Golang
 export PATH="\$HOME/go/bin:\$PATH"
 EOF
@@ -366,7 +366,7 @@ printf "\e[32mCheck node tools done.\e[0m\n"
 
 # ## Docker
 
-cat <<EOF >>${HOME}/.managed_profile
+cat <<EOF >>${HOME}/.managed_profile.tmp
 # # Docker
 export COMPOSE_MENU="0"
 EOF
@@ -408,7 +408,7 @@ if [[ "${oslike}" == "debian" || "${oslike}" == "darwin" ]]; then
   git --git-dir ${HOME}/theseed/theseed.git config user.name "${ND_USER_DISPLAY_NAME}"
   git --git-dir ${HOME}/theseed/theseed.git config user.email "${ND_USER_HANDLE}@ndscm.com"
 
-  cat <<EOF >>${HOME}/.managed_profile
+  cat <<EOF >>${HOME}/.managed_profile.tmp
 # # Monorepo
 export SEED_MONOREPO_HOME="\${HOME}/theseed"
 export SEED_MONOREPO_GIT_DIR="\$SEED_MONOREPO_HOME/theseed.git"
@@ -425,7 +425,7 @@ printf "\e[34mCheck theseed monorepo done.\e[0m\n"
 
 # # Ndscm
 
-cat <<EOF >>${HOME}/.managed_profile
+cat <<EOF >>${HOME}/.managed_profile.tmp
 # # Ndscm
 export ND_MONOREPO_HOME="\$SEED_MONOREPO_HOME"
 export ND_MONOREPO_GIT_DIR="\$SEED_MONOREPO_GIT_DIR"
@@ -441,7 +441,7 @@ if [[ "${oslike}" == "debian" ]]; then
   davfs2_gid=$(id -g davfs2)
   if [[ -z "${SEED_MONODRIVE_LOGIN+x}" ]]; then
     read -p "Enter mono drive user login: " SEED_MONODRIVE_LOGIN
-    cat <<EOF >>${HOME}/.managed_profile
+    cat <<EOF >>${HOME}/.managed_profile.tmp
 # # Monodrive
 export SEED_MONODRIVE_LOGIN="${SEED_MONODRIVE_LOGIN}"
 EOF
@@ -480,7 +480,7 @@ printf "\e[34mCheck theseed monodrive done.\e[0m\n"
 # # Shortcuts
 
 if [[ "${oslike}" == "debian" || "${oslike}" == "darwin" ]]; then
-  cat <<EOF >>${HOME}/.managed_shrc
+  cat <<EOF >>${HOME}/.managed_shrc.tmp
 # # Shortcuts
 function main { cd \$SEED_MAIN_HOME; }
 function dev { cd \$SEED_DEV_HOME; }
@@ -488,13 +488,13 @@ EOF
 fi
 
 if [[ "${oslike}" == "debian" || "${oslike}" == "darwin" ]]; then
-  cat <<EOF >>${HOME}/.managed_profile
+  cat <<EOF >>${HOME}/.managed_profile.tmp
 # # Personal Profile
 if [ -f \$HOME/.personal_profile ]; then
   source \$HOME/.personal_profile
 fi
 EOF
-  cat <<EOF >>${HOME}/.managed_shrc
+  cat <<EOF >>${HOME}/.managed_shrc.tmp
 # # Personal shrc
 if [ -f \$HOME/.personal_shrc ]; then
   source \$HOME/.personal_shrc
@@ -505,5 +505,10 @@ fi
 if [[ "${oslike}" == "debian" || "${oslike}" == "darwin" ]]; then
   ln -s -f -n ${HOME}/theseed/main/seed/devprod/setproxy.sh ${HOME}/.local/bin/setproxy
 fi
+
+# # Finish
+
+mv -f ${HOME}/.managed_profile.tmp ${HOME}/.managed_profile
+mv -f ${HOME}/.managed_shrc.tmp ${HOME}/.managed_shrc
 
 printf "\e[32mDone. Please restart the terminal to load new enviornments.\e[0m\n"
