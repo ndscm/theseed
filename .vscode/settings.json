@@ -3,14 +3,18 @@
   "clang-format.language.c.style": "Google",
   "clang-format.language.java.style": "Google",
   "clang-format.style": "Google",
+  "diffEditor.ignoreTrimWhitespace": false,
   "editor.formatOnSave": true,
   "editor.renderWhitespace": "all",
   "editor.detectIndentation": false,
   "files.associations": {
     "*.conf": "plaintext",
+    "*.svg": "html",
     "*.uvprojx": "plaintext"
   },
   "files.autoSave": "afterDelay",
+  "files.insertFinalNewline": true,
+  "files.trimFinalNewlines": true,
   "files.watcherExclude": {
     "**/tmproots/**": true
   },
@@ -22,8 +26,6 @@
   "prettier.proseWrap": "always",
   "prettier.semi": false,
   "python.defaultInterpreterPath": ".venv/bin/python",
-  "scm.showHistoryGraph": false,
-  "scm.showOutgoingChanges": "never",
   "typescript.updateImportsOnFileMove.enabled": "always",
   "xml.format.enforceQuoteStyle": "preferred",
   "xml.format.splitAttributes": "splitNewLine",
@@ -31,11 +33,14 @@
   "[c]": {
     "editor.defaultFormatter": "xaver.clang-format"
   },
+  "[dockerfile]": {
+    "editor.defaultFormatter": "ms-azuretools.vscode-containers"
+  },
   "[html]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
   "[java]": {
-    "editor.defaultFormatter": "xaver.clang-format"
+    "editor.defaultFormatter": "redhat.java"
   },
   "[javascript]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
