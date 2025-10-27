@@ -1,5 +1,16 @@
 {
   "endOfLine": "lf",
+  "importOrder": [
+    "^node:",
+    "<THIRD_PARTY_MODULES>",
+    "^@mui/material/",
+    "^@mui/icons-material/",
+    "^[./]"
+  ],
+  "importOrderSeparation": true,
+  "importOrderSideEffects": false,
+  "importOrderSortSpecifiers": true,
+  "plugins": ["@trivago/prettier-plugin-sort-imports"],
   "printWidth": 80,
   "proseWrap": "always",
   "semi": false,
