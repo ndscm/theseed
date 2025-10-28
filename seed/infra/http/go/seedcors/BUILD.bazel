@@ -1,0 +1,15 @@
+load("@rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "seedcors",
+    srcs = ["cors.go"],
+    importpath = "github.com/ndscm/theseed/seed/infra/http/go/seedcors",
+    visibility = [
+
+    ],
+    deps = [
+        "//seed/infra/flag/go/seedflag",
+        "//seed/infra/log/go/seedlog",
+        "@com_github_rs_cors//:cors",
+    ],
+)
