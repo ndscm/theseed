@@ -10,5 +10,9 @@
 # Node
 node_modules
 
+# Next.js
+.next
+next-env.d.ts
+
 # Python
 __pycache__
