@@ -6,6 +6,9 @@ node_modules
 pnpm-lock.yaml
 public
 
+# Archives
+*.tar.gz
+
 # Proto
 *_pb.js
 *_pb.d.ts
