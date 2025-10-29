@@ -8,6 +8,7 @@
   "editor.renderWhitespace": "all",
   "editor.detectIndentation": false,
   "files.associations": {
+    ".bazelignore": "ignore",
     "*.conf": "plaintext",
     "*.svg": "html",
     "*.uvprojx": "plaintext"
