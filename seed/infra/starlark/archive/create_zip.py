@@ -10,6 +10,7 @@ import seed.infra.python.seed_init as seed_init
 logger = logging.getLogger(__name__)
 
 flag_out = seed_flag.define_string("out", "")
+flag_subdir = seed_flag.define_string("subdir", "")
 arg_srcs = seed_flag.define_positional_list("srcs", [])
 
 
@@ -18,11 +19,13 @@ async def main():
     srcs: list[str] = arg_srcs.get()
     out = flag_out.get()
     unpack_folder = tempfile.mkdtemp()
+    target_folder = os.path.join(unpack_folder, flag_subdir.get())
+    os.makedirs(target_folder, exist_ok=True)
     for src in srcs:
         if os.path.isdir(src):
-            shutil.copytree(src, unpack_folder, dirs_exist_ok=True)
+            shutil.copytree(src, target_folder, dirs_exist_ok=True)
             continue
-        shutil.copy(src, unpack_folder)
+        shutil.copy(src, target_folder)
     output_folder = tempfile.mkdtemp()
     output_archive_path = shutil.make_archive(
         os.path.join(output_folder, "out"), "zip", unpack_folder
