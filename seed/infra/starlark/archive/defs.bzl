@@ -7,9 +7,10 @@ def _internal_create_impl(ctx):
         outputs = [out],
         inputs = ctx.files.srcs,
         tools = [ctx.executable.create_tool],
-        command = """{create_tool_path} --out "{out}" {srcs}""".format(
+        command = """{create_tool_path} --out "{out}" --subdir "{subdir}" {srcs}""".format(
             create_tool_path = ctx.executable.create_tool.path,
             out = out.path,
+            subdir = ctx.attr.subdir,
             srcs = " ".join([src.path for src in ctx.files.srcs]),
         ),
         mnemonic = "CreateArchive",
@@ -26,6 +27,7 @@ _internal_create = rule(
         "out": attr.output(
             mandatory = True,
         ),
+        "subdir": attr.string(),
         "create_tool": attr.label(
             mandatory = True,
             executable = True,
@@ -35,19 +37,21 @@ _internal_create = rule(
     doc = "Generates a directory with some dummy files inside.",
 )
 
-def create_tar_gz(name, srcs, out):
+def create_tar_gz(name, srcs, out, subdir = ""):
     _internal_create(
         name = name,
         srcs = srcs,
         out = out,
+        subdir = subdir,
         create_tool = "//seed/infra/starlark/archive:create_tar_gz",
     )
 
-def create_zip(name, srcs, out):
+def create_zip(name, srcs, out, subdir = ""):
     _internal_create(
         name = name,
         srcs = srcs,
         out = out,
+        subdir = subdir,
         create_tool = "//seed/infra/starlark/archive:create_zip",
     )
 
@@ -57,9 +61,10 @@ def _internal_extract_impl(ctx):
         outputs = [out],
         inputs = ctx.files.srcs,
         tools = [ctx.executable.extract_tool],
-        command = """{extract_tool_path} --out "{out}" {srcs}""".format(
+        command = """{extract_tool_path} --out "{out}" --subdir "{subdir}" {srcs}""".format(
             extract_tool_path = ctx.executable.extract_tool.path,
             out = out.path,
+            subdir = ctx.attr.subdir,
             srcs = " ".join([src.path for src in ctx.files.srcs]),
         ),
         mnemonic = "ExtractArchive",
@@ -73,6 +78,7 @@ _internal_extract = rule(
         "srcs": attr.label_list(
             allow_files = True,
         ),
+        "subdir": attr.string(),
         "extract_tool": attr.label(
             mandatory = True,
             executable = True,
@@ -82,9 +88,10 @@ _internal_extract = rule(
     doc = "Generates a directory with some dummy files inside.",
 )
 
-def extract_tar(name, srcs):
+def extract_tar(name, srcs, subdir = ""):
     _internal_extract(
         name = name,
         srcs = srcs,
+        subdir = subdir,
         extract_tool = "//seed/infra/starlark/archive:extract_tar",
     )
