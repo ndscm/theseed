@@ -12,14 +12,17 @@ import (
 
 const SessionIdCookieName = "SID"
 
-func WrapCookieString(sessionId string, expires time.Time) string {
+func WrapCookieString(sessionId string, expires time.Time, secure bool) string {
 	c := http.Cookie{
 		Name:     SessionIdCookieName,
 		Value:    sessionId,
+		Path:     "/",
 		Expires:  expires,
 		HttpOnly: true,
-		Secure:   true,
-		SameSite: http.SameSiteNoneMode,
+	}
+	if secure {
+		c.Secure = true
+		c.SameSite = http.SameSiteNoneMode
 	}
 	return c.String()
 }
