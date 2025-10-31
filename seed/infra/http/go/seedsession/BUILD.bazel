@@ -2,7 +2,10 @@ load("@rules_go//go:def.bzl", "go_library")
 
 go_library(
     name = "seedsession",
-    srcs = ["session.go"],
+    srcs = [
+        "memory_session.go",
+        "session.go",
+    ],
     importpath = "github.com/ndscm/theseed/seed/infra/http/go/seedsession",
     visibility = [
 
