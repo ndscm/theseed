@@ -9,6 +9,7 @@ go_library(
     importpath = "github.com/ndscm/theseed/seed/infra/http/go/seedsession",
     visibility = [
 
+        "//seed/infra/auth/go/mptauth:__subpackages__",
 
     ],
     deps = [
