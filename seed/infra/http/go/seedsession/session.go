@@ -31,7 +31,7 @@ type SessionAdapter interface {
 	Refresh(ctx context.Context, responseHeaders http.Header) error
 	Reload(ctx context.Context) error
 	Get(ctx context.Context, key string) (string, error)
-	Update(ctx context.Context, key string, value string) error
+	Update(ctx context.Context, change map[string]string) error
 }
 
 func Session(ctx context.Context) (SessionAdapter, error) {
