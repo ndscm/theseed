@@ -1,0 +1,10 @@
+load("@rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "cachecontrol",
+    srcs = ["cachecontrol.go"],
+    importpath = "github.com/ndscm/theseed/seed/infra/http/go/cachecontrol",
+    visibility = [
+
+    ],
+)
