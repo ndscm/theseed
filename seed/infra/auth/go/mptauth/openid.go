@@ -11,6 +11,7 @@ import (
 	"github.com/ndscm/theseed/seed/infra/http/go/seedsession"
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
 	"golang.org/x/oauth2"
+	"golang.org/x/oauth2/clientcredentials"
 )
 
 type sessionTokenSource struct {
@@ -100,6 +101,19 @@ type OpenidProvider struct {
 	clientSecret     string
 
 	cachedConfiguration *OpenidConfiguration
+	cachedOrigin        string
+}
+
+func (provider *OpenidProvider) Origin() (string, error) {
+	if provider.cachedOrigin != "" {
+		return provider.cachedOrigin, nil
+	}
+	parsedUrl, err := url.Parse(provider.configurationUrl)
+	if err != nil {
+		return "", seederr.Wrap(err)
+	}
+	provider.cachedOrigin = parsedUrl.Scheme + "://" + parsedUrl.Host
+	return provider.cachedOrigin, nil
 }
 
 func (provider *OpenidProvider) GetOpenidConfiguration(ctx context.Context) (*OpenidConfiguration, error) {
@@ -265,5 +279,44 @@ func NewOpenidProvider(prefix string, configurationUrl string, clientId string, 
 		configurationUrl: configurationUrl,
 		clientId:         clientId,
 		clientSecret:     clientSecret,
+	}
+}
+
+type ClientCredentialsOpenidProvider struct {
+	OpenidProvider
+}
+
+func (provider *ClientCredentialsOpenidProvider) getClientCredentialsConfig(ctx context.Context) (*clientcredentials.Config, error) {
+	configuration, err := provider.GetOpenidConfiguration(ctx)
+	if err != nil {
+		return nil, seederr.Wrap(err)
+	}
+	oauth2Config := &clientcredentials.Config{
+		ClientID:     provider.clientId,
+		ClientSecret: provider.clientSecret,
+		TokenURL:     configuration.TokenEndpoint,
+		Scopes:       configuration.ScopesSupported,
+	}
+	return oauth2Config, nil
+}
+
+func (provider *ClientCredentialsOpenidProvider) Client(
+	ctx context.Context,
+) (*http.Client, error) {
+	oauth2Config, err := provider.getClientCredentialsConfig(ctx)
+	if err != nil {
+		return nil, seederr.Wrap(err)
+	}
+	client := oauth2Config.Client(ctx)
+	return client, nil
+}
+
+func NewClientCredentialsOpenidProvider(configurationUrl string, clientId string, clientSecret string) *ClientCredentialsOpenidProvider {
+	return &ClientCredentialsOpenidProvider{
+		OpenidProvider: OpenidProvider{
+			configurationUrl: configurationUrl,
+			clientId:         clientId,
+			clientSecret:     clientSecret,
+		},
 	}
 }
