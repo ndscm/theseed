@@ -5,16 +5,17 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/ndscm/theseed/seed/infra/flag/go/seedflag"
 	"github.com/ndscm/theseed/seed/infra/context/go/seedctx"
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
 	"github.com/ndscm/theseed/seed/infra/log/go/seedlog"
 )
 
-const SessionIdCookieName = "SID"
+var flagSessionIdCookieName = seedflag.DefineString("session_id_cookie_name", "SID", "")
 
 func WrapCookieString(sessionId string, expires time.Time, secure bool) string {
 	c := http.Cookie{
-		Name:     SessionIdCookieName,
+		Name:     flagSessionIdCookieName.Get(),
 		Value:    sessionId,
 		Path:     "/",
 		Expires:  expires,
@@ -61,7 +62,7 @@ type sessionMiddleware struct {
 func (m sessionMiddleware) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	session := m.sessionInitializer()
-	cookieSessionId, err := r.Cookie(SessionIdCookieName)
+	cookieSessionId, err := r.Cookie(flagSessionIdCookieName.Get())
 	if err != nil && err != http.ErrNoCookie {
 		seedlog.Errorf("Failed to read cookie: %v", err)
 		http.Error(w, "Failed to read cookie", http.StatusBadRequest)
