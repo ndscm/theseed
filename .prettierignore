@@ -1,5 +1,6 @@
 .cache
 .clang-format
+.react-router
 .venv
 dist
 node_modules
