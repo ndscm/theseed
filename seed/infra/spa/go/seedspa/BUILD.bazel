@@ -1,0 +1,11 @@
+load("@rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "seedspa",
+    srcs = ["spa_server.go"],
+    importpath = "github.com/ndscm/theseed/seed/infra/spa/go/seedspa",
+    visibility = [
+
+
+    ],
+)
