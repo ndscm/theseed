@@ -37,22 +37,24 @@ _internal_create = rule(
     doc = "Generates a directory with some dummy files inside.",
 )
 
-def create_tar_gz(name, srcs, out, subdir = ""):
+def create_tar_gz(name, srcs, out, subdir = "", **kwargs):
     _internal_create(
         name = name,
         srcs = srcs,
         out = out,
         subdir = subdir,
         create_tool = "//seed/infra/starlark/archive:create_tar_gz",
+        **kwargs
     )
 
-def create_zip(name, srcs, out, subdir = ""):
+def create_zip(name, srcs, out, subdir = "", **kwargs):
     _internal_create(
         name = name,
         srcs = srcs,
         out = out,
         subdir = subdir,
         create_tool = "//seed/infra/starlark/archive:create_zip",
+        **kwargs
     )
 
 def _internal_extract_impl(ctx):
@@ -88,10 +90,11 @@ _internal_extract = rule(
     doc = "Generates a directory with some dummy files inside.",
 )
 
-def extract_tar(name, srcs, subdir = ""):
+def extract_tar(name, srcs, subdir = "", **kwargs):
     _internal_extract(
         name = name,
         srcs = srcs,
         subdir = subdir,
         extract_tool = "//seed/infra/starlark/archive:extract_tar",
+        **kwargs
     )
