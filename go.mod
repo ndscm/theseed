@@ -4,7 +4,6 @@ go 1.24
 
 require (
 	connectrpc.com/connect v1.16.2
-	connectrpc.com/cors v0.1.0
 
 
 

@@ -11,10 +11,6 @@ uv sync
 
 
 
-
-
-
-
 # Newtype Guiproxy
 
 
