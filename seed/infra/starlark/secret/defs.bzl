@@ -7,6 +7,7 @@ def local_secret(name, local_path):
         cmd_bash = "cat {local_path} > $@".format(local_path = local_path),
         tags = [
             "local",
+            "manual",
             "no-remote-cache",
         ],
     )
