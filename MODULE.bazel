@@ -9,6 +9,8 @@ module(
     version = "1.0",
 )
 
+bazel_dep(name = "platforms", version = "1.0.0")
+
 # Container
 
 bazel_dep(name = "rules_oci", version = "2.2.6")
