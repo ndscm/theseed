@@ -37,14 +37,9 @@ func (h *ColoredHandler) Handle(ctx context.Context, r slog.Record) error {
 	if len(levelString) > 0 {
 		levelChar = levelString[0]
 	}
-	file := ""
-	line := 0
-	fn := runtime.FuncForPC(r.PC)
-	if fn != nil {
-		file, line = fn.FileLine(r.PC)
-	}
+	frame, _ := runtime.CallersFrames([]uintptr{r.PC}).Next()
 	message := fmt.Sprintf("%s%s %c %s[%d]\x1b[0m %s\n",
-		colors[r.Level], r.Time.Format(time.RFC3339), levelChar, file, line-1, r.Message)
+		colors[r.Level], r.Time.Format(time.RFC3339), levelChar, frame.File, frame.Line, r.Message)
 	_, err := h.w.Write([]byte(message))
 	if err != nil {
 		return err
@@ -79,7 +74,7 @@ func Debugf(format string, args ...any) {
 		return
 	}
 	pcs := [1]uintptr{}
-	runtime.Callers(2, pcs[:]) // skip [Callers, Infof]
+	runtime.Callers(2, pcs[:]) // skip [Callers, Debugf]
 	r := slog.NewRecord(time.Now(), slog.LevelDebug, fmt.Sprintf(format, args...), pcs[0])
 	_ = logger.Handler().Handle(context.Background(), r)
 }
@@ -101,7 +96,7 @@ func Warnf(format string, args ...any) {
 		return
 	}
 	pcs := [1]uintptr{}
-	runtime.Callers(2, pcs[:]) // skip [Callers, Infof]
+	runtime.Callers(2, pcs[:]) // skip [Callers, Warnf]
 	r := slog.NewRecord(time.Now(), slog.LevelWarn, fmt.Sprintf(format, args...), pcs[0])
 	_ = logger.Handler().Handle(context.Background(), r)
 }
@@ -112,7 +107,7 @@ func Errorf(format string, args ...any) {
 		return
 	}
 	pcs := [1]uintptr{}
-	runtime.Callers(2, pcs[:]) // skip [Callers, Infof]
+	runtime.Callers(2, pcs[:]) // skip [Callers, Errorf]
 	r := slog.NewRecord(time.Now(), slog.LevelError, fmt.Sprintf(format, args...), pcs[0])
 	_ = logger.Handler().Handle(context.Background(), r)
 }
