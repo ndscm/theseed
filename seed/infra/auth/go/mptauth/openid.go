@@ -10,6 +10,7 @@ import (
 
 	"github.com/ndscm/theseed/seed/infra/http/go/seedsession"
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
+	"github.com/ndscm/theseed/seed/infra/log/go/seedlog"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/clientcredentials"
 )
@@ -104,6 +105,10 @@ type OpenidProvider struct {
 	cachedOrigin        string
 }
 
+func (provider *OpenidProvider) ClientId() string {
+	return provider.clientId
+}
+
 func (provider *OpenidProvider) Origin() (string, error) {
 	if provider.cachedOrigin != "" {
 		return provider.cachedOrigin, nil
@@ -120,6 +125,7 @@ func (provider *OpenidProvider) GetOpenidConfiguration(ctx context.Context) (*Op
 	if provider.cachedConfiguration != nil {
 		return provider.cachedConfiguration, nil
 	}
+	seedlog.Infof("Fetching openid configuration from %s", provider.configurationUrl)
 	request, err := http.NewRequestWithContext(ctx, http.MethodGet, provider.configurationUrl, nil)
 	if err != nil {
 		return nil, seederr.Wrap(err)
