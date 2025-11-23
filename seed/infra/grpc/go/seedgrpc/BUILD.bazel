@@ -2,11 +2,16 @@ load("@rules_go//go:def.bzl", "go_library")
 
 go_library(
     name = "seedgrpc",
-    srcs = ["serve.go"],
+    srcs = [
+        "log_interceptor.go",
+        "serve.go",
+    ],
     importpath = "github.com/ndscm/theseed/infra/go/http/mptgrpc",
     visibility = ["//visibility:public"],
     deps = [
         "//seed/infra/error/go/seederr",
         "//seed/infra/log/go/seedlog",
+        "@com_connectrpc_connect//:connect",
+        "@com_connectrpc_validate//:validate",
     ],
 )
