@@ -3,7 +3,7 @@ module github.com/ndscm/theseed
 go 1.24.2
 
 require (
-	connectrpc.com/connect v1.16.2
+	connectrpc.com/connect v1.19.1
 
 
 
@@ -17,10 +17,10 @@ require (
 
 
 
-	golang.org/x/net v0.46.0
+	golang.org/x/net v0.47.0
 	golang.org/x/oauth2 v0.32.0
-	golang.org/x/sync v0.17.0
-	google.golang.org/grpc v1.76.0
+	golang.org/x/sync v0.18.0
+	google.golang.org/grpc v1.77.0
 	google.golang.org/protobuf v1.36.10
 )
 
@@ -34,12 +34,12 @@ require (
 	github.com/miekg/dns v1.1.68 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.2 // indirect
-	golang.org/x/crypto v0.43.0 // indirect
-	golang.org/x/mod v0.28.0 // indirect
-	golang.org/x/sys v0.37.0 // indirect
-	golang.org/x/text v0.30.0 // indirect
+	golang.org/x/crypto v0.44.0 // indirect
+	golang.org/x/mod v0.29.0 // indirect
+	golang.org/x/sys v0.38.0 // indirect
+	golang.org/x/text v0.31.0 // indirect
 	golang.org/x/time v0.14.0 // indirect
-	golang.org/x/tools v0.37.0 // indirect
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20251022142026-3a174f9686a8 // indirect
+	golang.org/x/tools v0.38.0 // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20251111163417-95abcf5c77ba // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
 )
