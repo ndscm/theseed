@@ -24,6 +24,11 @@ async def main():
     for src in srcs:
         if os.path.isdir(src):
             shutil.copytree(src, target_folder, dirs_exist_ok=True)
+            # Revoke read-only permission from bazel
+            os.chmod(target_folder, 0o755)
+            for target_root, target_dirs, _ in os.walk(target_folder):
+                for target_dir in target_dirs:
+                    os.chmod(os.path.join(target_root, target_dir), 0o755)
             continue
         shutil.copy(src, target_folder)
     output_folder = tempfile.mkdtemp()
