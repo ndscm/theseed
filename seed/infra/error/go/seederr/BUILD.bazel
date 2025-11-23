@@ -10,7 +10,7 @@ go_library(
 )
 
 go_test(
-    name = "mpterrors_test",
+    name = "wrap_test",
     srcs = ["wrap_test.go"],
     deps = [":seederr"],
 )
