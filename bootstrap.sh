@@ -5,6 +5,12 @@ cd $(dirname "${BASH_SOURCE[0]}")
 
 # Monorepo
 bazel run @pnpm//:pnpm -- --dir $PWD install
+## Build all dependency packages of apps
+bazel run @pnpm//:pnpm -- --dir $PWD recursive \
+  --filter "@theseed/*haraka..." \
+  --filter "@theseed/*proto..." \
+  --filter "@theseed/infra*..." \
+  run build
 uv sync
 
 

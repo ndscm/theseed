@@ -15,5 +15,16 @@ node_modules
 .next
 next-env.d.ts
 
+# Protobuf
+*_connect.d.ts
+*_pb.d.ts
+*_pb.d.ts
+*_pb.js
+*_pb2_grpc.py
+*_pb2.py
+*_pb2.pyi
+*.connect.go
+*.pb.go
+
 # Python
 __pycache__
