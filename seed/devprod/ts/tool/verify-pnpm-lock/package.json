@@ -1,0 +1,25 @@
+{
+  "name": "@theseed/seed-devprod-ts-tool-verify-pnpm-lock",
+  "version": "0.0.0",
+  "description": "",
+  "main": "main.js",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "verify-pnpm-lock": "node --use-openssl-ca --loader ts-node/esm verify-pnpm-lock.ts"
+  },
+  "author": "ndscm",
+  "license": "UNLICENSED",
+  "dependencies": {
+    "debug": "^4.4.3",
+    "js-yaml": "^4.1.1"
+  },
+  "devDependencies": {
+    "@types/debug": "^4.1.12",
+    "@types/js-yaml": "^4.0.9",
+    "@types/node": "^24.9.2",
+    "ts-node": "^10.9.2",
+    "tslib": "^2.8.1",
+    "typescript": "^5.9.3"
+  }
+}
