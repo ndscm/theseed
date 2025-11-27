@@ -6,6 +6,13 @@ import JsYaml from "js-yaml"
 
 const debug = DebugModule("verify-pnpm-lock")
 
+const APPROVED_LEGACY_SPECIFIERS: { [dependency: string]: string[] } = {
+  "@types/react": ["^18.3.27"], // For taro miniapp
+  "react-dom": ["^18.3.1"], // For taro miniapp
+  react: ["^18.3.1"], // For taro miniapp
+  vite: ["^5.4.21"], // For taro miniapp
+}
+
 type PnpmLock = {
   importers: {
     [packagePath: string]: {
@@ -49,7 +56,10 @@ export const VerifyPnpmLock = async (args: { lockPath: string }) => {
   })
   let ok = true
   Object.keys(versions).forEach((dependency) => {
-    const specifiers = Object.keys(versions[dependency])
+    const specifiers = Object.keys(versions[dependency]).filter(
+      (specifier) =>
+        !APPROVED_LEGACY_SPECIFIERS[dependency]?.includes(specifier),
+    )
     if (specifiers.length > 1) {
       console.error(
         `Dependency ${dependency} has multiple specifiers:`,
