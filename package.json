@@ -6,12 +6,12 @@
   "license": "UNLICENSED",
   "private": true,
   "dependencies": {
-    "@bufbuild/protobuf": "^2.5.2",
-    "@bufbuild/protoc-gen-es": "^2.5.2",
-    "@connectrpc/connect": "^2.0.2",
-    "@connectrpc/connect-node": "^2.0.2",
-    "@trivago/prettier-plugin-sort-imports": "^5.2.2",
-    "@types/node": "^24.9.2",
+    "@bufbuild/protobuf": "^2.10.1",
+    "@bufbuild/protoc-gen-es": "^2.10.1",
+    "@connectrpc/connect": "^2.1.1",
+    "@connectrpc/connect-node": "^2.1.1",
+    "@trivago/prettier-plugin-sort-imports": "^6.0.0",
+    "@types/node": "^24.10.1",
     "babel-plugin-react-compiler": "^1.0.0",
     "prettier": "^3.6.2",
     "typescript": "^5.9.3"
