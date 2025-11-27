@@ -84,7 +84,7 @@ def go_connect_library(name, proto, importpath, **kwargs):
         proto = proto,
     )
     go_library(
-        name,
+        name = name,
         srcs = [":" + name + "_go"],
         importpath = importpath,
         **kwargs
