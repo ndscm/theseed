@@ -125,3 +125,15 @@ pip.parse(
     requirements_lock = "//:requirements.txt",
 )
 use_repo(pip, "pypi")
+
+# Apps
+
+git_repository = use_repo_rule("@bazel_tools//tools/build_defs/repo:git.bzl", "git_repository")
+
+
+
+
+
+
+
+
