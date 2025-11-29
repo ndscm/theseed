@@ -1,16 +1,16 @@
 load("@rules_go//go:def.bzl", "go_library")
 
 go_library(
-    name = "mptauth",
+    name = "loginopenid",
     srcs = ["openid.go"],
-    importpath = "github.com/ndscm/theseed/seed/infra/auth/go/mptauth",
+    importpath = "github.com/ndscm/theseed/seed/infra/auth/go/loginopenid",
     visibility = [
+        "//seed/infra/auth:__subpackages__",
     ],
     deps = [
+        "//seed/infra/auth/go/clientopenid",
         "//seed/infra/error/go/seederr",
         "//seed/infra/http/go/seedsession",
-        "//seed/infra/log/go/seedlog",
         "@org_golang_x_oauth2//:oauth2",
-        "@org_golang_x_oauth2//clientcredentials",
     ],
 )
