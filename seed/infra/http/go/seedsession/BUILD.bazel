@@ -10,7 +10,7 @@ go_library(
     visibility = [
 
 
-        "//seed/infra/auth/go/mptauth:__subpackages__",
+        "//seed/infra/auth/go/loginopenid:__subpackages__",
 
     ],
     deps = [
