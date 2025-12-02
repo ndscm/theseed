@@ -1,0 +1,19 @@
+load("@rules_python//python:py_binary.bzl", "py_binary")
+
+package(default_visibility = ["//visibility:private"])
+
+py_binary(
+    name = "llm_oneshot",
+    srcs = ["llm_oneshot.py"],
+    deps = [
+        "//seed/infra/llm/client/python",
+        "//seed/infra/python:seed_flag",
+        "//seed/infra/python:seed_init",
+    ],
+)
+
+filegroup(
+    name = "llm_oneshot_zip",
+    srcs = [":llm_oneshot"],
+    output_group = "python_zip_file",
+)
