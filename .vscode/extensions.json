@@ -15,11 +15,10 @@
     "ms-vscode-remote.vscode-remote-extensionpack",
     "ms-vscode.cpptools",
     "ms-vscode.powershell",
+    "pbkit.vscode-pbkit",
     "redhat.vscode-xml",
     "tyriar.sort-lines",
-    "visualstudioexptteam.vscodeintellicode",
     "vscodevim.vim",
-    "xaver.clang-format",
-    "zxh404.vscode-proto3"
+    "xaver.clang-format"
   ]
 }
