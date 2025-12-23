@@ -22,6 +22,9 @@ cd $(dirname "${BASH_SOURCE[0]}")
 # Must tidy go mod after all packages
 bazel run @rules_go//go -- mod tidy
 
+# Java
+clang-format -i $(find . -name "*.java")
+
 # Python
 if [[ "$(uname)" == "Darwin" ]]; then
   uv pip freeze >./requirements_darwin.txt

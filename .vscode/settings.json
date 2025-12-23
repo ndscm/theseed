@@ -41,7 +41,7 @@
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
   "[java]": {
-    "editor.defaultFormatter": "redhat.java"
+    "editor.defaultFormatter": "xaver.clang-format"
   },
   "[javascript]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
