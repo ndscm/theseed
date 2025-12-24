@@ -10,6 +10,7 @@ bazel run @pnpm//:pnpm -- --dir $PWD install
 bazel run @pnpm//:pnpm -- --dir $PWD recursive \
   --filter "@theseed/*haraka..." \
   --filter "@theseed/*proto..." \
+  --filter "@theseed/devprod-buildinfo*..." \
   --filter "@theseed/infra*..." \
   run build
 uv sync

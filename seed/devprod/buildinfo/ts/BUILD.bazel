@@ -1,0 +1,42 @@
+load("@aspect_rules_js//js:defs.bzl", "js_library")
+load("@aspect_rules_js//npm:defs.bzl", "npm_package")
+load("@aspect_rules_ts//ts:defs.bzl", "ts_project")
+
+package(default_visibility = [
+
+
+])
+
+genrule(
+    name = "index_ts",
+    outs = ["src/index.ts"],
+    cmd = "./$(location src/index_ts.sh) > $@",
+    stamp = 1,
+    tools = ["src/index_ts.sh"],
+)
+
+ts_project(
+    name = "ts_project",
+    srcs = [":index_ts"],
+    declaration = True,
+    out_dir = "dist",
+    root_dir = "src",
+    source_map = True,
+    transpiler = "tsc",
+    tsconfig = "tsconfig.json",
+)
+
+js_library(
+    name = "ts",
+    srcs = [":package.json"],
+    deps = [":ts_project"],
+)
+
+npm_package(
+    name = "pkg",  # Required by aspect_rules_js
+    srcs = [
+        "package.json",
+        ":ts_project",
+    ],
+    visibility = ["//visibility:public"],
+)
