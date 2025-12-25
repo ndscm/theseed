@@ -4,6 +4,7 @@ go 1.24.2
 
 require (
 	connectrpc.com/connect v1.19.1
+	connectrpc.com/grpchealth v1.4.0
 	connectrpc.com/validate v0.6.0
 	github.com/emersion/go-imap/v2 v2.0.0-beta.7
 	github.com/emersion/go-message v0.18.2
