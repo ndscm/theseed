@@ -1,19 +1,22 @@
 """Archive rules"""
 
 def _internal_create_impl(ctx):
-    # out = ctx.actions.declare_file(ctx.attr.name + ".zip")
     out = ctx.outputs.out
-    ctx.actions.run_shell(
+    args = ctx.actions.args()
+    args.add("--out", out)
+    args.add("--subdir", ctx.attr.subdir)
+    if ctx.attr.strip_components >= 0:
+        args.add("--strip_components", str(ctx.attr.strip_components))
+    if "local" in ctx.attr.tags:
+        args.add("--local")
+    src_args = ctx.actions.args()
+    src_args.add_all(ctx.files.srcs, expand_directories = False)
+    src_args.use_param_file("%s", use_always = True)
+    ctx.actions.run(
         outputs = [out],
         inputs = ctx.files.srcs,
-        tools = [ctx.executable.create_tool],
-        command = """{create_tool_path} --out "{out}" --subdir "{subdir}" {strip_components_flag} {srcs}""".format(
-            create_tool_path = ctx.executable.create_tool.path,
-            out = out.path,
-            subdir = ctx.attr.subdir,
-            strip_components_flag = "--strip_components {v}".format(v = ctx.attr.strip_components) if ctx.attr.strip_components >= 0 else "",
-            srcs = " ".join([src.path for src in ctx.files.srcs]),
-        ),
+        executable = ctx.executable.create_tool,
+        arguments = [args, src_args],
         mnemonic = "CreateArchive",
         progress_message = "Generating directory: {out}".format(out = out.path),
     )

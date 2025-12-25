@@ -40,8 +40,12 @@ def copy_tree(src: str, dst: str, sandbox: bool = True):
             shutil.copy(unlink(s, sandbox=sandbox), d, follow_symlinks=False)
 
 
-def copy_srcs(srcs: list[str], target_folder: str, strip_components: int = -1):
-    sandbox = check_sandbox()
+def copy_srcs(
+    srcs: list[str],
+    target_folder: str,
+    strip_components: int = 0,
+    sandbox: bool = True,
+):
     for src in srcs:
         dst = src if strip_components >= 0 else ""
         dst = dst.split(os.sep, strip_components)[-1]
