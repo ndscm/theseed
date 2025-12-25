@@ -13,6 +13,7 @@ go_library(
         "//seed/infra/error/go/seederr",
         "//seed/infra/log/go/seedlog",
         "@com_connectrpc_connect//:connect",
+        "@com_connectrpc_grpchealth//:grpchealth",
         "@com_connectrpc_validate//:validate",
     ],
 )
