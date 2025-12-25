@@ -6,7 +6,7 @@ go_library(
         "log_interceptor.go",
         "serve.go",
     ],
-    importpath = "github.com/ndscm/theseed/infra/go/http/mptgrpc",
+    importpath = "github.com/ndscm/theseed/seed/infra/grpc/go/seedgrpc",
     visibility = ["//visibility:public"],
     deps = [
         "//seed/infra/error/go/seederr",
