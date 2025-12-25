@@ -4,6 +4,7 @@ go_library(
     name = "seedgrpc",
     srcs = [
         "log_interceptor.go",
+        "mux.go",
         "serve.go",
     ],
     importpath = "github.com/ndscm/theseed/seed/infra/grpc/go/seedgrpc",
