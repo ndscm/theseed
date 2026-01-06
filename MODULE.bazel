@@ -9,6 +9,8 @@ module(
     version = "1.0",
 )
 
+git_repository = use_repo_rule("@bazel_tools//tools/build_defs/repo:git.bzl", "git_repository")
+
 bazel_dep(name = "platforms", version = "1.0.0")
 
 # Container
@@ -129,8 +131,6 @@ pip.parse(
 use_repo(pip, "pypi")
 
 # Apps
-
-git_repository = use_repo_rule("@bazel_tools//tools/build_defs/repo:git.bzl", "git_repository")
 
 
 
