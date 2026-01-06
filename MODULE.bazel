@@ -15,6 +15,17 @@ git_repository = use_repo_rule("@bazel_tools//tools/build_defs/repo:git.bzl", "g
 
 bazel_dep(name = "platforms", version = "1.0.0")
 
+# Android
+
+
+    name = "android_ndk_r19c_linux_x86_64",
+
+
+    patch_cmds = ["rm sources/third_party/googletest/test/BUILD.bazel"],
+    strip_prefix = "android-ndk-r19c",
+    url = "https://dl.google.com/android/repository/android-ndk-r19c-linux-x86_64.zip",
+)
+
 # CC
 
 bazel_dep(name = "rules_foreign_cc", version = "0.15.1")
