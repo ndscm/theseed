@@ -26,6 +26,17 @@ bazel_dep(name = "platforms", version = "1.0.0")
     url = "https://dl.google.com/android/repository/android-ndk-r19c-linux-x86_64.zip",
 )
 
+bazel_dep(name = "rules_android_ndk", version = "0.1.3")
+
+android_ndk_repository_extension = use_extension("@rules_android_ndk//:extension.bzl", "android_ndk_repository_extension")
+android_ndk_repository_extension.configure(
+
+    path = "$WORKSPACE_ROOT/devprod/android/androidndk",  # androidndk path is only accepted in workspace for now
+)
+use_repo(android_ndk_repository_extension, androidndk_r19c = "androidndk")
+
+register_toolchains("@androidndk_r19c//:all")
+
 # CC
 
 bazel_dep(name = "rules_foreign_cc", version = "0.15.1")
