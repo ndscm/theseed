@@ -34,6 +34,9 @@
   "[c]": {
     "editor.defaultFormatter": "xaver.clang-format"
   },
+  "[cpp]": {
+    "editor.defaultFormatter": "xaver.clang-format"
+  },
   "[dockerfile]": {
     "editor.defaultFormatter": "ms-azuretools.vscode-containers"
   },
