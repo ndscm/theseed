@@ -42,6 +42,13 @@ register_toolchains("@androidndk_r19c//:all")
 bazel_dep(name = "rules_foreign_cc", version = "0.15.1")
 bazel_dep(name = "rules_cc", version = "0.2.16")
 
+## CC Libraries
+
+bazel_dep(name = "abseil-cpp", version = "20250814.1")
+bazel_dep(name = "boost.asio", version = "1.89.0.bcr.2")
+bazel_dep(name = "boost.beast", version = "1.89.0.bcr.2")
+bazel_dep(name = "boost.coroutine", version = "1.89.0.bcr.2")
+
 # Container
 
 bazel_dep(name = "rules_oci", version = "2.2.6")

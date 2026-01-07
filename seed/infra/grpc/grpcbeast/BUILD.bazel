@@ -1,0 +1,32 @@
+load("@rules_cc//cc:defs.bzl", "cc_library")
+
+package(default_visibility = [
+
+])
+
+cc_library(
+    name = "beast_server",
+    srcs = ["beast_server.cc"],
+    hdrs = ["beast_server.h"],
+    deps = [
+        "@abseil-cpp//absl/status",
+        "@abseil-cpp//absl/status:statusor",
+        "@boost.asio",
+        "@boost.beast",
+        "@boost.coroutine",
+    ],
+)
+
+cc_library(
+    name = "grpcbeast",
+    srcs = ["grpcbeast.cc"],
+    hdrs = ["grpcbeast.h"],
+    deps = [
+        "@abseil-cpp//absl/status",
+        "@abseil-cpp//absl/strings",
+        "@boost.asio",
+        "@boost.beast",
+        "@boost.coroutine",
+        "@grpc//:grpc++",
+    ],
+)
