@@ -1,0 +1,16 @@
+load("@rules_cc//cc:defs.bzl", "cc_library")
+
+package(default_visibility = [
+
+])
+
+cc_library(
+    name = "serial_port",
+    srcs = ["serial_port.cc"],
+    hdrs = ["serial_port.h"],
+    deps = [
+        "@abseil-cpp//absl/status",
+        "@abseil-cpp//absl/status:statusor",
+        "@abseil-cpp//absl/strings",
+    ],
+)
