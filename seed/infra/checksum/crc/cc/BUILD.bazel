@@ -1,0 +1,15 @@
+load("@rules_cc//cc:defs.bzl", "cc_library")
+
+package(default_visibility = [
+
+])
+
+cc_library(
+    name = "crc16",
+    srcs = ["crc16.cc"],
+    hdrs = ["crc16.h"],
+    deps = [
+        "@abseil-cpp//absl/status",
+        "@abseil-cpp//absl/status:statusor",
+    ],
+)
