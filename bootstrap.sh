@@ -11,8 +11,10 @@ export ELECTRON_GET_USE_PROXY=1
 bazel run @pnpm//:pnpm -- --dir $PWD install
 ## Build all dependency packages of apps
 bazel run @pnpm//:pnpm -- --dir $PWD recursive \
-  --filter "@theseed/*haraka..." \
   --filter "@theseed/*proto..." \
+  run build
+bazel run @pnpm//:pnpm -- --dir $PWD recursive \
+  --filter "@theseed/*haraka..." \
   --filter "@theseed/devprod-buildinfo*..." \
   --filter "@theseed/infra*..." \
 
