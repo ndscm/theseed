@@ -11,9 +11,11 @@ go_library(
     visibility = ["//visibility:public"],
     deps = [
         "//seed/infra/error/go/seederr",
+        "//seed/infra/flag/go/seedflag",
         "//seed/infra/log/go/seedlog",
         "@com_connectrpc_connect//:connect",
         "@com_connectrpc_grpchealth//:grpchealth",
         "@com_connectrpc_validate//:validate",
+        "@com_github_soheilhy_cmux//:cmux",
     ],
 )
