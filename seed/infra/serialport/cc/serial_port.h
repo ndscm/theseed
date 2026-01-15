@@ -1,6 +1,8 @@
 #ifndef SEED_INFRA_SERIALPORT_CC_SERIAL_PORT_H
 #define SEED_INFRA_SERIALPORT_CC_SERIAL_PORT_H
 
+#include <termios.h>
+
 #include <cstdint>
 #include <string>
 #include <vector>
@@ -18,7 +20,8 @@ using ::std::vector;
 
 class SerialPort {
  public:
-  SerialPort(const string& port = "/dev/ttyUSB0") : port_(port), fd_(-1) {}
+  SerialPort(const string& port = "/dev/ttyUSB0", speed_t baud_rate = B57600)
+      : port_(port), baud_rate_(baud_rate), fd_(-1) {}
   ~SerialPort() { (void)close(); }
 
   ::absl::Status open();
@@ -32,8 +35,12 @@ class SerialPort {
 
   ::absl::Status flush();
 
+  const string& port() const { return port_; }
+  speed_t baud_rate() const { return baud_rate_; }
+
  private:
   string port_;
+  speed_t baud_rate_;
   int fd_;
 };
 

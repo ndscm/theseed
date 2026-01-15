@@ -27,10 +27,10 @@ using ::std::vector;
 
 ::absl::Status SerialPort::open() {
   if (fd_ >= 0) {
-    // Already open
     return ::absl::OkStatus();
   }
-  ::std::cerr << ::absl::StrFormat("Opening port: %s\n", port_);
+
+  ::std::cerr << ::absl::StrFormat("[SerialPort] Opening port: %s\n", port_);
   fd_ = ::open(port_.c_str(), O_RDWR | O_NOCTTY | O_NONBLOCK);
   if (fd_ < 0) {
     return ::absl::InternalError(::absl::StrCat("Failed to open port ", port_,
@@ -48,7 +48,7 @@ using ::std::vector;
     return ::absl::InternalError(error_message);
   }
 
-  // Set default configuration: 57600 8N1
+  // Configure: 8N1
   tty.c_cflag &= ~PARENB;         // No parity
   tty.c_cflag &= ~CSTOPB;         // 1 stop bit
   tty.c_cflag &= ~CSIZE;          // Clear size bits
@@ -67,9 +67,8 @@ using ::std::vector;
   tty.c_cc[VMIN] = 0;   // Non-blocking read
   tty.c_cc[VTIME] = 0;  // No timeout
 
-  // Set baud rate to 57600
-  ::cfsetispeed(&tty, B57600);
-  ::cfsetospeed(&tty, B57600);
+  ::cfsetispeed(&tty, baud_rate_);
+  ::cfsetospeed(&tty, baud_rate_);
 
   errno = 0;
   if (::tcsetattr(fd_, TCSANOW, &tty) != 0) {
