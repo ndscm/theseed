@@ -10,10 +10,12 @@ go_library(
     importpath = "github.com/ndscm/theseed/seed/infra/grpc/go/seedgrpc",
     visibility = ["//visibility:public"],
     deps = [
+        "//seed/infra/flag/go/seedflag",
         "//seed/infra/error/go/seederr",
         "//seed/infra/log/go/seedlog",
         "@com_connectrpc_connect//:connect",
         "@com_connectrpc_grpchealth//:grpchealth",
         "@com_connectrpc_validate//:validate",
+        "@com_github_soheilhy_cmux//:cmux",
     ],
 )

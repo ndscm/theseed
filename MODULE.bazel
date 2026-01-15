@@ -106,6 +106,7 @@ use_repo(
     "com_github_jackc_pgx_v5",
     "com_github_joho_godotenv",
     "com_github_rs_cors",
+    "com_github_soheilhy_cmux",
 
 
 
