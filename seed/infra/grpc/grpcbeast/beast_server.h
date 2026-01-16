@@ -19,22 +19,22 @@ namespace grpcbeast {
 
 using ::std::string;
 
-typedef ::absl::StatusOr<bool> BeastRouter(
+using BeastRouter = ::absl::StatusOr<bool>(
     ::boost::beast::tcp_stream& stream,
     ::boost::beast::http::request<::boost::beast::http::string_body>& request,
     ::boost::asio::yield_context yield);
 
 class BeastListener : public ::std::enable_shared_from_this<BeastListener> {
-  ::boost::asio::io_context& asioContext;
-  ::boost::asio::ip::tcp::acceptor tcpAcceptor;
-  ::std::function<BeastRouter> router;
+  ::boost::asio::io_context& asio_context_;
+  ::boost::asio::ip::tcp::acceptor tcp_acceptor_;
+  ::std::function<BeastRouter> router_;
 
  public:
-  BeastListener(::boost::asio::io_context& asioContext,
+  BeastListener(::boost::asio::io_context& asio_context,
                 ::std::function<BeastRouter> router)
-      : asioContext(asioContext),
-        tcpAcceptor(::boost::asio::make_strand(asioContext)),
-        router(router) {}
+      : asio_context_(asio_context),
+        tcp_acceptor_(::boost::asio::make_strand(asio_context)),
+        router_(router) {}
   ::absl::Status listen(::boost::asio::ip::tcp::endpoint endpoint);
   void asyncStart();
 };

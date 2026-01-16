@@ -1,19 +1,12 @@
 #include "seed/infra/grpc/grpcbeast/beast_server.h"
 
-#include <algorithm>
-#include <cstdio>
-#include <cstdlib>
-#include <functional>
 #include <iostream>
 #include <memory>
 #include <string>
-#include <thread>
-#include <vector>
 
 #include "absl/status/status.h"
 #include "absl/status/statusor.h"
 #include "boost/asio/detached.hpp"
-#include "boost/asio/dispatch.hpp"
 #include "boost/asio/ip/tcp.hpp"
 #include "boost/asio/spawn.hpp"
 #include "boost/asio/strand.hpp"
@@ -27,8 +20,6 @@ namespace infra {
 namespace grpc {
 namespace grpcbeast {
 
-using ::boost::string_view;
-using ::std::size_t;
 using ::std::string;
 
 static bool asyncHandleRequest(
@@ -66,32 +57,31 @@ static bool asyncHandleRequest(
     }
     return response.keep_alive();
   }
-  ::absl::StatusOr<bool> keepAlive = router(stream, request, yield);
-  if (!keepAlive.status().ok()) {
-    ::std::cerr << "ERROR: " << keepAlive.status().message() << "\n";
+  ::absl::StatusOr<bool> keep_alive = router(stream, request, yield);
+  if (!keep_alive.status().ok()) {
+    ::std::cerr << "ERROR: " << keep_alive.status().message() << "\n";
     return false;
   }
-  return keepAlive.value();
+  return keep_alive.value();
 }
 
 ::absl::Status BeastListener::listen(
     ::boost::asio::ip::tcp::endpoint endpoint) {
   ::boost::beast::error_code err;
-  this->tcpAcceptor.open(endpoint.protocol(), err);
+  tcp_acceptor_.open(endpoint.protocol(), err);
   if (err) {
     return ::absl::InternalError("open: " + err.message());
   }
-  this->tcpAcceptor.set_option(::boost::asio::socket_base::reuse_address(true),
-                               err);
+  tcp_acceptor_.set_option(::boost::asio::socket_base::reuse_address(true),
+                           err);
   if (err) {
     return ::absl::InternalError("set_option: " + err.message());
   }
-  this->tcpAcceptor.bind(endpoint, err);
+  tcp_acceptor_.bind(endpoint, err);
   if (err) {
     return ::absl::InternalError("bind: " + err.message());
   }
-  this->tcpAcceptor.listen(::boost::asio::socket_base::max_listen_connections,
-                           err);
+  tcp_acceptor_.listen(::boost::asio::socket_base::max_listen_connections, err);
   if (err) {
     return ::absl::InternalError("listen: " + err.message());
   }
@@ -126,37 +116,38 @@ static void doSession(::boost::beast::tcp_stream& stream,
   // At this point the connection is closed gracefully
 }
 
-static void doAccept(::boost::asio::io_context& asioContext,
-                     ::boost::asio::ip::tcp::acceptor& tcpAcceptor,
+static void doAccept(::boost::asio::io_context& asio_context,
+                     ::boost::asio::ip::tcp::acceptor& tcp_acceptor,
                      ::std::function<BeastRouter> router,
                      ::boost::asio::yield_context yield) {
   ::boost::beast::error_code err;
   while (true) {
-    ::boost::asio::ip::tcp::socket socket(asioContext);
-    tcpAcceptor.async_accept(socket, yield[err]);
+    ::boost::asio::ip::tcp::socket socket(asio_context);
+    tcp_acceptor.async_accept(socket, yield[err]);
     if (err) {
       ::std::cerr << "accept: " + err.message() << "\n";
       continue;
     }
-    ::boost::asio::spawn(  //
-        tcpAcceptor.get_executor(),
-        ::std::bind(&doSession, ::boost::beast::tcp_stream(std::move(socket)),
-                    router, std::placeholders::_1),
-        // Ignore the result of the session
+    ::boost::asio::spawn(
+        tcp_acceptor.get_executor(),
+        [socket = std::move(socket),
+         router](::boost::asio::yield_context yield) mutable {
+          ::boost::beast::tcp_stream stream(std::move(socket));
+          doSession(stream, router, yield);
+        },
         ::boost::asio::detached);
   }
 }
 
 void BeastListener::asyncStart() {
-  ::boost::asio::spawn(  //
-      this->asioContext,
-      ::std::bind(&doAccept, ::std::ref(this->asioContext),
-                  ::std::ref(this->tcpAcceptor), this->router,
-                  ::std::placeholders::_1),
+  ::boost::asio::spawn(
+      asio_context_,
+      [this](::boost::asio::yield_context yield) {
+        doAccept(asio_context_, tcp_acceptor_, router_, yield);
+      },
       [](::std::exception_ptr ex) {
-        // this will cause `ioc.run()` to throw
         if (ex) {
-          std::rethrow_exception(ex);
+          ::std::rethrow_exception(ex);
         }
       });
 }
