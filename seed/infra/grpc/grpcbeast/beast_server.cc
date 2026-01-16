@@ -1,20 +1,27 @@
 #include "seed/infra/grpc/grpcbeast/beast_server.h"
 
+#include <openssl/ssl.h>
+
 #include <iostream>
 #include <memory>
 #include <string>
 
+#include "absl/flags/flag.h"
 #include "absl/status/status.h"
 #include "absl/status/statusor.h"
 #include "boost/asio/detached.hpp"
 #include "boost/asio/ip/tcp.hpp"
 #include "boost/asio/spawn.hpp"
+#include "boost/asio/ssl.hpp"
 #include "boost/asio/strand.hpp"
 #include "boost/beast/core.hpp"
 #include "boost/beast/http.hpp"
 #include "boost/beast/version.hpp"
 #include "boost/config.hpp"
 #include "seed/infra/grpc/grpcbeast/cors.h"
+
+ABSL_FLAG(::std::string, https_certificate_file, "", "");
+ABSL_FLAG(::std::string, https_certificate_key_file, "", "");
 
 namespace seed {
 namespace infra {
@@ -23,8 +30,61 @@ namespace grpcbeast {
 
 using ::std::string;
 
+template <typename HttpStream>
+::absl::Status BeastListener<HttpStream>::initSsl(
+    const string& certificate_path, const string& certificate_key_path) {
+  string certificate_path_ =
+      certificate_path != "" ? certificate_path
+                             : ::absl::GetFlag(FLAGS_https_certificate_file);
+  string certificate_key_path_ =
+      certificate_key_path != ""
+          ? certificate_key_path
+          : ::absl::GetFlag(FLAGS_https_certificate_key_file);
+  this->ssl_context_ = ::std::make_shared<::boost::asio::ssl::context>(
+      ::boost::asio::ssl::context::tls_server);
+  this->ssl_context_->set_options(
+      ::boost::asio::ssl::context::default_workarounds |
+      ::boost::asio::ssl::context::no_sslv2 |
+      ::boost::asio::ssl::context::no_sslv3 |
+      ::boost::asio::ssl::context::no_tlsv1 |
+      ::boost::asio::ssl::context::no_tlsv1_1 |
+      ::boost::asio::ssl::context::single_dh_use);
+
+  // Set up ALPN to advertise HTTP/1.1 support
+  SSL_CTX_set_alpn_select_cb(
+      this->ssl_context_->native_handle(),
+      [](SSL* /*ssl*/, const unsigned char** out, unsigned char* outlen,
+         const unsigned char* in, unsigned int inlen, void* /*arg*/) -> int {
+        // Advertise HTTP/1.1
+        static const unsigned char alpn[] = {8,   'h', 't', 't', 'p',
+                                             '/', '1', '.', '1'};
+        if (SSL_select_next_proto(const_cast<unsigned char**>(out), outlen,
+                                  alpn, sizeof(alpn), in,
+                                  inlen) != OPENSSL_NPN_NEGOTIATED) {
+          return SSL_TLSEXT_ERR_NOACK;
+        }
+        return SSL_TLSEXT_ERR_OK;
+      },
+      nullptr);
+  ::boost::system::error_code err;
+  this->ssl_context_->use_certificate_chain_file(certificate_path_, err);
+  if (err) {
+    return ::absl::InternalError("Failed to load certificate: " +
+                                 err.message());
+  }
+  this->ssl_context_->use_private_key_file(
+      certificate_key_path_, ::boost::asio::ssl::context::pem, err);
+  if (err) {
+    return ::absl::InternalError("Failed to load certificate key: " +
+                                 err.message());
+  }
+  return ::absl::OkStatus();
+}
+
+// Generic request handler that works with any stream type
+template <typename HttpStream>
 static bool asyncHandleRequest(
-    ::boost::beast::tcp_stream& stream, ::std::function<BeastRouter> router,
+    HttpStream& stream, ::std::function<BeastRouter<HttpStream>> router,
     ::boost::beast::http::request<::boost::beast::http::string_body>&& request,
     ::boost::asio::yield_context yield) {
   ::boost::beast::error_code err;
@@ -63,7 +123,8 @@ static bool asyncHandleRequest(
   return keep_alive.value();
 }
 
-::absl::Status BeastListener::listen(
+template <typename HttpStream>
+::absl::Status BeastListener<HttpStream>::listen(
     ::boost::asio::ip::tcp::endpoint endpoint) {
   ::boost::beast::error_code err;
   tcp_acceptor_.open(endpoint.protocol(), err);
@@ -90,14 +151,33 @@ static void setStreamTimeout(::boost::beast::tcp_stream& stream) {
   stream.expires_after(::std::chrono::seconds(305));
 }
 
+static void setStreamTimeout(
+    ::boost::asio::ssl::stream<::boost::beast::tcp_stream>& stream) {
+  ::boost::beast::get_lowest_layer(stream).expires_after(
+      ::std::chrono::seconds(305));
+}
+
 static void shutdownStream(::boost::beast::tcp_stream& stream,
                            ::boost::asio::yield_context /*yield*/) {
   ::boost::beast::error_code err;
   stream.socket().shutdown(::boost::asio::ip::tcp::socket::shutdown_send, err);
 }
 
-static void doSession(::boost::beast::tcp_stream& stream,
-                      ::std::function<BeastRouter> router,
+static void shutdownStream(
+    ::boost::asio::ssl::stream<::boost::beast::tcp_stream>& stream,
+    ::boost::asio::yield_context yield) {
+  ::boost::beast::error_code err;
+  stream.async_shutdown(yield[err]);
+  if (err && err != ::boost::asio::error::eof &&
+      err != ::boost::beast::error::timeout) {
+    ::std::cerr << "SSL shutdown failed: " << err.message() << "\n";
+  }
+}
+
+// Generic session handler that works with any stream type
+template <typename HttpStream>
+static void doSession(HttpStream& stream,
+                      ::std::function<BeastRouter<HttpStream>> router,
                       ::boost::asio::yield_context yield) {
   ::boost::beast::error_code err;
   ::boost::beast::flat_buffer buffer;
@@ -122,16 +202,19 @@ static void doSession(::boost::beast::tcp_stream& stream,
   }
 }
 
-static void doAccept(::boost::asio::io_context& asio_context,
-                     ::boost::asio::ip::tcp::acceptor& tcp_acceptor,
-                     ::std::function<BeastRouter> router,
-                     ::boost::asio::yield_context yield) {
+// doAccept for tcp_stream (HTTP)
+static void doAccept(
+    ::boost::asio::io_context& asio_context,
+    ::boost::asio::ip::tcp::acceptor& tcp_acceptor,
+    ::std::shared_ptr<::boost::asio::ssl::context> /*ssl_context*/,
+    ::std::function<BeastRouter<::boost::beast::tcp_stream>> router,
+    ::boost::asio::yield_context yield) {
   ::boost::beast::error_code err;
   while (true) {
     ::boost::asio::ip::tcp::socket socket(asio_context);
     tcp_acceptor.async_accept(socket, yield[err]);
     if (err) {
-      ::std::cerr << "accept: " + err.message() << "\n";
+      ::std::cerr << "accept: " << err.message() << "\n";
       continue;
     }
     ::boost::asio::spawn(
@@ -146,11 +229,52 @@ static void doAccept(::boost::asio::io_context& asio_context,
   }
 }
 
-void BeastListener::asyncStart() {
+// doAccept for ssl::stream<tcp_stream> (HTTPS)
+static void doAccept(
+    ::boost::asio::io_context& asio_context,
+    ::boost::asio::ip::tcp::acceptor& tcp_acceptor,
+    ::std::shared_ptr<::boost::asio::ssl::context> ssl_context,
+    ::std::function<
+        BeastRouter<::boost::asio::ssl::stream<::boost::beast::tcp_stream>>>
+        router,
+    ::boost::asio::yield_context yield) {
+  ::boost::beast::error_code err;
+  while (true) {
+    ::boost::asio::ip::tcp::socket socket(asio_context);
+    tcp_acceptor.async_accept(socket, yield[err]);
+    if (err) {
+      ::std::cerr << "accept: " << err.message() << "\n";
+      continue;
+    }
+    ::boost::asio::spawn(
+        tcp_acceptor.get_executor(),
+        [socket = std::move(socket), ssl_context,
+         router](::boost::asio::yield_context yield) mutable {
+          ::boost::beast::tcp_stream tcp_stream(std::move(socket));
+          ::boost::asio::ssl::stream<::boost::beast::tcp_stream> stream(
+              std::move(tcp_stream), *ssl_context);
+
+          // Perform SSL handshake
+          ::boost::beast::error_code err;
+          stream.async_handshake(::boost::asio::ssl::stream_base::server,
+                                 yield[err]);
+          if (err) {
+            ::std::cerr << "SSL handshake failed: " << err.message() << "\n";
+            return;
+          }
+          doSession(stream, router, yield);
+          shutdownStream(stream, yield);
+        },
+        ::boost::asio::detached);
+  }
+}
+
+template <typename HttpStream>
+void BeastListener<HttpStream>::asyncStart() {
   ::boost::asio::spawn(
       asio_context_,
       [this](::boost::asio::yield_context yield) {
-        doAccept(asio_context_, tcp_acceptor_, router_, yield);
+        doAccept(asio_context_, tcp_acceptor_, ssl_context_, router_, yield);
       },
       [](::std::exception_ptr ex) {
         if (ex) {
@@ -158,6 +282,10 @@ void BeastListener::asyncStart() {
         }
       });
 }
+
+template class BeastListener<::boost::beast::tcp_stream>;
+template class BeastListener<
+    ::boost::asio::ssl::stream<::boost::beast::tcp_stream>>;
 
 }  // namespace grpcbeast
 }  // namespace grpc

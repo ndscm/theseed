@@ -8,6 +8,7 @@
 #include "boost/asio/dispatch.hpp"
 #include "boost/asio/error.hpp"
 #include "boost/asio/spawn.hpp"
+#include "boost/asio/ssl.hpp"
 #include "boost/asio/strand.hpp"
 #include "boost/beast/core.hpp"
 #include "boost/beast/http.hpp"
@@ -19,25 +20,39 @@ namespace grpcbeast {
 
 using ::std::string;
 
+// Generic router function template that works with any stream type
+template <typename HttpStream>
 using BeastRouter = ::absl::StatusOr<bool>(
-    ::boost::beast::tcp_stream& stream,
+    HttpStream& stream,
     ::boost::beast::http::request<::boost::beast::http::string_body>& request,
     ::boost::asio::yield_context yield);
 
-class BeastListener : public ::std::enable_shared_from_this<BeastListener> {
+template <typename HttpStream>
+class BeastListener
+    : public ::std::enable_shared_from_this<BeastListener<HttpStream>> {
   ::boost::asio::io_context& asio_context_;
   ::boost::asio::ip::tcp::acceptor tcp_acceptor_;
-  ::std::function<BeastRouter> router_;
+  ::std::function<BeastRouter<HttpStream>> router_;
+  ::std::shared_ptr<::boost::asio::ssl::context> ssl_context_;
 
  public:
   BeastListener(::boost::asio::io_context& asio_context,
-                ::std::function<BeastRouter> router)
+                ::std::function<BeastRouter<HttpStream>> router)
       : asio_context_(asio_context),
-        tcp_acceptor_(::boost::asio::make_strand(asio_context)),
-        router_(router) {}
+        tcp_acceptor_(::boost::asio::make_strand(asio_context_)),
+        router_(router),
+        ssl_context_(nullptr) {}
+
+  ::absl::Status initSsl(const string& certificate_path = "",
+                         const string& certificate_key_path = "");
+
   ::absl::Status listen(::boost::asio::ip::tcp::endpoint endpoint);
   void asyncStart();
 };
+
+extern template class BeastListener<::boost::beast::tcp_stream>;
+extern template class BeastListener<
+    ::boost::asio::ssl::stream<::boost::beast::tcp_stream>>;
 
 }  // namespace grpcbeast
 }  // namespace grpc
