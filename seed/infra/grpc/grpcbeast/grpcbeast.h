@@ -23,40 +23,40 @@ namespace internal {
 
 string wrapGrpcWebChunk(uint8_t chunkType, string content);
 
-template <class Message>
-string wrapGrpcWebMessage(Message messagePb) {
-  string messageBytes = messagePb.SerializeAsString();
-  return wrapGrpcWebChunk(0, messageBytes);
+template <typename Message>
+string wrapGrpcWebMessage(Message message_pb) {
+  string message_bytes = message_pb.SerializeAsString();
+  return wrapGrpcWebChunk(0, message_bytes);
 }
 
 string wrapGrpcWebTrailer(::grpc::Status status);
 
-template <class Reply>
-string wrapGrpcWebReply(::grpc::Status status, Reply replyPb) {
-  return wrapGrpcWebMessage(replyPb) + wrapGrpcWebTrailer(status);
+template <typename Reply>
+string wrapGrpcWebReply(::grpc::Status status, Reply reply_pb) {
+  return wrapGrpcWebMessage(reply_pb) + wrapGrpcWebTrailer(status);
 }
 
 }  // namespace internal
 
 ::absl::Status ParseGrpcWebRequestPath(
     ::boost::beast::http::request<::boost::beast::http::string_body>& request,
-    string& outService, string& outMethod);
+    string& out_service, string& out_method);
 
-template <class Request>
-::absl::Status ParseGrpcWebRequest(const string requestBody,
-                                   Request& outRequestPb) {
-  bool ok = outRequestPb.ParseFromString(requestBody.substr(5));
+template <typename Request>
+::absl::Status ParseGrpcWebRequest(const string request_body,
+                                   Request& out_request_pb) {
+  bool ok = out_request_pb.ParseFromString(request_body.substr(5));
   if (!ok) {
     return ::absl::InvalidArgumentError("Failed to parse Request");
   }
   return ::absl::OkStatus();
 }
 
-template <class Reply>
+template <typename Reply>
 bool WriteGrpcWebResponse(
     ::boost::beast::tcp_stream& stream,
     ::boost::beast::http::request<::boost::beast::http::string_body>& request,
-    ::grpc::Status status, Reply replyPb, ::boost::asio::yield_context yield) {
+    ::grpc::Status status, Reply reply_pb, ::boost::asio::yield_context yield) {
   ::boost::beast::error_code err;
   ::boost::beast::http::response<::boost::beast::http::string_body> response(
       ::boost::beast::http::status::ok, request.version());
@@ -66,7 +66,7 @@ bool WriteGrpcWebResponse(
   if (!status.ok()) {
     response.set("Message", status.error_message());
   }
-  response.body() = internal::wrapGrpcWebReply(status, replyPb);
+  response.body() = internal::wrapGrpcWebReply(status, reply_pb);
   response.content_length(response.body().length());
   response.keep_alive(request.keep_alive());
   ::boost::beast::http::async_write(stream, std::move(response), yield[err]);
@@ -81,10 +81,11 @@ bool WriteGrpcWebStreamHeader(
     ::boost::beast::http::request<::boost::beast::http::string_body>& request,
     ::boost::asio::yield_context yield);
 
-template <class Reply>
-void WriteGrpcWebStreamReply(::boost::beast::tcp_stream& stream, Reply& replyPb,
+template <typename Reply>
+void WriteGrpcWebStreamReply(::boost::beast::tcp_stream& stream,
+                             Reply& reply_pb,
                              ::boost::asio::yield_context yield) {
-  string chunk = internal::wrapGrpcWebMessage(replyPb);
+  string chunk = internal::wrapGrpcWebMessage(reply_pb);
   ::boost::asio::async_write(stream,
                              ::boost::beast::http::make_chunk(
                                  ::boost::asio::buffer(chunk, chunk.size())),
@@ -92,7 +93,7 @@ void WriteGrpcWebStreamReply(::boost::beast::tcp_stream& stream, Reply& replyPb,
 }
 
 void WriteGrpcWebStreamTrailer(::boost::beast::tcp_stream& stream,
-                               ::grpc::Status replyStatus,
+                               ::grpc::Status reply_status,
                                ::boost::asio::yield_context yield);
 
 }  // namespace grpcbeast
