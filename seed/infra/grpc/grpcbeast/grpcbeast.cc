@@ -44,14 +44,14 @@ string wrapGrpcWebTrailer(::grpc::Status status) {
 
 ::absl::Status ParseGrpcWebRequestPath(
     ::boost::beast::http::request<::boost::beast::http::string_body>& request,
-    string& outService, string& outMethod) {
+    string& out_service, string& out_method) {
   string path = request.target();
   vector<::absl::string_view> parts = ::absl::StrSplit(path, '/');
   if (parts.size() != 3) {
     return ::absl::InvalidArgumentError("Wrong request path format: " + path);
   }
-  outService = parts[1];
-  outMethod = parts[2];
+  out_service = parts[1];
+  out_method = parts[2];
   return ::absl::OkStatus();
 }
 
@@ -78,9 +78,9 @@ bool WriteGrpcWebStreamHeader(
 }
 
 void WriteGrpcWebStreamTrailer(::boost::beast::tcp_stream& stream,
-                               ::grpc::Status replyStatus,
+                               ::grpc::Status reply_status,
                                ::boost::asio::yield_context yield) {
-  string chunk = internal::wrapGrpcWebTrailer(replyStatus);
+  string chunk = internal::wrapGrpcWebTrailer(reply_status);
   ::boost::asio::async_write(stream,
                              ::boost::beast::http::make_chunk(
                                  ::boost::asio::buffer(chunk, chunk.size())),
