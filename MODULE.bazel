@@ -60,6 +60,11 @@ bazel_dep(name = "boost.asio", version = "1.89.0.bcr.2")
 bazel_dep(name = "boost.beast", version = "1.89.0.bcr.2")
 bazel_dep(name = "boost.coroutine", version = "1.89.0.bcr.2")
 
+single_version_override(
+    module_name = "boost.asio",
+    patches = ["//seed/infra/grpc/grpcbeast:boost_asio_android.patch"],
+)
+
 # Container
 
 bazel_dep(name = "rules_oci", version = "2.2.6")
