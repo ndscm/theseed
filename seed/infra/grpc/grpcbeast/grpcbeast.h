@@ -53,9 +53,9 @@ template <typename Request>
   return ::absl::OkStatus();
 }
 
-template <typename Reply>
+template <typename HttpStream, typename Reply>
 bool WriteGrpcWebResponse(
-    ::boost::beast::tcp_stream& stream,
+    HttpStream& stream,
     ::boost::beast::http::request<::boost::beast::http::string_body>& request,
     ::grpc::Status status, Reply reply_pb, ::boost::asio::yield_context yield) {
   ::boost::beast::error_code err;
@@ -77,14 +77,31 @@ bool WriteGrpcWebResponse(
   return response.keep_alive();
 }
 
+template <typename HttpStream>
 bool WriteGrpcWebStreamHeader(
-    ::boost::beast::tcp_stream& stream,
+    HttpStream& stream,
     ::boost::beast::http::request<::boost::beast::http::string_body>& request,
-    ::boost::asio::yield_context yield);
+    ::boost::asio::yield_context yield) {
+  ::boost::beast::error_code err;
+  ::boost::beast::http::response<::boost::beast::http::empty_body> response(
+      ::boost::beast::http::status::ok, request.version());
+  SetCors(response, request);
+  response.set(::boost::beast::http::field::content_type,
+               "application/grpc-web+proto");
+  response.content_length(0);
+  response.chunked(true);
+  response.keep_alive(request.keep_alive());
+  ::boost::beast::http::response_serializer<::boost::beast::http::empty_body>
+      serializer(response);
+  ::boost::beast::http::async_write_header(stream, serializer, yield[err]);
+  if (err) {
+    ::std::cerr << "Failed to write header: " << err.message();
+  }
+  return response.keep_alive();
+}
 
-template <typename Reply>
-void WriteGrpcWebStreamReply(::boost::beast::tcp_stream& stream,
-                             Reply& reply_pb,
+template <typename HttpStream, typename Reply>
+void WriteGrpcWebStreamReply(HttpStream& stream, Reply& reply_pb,
                              ::boost::asio::yield_context yield) {
   string chunk = internal::wrapGrpcWebMessage(reply_pb);
   ::boost::asio::async_write(stream,
@@ -93,9 +110,17 @@ void WriteGrpcWebStreamReply(::boost::beast::tcp_stream& stream,
                              yield);
 }
 
-void WriteGrpcWebStreamTrailer(::boost::beast::tcp_stream& stream,
-                               ::grpc::Status reply_status,
-                               ::boost::asio::yield_context yield);
+template <typename HttpStream>
+void WriteGrpcWebStreamTrailer(HttpStream& stream, ::grpc::Status reply_status,
+                               ::boost::asio::yield_context yield) {
+  string chunk = internal::wrapGrpcWebTrailer(reply_status);
+  ::boost::asio::async_write(stream,
+                             ::boost::beast::http::make_chunk(
+                                 ::boost::asio::buffer(chunk, chunk.size())),
+                             yield);
+  ::boost::asio::async_write(stream, ::boost::beast::http::make_chunk_last(),
+                             yield);
+}
 
 }  // namespace grpcbeast
 }  // namespace grpc
