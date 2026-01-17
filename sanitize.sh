@@ -18,6 +18,12 @@ cd $(dirname "${BASH_SOURCE[0]}")
 
 ./bootstrap.sh
 
+# CC
+find . \
+  -type d \( -name .git -o -name node_modules -o -name .venv -o -name dist \) -prune -o \
+  -type f \( -name "*.c" -o -name "*.cc" -o -name "*.cpp" -o -name "*.h" \) -print0 |
+  xargs -0 clang-format --verbose -i
+
 # Go
 # Must tidy go mod after all packages
 bazel run @rules_go//go -- mod tidy
