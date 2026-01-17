@@ -92,6 +92,12 @@ static void setStreamTimeout(::boost::beast::tcp_stream& stream) {
   stream.expires_after(::std::chrono::seconds(305));
 }
 
+static void shutdownStream(::boost::beast::tcp_stream& stream,
+                           ::boost::asio::yield_context /*yield*/) {
+  ::boost::beast::error_code err;
+  stream.socket().shutdown(::boost::asio::ip::tcp::socket::shutdown_send, err);
+}
+
 static void doSession(::boost::beast::tcp_stream& stream,
                       ::std::function<BeastRouter> router,
                       ::boost::asio::yield_context yield) {
@@ -116,8 +122,6 @@ static void doSession(::boost::beast::tcp_stream& stream,
       break;
     }
   }
-  stream.socket().shutdown(::boost::asio::ip::tcp::socket::shutdown_send, err);
-  // At this point the connection is closed gracefully
 }
 
 static void doAccept(::boost::asio::io_context& asio_context,
@@ -138,6 +142,7 @@ static void doAccept(::boost::asio::io_context& asio_context,
          router](::boost::asio::yield_context yield) mutable {
           ::boost::beast::tcp_stream stream(std::move(socket));
           doSession(stream, router, yield);
+          shutdownStream(stream, yield);
         },
         ::boost::asio::detached);
   }
