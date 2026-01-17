@@ -31,25 +31,6 @@ using ::boost::string_view;
 using ::std::size_t;
 using ::std::string;
 
-::boost::beast::http::status httpStatus(::absl::Status status) {
-  if (status.ok()) {
-    return ::boost::beast::http::status::ok;
-  } else if (::absl::IsInternal(status)) {
-    return ::boost::beast::http::status::internal_server_error;
-  } else if (::absl::IsInvalidArgument(status)) {
-    return ::boost::beast::http::status::bad_request;
-  } else if (::absl::IsNotFound(status)) {
-    return ::boost::beast::http::status::not_found;
-  } else if (::absl::IsPermissionDenied(status)) {
-    return ::boost::beast::http::status::forbidden;
-  } else if (::absl::IsUnauthenticated(status)) {
-    return ::boost::beast::http::status::unauthorized;
-  } else if (::absl::IsUnavailable(status)) {
-    return ::boost::beast::http::status::service_unavailable;
-  }
-  return ::boost::beast::http::status::unknown;
-}
-
 static bool asyncHandleRequest(
     ::boost::beast::tcp_stream& stream, ::std::function<BeastRouter> router,
     ::boost::beast::http::request<::boost::beast::http::string_body>&& request,
