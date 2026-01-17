@@ -88,13 +88,17 @@ static bool asyncHandleRequest(
   return ::absl::OkStatus();
 }
 
+static void setStreamTimeout(::boost::beast::tcp_stream& stream) {
+  stream.expires_after(::std::chrono::seconds(305));
+}
+
 static void doSession(::boost::beast::tcp_stream& stream,
                       ::std::function<BeastRouter> router,
                       ::boost::asio::yield_context yield) {
   ::boost::beast::error_code err;
   ::boost::beast::flat_buffer buffer;
   while (true) {
-    stream.expires_after(::std::chrono::seconds(305));
+    setStreamTimeout(stream);
     ::boost::beast::http::request<::boost::beast::http::string_body> request;
     ::boost::beast::http::async_read(stream, buffer, request, yield[err]);
     if (err == ::boost::beast::http::error::end_of_stream) {
