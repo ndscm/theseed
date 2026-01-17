@@ -14,6 +14,7 @@ bazel run @pnpm//:pnpm -- --dir $PWD recursive \
   --filter "@theseed/*proto..." \
   run build
 bazel run @pnpm//:pnpm -- --dir $PWD recursive \
+  --filter "@theseed/*-ts-service-context..." \
   --filter "@theseed/*haraka..." \
   --filter "@theseed/devprod-buildinfo*..." \
   --filter "@theseed/infra*..." \
