@@ -8,6 +8,10 @@ cc_library(
     name = "cors",
     srcs = ["cors.cc"],
     hdrs = ["cors.h"],
+    defines = select({
+        "@platforms//os:android": ["ABSL_FLAGS_STRIP_NAMES=0"],
+        "//conditions:default": [],
+    }),
     deps = [
         "@abseil-cpp//absl/flags:flag",
         "@abseil-cpp//absl/status",
@@ -20,6 +24,10 @@ cc_library(
     name = "beast_server",
     srcs = ["beast_server.cc"],
     hdrs = ["beast_server.h"],
+    defines = select({
+        "@platforms//os:android": ["ABSL_FLAGS_STRIP_NAMES=0"],
+        "//conditions:default": [],
+    }),
     deps = [
         ":cors",
         "@abseil-cpp//absl/flags:flag",
