@@ -4,5 +4,6 @@ common --incompatible_strict_action_env
 
 build --cxxopt=-std=c++17
 build --host_cxxopt=-std=c++17
+build --@boost.asio//:ssl=boringssl
 
 build --workspace_status_command=./seed/devprod/buildinfo/generate-workspace-status.sh
