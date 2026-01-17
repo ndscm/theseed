@@ -12,6 +12,7 @@
 #include "boost/beast/version.hpp"
 #include "boost/config.hpp"
 #include "grpcpp/grpcpp.h"
+#include "seed/infra/grpc/grpcbeast/cors.h"
 
 namespace seed {
 namespace infra {
@@ -62,7 +63,7 @@ bool WriteGrpcWebStreamHeader(
   ::boost::beast::error_code err;
   ::boost::beast::http::response<::boost::beast::http::empty_body> response(
       ::boost::beast::http::status::ok, request.version());
-  response.set(::boost::beast::http::field::access_control_allow_origin, "*");
+  SetCors(response, request);
   response.set(::boost::beast::http::field::content_type,
                "application/grpc-web+proto");
   response.content_length(0);

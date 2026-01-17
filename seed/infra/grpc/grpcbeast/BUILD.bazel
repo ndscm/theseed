@@ -5,10 +5,23 @@ package(default_visibility = [
 ])
 
 cc_library(
+    name = "cors",
+    srcs = ["cors.cc"],
+    hdrs = ["cors.h"],
+    deps = [
+        "@abseil-cpp//absl/flags:flag",
+        "@abseil-cpp//absl/status",
+        "@abseil-cpp//absl/strings",
+        "@boost.beast",
+    ],
+)
+
+cc_library(
     name = "beast_server",
     srcs = ["beast_server.cc"],
     hdrs = ["beast_server.h"],
     deps = [
+        ":cors",
         "@abseil-cpp//absl/status",
         "@abseil-cpp//absl/status:statusor",
         "@boost.asio",
@@ -22,6 +35,7 @@ cc_library(
     srcs = ["grpcbeast.cc"],
     hdrs = ["grpcbeast.h"],
     deps = [
+        ":cors",
         "@abseil-cpp//absl/status",
         "@abseil-cpp//absl/strings",
         "@boost.asio",
