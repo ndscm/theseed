@@ -14,6 +14,7 @@
 #include "boost/beast/http.hpp"
 #include "boost/beast/version.hpp"
 #include "boost/config.hpp"
+#include "seed/infra/grpc/grpcbeast/cors.h"
 
 namespace seed {
 namespace infra {
@@ -30,10 +31,7 @@ static bool asyncHandleRequest(
   if (request.method() == ::boost::beast::http::verb::options) {
     ::boost::beast::http::response<::boost::beast::http::empty_body> response(
         ::boost::beast::http::status::ok, request.version());
-    response.set(::boost::beast::http::field::access_control_allow_origin, "*");
-    response.set(::boost::beast::http::field::access_control_allow_headers,
-                 "Origin, Content-Type, X-Grpc-Web, X-User-Agent");
-    response.set(::boost::beast::http::field::access_control_max_age, "600");
+    SetCors(response, request);
     response.content_length(0);
     response.keep_alive(request.keep_alive());
     ::boost::beast::http::async_write(stream, std::move(response), yield[err]);
