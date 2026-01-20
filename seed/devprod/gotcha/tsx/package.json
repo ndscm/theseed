@@ -1,0 +1,23 @@
+{
+  "name": "@theseed/seed-devprod-gotcha-tsx",
+  "version": "0.0.0",
+  "private": true,
+  "main": "dist/Gotcha.js",
+  "types": "dist/Gotcha.d.ts",
+  "files": [
+    "/dist"
+  ],
+  "scripts": {
+    "build": "tsc"
+  },
+  "dependencies": {
+    "notistack": "^3.0.2",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0"
+  },
+  "devDependencies": {
+    "@types/react": "^19.2.7",
+    "@types/react-dom": "^19.2.3",
+    "typescript": "^5.9.3"
+  }
+}
