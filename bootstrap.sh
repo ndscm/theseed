@@ -17,6 +17,7 @@ bazel run @pnpm//:pnpm -- --dir $PWD recursive \
   --filter "@theseed/*-ts-service-context..." \
   --filter "@theseed/*haraka..." \
   --filter "@theseed/devprod-buildinfo*..." \
+  --filter "@theseed/devprod-gotcha*..." \
   --filter "@theseed/infra*..." \
   run build
 uv sync

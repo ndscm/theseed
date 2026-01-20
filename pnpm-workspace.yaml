@@ -4,6 +4,7 @@ packages:
 
 
   - "seed/devprod/buildinfo/ts"
+  - "seed/devprod/gotcha/tsx"
 
   - "seed/devprod/ts/tool/verify-pnpm-lock"
 
