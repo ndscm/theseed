@@ -1,0 +1,13 @@
+load("@rules_cc//cc:defs.bzl", "cc_library")
+
+package(default_visibility = ["//visibility:public"])
+
+cc_library(
+    name = "grpc_status",
+    srcs = ["grpc_status.cc"],
+    hdrs = ["grpc_status.h"],
+    deps = [
+        "@abseil-cpp//absl/status",
+        "@grpc//:grpc++",
+    ],
+)
