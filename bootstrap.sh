@@ -3,9 +3,6 @@ set -eux
 set -o pipefail
 cd $(dirname "${BASH_SOURCE[0]}")
 
-# Android
-./devprod/android/use-ndk.sh r19c
-
 # Monorepo
 export ELECTRON_GET_USE_PROXY=1
 bazel run @pnpm//:pnpm -- --dir $PWD install
