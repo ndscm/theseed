@@ -1,0 +1,15 @@
+load("@rules_cc//cc:defs.bzl", "cc_library")
+
+package(default_visibility = [
+
+])
+
+cc_library(
+    name = "epc_reader",
+    srcs = ["epc_reader.cc"],
+    hdrs = ["epc_reader.h"],
+    deps = [
+        "@abseil-cpp//absl/status",
+        "@abseil-cpp//absl/status:statusor",
+    ],
+)
