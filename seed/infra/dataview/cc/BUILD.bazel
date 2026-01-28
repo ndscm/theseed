@@ -1,0 +1,11 @@
+load("@rules_cc//cc:defs.bzl", "cc_library")
+
+package(default_visibility = [
+
+])
+
+cc_library(
+    name = "dataview",
+    srcs = ["dataview.cc"],
+    hdrs = ["dataview.h"],
+)
