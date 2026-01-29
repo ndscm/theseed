@@ -2,6 +2,7 @@
 .clang-format
 .react-router
 .venv
+compile_commands.json
 dist
 node_modules
 pnpm-lock.yaml
