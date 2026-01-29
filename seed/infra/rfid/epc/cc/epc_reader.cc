@@ -23,7 +23,7 @@ using ::std::vector;
 }
 
 ::absl::StatusOr<vector<vector<uint8_t>>> EpcReader::SynchronousInventory(
-    void) {
+    uint8_t antenna) {
   return ::absl::UnimplementedError("SynchronousInventory not implemented");
 }
 
