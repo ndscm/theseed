@@ -1,0 +1,5 @@
+CompileFlags:
+  Compiler: external/llvm_toolchain_llvm/bin/clang
+  Remove:
+    - -fcyclomatic-complexity
+    - -fno-canonical-system-headers

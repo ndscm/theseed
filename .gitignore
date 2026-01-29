@@ -7,6 +7,10 @@
 /bazel-testlogs
 /bazel-*
 
+# CC
+.cache
+compile_commands.json
+
 # Node
 dist
 node_modules

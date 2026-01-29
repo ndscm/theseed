@@ -6,4 +6,8 @@ build --cxxopt=-std=c++17
 build --host_cxxopt=-std=c++17
 build --@boost.asio//:ssl=boringssl
 
+# # Disable parse_headers to fix hedron_compile_commands with abseil-cpp
+build --features=-parse_headers
+build --host_features=-parse_headers
+
 build --workspace_status_command=./seed/devprod/buildinfo/generate-workspace-status.sh
