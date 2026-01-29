@@ -39,7 +39,7 @@ class EpcReader {
 
   // Tag Inventory
   virtual ::absl::StatusOr<::std::vector<::std::vector<uint8_t>>>
-  SynchronousInventory(void);
+  SynchronousInventory(uint8_t antenna = 0);
 
   // Tag Access
   virtual ::absl::Status WriteTagEpc(
