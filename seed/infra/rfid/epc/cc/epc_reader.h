@@ -3,6 +3,7 @@
 
 #include <cstdint>
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 #include "absl/status/status.h"
@@ -14,9 +15,15 @@ namespace rfid {
 namespace epc {
 namespace cc {
 
+class AntennaInfo {
+ public:
+  float power_dbm;
+};
+
 class ReaderInfo {
  public:
   ::std::string driver;
+  ::std::unordered_map<uint8_t, AntennaInfo> antennas;
 };
 
 class EpcReader {
