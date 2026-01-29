@@ -117,6 +117,17 @@ use_repo(
 bazel_dep(name = "grpc", version = "1.74.1")
 bazel_dep(name = "grpc-java", version = "1.75.0")
 
+# Java (required by grpc-java)
+bazel_dep(name = "rules_jvm_external", version = "6.7")
+
+maven = use_extension("@rules_jvm_external//:extensions.bzl", "maven")
+maven.install(
+    artifacts = [
+        "com.google.protobuf:protobuf-java-util:4.33.4",
+    ],
+)
+use_repo(maven, "maven")
+
 # JavaScript and TypeScript
 
 bazel_dep(name = "rules_nodejs", version = "6.6.0")
@@ -152,9 +163,8 @@ bazel_dep(name = "rules_pkg", version = "1.1.0")
 
 # Proto
 
-bazel_dep(name = "rules_proto", version = "7.1.0")
-bazel_dep(name = "protobuf", version = "31.1")
-bazel_dep(name = "rules_buf", version = "0.4.0")
+bazel_dep(name = "protobuf", version = "33.4")
+bazel_dep(name = "rules_buf", version = "0.5.2")
 
 # Python
 

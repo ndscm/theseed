@@ -12,8 +12,8 @@ file and feed it to the go_library rule.
 
 """
 
+load("@protobuf//bazel/common:proto_info.bzl", "ProtoInfo")
 load("@rules_go//go:def.bzl", "GoLibrary", "go_library")
-load("@rules_proto//proto:defs.bzl", "ProtoInfo")
 
 def _connect_go_impl(ctx):
     proto_info = ctx.attr.proto[ProtoInfo]
