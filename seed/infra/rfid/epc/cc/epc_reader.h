@@ -23,6 +23,7 @@ class AntennaInfo {
 class ReaderInfo {
  public:
   ::std::string driver;
+  ::std::string serial_number;
   ::std::unordered_map<uint8_t, AntennaInfo> antennas;
 };
 
