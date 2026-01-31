@@ -26,6 +26,14 @@ class ReaderInfo {
   ::std::unordered_map<uint8_t, AntennaInfo> antennas;
 };
 
+class EpcTag {
+ public:
+  ::std::vector<uint8_t> epc;
+  uint8_t antenna = 0;
+  int8_t rssi = 0;
+  int8_t confidence = 0;
+};
+
 class EpcReader {
  protected:
   EpcReader(void) = default;
@@ -38,8 +46,8 @@ class EpcReader {
   virtual ::absl::StatusOr<ReaderInfo> GetReaderInfo(void);
 
   // Tag Inventory
-  virtual ::absl::StatusOr<::std::vector<::std::vector<uint8_t>>>
-  SynchronousInventory(uint8_t antenna = 0);
+  virtual ::absl::StatusOr<::std::vector<EpcTag>> SynchronousInventory(
+      uint8_t antenna = 0);
 
   // Tag Access
   virtual ::absl::Status WriteTagEpc(
