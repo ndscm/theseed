@@ -45,6 +45,8 @@ class EpcReader {
   // Reader
   virtual ::absl::Status CheckHealthy(void);
   virtual ::absl::StatusOr<ReaderInfo> GetReaderInfo(void);
+  virtual ::absl::Status SetAntennas(
+      const ::std::unordered_map<uint8_t, AntennaInfo>& antennas);
 
   // Tag Inventory
   virtual ::absl::StatusOr<::std::vector<EpcTag>> SynchronousInventory(
