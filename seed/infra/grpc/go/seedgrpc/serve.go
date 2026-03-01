@@ -56,7 +56,7 @@ func goServeHttps(listener net.Listener, handler http.Handler) {
 	}
 }
 
-func ListenAndServe(addr string, handler http.Handler) error {
+func cmuxListenAndServe(addr string, handler http.Handler) error {
 	listener, err := net.Listen("tcp", addr)
 	if err != nil {
 		return seederr.Wrap(err)
@@ -79,4 +79,23 @@ func ListenAndServe(addr string, handler http.Handler) error {
 		return seederr.Wrap(err)
 	}
 	return nil
+}
+
+func ListenAndServe(addr string, handler http.Handler) error {
+	if flagEnableHttp.Get() && flagEnableHttps.Get() {
+		return cmuxListenAndServe(addr, handler)
+	}
+	listener, err := net.Listen("tcp", addr)
+	if err != nil {
+		return seederr.Wrap(err)
+	}
+	if flagEnableHttp.Get() {
+		goServeHttp(listener, handler)
+		return nil
+	}
+	if flagEnableHttps.Get() {
+		goServeHttps(listener, handler)
+		return nil
+	}
+	return seederr.WrapErrorf("no valid protocol enabled")
 }
