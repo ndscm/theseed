@@ -5,6 +5,8 @@ load("@npm//:defs.bzl", "npm_link_all_packages")
 
 package(default_visibility = [
 
+
+
 ])
 
 npm_link_all_packages()
