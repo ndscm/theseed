@@ -1,0 +1,17 @@
+load("@rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "seedjwt",
+    srcs = ["jwt.go"],
+    importpath = "github.com/ndscm/theseed/seed/infra/http/go/seedjwt",
+    visibility = [
+
+        "//seed/infra/grpc/go/seedgrpc:__subpackages__",
+
+    ],
+    deps = [
+        "//seed/infra/context/go/seedctx",
+        "//seed/infra/error/go/seederr",
+        "//seed/infra/log/go/seedlog",
+    ],
+)
