@@ -10,6 +10,7 @@ go_library(
     visibility = [
 
 
+
         "//seed/infra/auth/go/loginopenid:__subpackages__",
 
     ],
