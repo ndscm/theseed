@@ -6,6 +6,7 @@ go_library(
     importpath = "github.com/ndscm/theseed/seed/infra/auth/go/loginopenid",
     visibility = [
 
+
         "//seed/infra/auth:__subpackages__",
 
     ],
