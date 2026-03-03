@@ -89,6 +89,18 @@ func (provider *UserOpenidProvider) Exchange(
 	return nil
 }
 
+func (provider *UserOpenidProvider) Bearer(
+	ctx context.Context,
+	session seedsession.SessionAdapter,
+) string {
+	accessToken, err := session.Get(ctx, provider.prefix+"access_token")
+	if err != nil {
+		return ""
+	}
+	// TODO(nagi): check expiry and refresh with refresh token if needed
+	return "Bearer " + accessToken
+}
+
 func (provider *UserOpenidProvider) Client(
 	ctx context.Context,
 	session seedsession.SessionAdapter,
