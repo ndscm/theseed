@@ -6,6 +6,7 @@ packages:
   - "seed/devprod/buildinfo/ts"
   - "seed/devprod/golink/proto"
   - "seed/devprod/golink/client/tsx/golink-service-context"
+  - "seed/devprod/golink/webapp"
   - "seed/devprod/gotcha/tsx"
 
   - "seed/devprod/ts/tool/verify-pnpm-lock"

@@ -1,0 +1,43 @@
+{
+  "name": "@theseed/devprod-golink-webapp",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "GOLINK_SERVICE_SERVER=http://127.0.0.1:4656 react-router dev --host",
+    "build": "react-router build",
+    "serve": "react-router-serve ./build/server/index.js",
+    "translate": "i18next-cli extract",
+    "typecheck": "react-router typegen && tsc"
+  },
+  "dependencies": {
+    "@react-router/node": "^7.9.6",
+    "isbot": "^5.1.32"
+  },
+  "devDependencies": {
+    "@bufbuild/protobuf": "^2.10.1",
+    "@connectrpc/connect": "^2.1.1",
+    "@connectrpc/connect-web": "^2.1.1",
+    "@emotion/cache": "^11.14.0",
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.1",
+    "@fontsource/roboto": "^5.2.9",
+    "@mui/icons-material": "^7.3.5",
+    "@mui/material": "^7.3.5",
+    "@react-router/dev": "^7.9.6",
+    "@react-router/serve": "^7.9.6",
+    "@types/node": "^24.10.1",
+    "@types/react": "^19.2.7",
+    "@types/react-dom": "^19.2.3",
+    "i18next": "^25.7.4",
+    "i18next-cli": "^1.36.1",
+    "notistack": "^3.0.2",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4",
+    "react-i18next": "^16.5.3",
+    "react-router": "^7.9.6",
+    "typescript": "^5.9.3",
+    "vite": "^7.2.4",
+    "vite-tsconfig-paths": "^5.1.4"
+  }
+}
