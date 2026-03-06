@@ -1,0 +1,17 @@
+load("@rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "golinkdb",
+    srcs = [
+        "golink_database_client.go",
+        "link.go",
+    ],
+    importpath = "github.com/ndscm/theseed/seed/devprod/golink/database/golinkdb",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//seed/infra/flag/go/seedflag",
+        "//seed/infra/error/go/seederr",
+        "//seed/infra/log/go/seedlog",
+        "@com_github_jackc_pgx_v5//stdlib",
+    ],
+)
