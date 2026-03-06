@@ -56,6 +56,8 @@ gazelle_binary(
 # gazelle:python_default_visibility NONE
 # gazelle:python_generation_mode file
 
+# gazelle:resolve go github.com/ndscm/theseed/seed/devprod/golink/proto/golinkpbconnect //seed/devprod/golink/proto:golink_go_connect
+
 gazelle(
     name = "gazelle",
     gazelle = ":gazelle_extend",

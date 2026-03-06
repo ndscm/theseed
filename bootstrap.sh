@@ -18,3 +18,6 @@ bazel run @pnpm//:pnpm -- --dir $PWD recursive \
   --filter "@theseed/infra*..." \
   run build
 uv sync
+
+# Devprod Golink
+./devprod/golink/proto/build.sh go py

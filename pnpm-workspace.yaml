@@ -1,5 +1,6 @@
 packages:
   - "seed/devprod/buildinfo/ts"
+  - "seed/devprod/golink/proto"
   - "seed/devprod/gotcha/tsx"
   - "seed/devprod/ts/tool/verify-pnpm-lock"
   - "newtype/playwright/proxy"
