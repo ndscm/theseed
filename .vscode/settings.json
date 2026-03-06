@@ -26,7 +26,6 @@
   "isort.args": ["--profile", "black"],
   "prettier.proseWrap": "always",
   "prettier.semi": false,
-  "python.defaultInterpreterPath": ".venv/bin/python",
   "typescript.updateImportsOnFileMove.enabled": "always",
   "xml.format.enforceQuoteStyle": "preferred",
   "xml.format.splitAttributes": "splitNewLine",
