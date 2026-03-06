@@ -1,0 +1,23 @@
+load("@rules_go//go:def.bzl", "go_library")
+
+package(default_visibility = ["//seed/devprod/golink:__subpackages__"])
+
+go_library(
+    name = "service",
+    srcs = [
+        "golink_handler.go",
+        "golink_service.go",
+        "link_common.go",
+    ],
+    importpath = "github.com/ndscm/theseed/seed/devprod/golink/service",
+    deps = [
+        "//seed/devprod/golink/database/golinkdb",
+        "//seed/devprod/golink/proto:golink_go_proto",
+        "//seed/infra/http/go/seedjwt",
+        "//seed/infra/error/go/seederr",
+        "//seed/infra/log/go/seedlog",
+        "@com_connectrpc_connect//:connect",
+        "@org_golang_google_protobuf//types/known/emptypb",
+        "@org_golang_google_protobuf//types/known/timestamppb",
+    ],
+)

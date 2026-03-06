@@ -1,0 +1,31 @@
+load("@rules_go//go:def.bzl", "go_binary", "go_library")
+
+package(default_visibility = ["//visibility:private"])
+
+alias(
+    name = "server",
+    actual = ":golink-server",
+)
+
+go_library(
+    name = "server_lib",
+    srcs = ["golink_server.go"],
+    importpath = "github.com/ndscm/theseed/seed/devprod/golink/server",
+    deps = [
+        "//seed/devprod/golink/proto:golink_go_connect",
+        "//seed/devprod/golink/service",
+        "//seed/infra/http/go/cachecontrol",
+        "//seed/infra/spa/go/seedspa",
+        "//seed/infra/flag/go/seedflag",
+        "//seed/infra/error/go/seederr",
+        "//seed/infra/init/go/seedinit",
+        "//seed/infra/log/go/seedlog",
+        "//seed/infra/grpc/go/seedgrpc",
+    ],
+)
+
+go_binary(
+    name = "golink-server",
+    embed = [":server_lib"],
+    pure = "on",
+)
