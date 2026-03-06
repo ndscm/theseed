@@ -63,6 +63,7 @@ gazelle_binary(
 
 
 
+# gazelle:resolve go github.com/ndscm/theseed/seed/devprod/golink/proto/golinkpbconnect //seed/devprod/golink/proto:golink_go_connect
 
 
 

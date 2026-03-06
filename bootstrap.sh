@@ -27,6 +27,9 @@ uv sync
 # Cloud Mfe
 
 
+# Devprod Golink
+./devprod/golink/proto/build.sh go py
+
 # Newtype Guiproxy
 
 

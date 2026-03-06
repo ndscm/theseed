@@ -1,0 +1,112 @@
+syntax = "proto3";
+
+package seed.devprod.golink.proto;
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/field_mask.proto";
+import "google/protobuf/timestamp.proto";
+
+option go_package = "github.com/ndscm/theseed/seed/devprod/golink/proto/golinkpb";
+
+// Link represents a short URL mapping.
+message Link {
+  // The unique key for this link
+  // Only lowercase letters, numbers, and dashes are allowed.
+  string key = 1;
+
+  // The target URL to redirect to.
+  string target = 2;
+
+  // Whether this link is publicly accessible.
+  bool public = 3;
+
+  // The owner of this link (email or username).
+  optional string owner = 4;
+
+  // Number of times this link has been accessed.
+  int64 hit_count = 5;
+
+  // When the link was created.
+  google.protobuf.Timestamp created_time = 6;
+
+  // When the link was last updated.
+  google.protobuf.Timestamp updated_time = 7;
+
+  // Etag for optimistic concurrency control.
+  string etag = 8;
+}
+
+// Request message for CreateLink.
+message CreateLinkRequest {
+  // The link to create.
+  Link link = 1;
+}
+
+// Request message for GetLink.
+message GetLinkRequest {
+  // The key of the link to retrieve.
+  string key = 1;
+}
+
+// Request message for UpdateLink.
+message UpdateLinkRequest {
+  // The link with updated fields.
+  Link link = 1;
+
+  // The fields to update. If not set, all fields are updated.
+  google.protobuf.FieldMask update_mask = 2;
+
+  // The expected etag for optimistic concurrency control.
+  string etag = 3;
+}
+
+// Request message for DeleteLink.
+message DeleteLinkRequest {
+  // The key of the link to delete.
+  string key = 1;
+
+  // The expected etag for optimistic concurrency control.
+  string etag = 2;
+}
+
+// Request message for ListLinks.
+message ListLinksRequest {
+  // TODO(nagi): support filter
+  // string filter = 1;
+
+  // Maximum number of links to return.
+  int32 page_size = 2;
+
+  // Page token for pagination.
+  string page_token = 3;
+}
+
+// Response message for ListLinks.
+message ListLinksResponse {
+  // The list of links.
+  repeated Link links = 1;
+
+  // Token for the next page, empty if no more results.
+  string next_page_token = 2;
+
+  // Total number of links matching the request.
+  int64 total_size = 3;
+}
+
+// The Golink service provides short URL management.
+service GolinkService {
+  // Creates a new link.
+  rpc CreateLink(CreateLinkRequest) returns (Link) {}
+
+  // Gets a link by key.
+  rpc GetLink(GetLinkRequest) returns (Link) {}
+
+  // Updates an existing link.
+  rpc UpdateLink(UpdateLinkRequest) returns (Link) {}
+
+  // Deletes a link.
+  rpc DeleteLink(DeleteLinkRequest) returns (google.protobuf.Empty) {}
+
+  // Lists links with optional filtering and pagination.
+  rpc ListLinks(ListLinksRequest) returns (ListLinksResponse) {}
+}
