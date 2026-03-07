@@ -2,11 +2,7 @@ load("@aspect_rules_js//js:defs.bzl", "js_library")
 load("@aspect_rules_js//npm:defs.bzl", "npm_package")
 load("@aspect_rules_ts//ts:defs.bzl", "ts_project")
 
-package(default_visibility = [
-
-
-
-])
+package(default_visibility = ["//visibility:private"])
 
 genrule(
     name = "index_ts",
@@ -30,6 +26,7 @@ ts_project(
 js_library(
     name = "ts",
     srcs = [":package.json"],
+    visibility = ["//visibility:public"],
     deps = [":ts_project"],
 )
 
