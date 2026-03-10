@@ -1,4 +1,14 @@
 {
+  "link": {
+    "createButton": "Create",
+    "createTitle": "Create Link"
+  },
+  "list": {
+    "hitsLabel": "Hits",
+    "keyLabel": "Key",
+    "noLinksFound": "No links found",
+    "targetLabel": "Target"
+  },
   "system": {
     "brand": "go/link",
     "welcome": "A private short link service"
