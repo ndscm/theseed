@@ -145,6 +145,9 @@ const LinkList: React.FC<LinkListProps> = ({
         <Box sx={{ flex: 2, marginLeft: 1 }}>
           {t("list.targetLabel", "Target")}
         </Box>
+        <Box sx={{ flex: 1, marginLeft: 1 }}>
+          {t("list.ownerLabel", "Owner")}
+        </Box>
         <Box sx={{ width: 72, marginLeft: 1 }}>
           {t("list.hitsLabel", "Hits")}
         </Box>
@@ -182,6 +185,17 @@ const LinkList: React.FC<LinkListProps> = ({
             }}
           >
             <MuiLink href={link.target}>{link.target}</MuiLink>
+          </Box>
+          <Box
+            sx={{
+              flex: 1,
+              marginLeft: 1,
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              whiteSpace: "nowrap",
+            }}
+          >
+            {link.owner}
           </Box>
           <Box
             sx={{
