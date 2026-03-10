@@ -1,0 +1,45 @@
+load("@aspect_rules_js//js:defs.bzl", "js_library")
+load("@aspect_rules_js//npm:defs.bzl", "npm_package")
+load("@aspect_rules_ts//ts:defs.bzl", "ts_project")
+load("@npm//:defs.bzl", "npm_link_all_packages")
+
+package(default_visibility = [
+    "//seed/devprod/golink:__subpackages__",
+])
+
+npm_link_all_packages()
+
+ts_project(
+    name = "ts_project",
+    srcs = glob(
+        [
+            "src/**/*.ts",
+            "src/**/*.tsx",
+        ],
+        allow_empty = True,
+    ),
+    declaration = True,
+    out_dir = "dist",
+    root_dir = "src",
+    transpiler = "tsc",
+    tsconfig = "tsconfig.json",
+    deps = [
+        ":node_modules",
+        "//seed/devprod/golink/proto:golink_ts_proto",
+    ],
+)
+
+js_library(
+    name = "golink-service-context",
+    srcs = [":package.json"],
+    deps = [":ts_project"],
+)
+
+npm_package(
+    name = "pkg",  # Required by aspect_rules_js
+    srcs = [
+        "package.json",
+        ":ts_project",
+    ],
+    visibility = ["//visibility:public"],
+)
