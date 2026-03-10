@@ -1,4 +1,7 @@
 {
+  "auth": {
+    "loginButton": "Login"
+  },
   "link": {
     "createButton": "Create",
     "createTitle": "Create Link"
@@ -7,6 +10,7 @@
     "hitsLabel": "Hits",
     "keyLabel": "Key",
     "noLinksFound": "No links found",
+    "ownerLabel": "Owner",
     "targetLabel": "Target"
   },
   "system": {
