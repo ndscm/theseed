@@ -1,5 +1,5 @@
 import * as Protobuf from "@bufbuild/protobuf"
-import React, { useCallback, useEffect, useState } from "react"
+import React, { useCallback, useEffect, useRef, useState } from "react"
 import { useTranslation } from "react-i18next"
 
 import Box from "@mui/material/Box"
@@ -17,6 +17,8 @@ import CloseOutlinedIcon from "@mui/icons-material/CloseOutlined"
 
 import { type Link, LinkSchema } from "../../proto/golink_pb"
 import { useGolinkService } from "../../client/tsx/golink-service-context"
+
+const PAGE_SIZE = 10
 
 const LinkCreator: React.FC<{
   defaultKey?: string
@@ -241,6 +243,9 @@ const HomePage: React.FC<{ params: { linkKey?: string } }> = ({ params }) => {
   const golinkService = useGolinkService()
   const [links, setLinks] = useState<Link[]>([])
   const [isLoading, setIsLoading] = useState(false)
+  const [totalSize, setTotalSize] = useState<bigint>(BigInt(0))
+  const [nextPageToken, setNextPageToken] = useState<string>("")
+  const refOfListEnd = useRef<HTMLDivElement>(null)
 
   const fetchLinks = useCallback(async () => {
     if (!golinkService) {
@@ -248,8 +253,12 @@ const HomePage: React.FC<{ params: { linkKey?: string } }> = ({ params }) => {
     }
     setIsLoading(true)
     try {
-      const response = await golinkService.ListLinks()
+      const response = await golinkService.ListLinks({
+        pageSize: PAGE_SIZE,
+      })
       setLinks(response.links)
+      setTotalSize(response.totalSize)
+      setNextPageToken(response.nextPageToken)
     } finally {
       setIsLoading(false)
     }
@@ -285,6 +294,40 @@ const HomePage: React.FC<{ params: { linkKey?: string } }> = ({ params }) => {
     fetchLinks()
   }, [fetchLinks])
 
+  // Infinite scroll observer
+  useEffect(() => {
+    const divOfListEnd = refOfListEnd.current
+    const observer = new IntersectionObserver(
+      async (entries) => {
+        if (entries[0].isIntersecting) {
+          observer.unobserve(entries[0].target)
+          if (!golinkService) {
+            return
+          }
+          if (nextPageToken) {
+            const response = await golinkService.ListLinks({
+              pageSize: PAGE_SIZE,
+              pageToken: nextPageToken,
+            })
+            setLinks((prev) => [...prev, ...response.links])
+            setTotalSize(response.totalSize)
+            setNextPageToken(response.nextPageToken)
+          }
+        }
+      },
+      { threshold: 0.1 },
+    )
+
+    if (divOfListEnd) {
+      observer.observe(divOfListEnd)
+    }
+    return () => {
+      if (divOfListEnd) {
+        observer.unobserve(divOfListEnd)
+      }
+    }
+  }, [golinkService, nextPageToken])
+
   return (
     <Box>
       <Toolbar />
@@ -295,6 +338,7 @@ const HomePage: React.FC<{ params: { linkKey?: string } }> = ({ params }) => {
           isLoading={isLoading}
           onRemoveLink={handleRemoveLink}
         />
+        <Box ref={refOfListEnd} sx={{ height: "1px" }} />
       </Container>
     </Box>
   )
