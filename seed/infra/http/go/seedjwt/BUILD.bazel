@@ -6,6 +6,7 @@ go_library(
     importpath = "github.com/ndscm/theseed/seed/infra/http/go/seedjwt",
     visibility = [
 
+        "//seed/cloud/login:__subpackages__",
         "//seed/devprod/golink:__subpackages__",
         "//seed/infra/grpc/go/seedgrpc:__subpackages__",
 
