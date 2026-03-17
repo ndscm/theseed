@@ -11,20 +11,16 @@ import {
   DeleteLinkRequestSchema,
   type GetLinkRequest,
   GetLinkRequestSchema,
-  type GetLoginRequest,
-  GetLoginRequestSchema,
   GolinkService,
   type Link,
   type ListLinksRequest,
   ListLinksRequestSchema,
   type ListLinksResponse,
-  type Login,
   type UpdateLinkRequest,
   UpdateLinkRequestSchema,
 } from "../../../../proto/golink_pb"
 
 interface GolinkServiceInterface {
-  GetLogin: () => Promise<Login>
   CreateLink: (link: Link) => Promise<Link>
   GetLink: (key: string) => Promise<Link>
   UpdateLink: (link: Link, updatePaths?: string[]) => Promise<Link>
@@ -42,14 +38,6 @@ const wrapInterface = (
   grpcWeb: ConnectClient<typeof GolinkService>,
 ): GolinkServiceInterface => {
   return {
-    GetLogin: async () => {
-      const requestPb: GetLoginRequest = Protobuf.create(
-        GetLoginRequestSchema,
-        {},
-      )
-      const replyPb = await grpcWeb.getLogin(requestPb)
-      return replyPb
-    },
     CreateLink: async (link: Link) => {
       const requestPb: CreateLinkRequest = Protobuf.create(
         CreateLinkRequestSchema,
