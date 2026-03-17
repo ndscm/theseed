@@ -8,14 +8,6 @@ import "google/protobuf/timestamp.proto";
 
 option go_package = "github.com/ndscm/theseed/seed/devprod/golink/proto/golinkpb";
 
-message Login {
-  string user_uuid = 1;
-  string user_handle = 2;
-  string display_name = 3;
-}
-
-message GetLoginRequest {}
-
 // Link represents a short URL mapping.
 message Link {
   // The unique key for this link
@@ -103,8 +95,6 @@ message ListLinksResponse {
 
 // The Golink service provides short URL management.
 service GolinkService {
-  rpc GetLogin(GetLoginRequest) returns (Login) {}
-
   // Creates a new link.
   rpc CreateLink(CreateLinkRequest) returns (Link) {}
 

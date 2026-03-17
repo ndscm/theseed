@@ -22,20 +22,6 @@ var whitelistPathsOfUpdateLink = []string{
 
 type GolinkService struct{}
 
-func (svc *GolinkService) GetLogin(
-	ctx context.Context,
-	req *connect.Request[golinkpb.GetLoginRequest],
-) (*connect.Response[golinkpb.Login], error) {
-	response := &golinkpb.Login{}
-	jwtUser, err := seedjwt.JwtUser(ctx)
-	if err == nil && jwtUser != nil {
-		response.UserUuid = jwtUser.Sub
-		response.UserHandle = jwtUser.PreferredUsername
-		response.DisplayName = jwtUser.Name
-	}
-	return connect.NewResponse(response), nil
-}
-
 func (svc *GolinkService) CreateLink(
 	ctx context.Context,
 	req *connect.Request[golinkpb.CreateLinkRequest],
