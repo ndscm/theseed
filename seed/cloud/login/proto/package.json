@@ -1,0 +1,8 @@
+{
+  "name": "@theseed/seed-cloud-login-proto",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "build": "./build.sh ts"
+  }
+}

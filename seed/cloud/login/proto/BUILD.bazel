@@ -1,0 +1,54 @@
+load("@aspect_rules_js//npm:defs.bzl", "npm_package")
+load("@aspect_rules_ts//ts:proto.bzl", "ts_proto_library")
+load("@protobuf//bazel:proto_library.bzl", "proto_library")
+load("@rules_go//proto:def.bzl", "go_proto_library")
+load("//seed/devprod/go:proto.bzl", "go_connect_library")
+
+package(default_visibility = [
+    "//seed/cloud/login:__subpackages__",
+])
+
+proto_library(
+    name = "login_proto",
+    srcs = ["login.proto"],
+)
+
+go_proto_library(
+    name = "login_go_proto",
+    compilers = ["@rules_go//proto:go_grpc"],
+    importpath = "github.com/ndscm/theseed/seed/cloud/login/proto/loginpb",
+    proto = ":login_proto",
+    visibility = ["//visibility:public"],
+)
+
+go_connect_library(
+    name = "login_go_connect",
+    importpath = "github.com/ndscm/theseed/seed/cloud/login/proto/loginpbconnect",
+    proto = ":login_proto",
+    visibility = ["//visibility:public"],
+    deps = [
+        ":login_go_proto",
+        "@com_connectrpc_connect//:connect",
+    ],
+)
+
+ts_proto_library(
+    name = "login_ts_proto",
+    copy_files = False,
+    node_modules = "//:node_modules",
+    proto = ":login_proto",
+)
+
+npm_package(
+    name = "login_ts_proto_pkg",
+    srcs = [
+        "package.json",
+        ":login_ts_proto",
+    ],
+)
+
+alias(
+    name = "pkg",  # Required by aspect_rules_js
+    actual = ":login_ts_proto_pkg",
+    visibility = ["//visibility:public"],
+)
