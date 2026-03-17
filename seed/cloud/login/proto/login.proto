@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package seed.cloud.login.proto;
+
+option go_package = "github.com/ndscm/theseed/seed/cloud/login/proto/loginpb";
+
+message GetLoginStatusRequest {}
+
+message LoginStatus {
+  string team_uuid = 1;
+  string team_handle = 2;
+  string user_uuid = 3;
+  string user_handle = 4;
+  string display_name = 5;
+}
+
+service LoginService {
+  rpc GetLoginStatus(GetLoginStatusRequest) returns (LoginStatus) {}
+}

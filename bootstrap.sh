@@ -25,6 +25,9 @@ uv sync
 
 
 
+# Cloud Login
+./cloud/login/proto/build.sh go py
+
 # Cloud Mfe
 
 

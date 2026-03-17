@@ -3,6 +3,8 @@ packages:
 
 
 
+  - "seed/cloud/login/proto"
+  - "seed/cloud/login/client/tsx/login-service-context"
   - "seed/devprod/buildinfo/ts"
   - "seed/devprod/golink/proto"
   - "seed/devprod/golink/client/tsx/golink-service-context"

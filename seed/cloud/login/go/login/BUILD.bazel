@@ -1,0 +1,14 @@
+load("@rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "login",
+    srcs = ["login_user.go"],
+    importpath = "github.com/ndscm/theseed/seed/cloud/login/go/login",
+    visibility = [
+        "//visibility:public",
+    ],
+    deps = [
+        "//seed/infra/http/go/seedjwt",
+        "//seed/infra/error/go/seederr",
+    ],
+)

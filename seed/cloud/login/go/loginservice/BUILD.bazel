@@ -1,0 +1,17 @@
+load("@rules_go//go:def.bzl", "go_library")
+
+package(default_visibility = ["//seed/cloud/login:__subpackages__"])
+
+go_library(
+    name = "loginservice",
+    srcs = ["login_service.go"],
+    importpath = "github.com/ndscm/theseed/seed/cloud/login/go/loginservice",
+    visibility = [
+        "//visibility:public",
+    ],
+    deps = [
+        "//seed/cloud/login/go/login",
+        "//seed/cloud/login/proto:login_go_proto",
+        "@com_connectrpc_connect//:connect",
+    ],
+)

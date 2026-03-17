@@ -62,6 +62,7 @@ gazelle_binary(
 
 
 
+# gazelle:resolve go github.com/ndscm/theseed/seed/cloud/login/proto/loginpbconnect //seed/cloud/login/proto:login_go_connect
 
 # gazelle:resolve go github.com/ndscm/theseed/seed/devprod/golink/proto/golinkpbconnect //seed/devprod/golink/proto:golink_go_connect
 
