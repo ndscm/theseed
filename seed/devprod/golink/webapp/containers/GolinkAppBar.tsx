@@ -8,23 +8,23 @@ import Link from "@mui/material/Link"
 import Toolbar from "@mui/material/Toolbar"
 import Typography from "@mui/material/Typography"
 
-import { type Login } from "../../proto/golink_pb"
-import { useGolinkService } from "../../client/tsx/golink-service-context"
+import { type LoginStatus } from "../../../../../seed/cloud/login/proto/login_pb"
+import { useLoginService } from "../../../../../seed/cloud/login/client/tsx/login-service-context"
 
 const GolinkAppBar: React.FC = () => {
   const { t } = useTranslation("common")
-  const golinkService = useGolinkService()
-  const [login, setLogin] = React.useState<Login>()
+  const loginService = useLoginService()
+  const [login, setLogin] = React.useState<LoginStatus>()
 
   useEffect(() => {
     void (async () => {
-      if (!golinkService) {
+      if (!loginService) {
         return
       }
-      const currentLogin = await golinkService.GetLogin()
+      const currentLogin = await loginService.GetLoginStatus()
       setLogin(currentLogin)
     })()
-  }, [golinkService])
+  }, [loginService])
 
   const onLoginClick = async () => {
     window.location.href = `${window.location.origin}/auth/login?return=${encodeURIComponent(window.location.href)}`

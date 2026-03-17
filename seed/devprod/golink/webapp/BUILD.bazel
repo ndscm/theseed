@@ -19,6 +19,7 @@ js_run_binary(
         "tsconfig.json",
         "vite.config.ts",
         ":node_modules",
+        "//seed/cloud/login/client/tsx/login-service-context",
         "//seed/devprod/buildinfo/ts",
         "//seed/devprod/golink/client/tsx/golink-service-context",
         "//seed/devprod/gotcha/tsx",
