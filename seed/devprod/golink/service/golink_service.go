@@ -7,9 +7,9 @@ import (
 	"slices"
 
 	"connectrpc.com/connect"
+	"github.com/ndscm/theseed/seed/cloud/login/go/login"
 	"github.com/ndscm/theseed/seed/devprod/golink/database/golinkdb"
 	"github.com/ndscm/theseed/seed/devprod/golink/proto/golinkpb"
-	"github.com/ndscm/theseed/seed/infra/http/go/seedjwt"
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
 	"github.com/ndscm/theseed/seed/infra/log/go/seedlog"
 	"google.golang.org/protobuf/types/known/emptypb"
@@ -34,9 +34,9 @@ func (svc *GolinkService) CreateLink(
 	if linkRow.Key == "" {
 		return nil, seederr.WrapErrorf("key cannot be empty")
 	}
-	jwtUser, err := seedjwt.JwtUser(ctx)
-	if err == nil && jwtUser != nil && jwtUser.Email != "" {
-		linkRow.Owner = &jwtUser.Email
+	loginUser, err := login.LoginUser(ctx)
+	if err == nil && loginUser != nil && loginUser.Email != "" {
+		linkRow.Owner = &loginUser.Email
 	}
 
 	db, err := golinkdb.Open(ctx)
@@ -100,9 +100,9 @@ func (svc *GolinkService) UpdateLink(
 		return nil, seederr.WrapErrorf("key cannot be empty")
 	}
 	linkRow.Owner = nil // do not trust owner from request
-	jwtUser, err := seedjwt.JwtUser(ctx)
-	if err == nil && jwtUser != nil && jwtUser.Email != "" {
-		linkRow.Owner = &jwtUser.Email
+	loginUser, err := login.LoginUser(ctx)
+	if err == nil && loginUser != nil && loginUser.Email != "" {
+		linkRow.Owner = &loginUser.Email
 	}
 
 	db, err := golinkdb.Open(ctx)
@@ -181,11 +181,11 @@ func (svc *GolinkService) DeleteLink(
 	}
 	existing := getLinkProtoFromLinkRow(existingRow)
 	if existing.Owner != nil && *existing.Owner != "" {
-		jwtUser, err := seedjwt.JwtUser(ctx)
+		loginUser, err := login.LoginUser(ctx)
 		if err != nil {
 			return nil, seederr.Wrap(err)
 		}
-		if jwtUser == nil || jwtUser.Email != *existing.Owner {
+		if loginUser == nil || loginUser.Email != *existing.Owner {
 			return nil, seederr.WrapErrorf("not the owner of this link")
 		}
 	}
