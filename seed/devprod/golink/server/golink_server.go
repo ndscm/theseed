@@ -4,6 +4,8 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/ndscm/theseed/seed/cloud/login/go/loginservice"
+	"github.com/ndscm/theseed/seed/cloud/login/proto/loginpbconnect"
 	"github.com/ndscm/theseed/seed/devprod/golink/proto/golinkpbconnect"
 	golinkservice "github.com/ndscm/theseed/seed/devprod/golink/service"
 	"github.com/ndscm/theseed/seed/infra/http/go/cachecontrol"
@@ -24,6 +26,13 @@ func run() error {
 	}
 
 	mux := &seedgrpc.GrpcMux{}
+	err = mux.Register(loginpbconnect.NewLoginServiceHandler(
+		&loginservice.LoginService{},
+		seedgrpc.WithCommonInterceptors(),
+	))
+	if err != nil {
+		return seederr.Wrap(err)
+	}
 	err = mux.Register(golinkpbconnect.NewGolinkServiceHandler(
 		&golinkservice.GolinkService{},
 		seedgrpc.WithCommonInterceptors(),
