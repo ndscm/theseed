@@ -14,6 +14,8 @@ go_library(
     srcs = ["golink_server.go"],
     importpath = "github.com/ndscm/theseed/seed/devprod/golink/server",
     deps = [
+        "//seed/cloud/login/go/loginservice",
+        "//seed/cloud/login/proto:login_go_connect",
         "//seed/devprod/golink/proto:golink_go_connect",
         "//seed/devprod/golink/service",
         "//seed/infra/http/go/cachecontrol",
