@@ -54,6 +54,8 @@ type OpenidProvider struct {
 
 	cachedConfiguration *OpenidConfiguration
 	cachedOrigin        string
+
+	tokenSource oauth2.TokenSource
 }
 
 func (provider *OpenidProvider) ClientId() string {
@@ -143,14 +145,34 @@ func (provider *OpenidProvider) GetClientCredentialsConfig(ctx context.Context) 
 	return oauth2Config, nil
 }
 
+func (provider *OpenidProvider) Bearer(
+	ctx context.Context,
+) string {
+	if provider.tokenSource == nil {
+		oauth2Config, err := provider.GetClientCredentialsConfig(ctx)
+		if err != nil {
+			return ""
+		}
+		provider.tokenSource = oauth2Config.TokenSource(context.Background())
+	}
+	token, err := provider.tokenSource.Token()
+	if err != nil {
+		return ""
+	}
+	return "Bearer " + token.AccessToken
+}
+
 func (provider *OpenidProvider) Client(
 	ctx context.Context,
 ) (*http.Client, error) {
-	oauth2Config, err := provider.GetClientCredentialsConfig(ctx)
-	if err != nil {
-		return nil, seederr.Wrap(err)
+	if provider.tokenSource == nil {
+		oauth2Config, err := provider.GetClientCredentialsConfig(ctx)
+		if err != nil {
+			return nil, seederr.Wrap(err)
+		}
+		provider.tokenSource = oauth2Config.TokenSource(context.Background())
 	}
-	client := oauth2Config.Client(ctx)
+	client := oauth2.NewClient(ctx, provider.tokenSource)
 	return client, nil
 }
 
