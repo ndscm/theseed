@@ -8,6 +8,7 @@ require (
 	connectrpc.com/connect v1.19.1
 	connectrpc.com/grpchealth v1.4.0
 	connectrpc.com/validate v0.6.0
+	entgo.io/ent v0.14.5
 
 
 
@@ -37,7 +38,6 @@ require (
 	buf.build/gen/go/bufbuild/protovalidate/protocolbuffers/go v1.36.10-20250912141014-52f32327d4b0.1 // indirect
 	buf.build/go/protovalidate v1.0.1 // indirect
 	cel.dev/expr v0.25.1 // indirect
-	entgo.io/ent v0.14.5 // indirect
 	github.com/agext/levenshtein v1.2.3 // indirect
 
 
