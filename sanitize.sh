@@ -26,6 +26,7 @@ find . \
 
 # Go
 # Must tidy go mod after all packages
+
 bazel run @rules_go//go -- mod tidy
 
 # Java
