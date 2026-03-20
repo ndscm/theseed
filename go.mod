@@ -20,6 +20,7 @@ require (
 	github.com/google/uuid v1.6.0
 	github.com/jackc/pgx/v5 v5.7.6
 	github.com/joho/godotenv v1.5.1
+	github.com/lib/pq v1.12.0
 	github.com/rs/cors v1.11.1
 	github.com/soheilhy/cmux v0.1.5
 
