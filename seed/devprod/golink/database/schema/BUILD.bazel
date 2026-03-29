@@ -1,0 +1,17 @@
+load("@rules_go//go:def.bzl", "go_library")
+
+package(default_visibility = [
+    "//seed/devprod/golink:__subpackages__",
+])
+
+go_library(
+    name = "schema",
+    srcs = ["link.go"],
+    importpath = "github.com/ndscm/theseed/seed/devprod/golink/database/schema",
+    deps = [
+        "@io_entgo_ent//:ent",
+        "@io_entgo_ent//dialect/entsql",
+        "@io_entgo_ent//schema",
+        "@io_entgo_ent//schema/field",
+    ],
+)
