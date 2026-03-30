@@ -1,0 +1,12 @@
+load("//seed/devprod/go:ent.bzl", "go_ent_library")
+
+package(default_visibility = [
+    "//seed/devprod/golink:__subpackages__",
+])
+
+go_ent_library(
+    name = "ent",
+    entities = ["link"],
+    importpath = "github.com/ndscm/theseed/seed/devprod/golink/database/ent",
+    schema = "//seed/devprod/golink/database/schema",
+)

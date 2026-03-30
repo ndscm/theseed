@@ -1,0 +1,7 @@
+# gazelle:resolve go github.com/ndscm/theseed/seed/devprod/golink/database/ent //seed/devprod/golink/database:ent
+# gazelle:resolve go github.com/ndscm/theseed/seed/devprod/golink/database/ent/enttest //seed/devprod/golink/database:ent/enttest
+# gazelle:resolve go github.com/ndscm/theseed/seed/devprod/golink/database/ent/hook //seed/devprod/golink/database:ent/hook
+# gazelle:resolve go github.com/ndscm/theseed/seed/devprod/golink/database/ent/link //seed/devprod/golink/database:ent/link
+# gazelle:resolve go github.com/ndscm/theseed/seed/devprod/golink/database/ent/migrate //seed/devprod/golink/database:ent/migrate
+# gazelle:resolve go github.com/ndscm/theseed/seed/devprod/golink/database/ent/predicate //seed/devprod/golink/database:ent/predicate
+# gazelle:resolve go github.com/ndscm/theseed/seed/devprod/golink/database/ent/runtime //seed/devprod/golink/database:ent/runtime
