@@ -2,229 +2,99 @@ package golinkdb
 
 import (
 	"context"
-	"database/sql"
-	"fmt"
-	"strings"
-	"time"
 
+	"entgo.io/ent/dialect/sql"
+	"github.com/ndscm/theseed/seed/devprod/golink/database/ent"
+	"github.com/ndscm/theseed/seed/devprod/golink/database/ent/link"
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
 	"github.com/ndscm/theseed/seed/infra/log/go/seedlog"
 )
 
-type LinkRow struct {
-	Key         string
-	Target      string
-	Public      bool
-	Owner       *string
-	HitCount    int64
-	CreatedTime time.Time
-	UpdatedTime time.Time
-}
-
-func InsertLink(ctx context.Context, db *sql.DB, link *LinkRow) (*LinkRow, error) {
-	if link == nil {
+func InsertLink(ctx context.Context, db *ent.Client, key string, row *ent.Link) (*ent.Link, error) {
+	if row == nil {
 		return nil, seederr.WrapErrorf("link is required")
 	}
-	row := LinkRow{}
-	err := db.QueryRowContext(ctx, `
-INSERT INTO "golink" (
-  "key",
-  "target",
-  "public",
-  "owner"
-) VALUES ($1, $2, $3, $4)
-RETURNING "key",
-  "target",
-  "public",
-  "owner",
-  "hit_count",
-  "created_time",
-  "updated_time";
-`,
-		link.Key,
-		link.Target,
-		link.Public,
-		link.Owner,
-	).Scan(
-		&row.Key,
-		&row.Target,
-		&row.Public,
-		&row.Owner,
-		&row.HitCount,
-		&row.CreatedTime,
-		&row.UpdatedTime,
-	)
+	createQuery := db.Link.Create().
+		SetID(key).
+		SetTarget(row.Target).
+		SetPublic(row.Public)
+	if row.Owner != nil {
+		createQuery.SetOwner(*row.Owner)
+	}
+	resultRow, err := createQuery.Save(ctx)
 	if err != nil {
 		return nil, seederr.Wrap(err)
 	}
-
-	return &row, nil
+	return resultRow, nil
 }
 
-func SelectLinkByKey(ctx context.Context, db *sql.DB, key string) (*LinkRow, error) {
-	row := LinkRow{}
-	err := db.QueryRowContext(ctx, `
-SELECT "key",
-  "target",
-  "public",
-  "owner",
-  "hit_count",
-  "created_time",
-  "updated_time"
-FROM "golink"
-WHERE "key" = $1;
-`, key).Scan(
-		&row.Key,
-		&row.Target,
-		&row.Public,
-		&row.Owner,
-		&row.HitCount,
-		&row.CreatedTime,
-		&row.UpdatedTime,
-	)
+func SelectLink(ctx context.Context, db *ent.Client, key string) (*ent.Link, error) {
+	row, err := db.Link.Get(ctx, key)
 	if err != nil {
 		return nil, seederr.Wrap(err)
 	}
-
-	return &row, nil
+	return row, nil
 }
 
-func UpdateLink(ctx context.Context, db *sql.DB, key string, link *LinkRow, updateFields []string) (*LinkRow, error) {
-	if link == nil {
+func UpdateLink(ctx context.Context, db *ent.Client, key string, row *ent.Link, updateFields []string) (*ent.Link, error) {
+	if row == nil {
 		return nil, seederr.WrapErrorf("link is required")
 	}
-	setSegments := []string{}
-	values := []interface{}{key}
+	updateQuery := db.Link.UpdateOneID(key)
 	for _, field := range updateFields {
 		switch field {
 		case "target":
-			setSegments = append(setSegments, fmt.Sprintf(`"target" = $%d`, len(values)+1))
-			values = append(values, link.Target)
+			updateQuery.SetTarget(row.Target)
 		case "public":
-			setSegments = append(setSegments, fmt.Sprintf(`"public" = $%d`, len(values)+1))
-			values = append(values, link.Public)
+			updateQuery.SetPublic(row.Public)
 		case "owner":
-			setSegments = append(setSegments, fmt.Sprintf(`"owner" = $%d`, len(values)+1))
-			values = append(values, link.Owner)
+			if row.Owner == nil {
+				updateQuery.ClearOwner()
+			} else {
+				updateQuery.SetOwner(*row.Owner)
+			}
 		default:
 			seedlog.Warnf("Unknown field in update fields: %s", field)
 		}
 	}
-	setSegments = append(setSegments, `"updated_time" = CURRENT_TIMESTAMP`)
-	row := LinkRow{}
-	err := db.QueryRowContext(ctx, `
-UPDATE "golink"
-SET `+strings.Join(setSegments, ", ")+`
-WHERE "key" = $1
-RETURNING "key",
-  "target",
-  "public",
-  "owner",
-  "hit_count",
-  "created_time",
-  "updated_time";
-`, values...,
-	).Scan(
-		&row.Key,
-		&row.Target,
-		&row.Public,
-		&row.Owner,
-		&row.HitCount,
-		&row.CreatedTime,
-		&row.UpdatedTime,
-	)
+	resultRow, err := updateQuery.Save(ctx)
 	if err != nil {
 		return nil, seederr.Wrap(err)
 	}
-
-	return &row, nil
+	return resultRow, nil
 }
 
-func DeleteLink(ctx context.Context, db *sql.DB, key string) error {
-	result, err := db.ExecContext(ctx, `
-DELETE FROM "golink" WHERE "key" = $1;
-`, key)
+func DeleteLink(ctx context.Context, db *ent.Client, key string) error {
+	err := db.Link.DeleteOneID(key).Exec(ctx)
 	if err != nil {
 		return seederr.Wrap(err)
-	}
-	rowsAffected, err := result.RowsAffected()
-	if err != nil {
-		return seederr.Wrap(err)
-	}
-	if rowsAffected == 0 {
-		return sql.ErrNoRows
 	}
 	return nil
 }
 
-func SelectLinks(ctx context.Context, db *sql.DB, cursor string, limit int) ([]*LinkRow, error) {
-	var rows *sql.Rows
-	var err error
-
-	whereClause := ""
-	values := []interface{}{limit}
+func SelectLinks(ctx context.Context, db *ent.Client, cursor string, limit int) ([]*ent.Link, int64, error) {
+	query := db.Link.Query().Order(link.ByID(sql.OrderAsc()))
+	total, err := query.Clone().Count(ctx)
+	if err != nil {
+		return nil, 0, seederr.Wrap(err)
+	}
 	if cursor != "" {
-		whereClause = `WHERE "key" > $2`
-		values = append(values, cursor)
+		query = query.Where(link.IDGT(cursor))
 	}
-	rows, err = db.QueryContext(ctx, `
-SELECT "key",
-  "target",
-  "public",
-  "owner",
-  "hit_count",
-  "created_time",
-  "updated_time"
-FROM "golink"
-`+whereClause+`
-ORDER BY "key" ASC
-LIMIT $1;
-`, values...)
+	if limit > 0 {
+		query = query.Limit(limit)
+	}
+	rows, err := query.All(ctx)
 	if err != nil {
-		return nil, seederr.Wrap(err)
+		return nil, 0, seederr.Wrap(err)
 	}
-	defer rows.Close()
-
-	var links []*LinkRow
-	for rows.Next() {
-		row := LinkRow{}
-		err := rows.Scan(
-			&row.Key,
-			&row.Target,
-			&row.Public,
-			&row.Owner,
-			&row.HitCount,
-			&row.CreatedTime,
-			&row.UpdatedTime,
-		)
-		if err != nil {
-			return nil, seederr.Wrap(err)
-		}
-		links = append(links, &row)
-	}
-
-	return links, nil
+	return rows, int64(total), nil
 }
 
-func IncrementHitCount(ctx context.Context, db *sql.DB, key string) error {
-	_, err := db.ExecContext(ctx, `
-UPDATE "golink"
-SET "hit_count" = "hit_count" + 1
-WHERE "key" = $1;
-`, key)
+func IncrementHitCount(ctx context.Context, db *ent.Client, key string) error {
+	err := db.Link.UpdateOneID(key).AddHitCount(1).Exec(ctx)
 	if err != nil {
 		return seederr.Wrap(err)
 	}
 	return nil
-}
-
-func CountLinks(ctx context.Context, db *sql.DB) (int64, error) {
-	var count int64
-	err := db.QueryRowContext(ctx, `
-SELECT COUNT(*) FROM "golink";
-`).Scan(&count)
-	if err != nil {
-		return 0, seederr.Wrap(err)
-	}
-	return count, nil
 }

@@ -6,7 +6,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/ndscm/theseed/seed/devprod/golink/database/golinkdb"
+	"github.com/ndscm/theseed/seed/devprod/golink/database/ent"
 	"github.com/ndscm/theseed/seed/devprod/golink/proto/golinkpb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
@@ -37,29 +37,29 @@ func computeEtag(key, target string, updatedTime time.Time) string {
 	return hex.EncodeToString(h.Sum(nil))[:16]
 }
 
-func getLinkProtoFromLinkRow(row *golinkdb.LinkRow) *golinkpb.Link {
+func getLinkProtoFromEnt(row *ent.Link) *golinkpb.Link {
 	if row == nil {
 		return nil
 	}
 	link := golinkpb.Link{
-		Key:         row.Key,
+		Key:         row.ID,
 		Target:      row.Target,
 		Public:      row.Public,
 		Owner:       row.Owner,
 		HitCount:    row.HitCount,
 		CreatedTime: timestamppb.New(row.CreatedTime),
 		UpdatedTime: timestamppb.New(row.UpdatedTime),
-		Etag:        computeEtag(row.Key, row.Target, row.UpdatedTime),
+		Etag:        computeEtag(row.ID, row.Target, row.UpdatedTime),
 	}
 	return &link
 }
 
-func getLinkRowFromLinkProto(link *golinkpb.Link) *golinkdb.LinkRow {
+func getLinkEntFromProto(link *golinkpb.Link) *ent.Link {
 	if link == nil {
 		return nil
 	}
-	row := golinkdb.LinkRow{
-		Key:      link.Key,
+	row := ent.Link{
+		ID:       normalizeKey(link.Key),
 		Target:   link.Target,
 		Public:   link.Public,
 		Owner:    link.Owner,
