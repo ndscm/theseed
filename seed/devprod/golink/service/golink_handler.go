@@ -2,12 +2,11 @@ package service
 
 import (
 	"context"
-	"database/sql"
-	"errors"
 	"net/http"
 	"strings"
 	"time"
 
+	"github.com/ndscm/theseed/seed/devprod/golink/database/ent"
 	"github.com/ndscm/theseed/seed/devprod/golink/database/golinkdb"
 	"github.com/ndscm/theseed/seed/infra/log/go/seedlog"
 )
@@ -57,8 +56,8 @@ func (h *GolinkHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		}
 	}()
 
-	row, err := golinkdb.SelectLinkByKey(ctx, db, key)
-	if errors.Is(err, sql.ErrNoRows) {
+	row, err := golinkdb.SelectLink(ctx, db, key)
+	if ent.IsNotFound(err) {
 		h.serveWebapp(w, r)
 		return
 	}

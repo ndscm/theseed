@@ -9,6 +9,9 @@ import (
 	"strings"
 	"time"
 
+	"entgo.io/ent/dialect"
+	entsql "entgo.io/ent/dialect/sql"
+	"github.com/ndscm/theseed/seed/devprod/golink/database/ent"
 	"github.com/ndscm/theseed/seed/infra/flag/go/seedflag"
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
 	"github.com/ndscm/theseed/seed/infra/log/go/seedlog"
@@ -16,6 +19,7 @@ import (
 )
 
 var flagGolinkDatabase = seedflag.DefineString("golink_database", "postgres://127.0.0.1:5432/golink", "Database connection URL")
+var flagGolinkDatabaseDebug = seedflag.DefineBool("golink_database_debug", false, "Enable debug mode for database")
 var flagGolinkDatabaseLogin = seedflag.DefineString("golink_database_login", "golink", "Database login user")
 var flagGolinkDatabaseSecretFile = seedflag.DefineString("golink_database_secret_file", "${ND_USER_SECRET_HOME}/golink/GOLINK_DATABASE_SECRET", "Path to database password file")
 
@@ -26,11 +30,12 @@ const (
 	dbConnMaxIdleTime = 5 * time.Minute
 )
 
-func Open(ctx context.Context) (*sql.DB, error) {
+func Open(ctx context.Context) (*ent.Client, error) {
 	connectUrl, err := url.Parse(flagGolinkDatabase.Get())
 	if err != nil {
 		return nil, seederr.Wrap(err)
 	}
+	seedlog.Debugf("Connecting to database: %s", connectUrl.Host+connectUrl.Path)
 	databaseSecretPath := flagGolinkDatabaseSecretFile.Get()
 	if strings.HasPrefix(databaseSecretPath, "~/") {
 		homeDir, err := os.UserHomeDir()
@@ -55,9 +60,10 @@ func Open(ctx context.Context) (*sql.DB, error) {
 	db.SetConnMaxLifetime(dbConnMaxLifetime)
 	db.SetConnMaxIdleTime(dbConnMaxIdleTime)
 
-	if err := db.PingContext(ctx); err != nil {
-		return nil, seederr.Wrap(err)
-	}
+	client := ent.NewClient(ent.Driver(entsql.OpenDB(dialect.Postgres, db)))
 	seedlog.Infof("Connected to database: %s", connectUrl.Host+connectUrl.Path)
-	return db, nil
+	if flagGolinkDatabaseDebug.Get() {
+		client = client.Debug()
+	}
+	return client, nil
 }

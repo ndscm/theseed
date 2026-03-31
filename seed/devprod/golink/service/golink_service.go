@@ -2,12 +2,11 @@ package service
 
 import (
 	"context"
-	"database/sql"
-	"errors"
 	"slices"
 
 	"connectrpc.com/connect"
 	"github.com/ndscm/theseed/seed/cloud/login/go/login"
+	"github.com/ndscm/theseed/seed/devprod/golink/database/ent"
 	"github.com/ndscm/theseed/seed/devprod/golink/database/golinkdb"
 	"github.com/ndscm/theseed/seed/devprod/golink/proto/golinkpb"
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
@@ -26,17 +25,17 @@ func (svc *GolinkService) CreateLink(
 	ctx context.Context,
 	req *connect.Request[golinkpb.CreateLinkRequest],
 ) (*connect.Response[golinkpb.Link], error) {
-	linkRow := getLinkRowFromLinkProto(req.Msg.Link)
-	if linkRow == nil {
+	row := getLinkEntFromProto(req.Msg.Link)
+	if row == nil {
 		return nil, seederr.WrapErrorf("link is required")
 	}
-	linkRow.Key = normalizeKey(linkRow.Key)
-	if linkRow.Key == "" {
+	key := normalizeKey(row.ID)
+	if key == "" {
 		return nil, seederr.WrapErrorf("key cannot be empty")
 	}
 	loginUser, err := login.LoginUser(ctx)
 	if err == nil && loginUser != nil && loginUser.Email != "" {
-		linkRow.Owner = &loginUser.Email
+		row.Owner = &loginUser.Email
 	}
 
 	db, err := golinkdb.Open(ctx)
@@ -49,12 +48,13 @@ func (svc *GolinkService) CreateLink(
 		}
 	}()
 
-	row, err := golinkdb.InsertLink(ctx, db, linkRow)
+	resultRow, err := golinkdb.InsertLink(ctx, db, key, row)
 	if err != nil {
 		return nil, seederr.Wrap(err)
 	}
 
-	return connect.NewResponse(getLinkProtoFromLinkRow(row)), nil
+	responsePb := getLinkProtoFromEnt(resultRow)
+	return connect.NewResponse(responsePb), nil
 }
 
 func (svc *GolinkService) GetLink(
@@ -76,33 +76,34 @@ func (svc *GolinkService) GetLink(
 		}
 	}()
 
-	row, err := golinkdb.SelectLinkByKey(ctx, db, key)
-	if errors.Is(err, sql.ErrNoRows) {
+	row, err := golinkdb.SelectLink(ctx, db, key)
+	if ent.IsNotFound(err) {
 		return nil, seederr.WrapErrorf("link not found: %s", key)
 	}
 	if err != nil {
 		return nil, seederr.Wrap(err)
 	}
 
-	return connect.NewResponse(getLinkProtoFromLinkRow(row)), nil
+	responsePb := getLinkProtoFromEnt(row)
+	return connect.NewResponse(responsePb), nil
 }
 
 func (svc *GolinkService) UpdateLink(
 	ctx context.Context,
 	req *connect.Request[golinkpb.UpdateLinkRequest],
 ) (*connect.Response[golinkpb.Link], error) {
-	linkRow := getLinkRowFromLinkProto(req.Msg.Link)
-	if linkRow == nil {
+	row := getLinkEntFromProto(req.Msg.Link)
+	if row == nil {
 		return nil, seederr.WrapErrorf("link is required")
 	}
-	linkRow.Key = normalizeKey(linkRow.Key)
-	if linkRow.Key == "" {
+	key := normalizeKey(row.ID)
+	if key == "" {
 		return nil, seederr.WrapErrorf("key cannot be empty")
 	}
-	linkRow.Owner = nil // do not trust owner from request
+	row.Owner = nil // do not trust owner from request
 	loginUser, err := login.LoginUser(ctx)
 	if err == nil && loginUser != nil && loginUser.Email != "" {
-		linkRow.Owner = &loginUser.Email
+		row.Owner = &loginUser.Email
 	}
 
 	db, err := golinkdb.Open(ctx)
@@ -116,22 +117,22 @@ func (svc *GolinkService) UpdateLink(
 	}()
 
 	// Check ownership
-	existingRow, err := golinkdb.SelectLinkByKey(ctx, db, linkRow.Key)
-	if errors.Is(err, sql.ErrNoRows) {
-		return nil, seederr.WrapErrorf("link not found: %s", linkRow.Key)
+	existingRow, err := golinkdb.SelectLink(ctx, db, key)
+	if ent.IsNotFound(err) {
+		return nil, seederr.WrapErrorf("link not found: %s", key)
 	}
 	if err != nil {
 		return nil, seederr.Wrap(err)
 	}
-	existing := getLinkProtoFromLinkRow(existingRow)
-	if existing.Owner != nil && *existing.Owner != "" {
-		if linkRow.Owner == nil || *linkRow.Owner != *existing.Owner {
+	existingPb := getLinkProtoFromEnt(existingRow)
+	if existingPb.Owner != nil && *existingPb.Owner != "" {
+		if row.Owner == nil || *row.Owner != *existingPb.Owner {
 			return nil, seederr.WrapErrorf("not the owner of this link")
 		}
 	}
 
 	// Check etag
-	if req.Msg.Etag != "" && req.Msg.Etag != existing.Etag {
+	if req.Msg.Etag != "" && req.Msg.Etag != existingPb.Etag {
 		return nil, seederr.WrapErrorf("etag mismatch")
 	}
 
@@ -144,12 +145,13 @@ func (svc *GolinkService) UpdateLink(
 	}
 	updatePaths = append(updatePaths, "owner")
 	updateFields := updatePaths // translate proto fields to db fields
-	row, err := golinkdb.UpdateLink(ctx, db, linkRow.Key, linkRow, updateFields)
+	resultRow, err := golinkdb.UpdateLink(ctx, db, key, row, updateFields)
 	if err != nil {
 		return nil, seederr.Wrap(err)
 	}
 
-	return connect.NewResponse(getLinkProtoFromLinkRow(row)), nil
+	responsePb := getLinkProtoFromEnt(resultRow)
+	return connect.NewResponse(responsePb), nil
 }
 
 func (svc *GolinkService) DeleteLink(
@@ -172,26 +174,26 @@ func (svc *GolinkService) DeleteLink(
 	}()
 
 	// Check ownership
-	existingRow, err := golinkdb.SelectLinkByKey(ctx, db, key)
-	if errors.Is(err, sql.ErrNoRows) {
+	existingRow, err := golinkdb.SelectLink(ctx, db, key)
+	if ent.IsNotFound(err) {
 		return nil, seederr.WrapErrorf("link not found: %s", key)
 	}
 	if err != nil {
 		return nil, seederr.Wrap(err)
 	}
-	existing := getLinkProtoFromLinkRow(existingRow)
-	if existing.Owner != nil && *existing.Owner != "" {
+	existingPb := getLinkProtoFromEnt(existingRow)
+	if existingPb.Owner != nil && *existingPb.Owner != "" {
 		loginUser, err := login.LoginUser(ctx)
 		if err != nil {
 			return nil, seederr.Wrap(err)
 		}
-		if loginUser == nil || loginUser.Email != *existing.Owner {
+		if loginUser == nil || loginUser.Email != *existingPb.Owner {
 			return nil, seederr.WrapErrorf("not the owner of this link")
 		}
 	}
 
 	// Check etag
-	if req.Msg.Etag != "" && req.Msg.Etag != existing.Etag {
+	if req.Msg.Etag != "" && req.Msg.Etag != existingPb.Etag {
 		return nil, seederr.WrapErrorf("etag mismatch")
 	}
 
@@ -222,34 +224,27 @@ func (svc *GolinkService) ListLinks(
 		}
 	}()
 
-	// page_token is the last key from previous page
 	cursor := req.Msg.PageToken
 
-	rows, err := golinkdb.SelectLinks(ctx, db, cursor, pageSize+1)
+	rows, total, err := golinkdb.SelectLinks(ctx, db, cursor, pageSize)
 	if err != nil {
 		return nil, seederr.Wrap(err)
 	}
 
 	nextPageToken := ""
-	if len(rows) > pageSize {
-		// More results available, set next_page_token to last key we'll return
-		nextPageToken = rows[pageSize-1].Key
-		rows = rows[:pageSize]
+	if len(rows) >= pageSize {
+		nextPageToken = rows[len(rows)-1].ID
 	}
 
 	links := []*golinkpb.Link{}
 	for _, row := range rows {
-		links = append(links, getLinkProtoFromLinkRow(row))
+		links = append(links, getLinkProtoFromEnt(row))
 	}
 
-	totalSize, err := golinkdb.CountLinks(ctx, db)
-	if err != nil {
-		return nil, seederr.Wrap(err)
-	}
-
-	return connect.NewResponse(&golinkpb.ListLinksResponse{
+	responsePb := &golinkpb.ListLinksResponse{
 		Links:         links,
 		NextPageToken: nextPageToken,
-		TotalSize:     totalSize,
-	}), nil
+		TotalSize:     total,
+	}
+	return connect.NewResponse(responsePb), nil
 }
