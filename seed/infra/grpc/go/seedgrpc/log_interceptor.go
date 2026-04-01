@@ -18,16 +18,22 @@ func (i *logInterceptor) WrapUnary(next connect.UnaryFunc) connect.UnaryFunc {
 		seedlog.Infof("Grpc: %s", request.Spec().Procedure)
 		seedlog.Debugf("Headers: %+v", request.Header())
 		seedlog.Debugf("Message: (%T) %+v", request.Any(), request.Any())
+		seedErrorCode := uint32(0)
 		response, err := next(ctx, request)
 		if err != nil {
 			seedlog.Errorf("%s error: %v", request.Spec().Procedure, err)
 			seedErr := &seederr.SeedError{}
 			if errors.As(err, &seedErr) {
+				seedErrorCode = seedErr.Code()
 				err = seedErr.Unwrap()
 			}
 		}
 		if !reflect.ValueOf(response).IsNil() {
 			seedlog.Debugf("Response: (%T) %+v", response.Any(), response.Any())
+		}
+		grpcErrorCode := seedErrorCode & 0xff
+		if grpcErrorCode != 0 {
+			return response, connect.NewError(connect.Code(grpcErrorCode), err)
 		}
 		return response, err
 	}
