@@ -6,13 +6,14 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"github.com/ndscm/theseed/seed/devprod/golink/database/ent"
 	"github.com/ndscm/theseed/seed/devprod/golink/database/ent/link"
+	"github.com/ndscm/theseed/seed/devprod/golink/proto/golinkerrorpb"
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
 	"github.com/ndscm/theseed/seed/infra/log/go/seedlog"
 )
 
 func InsertLink(ctx context.Context, db *ent.Client, key string, row *ent.Link) (*ent.Link, error) {
 	if row == nil {
-		return nil, seederr.WrapErrorf("link is required")
+		return nil, seederr.CodeErrorf(golinkerrorpb.Code_INVALID_LINK, "link is required")
 	}
 	createQuery := db.Link.Create().
 		SetID(key).
