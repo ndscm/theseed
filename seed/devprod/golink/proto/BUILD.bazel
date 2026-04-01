@@ -43,10 +43,30 @@ ts_proto_library(
     proto = ":golink_proto",
 )
 
+proto_library(
+    name = "golink_error_proto",
+    srcs = ["golink_error.proto"],
+)
+
+go_proto_library(
+    name = "golink_error_go_proto",
+    compilers = ["@rules_go//proto:go_grpc"],
+    importpath = "github.com/ndscm/theseed/seed/devprod/golink/proto/golinkerrorpb",
+    proto = ":golink_error_proto",
+)
+
+ts_proto_library(
+    name = "golink_error_ts_proto",
+    copy_files = False,
+    node_modules = "//:node_modules",
+    proto = ":golink_error_proto",
+)
+
 npm_package(
     name = "golink_ts_proto_pkg",
     srcs = [
         "package.json",
+        ":golink_error_ts_proto",
         ":golink_ts_proto",
     ],
 )
@@ -55,4 +75,17 @@ alias(
     name = "pkg",  # Required by aspect_rules_js
     actual = ":golink_ts_proto_pkg",
     visibility = ["//visibility:public"],
+)
+
+proto_library(
+    name = "golinkerrorpb_proto",
+    srcs = [
+        "golink.proto",
+        "golink_error.proto",
+    ],
+    deps = [
+        "@protobuf//:empty_proto",
+        "@protobuf//:field_mask_proto",
+        "@protobuf//:timestamp_proto",
+    ],
 )

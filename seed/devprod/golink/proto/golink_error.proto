@@ -1,0 +1,80 @@
+syntax = "proto3";
+
+package seed.devprod.golink.proto;
+
+option go_package = "github.com/ndscm/theseed/seed/devprod/golink/proto/golinkerrorpb";
+
+// The code enum is uint32 in format of 0xAAAABBCC
+// AAAA is the application code (0x4656 for golink)
+// BB is the error index
+// CC is the corresponding gRPC error code
+//
+// The error name is in the format of CATEGORY_ERROR_DESCRIPTION
+// The category prefix are defined as follows:
+// [0x01] CANCELLED: CANCELLED_
+// [0x02] UNKNOWN: UNKNOWN_
+// [0x03] INVALID_ARGUMENT: INVALID_
+// [0x04] DEADLINE_EXCEEDED: DEADLINE_
+// [0x05] NOT_FOUND: NOTFOUND_
+// [0x06] ALREADY_EXISTS: EXISTS_;
+// [0x07] PERMISSION_DENIED: DENIED_
+// [0x08] RESOURCE_EXHAUSTED: EXHAUSTED_
+// [0x09] FAILED_PRECONDITION: PRECONDITION_
+// [0x0a] ABORTED: ABORTED_
+// [0x0b] OUT_OF_RANGE: RANGE_
+// [0x0c] UNIMPLEMENTED: UNIMPLEMENTED_
+// [0x0d] INTERNAL: INTERNAL_
+// [0x0e] UNAVAILABLE: UNAVAILABLE_
+// [0x0f] DATA_LOSS: LOSS_
+// [0x10] UNAUTHENTICATED: UNAUTHENTICATED_
+// See: https://grpc.io/docs/guides/status-codes/
+
+enum Code {
+  OK = 0;
+
+  // [0x01] CANCELLED
+
+  // [0x02] UNKNOWN
+
+  // [0x03] INVALID_ARGUMENT
+
+  INVALID_LINK = 0x46560103;
+  INVALID_KEY = 0x46560203;
+
+  // [0x04] DEADLINE_EXCEEDED
+
+  // [0x05] NOT_FOUND
+
+  NOTFOUND_LINK = 0x46560105;
+
+  // [0x06] ALREADY_EXISTS
+
+  EXISTS_LINK = 0x46560106;
+
+  // [0x07] PERMISSION_DENIED
+
+  DENIED_NOT_LINK_OWNER = 0x46560107;
+
+  // [0x08] RESOURCE_EXHAUSTED
+
+  // [0x09] FAILED_PRECONDITION
+
+  // [0x0a] ABORTED
+
+  ABORTED_ETAG_MISMATCH = 0x4656010a;
+
+  // [0x0b] OUT_OF_RANGE
+
+  // [0x0c] UNIMPLEMENTED
+
+  // [0x0d] INTERNAL
+
+  INTERNAL_INVALID_USER_HOME = 0x4656010d;
+  INTERNAL_INVALID_DATABASE_URL = 0x4656020d;
+  INTERNAL_INVALID_DATABASE_SECRET_FILE = 0x4656030d;
+  INTERNAL_OPEN_DATABASE_FAILED = 0x4656040d;
+
+  // [0x0e] UNAVAILABLE
+
+  // [0x0f] DATA_LOSS
+}
