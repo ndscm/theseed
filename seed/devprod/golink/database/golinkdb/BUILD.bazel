@@ -11,6 +11,7 @@ go_library(
     deps = [
         "//seed/devprod/golink/database:ent",
         "//seed/devprod/golink/database:ent/link",
+        "//seed/devprod/golink/proto:golink_error_go_proto",
         "//seed/infra/flag/go/seedflag",
         "//seed/infra/error/go/seederr",
         "//seed/infra/log/go/seedlog",

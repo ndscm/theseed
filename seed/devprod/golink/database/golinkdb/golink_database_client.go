@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent/dialect"
 	entsql "entgo.io/ent/dialect/sql"
 	"github.com/ndscm/theseed/seed/devprod/golink/database/ent"
+	"github.com/ndscm/theseed/seed/devprod/golink/proto/golinkerrorpb"
 	"github.com/ndscm/theseed/seed/infra/flag/go/seedflag"
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
 	"github.com/ndscm/theseed/seed/infra/log/go/seedlog"
@@ -33,26 +34,26 @@ const (
 func Open(ctx context.Context) (*ent.Client, error) {
 	connectUrl, err := url.Parse(flagGolinkDatabase.Get())
 	if err != nil {
-		return nil, seederr.Wrap(err)
+		return nil, seederr.Code(golinkerrorpb.Code_INTERNAL_INVALID_DATABASE_URL, err)
 	}
 	seedlog.Debugf("Connecting to database: %s", connectUrl.Host+connectUrl.Path)
 	databaseSecretPath := flagGolinkDatabaseSecretFile.Get()
 	if strings.HasPrefix(databaseSecretPath, "~/") {
 		homeDir, err := os.UserHomeDir()
 		if err != nil {
-			return nil, seederr.Wrap(err)
+			return nil, seederr.Code(golinkerrorpb.Code_INTERNAL_INVALID_USER_HOME, err)
 		}
 		databaseSecretPath = filepath.Join(homeDir, databaseSecretPath[2:])
 	}
 	databaseSecret, err := os.ReadFile(databaseSecretPath)
 	if err != nil {
-		return nil, seederr.Wrap(err)
+		return nil, seederr.Code(golinkerrorpb.Code_INTERNAL_INVALID_DATABASE_SECRET_FILE, err)
 	}
 	databaseSecret = []byte(strings.TrimSpace(string(databaseSecret)))
 	connectUrl.User = url.UserPassword(flagGolinkDatabaseLogin.Get(), string(databaseSecret))
 	db, err := sql.Open("pgx", connectUrl.String())
 	if err != nil {
-		return nil, seederr.Wrap(err)
+		return nil, seederr.Code(golinkerrorpb.Code_INTERNAL_OPEN_DATABASE_FAILED, err)
 	}
 
 	db.SetMaxOpenConns(dbMaxOpenConns)
