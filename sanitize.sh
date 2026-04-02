@@ -34,9 +34,9 @@ clang-format -i $(find . -name "*.java")
 
 # Python
 if [[ "$(uname)" == "Darwin" ]]; then
-  uv pip freeze >./requirements_darwin.txt
+  uv pip freeze --color never >./requirements_darwin.txt
 else
-  uv pip freeze >./requirements.txt
+  uv pip freeze --color never >./requirements.txt
 fi
 bazel run //seed/devprod/python/modules_mapping:generate
 bazel run //:gazelle_python_manifest.update
