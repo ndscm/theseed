@@ -8,6 +8,7 @@ go_library(
 
         "//seed/cloud/login:__subpackages__",
         "//seed/devprod/golink:__subpackages__",
+
         "//seed/infra/grpc/go/seedgrpc:__subpackages__",
 
     ],
