@@ -34,6 +34,7 @@ require (
 	google.golang.org/genproto/googleapis/api v0.0.0-20251124214823-79d6a2a48846
 	google.golang.org/grpc v1.77.0
 	google.golang.org/protobuf v1.36.10
+	nhooyr.io/websocket v1.8.17
 )
 
 require (
