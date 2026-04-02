@@ -27,8 +27,5 @@ bazel run @pnpm//:pnpm -- --dir $PWD recursive \
   run build
 uv sync
 
-# Cloud Login
-./cloud/login/proto/build.sh go py
-
-# Devprod Golink
-./devprod/golink/proto/build.sh go py
+find . -type f -path "*/database/build.sh" -exec bash {} \;
+find . -type f -path "*/proto/build.sh" -exec bash {} go py \;
