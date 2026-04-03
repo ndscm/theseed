@@ -7,6 +7,12 @@ export default defineConfig({
   build: {
     assetsDir: ".assets",
   },
+  ssr: {
+    noExternal: ["@univerjs/*"],
+  },
+  optimizeDeps: {
+    include: ["@univerjs/*"],
+  },
   server: {
     proxy: {
       "/seed.cloud.login.proto.LoginService/": {
