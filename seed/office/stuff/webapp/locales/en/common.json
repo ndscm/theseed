@@ -2,6 +2,19 @@
   "auth": {
     "loginButton": "Login"
   },
+  "stuff": {
+    "brand": "Brand",
+    "displayName": "Name",
+    "fixedAsset": "Fixed Asset",
+    "identifier": "ID",
+    "model": "Model",
+    "notes": "Notes",
+    "originalUsage": "Original Usage",
+    "primaryCategory": "Primary Category",
+    "purchaseDate": "Purchase Date",
+    "secondaryCategory": "Secondary Category",
+    "source": "Source"
+  },
   "system": {
     "brand": "Stuff",
     "welcome": "Physical asset management"
