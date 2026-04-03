@@ -1,0 +1,18 @@
+load("//seed/devprod/go:ent.bzl", "go_ent_library")
+
+package(default_visibility = [
+    "//seed/office/stuff:__subpackages__",
+])
+
+go_ent_library(
+    name = "ent",
+    entities = [
+        "category",
+        "stuff",
+    ],
+    importpath = "github.com/ndscm/theseed/seed/office/stuff/database/ent",
+    schema = "//seed/office/stuff/database/schema",
+    deps = [
+        "@com_github_google_uuid//:uuid",
+    ],
+)
