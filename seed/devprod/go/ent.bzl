@@ -186,7 +186,7 @@ _ent_gazelle = rule(
     },
 )
 
-def go_ent_library(name, schema, entities, importpath, **kwargs):
+def go_ent_library(name, schema, entities, importpath, deps = [], **kwargs):
     """Generate go_library targets for all Ent output groups.
 
     Creates one go_library per output group from ent_full_srcs: the main ent
@@ -197,6 +197,7 @@ def go_ent_library(name, schema, entities, importpath, **kwargs):
         schema: Label of the Ent schema go_library.
         entities: Entity names matching schema .go filenames (without extension).
         importpath: Go import path for the generated ent package.
+        deps: Additional dependencies for the generated entity go_library.
         **kwargs: Forwarded to ent_full_srcs.
     """
     ent_full_srcs(
@@ -262,7 +263,8 @@ def go_ent_library(name, schema, entities, importpath, **kwargs):
             deps = [
                 ":" + name + "/predicate",
                 "@io_entgo_ent//dialect/sql",
-            ],
+                "@io_entgo_ent//dialect/sql/sqlgraph",
+            ] + deps,
         )
 
     native.filegroup(
@@ -287,7 +289,7 @@ def go_ent_library(name, schema, entities, importpath, **kwargs):
         ] + [
             ":" + name + "/" + entity
             for entity in entities
-        ],
+        ] + deps,
     )
 
     native.filegroup(
