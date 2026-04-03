@@ -9,3 +9,4 @@ packages:
   - "seed/devprod/ts/tool/verify-pnpm-lock"
   - "newtype/playwright/proxy"
   - "seed/office/stuff/proto"
+  - "seed/office/stuff/client/tsx/stuff-service-context"
