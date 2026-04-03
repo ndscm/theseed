@@ -1,0 +1,92 @@
+load("@aspect_rules_js//npm:defs.bzl", "npm_package")
+load("@aspect_rules_ts//ts:proto.bzl", "ts_proto_library")
+load("@protobuf//bazel:proto_library.bzl", "proto_library")
+load("@rules_go//proto:def.bzl", "go_proto_library")
+load("//seed/devprod/go:proto.bzl", "go_connect_library")
+
+package(default_visibility = [
+    "//seed/office/stuff:__subpackages__",
+])
+
+proto_library(
+    name = "stuff_proto",
+    srcs = ["stuff.proto"],
+    deps = [
+        "@protobuf//:empty_proto",
+        "@protobuf//:field_mask_proto",
+        "@protobuf//:struct_proto",
+        "@protobuf//:timestamp_proto",
+    ],
+)
+
+go_proto_library(
+    name = "stuff_go_proto",
+    compilers = ["@rules_go//proto:go_grpc"],
+    importpath = "github.com/ndscm/theseed/seed/office/stuff/proto/stuffpb",
+    proto = ":stuff_proto",
+)
+
+go_connect_library(
+    name = "stuff_go_connect",
+    importpath = "github.com/ndscm/theseed/seed/office/stuff/proto/stuffpbconnect",
+    proto = ":stuff_proto",
+    deps = [
+        ":stuff_go_proto",
+        "@com_connectrpc_connect//:connect",
+        "@org_golang_google_protobuf//types/known/emptypb",
+    ],
+)
+
+ts_proto_library(
+    name = "stuff_ts_proto",
+    copy_files = False,
+    node_modules = "//:node_modules",
+    proto = ":stuff_proto",
+)
+
+proto_library(
+    name = "stuff_error_proto",
+    srcs = ["stuff_error.proto"],
+)
+
+go_proto_library(
+    name = "stuff_error_go_proto",
+    compilers = ["@rules_go//proto:go_grpc"],
+    importpath = "github.com/ndscm/theseed/seed/office/stuff/proto/stufferrorpb",
+    proto = ":stuff_error_proto",
+)
+
+ts_proto_library(
+    name = "stuff_error_ts_proto",
+    copy_files = False,
+    node_modules = "//:node_modules",
+    proto = ":stuff_error_proto",
+)
+
+npm_package(
+    name = "stuff_ts_proto_pkg",
+    srcs = [
+        ":stuff_error_ts_proto",
+        ":stuff_ts_proto",
+    ],
+)
+
+alias(
+    name = "pkg",  # Required by aspect_rules_js
+    actual = ":stuff_ts_proto_pkg",
+    visibility = ["//visibility:public"],
+)
+
+proto_library(
+    name = "stufferrorpb_proto",
+    srcs = [
+        "stuff.proto",
+        "stuff_error.proto",
+    ],
+    deps = [
+        "@protobuf//:empty_proto",
+        "@protobuf//:field_mask_proto",
+        "@protobuf//:struct_proto",
+        "@protobuf//:timestamp_proto",
+    ],
+)

@@ -7,3 +7,4 @@
 # gazelle:resolve go github.com/ndscm/theseed/seed/office/stuff/database/ent/predicate //seed/office/stuff/database:ent/predicate
 # gazelle:resolve go github.com/ndscm/theseed/seed/office/stuff/database/ent/runtime //seed/office/stuff/database:ent/runtime
 # gazelle:resolve go github.com/ndscm/theseed/seed/office/stuff/database/ent/stuff //seed/office/stuff/database:ent/stuff
+# gazelle:resolve go github.com/ndscm/theseed/seed/office/stuff/proto/stuffpbconnect //seed/office/stuff/proto:stuff_go_connect

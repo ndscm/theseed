@@ -1,0 +1,64 @@
+syntax = "proto3";
+
+package seed.office.stuff.proto;
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/field_mask.proto";
+import "google/protobuf/struct.proto";
+import "google/protobuf/timestamp.proto";
+
+option go_package = "github.com/ndscm/theseed/seed/office/stuff/proto/stuffpb";
+
+message Category {
+  string uuid = 1;
+  string primary = 2;
+  string secondary = 3;
+}
+
+message ListCategoriesRequest {}
+
+message ListCategoriesResponse {
+  repeated Category categories = 1;
+}
+
+message Stuff {
+  string uuid = 1;
+  string order = 2;
+  string data = 3;
+  optional string owner = 4;
+  google.protobuf.Timestamp created_time = 5;
+  google.protobuf.Timestamp updated_time = 6;
+}
+
+message CreateStuffRequest {
+  Stuff stuff = 1;
+}
+
+message GetStuffRequest {
+  string uuid = 1;
+}
+
+message UpdateStuffRequest {
+  Stuff stuff = 1;
+}
+
+message DeleteStuffRequest {
+  string uuid = 1;
+}
+
+message ListStuffRequest {
+  string filter = 4;
+}
+
+message ListStuffResponse {
+  repeated Stuff stuff = 1;
+}
+
+service StuffService {
+  rpc ListCategories(ListCategoriesRequest) returns (ListCategoriesResponse) {}
+  rpc CreateStuff(CreateStuffRequest) returns (Stuff) {}
+  rpc GetStuff(GetStuffRequest) returns (Stuff) {}
+  rpc UpdateStuff(UpdateStuffRequest) returns (Stuff) {}
+  rpc DeleteStuff(DeleteStuffRequest) returns (google.protobuf.Empty) {}
+  rpc ListStuff(ListStuffRequest) returns (ListStuffResponse) {}
+}
