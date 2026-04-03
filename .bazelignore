@@ -11,6 +11,7 @@ seed/devprod/ts/tool/verify-pnpm-lock/node_modules
 newtype/playwright/proxy/node_modules
 seed/office/stuff/proto/node_modules
 seed/office/stuff/client/tsx/stuff-service-context/node_modules
+seed/office/stuff/webapp/node_modules
 
 # Python
 .venv

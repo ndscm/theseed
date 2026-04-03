@@ -1,0 +1,54 @@
+load("@aspect_rules_js//js:defs.bzl", "js_run_binary")
+load("@npm//:defs.bzl", "npm_link_all_packages")
+load("@npm//seed/office/stuff/webapp:@react-router/dev/package_json.bzl", react_router_bin = "bin")
+load("//seed/infra/starlark/archive:defs.bzl", "create_tar_gz")
+
+package(default_visibility = ["//seed/office/stuff:__subpackages__"])
+
+npm_link_all_packages()
+
+react_router_bin.react_router_binary(
+    name = "react-router",
+)
+
+js_run_binary(
+    name = "webapp",
+    srcs = [
+        "package.json",
+        "react-router.config.ts",
+        "tsconfig.json",
+        "vite.config.ts",
+        ":node_modules",
+        "//seed/cloud/login/client/tsx/login-service-context",
+        "//seed/devprod/gotcha/tsx",
+        "//seed/office/stuff/client/tsx/stuff-service-context",
+    ] + glob(
+        [
+            "app/**/*",
+            "components/**/*",
+            "containers/**/*",
+            "context/**/*",
+            "icons/**/*",
+            "locales/**/*",
+            "public/**/*",
+            "utils/**/*",
+        ],
+        allow_empty = True,
+    ),
+    args = [
+        "build",
+    ],
+    chdir = package_name(),
+    mnemonic = "ReactRouter",
+    out_dirs = ["dist/client"],
+    progress_message = "Compile %{label}",
+    tool = ":react-router",
+)
+
+create_tar_gz(
+    name = "webapp-tar-gz",
+    srcs = [
+        ":webapp",
+    ],
+    out = "webapp.tar.gz",
+)

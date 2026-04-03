@@ -10,3 +10,4 @@ packages:
   - "newtype/playwright/proxy"
   - "seed/office/stuff/proto"
   - "seed/office/stuff/client/tsx/stuff-service-context"
+  - "seed/office/stuff/webapp"
