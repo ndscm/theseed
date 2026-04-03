@@ -1,0 +1,16 @@
+load("@rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "stuffdb",
+    srcs = ["stuff_database_client.go"],
+    importpath = "github.com/ndscm/theseed/seed/office/stuff/database/stuffdb",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//seed/infra/flag/go/seedflag",
+        "//seed/infra/error/go/seederr",
+        "//seed/infra/log/go/seedlog",
+        "//seed/office/stuff/database:ent",
+        "@com_github_lib_pq//:pq",
+        "@io_entgo_ent//dialect",
+    ],
+)
