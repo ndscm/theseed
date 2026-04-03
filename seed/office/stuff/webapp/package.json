@@ -46,6 +46,7 @@
     "@univerjs/sheets-numfmt-ui": "^0.20.0",
     "@univerjs/sheets-ui": "^0.20.0",
     "@univerjs/ui": "^0.20.0",
+    "fractional-indexing": "^3.2.0",
     "i18next": "^25.7.4",
     "i18next-cli": "^1.36.1",
     "notistack": "^3.0.2",
