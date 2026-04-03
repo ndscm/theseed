@@ -1,0 +1,9 @@
+{
+  "auth": {
+    "loginButton": "Login"
+  },
+  "system": {
+    "brand": "Stuff",
+    "welcome": "Physical asset management"
+  }
+}
