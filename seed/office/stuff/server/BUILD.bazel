@@ -1,0 +1,30 @@
+load("@rules_go//go:def.bzl", "go_binary", "go_library")
+
+package(default_visibility = ["//visibility:private"])
+
+alias(
+    name = "server",
+    actual = ":stuff-server",
+)
+
+go_library(
+    name = "server_lib",
+    srcs = ["stuff_server.go"],
+    importpath = "github.com/ndscm/theseed/seed/office/stuff/server",
+    deps = [
+        "//seed/cloud/login/go/loginservice",
+        "//seed/cloud/login/proto:login_go_connect",
+        "//seed/infra/error/go/seederr",
+        "//seed/infra/init/go/seedinit",
+        "//seed/infra/log/go/seedlog",
+        "//seed/infra/grpc/go/seedgrpc",
+        "//seed/office/stuff/proto:stuff_go_connect",
+        "//seed/office/stuff/service",
+    ],
+)
+
+go_binary(
+    name = "stuff-server",
+    embed = [":server_lib"],
+    pure = "on",
+)
