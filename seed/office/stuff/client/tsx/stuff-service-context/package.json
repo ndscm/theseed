@@ -1,0 +1,26 @@
+{
+  "name": "@theseed/seed-office-stuff-client-tsx-stuff-service-context",
+  "version": "0.0.0",
+  "private": true,
+  "main": "dist/StuffServiceContext.js",
+  "types": "dist/StuffServiceContext.d.ts",
+  "files": [
+    "/dist"
+  ],
+  "scripts": {
+    "build": "tsc"
+  },
+  "dependencies": {
+    "@bufbuild/protobuf": "^2.10.1",
+    "@connectrpc/connect": "^2.1.1",
+    "@connectrpc/connect-web": "^2.1.1",
+    "@theseed/seed-office-stuff-proto": "workspace:^",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4"
+  },
+  "devDependencies": {
+    "@types/react": "^19.2.7",
+    "@types/react-dom": "^19.2.3",
+    "typescript": "^5.9.3"
+  }
+}
