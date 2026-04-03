@@ -8,3 +8,4 @@ packages:
   - "seed/devprod/gotcha/tsx"
   - "seed/devprod/ts/tool/verify-pnpm-lock"
   - "newtype/playwright/proxy"
+  - "seed/office/stuff/proto"
