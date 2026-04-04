@@ -12,6 +12,7 @@ packages:
 
 
 
+
   - "seed/devprod/gotcha/tsx"
 
   - "seed/devprod/ts/tool/verify-pnpm-lock"
