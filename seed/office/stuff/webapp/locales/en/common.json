@@ -2,6 +2,12 @@
   "auth": {
     "loginButton": "Login"
   },
+  "label": {
+    "printButton": "Print"
+  },
+  "page": {
+    "print": "Print"
+  },
   "stuff": {
     "brand": "Brand",
     "displayName": "Name",

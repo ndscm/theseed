@@ -49,6 +49,7 @@ import React, { useCallback, useEffect, useRef, useState } from "react"
 import { useTranslation } from "react-i18next"
 
 import Box from "@mui/material/Box"
+import Button from "@mui/material/Button"
 import CircularProgress from "@mui/material/CircularProgress"
 import Toolbar from "@mui/material/Toolbar"
 import Typography from "@mui/material/Typography"
@@ -84,6 +85,7 @@ const HomePage: React.FC = () => {
     order?: string
     field?: string
   }>({})
+  const [selectedUuids, setSelectedUuids] = useState<string[]>([])
 
   const assignOrders = useCallback(
     (
@@ -446,6 +448,14 @@ const HomePage: React.FC = () => {
           order: rowMetadata?.order ? String(rowMetadata.order) : "-",
           field: colMetadata?.field ? String(colMetadata.field) : "-",
         })
+        const uuids: string[] = []
+        for (let r = range.getRow(); r <= range.getLastRow(); r++) {
+          const metadata = sheet.getRowCustomMetadata(r)
+          if (metadata?.uuid) {
+            uuids.push(String(metadata.uuid))
+          }
+          setSelectedUuids(uuids)
+        }
       })
 
       univerApi.addEvent(univerApi.Event.BeforeCommandExecute, (event) => {
@@ -585,6 +595,14 @@ const HomePage: React.FC = () => {
         >
           <strong>field:</strong> {selectedCellMeta?.field ?? "—"}
         </Typography>
+        <Button
+          sx={{ marginRight: 2 }}
+          disabled={selectedUuids.length === 0}
+          href={`/print?paperSize=a6&labelSize=a6&template=more&uuids=${selectedUuids.join(",")}`}
+          target="_blank"
+        >
+          {t("label.printButton", "Print")}
+        </Button>
       </Box>
       <Box ref={univerDivRef} sx={{ flexGrow: 1 }} />
     </Box>
