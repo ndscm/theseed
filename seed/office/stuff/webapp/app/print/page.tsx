@@ -31,9 +31,7 @@ const TemplateMore: React.FC<{ stuff: Stuff }> = ({ stuff }) => {
             alignItems: "center",
             justifyContent: "center",
           }}
-        >
-          logo
-        </div>
+        ></div>
         <div
           style={{
             flexGrow: 1,
