@@ -1,0 +1,7 @@
+#!/bin/bash
+./stuff-server \
+  --port 9000 \
+  --stuff_database "postgres://${POSTGRES_PROD_HOST}:5432/stuff" \
+  --stuff_database_login stuff \
+  --stuff_database_secret_file ./STUFF_DATABASE_SECRET \
+  --webapp=./webapp
