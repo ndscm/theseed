@@ -14,6 +14,9 @@ go_library(
     deps = [
         "//seed/cloud/login/go/loginservice",
         "//seed/cloud/login/proto:login_go_connect",
+        "//seed/infra/http/go/cachecontrol",
+        "//seed/infra/spa/go/seedspa",
+        "//seed/infra/flag/go/seedflag",
         "//seed/infra/error/go/seederr",
         "//seed/infra/init/go/seedinit",
         "//seed/infra/log/go/seedlog",
