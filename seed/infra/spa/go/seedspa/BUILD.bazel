@@ -9,6 +9,7 @@ go_library(
 
         "//seed/devprod/golink:__subpackages__",
 
+        "//seed/office/stuff:__subpackages__",
 
     ],
 )
