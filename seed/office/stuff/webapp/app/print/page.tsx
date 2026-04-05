@@ -8,6 +8,7 @@ import CircularProgress from "@mui/material/CircularProgress"
 import { type Stuff } from "../../../proto/stuff_pb"
 import { useStuffService } from "../../../client/tsx/stuff-service-context"
 
+
 const TemplateMore: React.FC<{ stuff: Stuff }> = ({ stuff }) => {
   const { t } = useTranslation("common")
   const parsed = JSON.parse(stuff.data)
@@ -32,7 +33,7 @@ const TemplateMore: React.FC<{ stuff: Stuff }> = ({ stuff }) => {
             justifyContent: "center",
           }}
         >
-          logo
+
         </div>
         <div
           style={{
