@@ -8,6 +8,15 @@ py_library(
 )
 
 py_library(
+    name = "export",
+    srcs = ["export.py"],
+    deps = [
+        ":asyncx",
+        ":git",
+    ],
+)
+
+py_library(
     name = "git",
     srcs = ["git.py"],
     deps = [":asyncx"],
