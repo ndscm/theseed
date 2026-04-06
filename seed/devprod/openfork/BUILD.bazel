@@ -8,6 +8,15 @@ py_library(
 )
 
 py_library(
+    name = "diffpath",
+    srcs = ["diffpath.py"],
+    deps = [
+        ":git",
+        ":patch",
+    ],
+)
+
+py_library(
     name = "export",
     srcs = ["export.py"],
     deps = [
