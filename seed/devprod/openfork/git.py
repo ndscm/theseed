@@ -5,6 +5,20 @@ import asyncio
 import seed.devprod.openfork.asyncx as asyncx
 
 
+async def get_user_name(worktree: str) -> str:
+    user_name = (
+        await asyncx.output(["git", "config", "user.name"], cwd=worktree)
+    ).strip()
+    return user_name
+
+
+async def get_user_email(worktree: str) -> str:
+    user_email = (
+        await asyncx.output(["git", "config", "user.email"], cwd=worktree)
+    ).strip()
+    return user_email
+
+
 async def create_branch(
     worktree: str, branch: str, *, tracking: str = "main", skip_exist: bool = False
 ) -> None:
