@@ -12,3 +12,12 @@ py_library(
     srcs = ["git.py"],
     deps = [":asyncx"],
 )
+
+py_library(
+    name = "worktree",
+    srcs = ["worktree.py"],
+    deps = [
+        ":asyncx",
+        "//seed/infra/python:seed_flag",
+    ],
+)
