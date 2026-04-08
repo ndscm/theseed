@@ -41,6 +41,12 @@ py_library(
 )
 
 py_library(
+    name = "metadata",
+    srcs = ["metadata.py"],
+    deps = [":git"],
+)
+
+py_library(
     name = "patch",
     srcs = ["patch.py"],
 )
