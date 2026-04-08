@@ -6,3 +6,9 @@ py_library(
     name = "asyncx",
     srcs = ["asyncx.py"],
 )
+
+py_library(
+    name = "git",
+    srcs = ["git.py"],
+    deps = [":asyncx"],
+)
