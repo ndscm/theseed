@@ -73,6 +73,15 @@ py_library(
 )
 
 py_library(
+    name = "scalpel",
+    srcs = ["scalpel.py"],
+    deps = [
+        ":git",
+        ":patch",
+    ],
+)
+
+py_library(
     name = "walk",
     srcs = ["walk.py"],
     deps = [
