@@ -17,6 +17,15 @@ py_library(
 )
 
 py_library(
+    name = "diffedit",
+    srcs = ["diffedit.py"],
+    deps = [
+        ":git",
+        ":patch",
+    ],
+)
+
+py_library(
     name = "diffpath",
     srcs = ["diffpath.py"],
     deps = [
