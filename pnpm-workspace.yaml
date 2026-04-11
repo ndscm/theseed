@@ -1,8 +1,4 @@
 packages:
-
-
-
-
   - "seed/cloud/login/proto"
   - "seed/cloud/login/client/tsx/login-service-context"
   - "seed/devprod/buildinfo/ts"
@@ -10,36 +6,12 @@ packages:
   - "seed/devprod/golink/client/tsx/golink-service-context"
   - "seed/devprod/golink/webapp"
 
-
-
-
-
-
-
   - "seed/devprod/gotcha/tsx"
 
   - "seed/devprod/ts/tool/verify-pnpm-lock"
 
-
-
   - "newtype/playwright/proxy"
-
-
-
-
-
-
-
 
   - "seed/office/stuff/proto"
   - "seed/office/stuff/client/tsx/stuff-service-context"
   - "seed/office/stuff/webapp"
-
-
-
-
-
-
-
-
-

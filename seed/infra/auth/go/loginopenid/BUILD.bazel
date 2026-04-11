@@ -5,15 +5,12 @@ go_library(
     srcs = ["openid.go"],
     importpath = "github.com/ndscm/theseed/seed/infra/auth/go/loginopenid",
     visibility = [
-
-
         "//seed/infra/auth:__subpackages__",
-
     ],
     deps = [
         "//seed/infra/auth/go/clientopenid",
-        "//seed/infra/http/go/seedsession",
         "//seed/infra/error/go/seederr",
+        "//seed/infra/http/go/seedsession",
         "@org_golang_x_oauth2//:oauth2",
     ],
 )

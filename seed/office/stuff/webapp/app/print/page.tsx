@@ -5,9 +5,8 @@ import { useSearchParams } from "react-router"
 import Box from "@mui/material/Box"
 import CircularProgress from "@mui/material/CircularProgress"
 
-import { type Stuff } from "../../../proto/stuff_pb"
 import { useStuffService } from "../../../client/tsx/stuff-service-context"
-
+import { type Stuff } from "../../../proto/stuff_pb"
 
 const TemplateMore: React.FC<{ stuff: Stuff }> = ({ stuff }) => {
   const { t } = useTranslation("common")
@@ -32,9 +31,7 @@ const TemplateMore: React.FC<{ stuff: Stuff }> = ({ stuff }) => {
             alignItems: "center",
             justifyContent: "center",
           }}
-        >
-
-        </div>
+        ></div>
         <div
           style={{
             flexGrow: 1,

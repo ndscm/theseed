@@ -3,26 +3,15 @@ import { initReactI18next } from "react-i18next"
 
 import LocalesEnCommon from "../locales/en/common.json"
 
-
 const resources = {
   en: {
     common: LocalesEnCommon,
-
-
-
   },
 }
 
 const fallbackLng = {
   default: ["en"],
   "en-US": ["en"],
-
-
-
-
-
-
-
 }
 
 i18next //

@@ -8,8 +8,8 @@ import Link from "@mui/material/Link"
 import Toolbar from "@mui/material/Toolbar"
 import Typography from "@mui/material/Typography"
 
-import { type LoginStatus } from "../../../../../seed/cloud/login/proto/login_pb"
 import { useLoginService } from "../../../../../seed/cloud/login/client/tsx/login-service-context"
+import { type LoginStatus } from "../../../../../seed/cloud/login/proto/login_pb"
 
 const StuffAppBar: React.FC = () => {
   const { t } = useTranslation("common")
