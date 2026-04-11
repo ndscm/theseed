@@ -6,8 +6,6 @@ py_library(
     name = "client",
     srcs = ["__init__.py"],
     visibility = [
-
-
     ],
     deps = [
         ":mcp_client",

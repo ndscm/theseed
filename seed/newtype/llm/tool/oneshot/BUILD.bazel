@@ -6,7 +6,7 @@ py_binary(
     name = "llm_oneshot",
     srcs = ["llm_oneshot.py"],
     deps = [
-        "//seed/infra/llm/client/python",
+        "//seed/infra/llm/client/python:client",
         "//seed/infra/python:seed_flag",
         "//seed/infra/python:seed_init",
     ],

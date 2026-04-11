@@ -5,7 +5,6 @@ go_library(
     srcs = ["cors.go"],
     importpath = "github.com/ndscm/theseed/seed/infra/http/go/seedcors",
     visibility = [
-
     ],
     deps = [
         "//seed/infra/flag/go/seedflag",

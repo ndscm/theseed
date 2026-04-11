@@ -1,48 +1,6 @@
 var proxy = "DIRECT"
 
 var whitelist = {
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
   go: 1,
 }
 

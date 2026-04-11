@@ -15,8 +15,8 @@ import Typography from "@mui/material/Typography"
 import ArrowForwardOutlinedIcon from "@mui/icons-material/ArrowForwardOutlined"
 import CloseOutlinedIcon from "@mui/icons-material/CloseOutlined"
 
-import { type Link, LinkSchema } from "../../proto/golink_pb"
 import { useGolinkService } from "../../client/tsx/golink-service-context"
+import { type Link, LinkSchema } from "../../proto/golink_pb"
 
 const PAGE_SIZE = 10
 

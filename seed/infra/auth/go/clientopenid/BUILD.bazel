@@ -5,10 +5,7 @@ go_library(
     srcs = ["openid.go"],
     importpath = "github.com/ndscm/theseed/seed/infra/auth/go/clientopenid",
     visibility = [
-
-
         "//seed/infra/auth:__subpackages__",
-
     ],
     deps = [
         "//seed/infra/error/go/seederr",

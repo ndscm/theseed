@@ -10,7 +10,6 @@ load("@rules_python_gazelle_plugin//modules_mapping:def.bzl", "modules_mapping")
 refresh_compile_commands(
     name = "refresh_compile_commands",
     targets = {
-
     },
 )
 
@@ -60,20 +59,9 @@ gazelle_binary(
 # gazelle:python_default_visibility NONE
 # gazelle:python_generation_mode file
 
-
-
-
 # gazelle:resolve go github.com/ndscm/theseed/seed/cloud/login/proto/loginpbconnect //seed/cloud/login/proto:login_go_connect
 
 # gazelle:resolve go github.com/ndscm/theseed/seed/devprod/golink/proto/golinkpbconnect //seed/devprod/golink/proto:golink_go_connect
-
-
-
-
-
-
-
-
 
 gazelle(
     name = "gazelle",

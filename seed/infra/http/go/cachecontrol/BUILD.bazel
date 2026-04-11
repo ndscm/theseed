@@ -5,11 +5,7 @@ go_library(
     srcs = ["cachecontrol.go"],
     importpath = "github.com/ndscm/theseed/seed/infra/http/go/cachecontrol",
     visibility = [
-
-
         "//seed/devprod/golink:__subpackages__",
-
         "//seed/office/stuff:__subpackages__",
-
     ],
 )

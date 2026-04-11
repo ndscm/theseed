@@ -5,11 +5,7 @@ go_library(
     srcs = ["spa_server.go"],
     importpath = "github.com/ndscm/theseed/seed/infra/spa/go/seedspa",
     visibility = [
-
-
         "//seed/devprod/golink:__subpackages__",
-
         "//seed/office/stuff:__subpackages__",
-
     ],
 )
