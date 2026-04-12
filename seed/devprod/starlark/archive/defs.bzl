@@ -49,7 +49,7 @@ def create_tar_gz(name, srcs, out, subdir = "", strip_components = -1, **kwargs)
         out = out,
         subdir = subdir,
         strip_components = strip_components,
-        create_tool = "//seed/infra/starlark/archive:create_tar_gz",
+        create_tool = "//seed/devprod/starlark/archive:create_tar_gz",
         **kwargs
     )
 
@@ -60,7 +60,7 @@ def create_zip(name, srcs, out, subdir = "", strip_components = -1, **kwargs):
         out = out,
         subdir = subdir,
         strip_components = strip_components,
-        create_tool = "//seed/infra/starlark/archive:create_zip",
+        create_tool = "//seed/devprod/starlark/archive:create_zip",
         **kwargs
     )
 
@@ -102,6 +102,6 @@ def extract_tar(name, srcs, subdir = "", **kwargs):
         name = name,
         srcs = srcs,
         subdir = subdir,
-        extract_tool = "//seed/infra/starlark/archive:extract_tar",
+        extract_tool = "//seed/devprod/starlark/archive:extract_tar",
         **kwargs
     )
