@@ -1,4 +1,5 @@
 # gazelle:exclude **/ent
+
 # gazelle:resolve go github.com/ndscm/theseed/seed/office/stuff/database/ent //seed/office/stuff/database:ent
 # gazelle:resolve go github.com/ndscm/theseed/seed/office/stuff/database/ent/category //seed/office/stuff/database:ent/category
 # gazelle:resolve go github.com/ndscm/theseed/seed/office/stuff/database/ent/enttest //seed/office/stuff/database:ent/enttest

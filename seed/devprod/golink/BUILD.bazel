@@ -5,3 +5,5 @@
 # gazelle:resolve go github.com/ndscm/theseed/seed/devprod/golink/database/ent/migrate //seed/devprod/golink/database:ent/migrate
 # gazelle:resolve go github.com/ndscm/theseed/seed/devprod/golink/database/ent/predicate //seed/devprod/golink/database:ent/predicate
 # gazelle:resolve go github.com/ndscm/theseed/seed/devprod/golink/database/ent/runtime //seed/devprod/golink/database:ent/runtime
+
+# gazelle:resolve go github.com/ndscm/theseed/seed/devprod/golink/proto/golinkpbconnect //seed/devprod/golink/proto:golink_go_connect
