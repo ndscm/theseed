@@ -20,20 +20,9 @@ py_binary(
 py_binary(
     name = "merge",
     srcs = ["merge.py"],
+    visibility = ["//visibility:public"],
     deps = [
         "//seed/infra/python:seed_flag",
         "//seed/infra/python:seed_init",
     ],
-)
-
-genrule(
-    name = "modules_mapping",
-    srcs = [
-        "modules_mapping_darwin.json",
-        "modules_mapping_linux.json",
-    ],
-    outs = ["modules_mapping.json"],
-    cmd_bash = "$(location :merge) $(SRCS) > $@",
-    tools = [":merge"],
-    visibility = ["//visibility:public"],
 )

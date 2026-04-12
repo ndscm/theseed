@@ -26,6 +26,7 @@ manifest:
     PyObjCTools.TestSupport: pyobjc_core
     Quartz: pyobjc_framework_quartz
     Xlib: python_xlib
+    aiofile: aiofile
     annotated_doc: annotated_doc
     annotated_types: annotated_types
     anyio: anyio
@@ -33,10 +34,12 @@ manifest:
     attr: attrs
     attrs: attrs
     authlib: authlib
+    backports: backports.tarfile
     beartype: beartype
     bs4: beautifulsoup4
     bson: pymongo
     cachetools: cachetools
+    caio: caio
     certifi: certifi
     cffi: cffi
     charset_normalizer: charset_normalizer
@@ -52,6 +55,7 @@ manifest:
     docstring_parser: docstring_parser
     docutils: docutils
     dotenv: python_dotenv
+    email_validator: email_validator
     evdev: evdev
     exceptiongroup: exceptiongroup
     fastapi: fastapi
@@ -148,6 +152,10 @@ manifest:
     importlib_metadata: importlib_metadata
     intervaltree: intervaltree
     isympy: sympy
+    jaraco.classes: jaraco.classes
+    jaraco.context: jaraco_context
+    jaraco.functools: jaraco_functools
+    jeepney: jeepney
     jinja2: jinja2
     jiter: jiter
     jsonref: jsonref
@@ -156,11 +164,12 @@ manifest:
     jsonschema_specifications: jsonschema_specifications
     jwt: pyjwt
     key_value: py_key_value_aio
+    keyring: keyring
     markdown_it: markdown_it_py
     markupsafe: MarkupSafe
     mcp: mcp
     mdurl: mdurl
-    milvus_lite: milvus_lite
+    more_itertools: more_itertools
     mouseinfo: mouseinfo
     mpmath: mpmath
     multipart: python_multipart
@@ -212,7 +221,6 @@ manifest:
     pyscreeze: pyscreeze
     python_multipart: python_multipart
     pytweening: pytweening
-    pytz: pytz
     referencing: referencing
     requests: requests
     requests_oauthlib: requests_oauthlib
@@ -220,8 +228,8 @@ manifest:
     rich_rst: rich_rst
     rpds: rpds_py
     rubicon.objc: rubicon_objc
+    secretstorage: secretstorage
     setuptools: setuptools
-    shellingham: shellingham
     six: six
     sniffio: sniffio
     socks: PySocks
@@ -237,11 +245,8 @@ manifest:
     torchgen: torch
     tqdm: tqdm
     triton: triton
-    typer: typer
     typing_extensions: typing_extensions
     typing_inspection: typing_inspection
-    tzdata: tzdata
-    ujson: ujson
     uncalled_for: uncalled_for
     uritemplate: uritemplate
     urllib3: urllib3
@@ -252,4 +257,4 @@ manifest:
     zipp: zipp
   pip_repository:
     name: pypi
-integrity: 641b9cdfb2411adaa697e14b2334edd9427c56655d504c585f9a17803c0c3a30
+integrity: 6ba777708fa6a5fcf241e37a27ee1b5dd91a8bb10f882a1f1e974fd6364e45fe
