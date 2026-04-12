@@ -24,9 +24,20 @@ modules_mapping(
     wheels = all_whl_requirements,
 )
 
+genrule(
+    name = "gazelle_python_modules_mapping",
+    srcs = [
+        "gazelle_python_modules_mapping_darwin.json",
+        "gazelle_python_modules_mapping_linux.json",
+    ],
+    outs = ["gazelle_python_modules_mapping.json"],
+    cmd_bash = "$(location //seed/devprod/python/modules_mapping:merge) $(SRCS) > $@",
+    tools = ["//seed/devprod/python/modules_mapping:merge"],
+)
+
 gazelle_python_manifest(
     name = "gazelle_python_manifest",
-    modules_mapping = "//seed/devprod/python/modules_mapping",
+    modules_mapping = ":gazelle_python_modules_mapping",
     pip_repository_name = "pypi",
     requirements = [
         "//:requirements_darwin.txt",
