@@ -52,16 +52,9 @@ gazelle_binary(
 # gazelle:exclude **/*pb
 # gazelle:exclude **/*pbconnect
 # gazelle:exclude **/node_modules
-
 # gazelle:exclude **/ent
-
-# gazelle:go_test file
 # gazelle:python_default_visibility NONE
 # gazelle:python_generation_mode file
-
-# gazelle:resolve go github.com/ndscm/theseed/seed/cloud/login/proto/loginpbconnect //seed/cloud/login/proto:login_go_connect
-
-# gazelle:resolve go github.com/ndscm/theseed/seed/devprod/golink/proto/golinkpbconnect //seed/devprod/golink/proto:golink_go_connect
 
 gazelle(
     name = "gazelle",
