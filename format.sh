@@ -3,19 +3,6 @@ set -eux
 set -o pipefail
 cd $(dirname "${BASH_SOURCE[0]}")
 
-# Test all commits:
-# $ git rebase --interactive --exec "./sanitize.sh"
-
-# Test commits since a specific commit:
-# $ git rebase --interactive --exec "./sanitize.sh" <commit-hash-or-tag>
-
-# KNOWN ISSUE!!!
-#
-# git-rebase doesn't check untracked new file. If a new file is generated
-# during the sanitization process, create a separate commit for the new file
-# during the sanitizing rebase process. And carefully apply it (with rebase
-# fixup) to the proper commit.
-
 # Returns the union of untracked files, staged changes, and last committed
 # files. One path per line, deduplicated. Handles spaces and UTF-8 in paths
 # by using newlines as separators internally and NULL-separating for xargs.
@@ -31,7 +18,7 @@ changed_files=$(get_changed_files)
 changed_count=$(printf '%s\n' "$changed_files" | grep -c . || true)
 
 if [[ "$changed_count" -gt 10 ]]; then
-  export SEED_SANITIZE_FULL=1
+  export SEED_FORMAT_FULL=1
 fi
 
 # Filter changed files by regex pattern, one match per line.
@@ -40,7 +27,7 @@ grep_changes() {
 }
 
 # CC
-if [[ "${SEED_SANITIZE_FULL:-}" ]]; then
+if [[ "${SEED_FORMAT_FULL:-}" ]]; then
   find . \
     -type d \( -name .git -o -name node_modules -o -name .venv -o -name dist \) -prune -o \
     -type f \( -name "*.c" -o -name "*.cc" -o -name "*.cpp" -o -name "*.h" \) -print0 |
@@ -52,29 +39,14 @@ else
   fi
 fi
 
-# Go
-
-bazel run @rules_go//go -- mod tidy
-
 # Java
-if [[ "${SEED_SANITIZE_FULL:-}" ]]; then
+if [[ "${SEED_FORMAT_FULL:-}" ]]; then
   find . -name "*.java" -print0 | xargs -0 clang-format -i
 else
   java_changes=$(grep_changes '\.java$')
   if [[ -n "$java_changes" ]]; then
     printf '%s\n' "$java_changes" | tr '\n' '\0' | xargs -0 clang-format -i
   fi
-fi
-
-# Python
-if [[ "${SEED_SANITIZE_FULL:-}" ]] || [[ -n $(grep_changes '(^|/)pyproject\.toml$') ]]; then
-  if [[ "$(uname)" == "Darwin" ]]; then
-    uv pip freeze --color never >./requirements_darwin.txt
-  else
-    uv pip freeze --color never >./requirements.txt
-  fi
-  bazel run //seed/devprod/python/modules_mapping:generate
-  bazel run //:gazelle_python_manifest.update
 fi
 
 # TypeScript
@@ -86,11 +58,3 @@ else
     printf '%s\n' "$prettier_changes" | tr '\n' '\0' | xargs -0 bazel run //seed/devprod/format/prettier -- --write
   fi
 fi
-
-# Gazelle
-# Must run gazelle build file generator after all generators
-bazel run //:gazelle
-
-# Bazel
-# Must tidy bazel mods after gazelle
-bazel mod tidy
