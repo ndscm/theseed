@@ -2,6 +2,7 @@ packages:
   - "seed/cloud/login/client/tsx/login-service-context"
   - "seed/cloud/login/proto"
   - "seed/devprod/buildinfo/ts"
+  - "seed/devprod/format/prettier"
   - "seed/devprod/golink/client/tsx/golink-service-context"
   - "seed/devprod/golink/proto"
   - "seed/devprod/golink/webapp"
