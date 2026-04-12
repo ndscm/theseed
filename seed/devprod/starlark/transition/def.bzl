@@ -3,7 +3,7 @@
 def _android_arm64_transition_impl(_settings, _attr):
     """Transition to build for Android ARM64."""
     return {
-        "//command_line_option:platforms": "//:android-arm64",
+        "//command_line_option:platforms": "//seed/devprod/platform:android-arm64",
     }
 
 android_arm64_transition = transition(
