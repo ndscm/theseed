@@ -55,8 +55,6 @@ else
 fi
 
 # Go
-# Must tidy go mod after all packages
-./seed/devprod/golink/database/build.sh
 bazel run @rules_go//go -- mod tidy
 
 # Java
