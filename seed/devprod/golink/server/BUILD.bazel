@@ -1,6 +1,6 @@
 load("@rules_go//go:def.bzl", "go_binary", "go_library")
 load("//seed/devprod/starlark/archive:defs.bzl", "create_zip", "extract_tar")
-load("//seed/infra/starlark/secret:defs.bzl", "local_secret")
+load("//seed/devprod/starlark/secret:defs.bzl", "local_secret")
 
 package(default_visibility = ["//visibility:private"])
 
