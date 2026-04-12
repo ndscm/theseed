@@ -39,8 +39,6 @@ grep_changes() {
   printf '%s\n' "$changed_files" | grep -E "$1" || true
 }
 
-./bootstrap.sh
-
 # CC
 if [[ "${SEED_SANITIZE_FULL:-}" ]]; then
   find . \
