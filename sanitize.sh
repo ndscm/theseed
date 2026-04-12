@@ -80,14 +80,12 @@ if [[ "${SEED_SANITIZE_FULL:-}" ]] || [[ -n $(grep_changes '(^|/)pyproject\.toml
 fi
 
 # TypeScript
-if [[ "${SEED_SANITIZE_FULL:-}" ]]; then
-  bazel build //:node_modules/prettier
-  ./bazel-bin/node_modules/prettier/bin/prettier.cjs --write .
+if [[ "${SEED_FORMAT_FULL:-}" ]]; then
+  bazel run //seed/devprod/format/prettier -- --write .
 else
   prettier_changes=$(grep_changes '\.(ts|tsx|js|jsx|mts|cts|mjs|cjs|css|scss|less|json|yaml|yml|md|mdx|html|vue|svelte|graphql|gql)$')
   if [[ -n "$prettier_changes" ]]; then
-    bazel build //:node_modules/prettier
-    printf '%s\n' "$prettier_changes" | tr '\n' '\0' | xargs -0 ./bazel-bin/node_modules/prettier/bin/prettier.cjs --write
+    printf '%s\n' "$prettier_changes" | tr '\n' '\0' | xargs -0 bazel run //seed/devprod/format/prettier -- --write
   fi
 fi
 
