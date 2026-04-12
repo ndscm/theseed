@@ -1,7 +1,7 @@
 load("@aspect_rules_js//js:defs.bzl", "js_run_binary")
 load("@npm//:defs.bzl", "npm_link_all_packages")
 load("@npm//seed/devprod/golink/webapp:@react-router/dev/package_json.bzl", react_router_bin = "bin")
-load("//seed/infra/starlark/archive:defs.bzl", "create_tar_gz")
+load("//seed/devprod/starlark/archive:defs.bzl", "create_tar_gz")
 
 package(default_visibility = ["//seed/devprod/golink:__subpackages__"])
 
