@@ -1,6 +1,6 @@
 load("@rules_python//python:defs.bzl", "py_binary", "py_library")
 
-package(default_visibility = ["//seed/infra/starlark/archive:__subpackages__"])
+package(default_visibility = ["//seed/devprod/starlark/archive:__subpackages__"])
 
 exports_files(
     glob(["*.bzl"]),
