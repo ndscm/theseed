@@ -1,12 +1,15 @@
-.PHONY: all bootstrap sanitize test
+.PHONY: all bootstrap format tidy test
 
-all: sanitize test
+all: format tidy test
 
 bootstrap:
 	./bootstrap.sh
 
-sanitize: bootstrap
-	./sanitize.sh
+format:
+	./format.sh
 
 test: bootstrap
 	./test.sh
+
+tidy: bootstrap
+	./tidy.sh
