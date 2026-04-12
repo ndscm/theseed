@@ -1,0 +1,10 @@
+{
+  "name": "@theseed/seed-devprod-format-prettier",
+  "version": "0.0.0",
+  "private": true,
+  "main": "index.js",
+  "dependencies": {
+    "@trivago/prettier-plugin-sort-imports": "^6.0.0",
+    "prettier": "^3.6.2"
+  }
+}
