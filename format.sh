@@ -9,8 +9,8 @@ cd $(dirname "${BASH_SOURCE[0]}")
 get_changed_files() {
   {
     git ls-files --others --exclude-standard
-    git diff --cached --name-only
-    git diff --name-only HEAD~1 -- . 2>/dev/null || true
+    git diff --cached --diff-filter=d --name-only
+    git diff --diff-filter=d --name-only HEAD~1 2>/dev/null || true
   } | sort -u
 }
 
