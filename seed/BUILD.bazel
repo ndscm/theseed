@@ -1,0 +1,11 @@
+# gazelle:exclude **/*_pb2.py
+# gazelle:exclude **/*_pb2.pyi
+# gazelle:exclude **/*_pb2_grpc.py
+# gazelle:exclude **/*pb
+# gazelle:exclude **/*pbconnect
+# gazelle:exclude **/ent
+# gazelle:exclude **/node_modules
+
+# gazelle:prefix github.com/ndscm/theseed/seed/
+
+# gazelle:resolve go github.com/ndscm/theseed/seed/cloud/login/proto/loginpbconnect //seed/cloud/login/proto:login_go_connect
