@@ -1,0 +1,27 @@
+"""Android SDK Command-Line Tools.
+
+Fetches the Android SDK command-line tools package from Google, which includes
+sdkmanager for installing and managing Android SDK components.
+"""
+
+android_cmdline_tools = use_repo_rule("//seed/vendor/android/cmdline-tools:repo.bzl", "android_cmdline_tools")
+
+http_archive = use_repo_rule("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
+
+http_archive(
+    name = "android_cmdline-tools_linux",
+    build_file = "//seed/vendor/android/cmdline-tools:cmdline-tools.BUILD.bazel",
+    integrity = "sha256-BEUwZrVAQJ2XXGdteB2hR3R53eN2ExDxp+uSod+xWvc=",
+    strip_prefix = "cmdline-tools",
+    url = "https://dl.google.com/android/repository/commandlinetools-linux-14742923_latest.zip",
+)
+
+http_archive(
+    name = "android_cmdline-tools_mac",
+    build_file = "//seed/vendor/android/cmdline-tools:cmdline-tools.BUILD.bazel",
+    integrity = "sha256-7TBMXt43GFQeT5eOSuhwpNhT23SvbBbZIFiNSFI7ne4=",
+    strip_prefix = "cmdline-tools",
+    url = "https://dl.google.com/android/repository/commandlinetools-mac-14742923_latest.zip",
+)
+
+android_cmdline_tools(name = "android_cmdline-tools")
