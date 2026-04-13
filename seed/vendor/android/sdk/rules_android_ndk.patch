@@ -1,0 +1,57 @@
+From 1c6e53fe29020f8b2aaaeb4ce4696fdea153fda7 Mon Sep 17 00:00:00 2001
+From: Nagi <nagi@ndscm.com>
+Date: Mon, 13 Apr 2026 19:19:44 +0800
+Subject: [PATCH] seed: vendor: android: use ndk bazel target
+
+
+diff --git a/extension.bzl b/extension.bzl
+index 22c8076..164d611 100644
+--- extension.bzl
++++ extension.bzl
+@@ -29,7 +29,7 @@ def _android_ndk_repository_extension_impl(module_ctx):
+     kwargs = {}
+     if module.tags.configure:
+         kwargs["api_level"] = module.tags.configure[0].api_level
+-        kwargs["path"] = module.tags.configure[0].path
++        kwargs["ndk"] = module.tags.configure[0].ndk
+
+     android_ndk_repository(
+         name = "androidndk",
+@@ -40,7 +40,7 @@ android_ndk_repository_extension = module_extension(
+     implementation = _android_ndk_repository_extension_impl,
+     tag_classes = {
+         "configure": tag_class(attrs = {
+-            "path": attr.string(),
++            "ndk": attr.label(),
+             "api_level": attr.int(),
+         }),
+     },
+diff --git a/rules.bzl b/rules.bzl
+index 9f76a87..f3c9990 100644
+--- rules.bzl
++++ rules.bzl
+@@ -23,10 +23,13 @@ def _android_ndk_repository_impl(ctx):
+     Returns:
+         A final dict of configuration attributes and values.
+     """
+-    ndk_path = ctx.attr.path or ctx.os.environ.get("ANDROID_NDK_HOME", None)
++    if ctx.attr.ndk:
++        ndk_path = str(ctx.path(ctx.attr.ndk).dirname)
++    else:
++        ndk_path = ctx.os.environ.get("ANDROID_NDK_HOME", None)
+     if not ndk_path:
+         fail("Either the ANDROID_NDK_HOME environment variable or the " +
+-             "path attribute of android_ndk_repository must be set.")
++             "ndk attribute of android_ndk_repository must be set.")
+     if ndk_path.startswith("$WORKSPACE_ROOT"):
+         ndk_path = str(ctx.workspace_root) + ndk_path.removeprefix("$WORKSPACE_ROOT")
+
+@@ -126,7 +129,7 @@ def _create_symlinks(ctx, ndk_path, clang_directory, sysroot_directory):
+
+ android_ndk_repository = repository_rule(
+     attrs = {
+-        "path": attr.string(),
++        "ndk": attr.label(),
+         "api_level": attr.int(),
+         "_build": attr.label(default = ":BUILD", allow_single_file = True),
+         "_template_ndk_root": attr.label(default = ":BUILD.ndk_root.tpl", allow_single_file = True),
