@@ -60,12 +60,8 @@ uv sync
 # by Bazel rules.  Run them all uniformly:
 #   **/database/build.sh — generates database migration helpers / query code
 #   **/proto/build.sh    — generates additional proto bindings (Go + Python)
-database_scripts=($(find . -type f -path "*/database/build.sh"))
-for s in "${database_scripts[@]}"; do
-  "${s}"
-done
+find . -type f -path "*/database/build.sh" -print0 |
+  xargs -0 -P0 -I{} bash -c '"$1" || { echo "FAILED: $1" >&2; exit 1; }' _ {}
 
-proto_scripts=($(find . -type f -path "*/proto/build.sh"))
-for s in "${proto_scripts[@]}"; do
-  "${s}" go py
-done
+find . -type f -path "*/proto/build.sh" -print0 |
+  xargs -0 -P0 -I{} bash -c '"$1" go py || { echo "FAILED: $1 go py" >&2; exit 1; }' _ {}
