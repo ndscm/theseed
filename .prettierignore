@@ -14,6 +14,3 @@ public
 # Proto
 *_pb.js
 *_pb.d.ts
-
-# Office Cattiva
-office/cattiva/parser/xpdf/xpdf-chinese-simplified
