@@ -549,6 +549,38 @@
   },
   "selectedYankedVersions": {},
   "moduleExtensions": {
+    "//seed/devprod/android/sdk:extension.bzl%android_sdk_extension": {
+      "general": {
+        "bzlTransitiveDigest": "c4qLaows9VjC/BqfDE+CxkwrykuGbKyVnNI3HtwZMjU=",
+        "usagesDigest": "t2hYajnFFx7t8I8nNHIkO+LyGuNpMDGkVwy8mOKKo1s=",
+        "recordedFileInputs": {
+          "@@//seed/devprod/android/sdk/repository2-3.xml": "1b8e95bb8b636e94d694868a88b98061e713ef187f2c5e0a0c1a0a549cae4971"
+        },
+        "recordedDirentsInputs": {},
+        "envVariables": {},
+        "generatedRepoSpecs": {
+          "android_sdk": {
+            "repoRuleId": "@@//seed/devprod/android/sdk:extension.bzl%_android_sdk",
+            "attributes": {
+              "package_paths": [
+                "build-tools;34.0.0",
+                "cmake;4.1.2",
+                "cmdline-tools;latest",
+                "ndk;30.0.14904198",
+                "platform-tools",
+                "platforms;android-34"
+              ],
+              "packages_json": "{\"build-tools;34.0.0\":[{\"host_os\":\"linux\",\"sha1\":\"d6d58e0c6925a9e4d9a541e84cd1f405c2f9d2a9\",\"url\":\"build-tools_r34-linux.zip\"},{\"host_os\":\"macosx\",\"sha1\":\"00e1301387028f33753e38274401694e1a27c62f\",\"url\":\"build-tools_r34-macosx.zip\"},{\"host_os\":\"windows\",\"sha1\":\"62cfde1b6fcc3ad12a4d2ba1b537e752768bfd47\",\"url\":\"build-tools_r34-windows.zip\"}],\"cmake;4.1.2\":[{\"host_os\":\"linux\",\"sha1\":\"c8c4f1c19b75c56f28b9dcf1af928d25cf1a1471\",\"url\":\"cmake-4.1.2-linux.zip\"},{\"host_os\":\"macosx\",\"sha1\":\"a0578a0543942c7eb35822c88a516b87e5b9867a\",\"url\":\"cmake-4.1.2-darwin.zip\"},{\"host_os\":\"windows\",\"sha1\":\"06bc3fe29aa49297dcc11a2ffe3a999445df05ae\",\"url\":\"cmake-4.1.2-windows.zip\"}],\"cmdline-tools;latest\":[{\"host_os\":\"linux\",\"sha1\":\"48833c34b761c10cb20bcd16582129395d121b27\",\"url\":\"commandlinetools-linux-14742923_latest.zip\"},{\"host_os\":\"macosx\",\"sha1\":\"cc27cca4b84bfdbc7df17e3d0a01d0c640d8ee71\",\"url\":\"commandlinetools-mac-14742923_latest.zip\"},{\"host_os\":\"windows\",\"sha1\":\"16b3f45ddb3d85ea6bbe6a1c0b47146daf0db450\",\"url\":\"commandlinetools-win-14742923_latest.zip\"}],\"ndk;30.0.14904198\":[{\"host_os\":\"linux\",\"sha1\":\"26b746e5a1e7ac3371f2a862a2f52a7c0740aa8a\",\"url\":\"android-ndk-r30-beta1-linux.zip\"},{\"host_os\":\"macosx\",\"sha1\":\"61f0ae7b4b6fdb732a642560b19e7fd5680fb257\",\"url\":\"android-ndk-r30-beta1-darwin.zip\"},{\"host_os\":\"windows\",\"sha1\":\"ec410335aac74d182b369a62c18079187b191149\",\"url\":\"android-ndk-r30-beta1-windows.zip\"}],\"platform-tools\":[{\"host_os\":\"linux\",\"sha1\":\"bcf323933980a59dccc3f14c339aed5fb2171163\",\"url\":\"platform-tools_r37.0.0-linux.zip\"},{\"host_os\":\"macosx\",\"sha1\":\"ff8facde137e57994112672a0d0f411a3ca7b201\",\"url\":\"platform-tools_r37.0.0-darwin.zip\"},{\"host_os\":\"windows\",\"sha1\":\"8a8351438a9bde81726129214940e0275f7949c7\",\"url\":\"platform-tools_r37.0.0-win.zip\"}],\"platforms;android-34\":[{\"host_os\":\"\",\"sha1\":\"1f2e9478d6a7601425ceaa553311dc43191f103d\",\"url\":\"platform-34-ext7_r03.zip\"}]}",
+              "remove_files": [
+                "ndk/30.0.14904198/sources/third_party/googletest/test/BUILD.bazel"
+              ],
+              "repository_url": "https://dl.google.com/android/repository/"
+            }
+          }
+        },
+        "recordedRepoMappingEntries": []
+      }
+    },
     "@@aspect_rules_js+//npm:extensions.bzl%pnpm": {
       "general": {
         "bzlTransitiveDigest": "Rklxn++4CoBV+VA5ta0tUC2nd61mecj/MVAViQlfTcE=",
