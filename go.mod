@@ -4,6 +4,10 @@ go 1.24.2
 
 tool entgo.io/ent/cmd/ent
 
+tool github.com/rogpeppe/go-internal/fmtsort
+
+replace github.com/ndscm/theseed => ./
+
 require (
 	connectrpc.com/connect v1.19.1
 	connectrpc.com/grpchealth v1.4.0
@@ -60,5 +64,3 @@ require (
 	google.golang.org/genproto/googleapis/api v0.0.0-20251124214823-79d6a2a48846 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20251124214823-79d6a2a48846 // indirect
 )
-
-replace github.com/ndscm/theseed => ./
