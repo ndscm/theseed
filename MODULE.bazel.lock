@@ -960,24 +960,34 @@
     },
     "@@rules_android+//rules/android_sdk_repository:rule.bzl%android_sdk_repository_extension": {
       "general": {
-        "bzlTransitiveDigest": "NAy+0M15JNVEBb8Tny6t7j3lKqTnsAMjoBB6LJ+C370=",
-        "usagesDigest": "7Kd2+G/h1ZvtIZ2jogV31Vos9SGsnt9GKN9DnDf4hQ8=",
+        "bzlTransitiveDigest": "a67XnAs7+IHxwKclWY3VXib7f8/ZDNC81STCIbVnwwo=",
+        "usagesDigest": "GJy4SSZw4L5FQamFXbxFuRY56uQE5X7pwwXVCCEdQQc=",
         "recordedFileInputs": {},
         "recordedDirentsInputs": {},
         "envVariables": {},
         "generatedRepoSpecs": {
           "androidsdk": {
             "repoRuleId": "@@rules_android+//rules/android_sdk_repository:rule.bzl%_android_sdk_repository",
-            "attributes": {}
+            "attributes": {
+              "api_level": 0,
+              "build_tools_version": "",
+              "sdk": "@@+android_sdk_extension+android_sdk//:files"
+            }
           }
         },
-        "recordedRepoMappingEntries": []
+        "recordedRepoMappingEntries": [
+          [
+            "",
+            "android_sdk",
+            "+android_sdk_extension+android_sdk"
+          ]
+        ]
       }
     },
     "@@rules_android_ndk+//:extension.bzl%android_ndk_repository_extension": {
       "general": {
-        "bzlTransitiveDigest": "oV/TPZWCXAAcpJG/DBV/lNiWCISUTk5ba0KRjUb7adg=",
-        "usagesDigest": "75UQ9beGpE/eWr/vlvkHGC7a3zw7wZwP710bYhR3Rxk=",
+        "bzlTransitiveDigest": "tA07bx0tEf8aZ/EWGWr6NVUAXK8FuikwE+c1ecsa2Y4=",
+        "usagesDigest": "AGXS/XJ4RBMuyn2qwzdpmrvXEArrhDaLFrB6mmi/JnU=",
         "recordedFileInputs": {},
         "recordedDirentsInputs": {},
         "envVariables": {},
@@ -986,11 +996,17 @@
             "repoRuleId": "@@rules_android_ndk+//:rules.bzl%android_ndk_repository",
             "attributes": {
               "api_level": 0,
-              "path": ""
+              "ndk": "@@+android_sdk_extension+android_sdk//:ndk/30.0.14904198/files"
             }
           }
         },
-        "recordedRepoMappingEntries": []
+        "recordedRepoMappingEntries": [
+          [
+            "",
+            "android_sdk",
+            "+android_sdk_extension+android_sdk"
+          ]
+        ]
       }
     },
     "@@rules_buf+//buf:extensions.bzl%buf": {

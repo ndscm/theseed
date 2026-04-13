@@ -24,6 +24,10 @@ use_repo(
 # Android SDK
 
 bazel_dep(name = "rules_android", version = "0.6.6")
+single_version_override(
+    module_name = "rules_android",
+    patches = ["//seed/vendor/android/sdk:rules_android.patch"],
+)
 
 remote_android_extensions = use_extension(
     "@rules_android//bzlmod_extensions:android_extensions.bzl",
@@ -32,14 +36,23 @@ remote_android_extensions = use_extension(
 use_repo(remote_android_extensions, "android_tools")
 
 android_sdk_repository_extension = use_extension("@rules_android//rules/android_sdk_repository:rule.bzl", "android_sdk_repository_extension")
+android_sdk_repository_extension.configure(
+    sdk = "@android_sdk//:files",
+)
 use_repo(android_sdk_repository_extension, "androidsdk")
 
 # Android NDK
 
 bazel_dep(name = "rules_android_ndk", version = "0.1.3")
+single_version_override(
+    module_name = "rules_android_ndk",
+    patches = ["//seed/vendor/android/sdk:rules_android_ndk.patch"],
+)
 
 android_ndk_repository_extension = use_extension("@rules_android_ndk//:extension.bzl", "android_ndk_repository_extension")
-android_ndk_repository_extension.configure()
+android_ndk_repository_extension.configure(
+    ndk = "@android_sdk//:ndk/30.0.14904198/files",
+)
 use_repo(android_ndk_repository_extension, "androidndk")
 
 register_toolchains("@androidndk//:all")
