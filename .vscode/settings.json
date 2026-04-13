@@ -11,7 +11,8 @@
     ".bazelignore": "ignore",
     "*.conf": "plaintext",
     "*.svg": "html",
-    "*.uvprojx": "plaintext"
+    "*.uvprojx": "plaintext",
+    "repository*.xml": "plaintext"
   },
   "files.autoSave": "afterDelay",
   "files.insertFinalNewline": true,
