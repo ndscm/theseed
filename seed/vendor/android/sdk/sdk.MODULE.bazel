@@ -1,3 +1,26 @@
+# Android Home
+
+android_sdk_extension = use_extension("//seed/devprod/android/sdk:extension.bzl", "android_sdk_extension")
+android_sdk_extension.configure(
+    packages = [
+        "build-tools;34.0.0",
+        "cmake;4.1.2",
+        "cmdline-tools;latest",
+        "ndk;30.0.14904198",
+        "platform-tools",
+        "platforms;android-34",
+    ],
+    remove_files = [
+        "ndk/30.0.14904198/sources/third_party/googletest/test/BUILD.bazel",
+    ],
+    repository_file = "//seed/devprod/android/sdk:repository2-3.xml",
+    repository_url = "https://dl.google.com/android/repository/",
+)
+use_repo(
+    android_sdk_extension,
+    "android_sdk",
+)
+
 # Android SDK
 
 bazel_dep(name = "rules_android", version = "0.6.6")
