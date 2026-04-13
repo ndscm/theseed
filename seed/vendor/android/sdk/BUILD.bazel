@@ -1,0 +1,4 @@
+exports_files([
+    "rules_android_ndk.patch",
+    "rules_android.patch",
+])

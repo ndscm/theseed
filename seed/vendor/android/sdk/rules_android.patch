@@ -1,0 +1,76 @@
+--- rules/android_sdk_repository/rule.bzl
++++ rules/android_sdk_repository/rule.bzl
+@@ -92,8 +92,9 @@
+
+ def _android_sdk_repository_impl(repo_ctx):
+     # Determine the SDK path to use, either from the attribute or the environment.
+-    android_sdk_path = repo_ctx.attr.path
+-    if not android_sdk_path:
++    if repo_ctx.attr.sdk:
++        android_sdk_path = str(repo_ctx.path(repo_ctx.attr.sdk).dirname)
++    else:
+         android_sdk_path = repo_ctx.os.environ.get("ANDROID_HOME")
+     if not android_sdk_path:
+         # Create an empty repository that allows non-Android code to build.
+@@ -105,8 +106,8 @@
+     # Symlink the needed contents to this repository.
+     for dir_to_link in _DIRS_TO_LINK:
+         source = "%s/%s" % (android_sdk_path, dir_to_link)
+-        dest = dir_to_link
+-        repo_ctx.symlink(source, dest)
++        if repo_ctx.path(source).exists:
++            repo_ctx.symlink(source, dir_to_link)
+
+     # Read list of supported SDK levels
+     api_levels = _read_api_levels(repo_ctx, android_sdk_path)
+@@ -169,7 +170,7 @@
+     attrs = {
+         "api_level": attr.int(default = 0),
+         "build_tools_version": attr.string(),
+-        "path": attr.string(),
++        "sdk": attr.label(),
+     },
+     environ = ["ANDROID_HOME"],
+     local = True,
+@@ -177,7 +178,7 @@
+
+ def android_sdk_repository(
+         name,
+-        path = "",
++        sdk = None,
+         api_level = 0,
+         build_tools_version = ""):
+     """Create a repository with Android SDK toolchains.
+@@ -189,12 +190,12 @@
+       name: The repository name.
+       api_level: The SDK API level to use.
+       build_tools_version: The build_tools in the SDK to use.
+-      path: The path to the Android SDK.
++      sdk: Label pointing to the Android SDK.
+     """
+
+     _android_sdk_repository(
+         name = name,
+-        path = path,
++        sdk = sdk,
+         api_level = api_level,
+         build_tools_version = build_tools_version,
+     )
+@@ -216,7 +217,7 @@
+     if module.tags.configure:
+         kwargs["api_level"] = module.tags.configure[0].api_level
+         kwargs["build_tools_version"] = module.tags.configure[0].build_tools_version
+-        kwargs["path"] = module.tags.configure[0].path
++        kwargs["sdk"] = module.tags.configure[0].sdk
+
+     _android_sdk_repository(
+         name = "androidsdk",
+@@ -227,7 +228,7 @@
+     implementation = _android_sdk_repository_extension_impl,
+     tag_classes = {
+         "configure": tag_class(attrs = {
+-            "path": attr.string(),
++            "sdk": attr.label(),
+             "api_level": attr.int(),
+             "build_tools_version": attr.string(),
+         }),
