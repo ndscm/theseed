@@ -1,0 +1,16 @@
+"""Android SDK Command-Line Tools build targets.
+
+Exposes the sdkmanager binary and all files from the command-line tools package.
+"""
+
+package(default_visibility = ["//visibility:public"])
+
+filegroup(
+    name = "files",
+    srcs = glob(["**"]),
+)
+
+sh_binary(
+    name = "sdkmanager",
+    srcs = ["bin/sdkmanager"],
+)
