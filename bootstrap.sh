@@ -58,7 +58,14 @@ uv sync
 # --- Per-package generated artifacts ---
 # Some packages carry their own generation scripts that are not (yet) driven
 # by Bazel rules.  Run them all uniformly:
-#   database/build.sh — generates database migration helpers / query code
-#   proto/build.sh    — generates additional proto bindings (Go + Python)
-find . -type f -path "*/database/build.sh" -exec bash {} \;
-find . -type f -path "*/proto/build.sh" -exec bash {} go py \;
+#   **/database/build.sh — generates database migration helpers / query code
+#   **/proto/build.sh    — generates additional proto bindings (Go + Python)
+database_scripts=($(find . -type f -path "*/database/build.sh"))
+for s in "${database_scripts[@]}"; do
+  "${s}"
+done
+
+proto_scripts=($(find . -type f -path "*/proto/build.sh"))
+for s in "${proto_scripts[@]}"; do
+  "${s}" go py
+done
