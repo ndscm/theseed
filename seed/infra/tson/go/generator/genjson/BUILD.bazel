@@ -1,4 +1,4 @@
-load("@rules_go//go:def.bzl", "go_library")
+load("@rules_go//go:def.bzl", "go_library", "go_test")
 
 go_library(
     name = "genjson",
@@ -8,5 +8,15 @@ go_library(
     deps = [
         "//seed/infra/error/go/seederr",
         "//seed/infra/tson/go/tsonast",
+    ],
+)
+
+go_test(
+    name = "genjson_test",
+    srcs = ["generator_test.go"],
+    embed = [":genjson"],
+    deps = [
+        "//seed/infra/tson/go/tsonast",
+        "//seed/infra/tson/go/tsonparser",
     ],
 )
