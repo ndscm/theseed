@@ -14,7 +14,9 @@ import (
 // TODO(nagi): support subcommand flags, e.g. nd dev --foo, nd review --bar, etc.
 
 func run() error {
-	err := seedinit.Initialize()
+	err := seedinit.Initialize(
+		seedinit.WithEnvPrefix("ND_"),
+	)
 	if err != nil {
 		return seederr.Wrap(err)
 	}
