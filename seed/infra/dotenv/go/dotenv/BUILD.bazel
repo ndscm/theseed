@@ -1,0 +1,14 @@
+load("@rules_go//go:def.bzl", "go_library")
+
+package(default_visibility = ["//visibility:public"])
+
+go_library(
+    name = "dotenv",
+    srcs = [
+        "parse.go",
+    ],
+    importpath = "github.com/ndscm/theseed/seed/infra/dotenv/go/dotenv",
+    deps = [
+        "//seed/infra/error/go/seederr",
+    ],
+)
