@@ -8,10 +8,11 @@ import (
 
 	"github.com/ndscm/theseed/seed/devprod/ndscm/common"
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
+	"github.com/ndscm/theseed/seed/infra/shell/go/seedshell"
 )
 
 func NdReview(args []string, ndConfig *common.NdConfig) error {
-	if ndConfig.ShellEval {
+	if seedshell.ShellEval() {
 		return seederr.WrapErrorf("nd-review should not run with --shell-eval")
 	}
 	if len(args) != 2 {
@@ -30,54 +31,54 @@ func NdReview(args []string, ndConfig *common.NdConfig) error {
 		}
 		if err == nil {
 			log.Printf("Worktree %v already exists, removing...\n", worktreePath)
-			err = common.ShellRun(ndConfig.Dry, ndConfig.ShellEval, "git", "worktree", "remove", worktreePath)
+			err = seedshell.ImpureRun("git", "worktree", "remove", worktreePath)
 			if err != nil {
 				return seederr.Wrap(err)
 			}
 		}
-		_, err = common.ShellOutput(false, "git", "rev-parse", "--verify", "review/"+featureName)
+		_, err = seedshell.PureOutput("git", "rev-parse", "--verify", "review/"+featureName)
 		if err == nil {
 			log.Printf("Branch review/%v already exists, removing...\n", featureName)
-			err = common.ShellRun(ndConfig.Dry, ndConfig.ShellEval, "git", "branch", "--delete", "--force", "review/"+featureName)
+			err = seedshell.ImpureRun("git", "branch", "--delete", "--force", "review/"+featureName)
 			if err != nil {
 				return seederr.Wrap(err)
 			}
 		}
-		trackingBranchOutput, err := common.ShellOutput(false, "git", "rev-parse", "--abbrev-ref", "--symbolic-full-name", "change/"+featureName+"@{upstream}")
+		trackingBranchOutput, err := seedshell.PureOutput("git", "rev-parse", "--abbrev-ref", "--symbolic-full-name", "change/"+featureName+"@{upstream}")
 		if err != nil {
 			return seederr.WrapErrorf("tracking upstream is missing for change/%v", featureName)
 		}
 		trackingBranch := strings.TrimSpace(string(trackingBranchOutput))
-		mergeBaseHashOutput, err := common.ShellOutput(false, "git", "merge-base", "origin/main", "change/"+featureName)
+		mergeBaseHashOutput, err := seedshell.PureOutput("git", "merge-base", "origin/main", "change/"+featureName)
 		if err != nil {
 			return seederr.WrapErrorf("merge base is missing for change/%v", featureName)
 		}
 		mergeBaseHash := strings.TrimSpace(string(mergeBaseHashOutput))
-		err = common.ShellRun(ndConfig.Dry, ndConfig.ShellEval, "git", "branch", "review/"+featureName, mergeBaseHash)
+		err = seedshell.ImpureRun("git", "branch", "review/"+featureName, mergeBaseHash)
 		if err != nil {
 			return seederr.Wrap(err)
 		}
-		err = common.ShellRun(ndConfig.Dry, ndConfig.ShellEval, "git", "branch", "--set-upstream-to=origin/main", "review/"+featureName)
+		err = seedshell.ImpureRun("git", "branch", "--set-upstream-to=origin/main", "review/"+featureName)
 		if err != nil {
 			return seederr.Wrap(err)
 		}
-		err = common.ShellRun(ndConfig.Dry, ndConfig.ShellEval, "git", "worktree", "add", worktreePath, "review/"+featureName)
+		err = seedshell.ImpureRun("git", "worktree", "add", worktreePath, "review/"+featureName)
 		if err != nil {
 			return seederr.Wrap(err)
 		}
-		err = common.ShellRun(ndConfig.Dry, ndConfig.ShellEval, "git", "-C", worktreePath, "cherry-pick", trackingBranch+"..change/"+featureName)
+		err = seedshell.ImpureRun("git", "-C", worktreePath, "cherry-pick", trackingBranch+"..change/"+featureName)
 		if err != nil {
 			return seederr.Wrap(err)
 		}
-		err = common.ShellRun(ndConfig.Dry, ndConfig.ShellEval, "git", "push", "--force", "origin", "review/"+featureName+":"+ndConfig.UserHandle+"/"+featureName)
+		err = seedshell.ImpureRun("git", "push", "--force", "origin", "review/"+featureName+":"+ndConfig.UserHandle+"/"+featureName)
 		if err != nil {
 			return seederr.Wrap(err)
 		}
-		err = common.ShellRun(ndConfig.Dry, ndConfig.ShellEval, "git", "worktree", "remove", worktreePath)
+		err = seedshell.ImpureRun("git", "worktree", "remove", worktreePath)
 		if err != nil {
 			return seederr.Wrap(err)
 		}
-		err = common.ShellRun(ndConfig.Dry, ndConfig.ShellEval, "git", "branch", "--delete", "--force", "review/"+featureName)
+		err = seedshell.ImpureRun("git", "branch", "--delete", "--force", "review/"+featureName)
 		if err != nil {
 			return seederr.Wrap(err)
 		}
