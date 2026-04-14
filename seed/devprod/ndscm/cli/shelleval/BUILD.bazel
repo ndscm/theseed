@@ -1,0 +1,15 @@
+load("@rules_go//go:def.bzl", "go_library")
+
+package(default_visibility = [
+    "//seed/devprod/ndscm:__subpackages__",
+])
+
+go_library(
+    name = "shelleval",
+    srcs = ["shelleval.go"],
+    embedsrcs = [
+        "nd_snippet.sh",
+        "nd_completions_snippet.sh",
+    ],
+    importpath = "github.com/ndscm/theseed/seed/devprod/ndscm/cli/shelleval",
+)
