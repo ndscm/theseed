@@ -8,15 +8,16 @@ import (
 
 	"github.com/ndscm/theseed/seed/devprod/ndscm/common"
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
+	"github.com/ndscm/theseed/seed/infra/shell/go/seedshell"
 )
 
-func injectShrcLine(dry bool, shrcPath string, line string) error {
+func injectShrcLine(shrcPath string, line string) error {
 	shrcBytes, err := os.ReadFile(shrcPath)
 	if err != nil && !os.IsNotExist(err) {
 		return seederr.Wrap(err)
 	}
 	if os.IsNotExist(err) {
-		if dry {
+		if seedshell.Dry() {
 			log.Printf("Dry mode skip: create shrc file at %v", shrcPath)
 			return nil
 		}
@@ -33,7 +34,7 @@ func injectShrcLine(dry bool, shrcPath string, line string) error {
 			return nil
 		}
 	}
-	if dry {
+	if seedshell.Dry() {
 		log.Printf("Dry mode skip: update shrc file at %v", shrcPath)
 		return nil
 	}
@@ -49,7 +50,7 @@ func injectShrcLine(dry bool, shrcPath string, line string) error {
 }
 
 func NdSetup(args []string, ndConfig *common.NdConfig) error {
-	if ndConfig.ShellEval {
+	if seedshell.ShellEval() {
 		return seederr.WrapErrorf("nd-setup should not run with --shell-eval")
 	}
 	if len(args) != 1 {
@@ -60,11 +61,11 @@ func NdSetup(args []string, ndConfig *common.NdConfig) error {
 	if err != nil {
 		return seederr.Wrap(err)
 	}
-	err = injectShrcLine(ndConfig.Dry, filepath.Join(userHome, ".bashrc"), injectionCommand)
+	err = injectShrcLine(filepath.Join(userHome, ".bashrc"), injectionCommand)
 	if err != nil {
 		return seederr.Wrap(err)
 	}
-	err = injectShrcLine(ndConfig.Dry, filepath.Join(userHome, ".zshrc"), injectionCommand)
+	err = injectShrcLine(filepath.Join(userHome, ".zshrc"), injectionCommand)
 	if err != nil {
 		return seederr.Wrap(err)
 	}

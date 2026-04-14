@@ -6,10 +6,11 @@ import (
 
 	"github.com/ndscm/theseed/seed/devprod/ndscm/common"
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
+	"github.com/ndscm/theseed/seed/infra/shell/go/seedshell"
 )
 
 func NdCut(args []string, ndConfig *common.NdConfig) error {
-	if ndConfig.ShellEval {
+	if seedshell.ShellEval() {
 		return seederr.WrapErrorf("nd-cut should not run with --shell-eval")
 	}
 	if len(args) != 3 {
@@ -17,14 +18,14 @@ func NdCut(args []string, ndConfig *common.NdConfig) error {
 	}
 	featureName := strings.TrimSpace(args[1])
 	target := strings.TrimSpace(args[2])
-	checkDirtyOutput, err := common.ShellOutput(false, "git", "status", "--porcelain")
+	checkDirtyOutput, err := seedshell.PureOutput("git", "status", "--porcelain")
 	if err != nil {
 		return seederr.Wrap(err)
 	}
 	if strings.TrimSpace(string(checkDirtyOutput)) != "" {
 		return seederr.WrapErrorf("workspace is dirty:\n%v", string(checkDirtyOutput))
 	}
-	devBranchOutput, err := common.ShellOutput(false, "git", "branch", "--show-current")
+	devBranchOutput, err := seedshell.PureOutput("git", "branch", "--show-current")
 	if err != nil {
 		return seederr.Wrap(err)
 	}
@@ -32,14 +33,14 @@ func NdCut(args []string, ndConfig *common.NdConfig) error {
 	if !strings.HasPrefix(devBranch, "dev") {
 		return seederr.WrapErrorf("workspace branch is not a dev branch: %v", devBranch)
 	}
-	targetCommitHashOutput, err := common.ShellOutput(false, "git", "rev-parse", target)
+	targetCommitHashOutput, err := seedshell.PureOutput("git", "rev-parse", target)
 	if err != nil {
 		return seederr.Wrap(err)
 	}
 	targetCommitHash := strings.TrimSpace(string(targetCommitHashOutput))
 	currentBranch := devBranch
 	for !strings.HasPrefix(currentBranch, "base/") {
-		trackingBranchOutput, err := common.ShellOutput(false, "git", "rev-parse", "--abbrev-ref", "--symbolic-full-name", currentBranch+"@{upstream}")
+		trackingBranchOutput, err := seedshell.PureOutput("git", "rev-parse", "--abbrev-ref", "--symbolic-full-name", currentBranch+"@{upstream}")
 		if err != nil {
 			return seederr.WrapErrorf("tracking upstream is missing for %v", currentBranch)
 		}
@@ -47,14 +48,14 @@ func NdCut(args []string, ndConfig *common.NdConfig) error {
 		if !strings.HasPrefix(trackingBranch, "change/") && !strings.HasPrefix(trackingBranch, "base/") {
 			return seederr.WrapErrorf("tracking chain is broken for %v (point to %v)", currentBranch, trackingBranch)
 		}
-		mergeCommitsOutput, err := common.ShellOutput(false, "git", "rev-list", "--merges", trackingBranch+".."+currentBranch)
+		mergeCommitsOutput, err := seedshell.PureOutput("git", "rev-list", "--merges", trackingBranch+".."+currentBranch)
 		if err != nil {
 			return seederr.Wrap(err)
 		}
 		if strings.TrimSpace(string(mergeCommitsOutput)) != "" {
 			return seederr.WrapErrorf("current dev branch (%v) is not a pure branch and contains merge commit:\n%v", currentBranch, string(mergeCommitsOutput))
 		}
-		branchCommitsOutput, err := common.ShellOutput(false, "git", "rev-list", "--ancestry-path", trackingBranch+".."+currentBranch)
+		branchCommitsOutput, err := seedshell.PureOutput("git", "rev-list", "--ancestry-path", trackingBranch+".."+currentBranch)
 		if err != nil {
 			return seederr.Wrap(err)
 		}
@@ -70,15 +71,15 @@ func NdCut(args []string, ndConfig *common.NdConfig) error {
 			}
 		}
 		if found {
-			err := common.ShellRun(ndConfig.Dry, ndConfig.ShellEval, "git", "branch", "change/"+featureName, targetCommitHash)
+			err := seedshell.ImpureRun("git", "branch", "change/"+featureName, targetCommitHash)
 			if err != nil {
 				return seederr.Wrap(err)
 			}
-			err = common.ShellRun(ndConfig.Dry, ndConfig.ShellEval, "git", "branch", "--set-upstream-to="+trackingBranch, "change/"+featureName)
+			err = seedshell.ImpureRun("git", "branch", "--set-upstream-to="+trackingBranch, "change/"+featureName)
 			if err != nil {
 				return seederr.Wrap(err)
 			}
-			err = common.ShellRun(ndConfig.Dry, ndConfig.ShellEval, "git", "branch", "--set-upstream-to=change/"+featureName, currentBranch)
+			err = seedshell.ImpureRun("git", "branch", "--set-upstream-to=change/"+featureName, currentBranch)
 			if err != nil {
 				return seederr.Wrap(err)
 			}

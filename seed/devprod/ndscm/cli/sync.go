@@ -7,10 +7,11 @@ import (
 
 	"github.com/ndscm/theseed/seed/devprod/ndscm/common"
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
+	"github.com/ndscm/theseed/seed/infra/shell/go/seedshell"
 )
 
 func NdSync(args []string, ndConfig *common.NdConfig) error {
-	if ndConfig.ShellEval {
+	if seedshell.ShellEval() {
 		return seederr.WrapErrorf("nd-sync should not run with --shell-eval")
 	}
 	if len(args) != 1 {
@@ -21,14 +22,14 @@ func NdSync(args []string, ndConfig *common.NdConfig) error {
 		if err != nil {
 			return seederr.Wrap(err)
 		}
-		checkDirtyOutput, err := common.ShellOutput(false, "git", "status", "--porcelain")
+		checkDirtyOutput, err := seedshell.PureOutput("git", "status", "--porcelain")
 		if err != nil {
 			return seederr.Wrap(err)
 		}
 		if strings.TrimSpace(string(checkDirtyOutput)) != "" {
 			return seederr.WrapErrorf("workspace is dirty:\n%v", string(checkDirtyOutput))
 		}
-		devBranchOutput, err := common.ShellOutput(false, "git", "branch", "--show-current")
+		devBranchOutput, err := seedshell.PureOutput("git", "branch", "--show-current")
 		if err != nil {
 			return seederr.Wrap(err)
 		}
@@ -36,7 +37,7 @@ func NdSync(args []string, ndConfig *common.NdConfig) error {
 		if !strings.HasPrefix(devBranch, "dev") {
 			return seederr.WrapErrorf("workspace branch is not a dev branch: %v", devBranch)
 		}
-		worktreePathOutput, err := common.ShellOutput(false, "git", "rev-parse", "--show-toplevel")
+		worktreePathOutput, err := seedshell.PureOutput("git", "rev-parse", "--show-toplevel")
 		if err != nil {
 			return seederr.Wrap(err)
 		}
@@ -51,7 +52,7 @@ func NdSync(args []string, ndConfig *common.NdConfig) error {
 		// # Iterate changes tree
 		chain := []string{devBranch}
 		for iter := devBranch; iter != ("base/" + devBranch); {
-			inspectBranchOutput, err := common.ShellOutput(false, "git", "rev-parse", "--abbrev-ref", "--symbolic-full-name", iter+"@{upstream}")
+			inspectBranchOutput, err := seedshell.PureOutput("git", "rev-parse", "--abbrev-ref", "--symbolic-full-name", iter+"@{upstream}")
 			if err != nil {
 				return seederr.Wrap(err)
 			}
@@ -66,14 +67,14 @@ func NdSync(args []string, ndConfig *common.NdConfig) error {
 			iter = inspectBranch
 		}
 		// # Fetch upstream changes
-		err = common.ShellRun(ndConfig.Dry, ndConfig.ShellEval, "git", "fetch", "--all", "--prune")
+		err = seedshell.ImpureRun("git", "fetch", "--all", "--prune")
 		if err != nil {
 			return seederr.Wrap(err)
 		}
 		// # Rebase dev branch
 		log.Printf("\x1b[34mRebasing: %v\x1b[0m", chain)
 		incomingCommits := []string{}
-		incomingCommitsOutput, err := common.ShellOutput(false, "git", "rev-list", "base/"+devBranch+"..origin/main")
+		incomingCommitsOutput, err := seedshell.PureOutput("git", "rev-list", "base/"+devBranch+"..origin/main")
 		if err != nil {
 			return seederr.Wrap(err)
 		}
@@ -83,7 +84,7 @@ func NdSync(args []string, ndConfig *common.NdConfig) error {
 				incomingCommits = append(incomingCommits, commitHash)
 			}
 		}
-		baseCommitHashOutput, err := common.ShellOutput(false, "git", "rev-parse", "base/"+devBranch)
+		baseCommitHashOutput, err := seedshell.PureOutput("git", "rev-parse", "base/"+devBranch)
 		if err != nil {
 			return seederr.Wrap(err)
 		}
@@ -92,20 +93,20 @@ func NdSync(args []string, ndConfig *common.NdConfig) error {
 			// Reverse iteration
 			incommingCommitHash := incomingCommits[i]
 			log.Printf("\x1b[34mRebasing to: %v\x1b[0m", incommingCommitHash)
-			err := common.ShellRun(ndConfig.Dry, ndConfig.ShellEval, "git", "checkout", "base/"+devBranch)
+			err := seedshell.ImpureRun("git", "checkout", "base/"+devBranch)
 			if err != nil {
 				return seederr.Wrap(err)
 			}
-			err = common.ShellRun(ndConfig.Dry, ndConfig.ShellEval, "git", "rebase", incommingCommitHash)
+			err = seedshell.ImpureRun("git", "rebase", incommingCommitHash)
 			if err != nil {
 				return seederr.Wrap(err)
 			}
 			for _, chainBranch := range chain[1:] {
-				err := common.ShellRun(ndConfig.Dry, ndConfig.ShellEval, "git", "checkout", chainBranch)
+				err := seedshell.ImpureRun("git", "checkout", chainBranch)
 				if err != nil {
 					return seederr.Wrap(err)
 				}
-				err = common.ShellRun(ndConfig.Dry, ndConfig.ShellEval, "git", "pull", "--rebase")
+				err = seedshell.ImpureRun("git", "pull", "--rebase")
 				if err != nil {
 					return seederr.Wrap(err)
 				}
@@ -114,7 +115,7 @@ func NdSync(args []string, ndConfig *common.NdConfig) error {
 		}
 		// # Cleanup local change branches
 		for iter := devBranch; iter != ("base/" + devBranch); {
-			inspectBranchOutput, err := common.ShellOutput(false, "git", "rev-parse", "--abbrev-ref", "--symbolic-full-name", iter+"@{upstream}")
+			inspectBranchOutput, err := seedshell.PureOutput("git", "rev-parse", "--abbrev-ref", "--symbolic-full-name", iter+"@{upstream}")
 			if err != nil {
 				return seederr.Wrap(err)
 			}
@@ -128,17 +129,17 @@ func NdSync(args []string, ndConfig *common.NdConfig) error {
 			if inspectBranch == ("base/" + devBranch) {
 				break
 			}
-			nextBranchOutput, err := common.ShellOutput(false, "git", "rev-parse", "--abbrev-ref", "--symbolic-full-name", inspectBranch+"@{upstream}")
+			nextBranchOutput, err := seedshell.PureOutput("git", "rev-parse", "--abbrev-ref", "--symbolic-full-name", inspectBranch+"@{upstream}")
 			if err != nil {
 				return seederr.Wrap(err)
 			}
 			nextBranch := strings.TrimSpace(string(nextBranchOutput))
-			inspectCommitHashOutput, err := common.ShellOutput(false, "git", "rev-parse", inspectBranch)
+			inspectCommitHashOutput, err := seedshell.PureOutput("git", "rev-parse", inspectBranch)
 			if err != nil {
 				return seederr.Wrap(err)
 			}
 			inspectCommitHash := strings.TrimSpace(string(inspectCommitHashOutput))
-			nextCommitHashOutput, err := common.ShellOutput(false, "git", "rev-parse", nextBranch)
+			nextCommitHashOutput, err := seedshell.PureOutput("git", "rev-parse", nextBranch)
 			if err != nil {
 				return seederr.Wrap(err)
 			}
@@ -147,11 +148,11 @@ func NdSync(args []string, ndConfig *common.NdConfig) error {
 				if !strings.HasPrefix(inspectBranch, "change/") {
 					return seederr.WrapErrorf("unexpected empty branch %v", inspectBranch)
 				}
-				err := common.ShellRun(ndConfig.Dry, ndConfig.ShellEval, "git", "branch", "-d", inspectBranch)
+				err := seedshell.ImpureRun("git", "branch", "-d", inspectBranch)
 				if err != nil {
 					return seederr.Wrap(err)
 				}
-				err = common.ShellRun(ndConfig.Dry, ndConfig.ShellEval, "git", "branch", "--set-upstream-to="+nextBranch, iter)
+				err = seedshell.ImpureRun("git", "branch", "--set-upstream-to="+nextBranch, iter)
 				if err != nil {
 					return seederr.Wrap(err)
 				}
