@@ -1,4 +1,4 @@
-load("@rules_go//go:def.bzl", "go_library")
+load("@rules_go//go:def.bzl", "go_library", "go_test")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -11,4 +11,13 @@ go_library(
         "parser.go",
     ],
     importpath = "github.com/ndscm/theseed/seed/infra/tson/go/tson",
+)
+
+go_test(
+    name = "tson_test",
+    srcs = [
+        "generator_test.go",
+        "parser_test.go",
+    ],
+    embed = [":tson"],
 )
