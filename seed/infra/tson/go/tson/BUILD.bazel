@@ -1,0 +1,14 @@
+load("@rules_go//go:def.bzl", "go_library")
+
+package(default_visibility = ["//visibility:public"])
+
+go_library(
+    name = "tson",
+    srcs = [
+        "ast.go",
+        "generator.go",
+        "lexer.go",
+        "parser.go",
+    ],
+    importpath = "github.com/ndscm/theseed/seed/infra/tson/go/tson",
+)
