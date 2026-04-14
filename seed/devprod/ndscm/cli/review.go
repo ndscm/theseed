@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/ndscm/theseed/seed/devprod/ndscm/common"
+	"github.com/ndscm/theseed/seed/devprod/ndscm/user"
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
 	"github.com/ndscm/theseed/seed/infra/shell/go/seedshell"
 )
@@ -17,6 +18,10 @@ func NdReview(args []string, ndConfig *common.NdConfig) error {
 	}
 	if len(args) != 2 {
 		return seederr.WrapErrorf("nd-review usage: nd review <feature-name>")
+	}
+	currentUserHandle := user.CurrentUserHandle()
+	if currentUserHandle == "" {
+		return seederr.WrapErrorf("user handle is not set")
 	}
 	if ndConfig.Scm == "git" {
 		err := common.QuickVerifyGitMonorepo(ndConfig)
@@ -70,7 +75,7 @@ func NdReview(args []string, ndConfig *common.NdConfig) error {
 		if err != nil {
 			return seederr.Wrap(err)
 		}
-		err = seedshell.ImpureRun("git", "push", "--force", "origin", "review/"+featureName+":"+ndConfig.UserHandle+"/"+featureName)
+		err = seedshell.ImpureRun("git", "push", "--force", "origin", "review/"+featureName+":"+currentUserHandle+"/"+featureName)
 		if err != nil {
 			return seederr.Wrap(err)
 		}
