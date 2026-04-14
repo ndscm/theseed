@@ -6,6 +6,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
 	"github.com/ndscm/theseed/seed/infra/log/go/seedlog"
 )
 
@@ -32,7 +33,7 @@ type BoolConfig struct {
 func (d *BoolConfig) Set(s string) error {
 	v, err := strconv.ParseBool(s)
 	if err != nil {
-		return err
+		return seederr.Wrap(err)
 	}
 	d.value = v
 	return nil
@@ -90,20 +91,67 @@ func DefineString(name string, defaultValue string, usage string) *StringConfig 
 	return item
 }
 
-func Parse() error {
+type parseOptions struct {
+	envPrefix         string
+	fallbackEnvPrefix string
+}
+
+type parseOption func(*parseOptions)
+
+func WithEnvPrefix(prefix string) parseOption {
+	return func(o *parseOptions) {
+		o.envPrefix = prefix
+	}
+}
+
+func WithFallbackEnvPrefix(prefix string) parseOption {
+	return func(o *parseOptions) {
+		o.fallbackEnvPrefix = prefix
+	}
+}
+
+func Parse(opts ...parseOption) error {
+	o := &parseOptions{}
+	for _, opt := range opts {
+		opt(o)
+	}
+
 	for _, env := range os.Environ() {
 		parts := strings.SplitN(env, "=", 2)
-		if len(parts) == 2 {
-			name := strings.ToLower(strings.TrimSpace(parts[0]))
+		if len(parts) != 2 {
+			continue
+		}
+		if strings.HasPrefix(parts[0], o.envPrefix) {
+			pure := strings.TrimPrefix(parts[0], o.envPrefix)
+			name := strings.ToLower(strings.TrimSpace(pure))
 			value := strings.TrimSpace(parts[1])
-			if item, ok := configs[name]; ok {
-				err := item.Set(value)
-				if err != nil {
-					return err
+			item, ok := configs[name]
+			if !ok {
+				if o.envPrefix != "" {
+					seedlog.Warnf("Unknown env flag: %s=%s", parts[0], value)
 				}
+				continue
+			}
+			err := item.Set(value)
+			if err != nil {
+				return seederr.Wrap(err)
+			}
+		} else if o.fallbackEnvPrefix != "" && strings.HasPrefix(parts[0], o.fallbackEnvPrefix) {
+			pure := strings.TrimPrefix(parts[0], o.fallbackEnvPrefix)
+			name := strings.ToLower(strings.TrimSpace(pure))
+			value := strings.TrimSpace(parts[1])
+			item, ok := configs[name]
+			if !ok {
+				continue
+			}
+			seedlog.Infof("Loaded fallback env flag: %s=%s", parts[0], value)
+			err := item.Set(value)
+			if err != nil {
+				return seederr.Wrap(err)
 			}
 		}
 	}
+
 	for name, item := range configs {
 		flag.Var(item, name, item.Usage())
 	}
