@@ -108,6 +108,6 @@ func Parse() error {
 		flag.Var(item, name, item.Usage())
 	}
 	flag.Parse()
-	seedlog.Infof("MPT Configs: %+v", configs)
+	seedlog.Infof("flags: %+v", configs)
 	return nil
 }
