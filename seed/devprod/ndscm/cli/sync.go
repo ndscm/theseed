@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/ndscm/theseed/seed/devprod/ndscm/common"
+	"github.com/ndscm/theseed/seed/devprod/ndscm/scm"
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
 	"github.com/ndscm/theseed/seed/infra/shell/go/seedshell"
 )
@@ -17,8 +18,17 @@ func NdSync(args []string, ndConfig *common.NdConfig) error {
 	if len(args) != 1 {
 		return seederr.WrapErrorf("nd-sync usage: (on dev branch) nd sync")
 	}
-	if ndConfig.Scm == "git" {
-		err := common.QuickVerifyGitMonorepo(ndConfig)
+	scmName, err := scm.ScmName()
+	if err != nil {
+		return seederr.Wrap(err)
+	}
+	switch scmName {
+	case "git":
+		monorepoHome, err := scm.MonorepoHome()
+		if err != nil {
+			return seederr.Wrap(err)
+		}
+		err = common.QuickVerifyGitMonorepo(ndConfig)
 		if err != nil {
 			return seederr.Wrap(err)
 		}
@@ -42,7 +52,7 @@ func NdSync(args []string, ndConfig *common.NdConfig) error {
 			return seederr.Wrap(err)
 		}
 		worktreePath := strings.TrimSpace(string(worktreePathOutput))
-		worktree, err := filepath.Rel(ndConfig.MonorepoHome, worktreePath)
+		worktree, err := filepath.Rel(monorepoHome, worktreePath)
 		if err != nil {
 			return seederr.Wrap(err)
 		}
@@ -160,8 +170,8 @@ func NdSync(args []string, ndConfig *common.NdConfig) error {
 				iter = inspectBranch
 			}
 		}
-	} else {
-		return seederr.WrapErrorf("nd-sync does not support %v", ndConfig.Scm)
+	default:
+		return seederr.WrapErrorf("nd-sync does not support %v", scmName)
 	}
 	return nil
 }

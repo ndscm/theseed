@@ -7,6 +7,7 @@ import (
 	"path/filepath"
 
 	"github.com/ndscm/theseed/seed/devprod/ndscm/common"
+	"github.com/ndscm/theseed/seed/devprod/ndscm/scm"
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
 	"github.com/ndscm/theseed/seed/infra/shell/go/seedshell"
 )
@@ -15,8 +16,21 @@ func NdDev(args []string, ndConfig *common.NdConfig) error {
 	if !seedshell.ShellEval() {
 		log.Printf("\x1b[33mWarning: It's recommended to run nd-dev with --shell-eval\x1b[0m")
 	}
-	if ndConfig.Scm == "git" {
-		err := common.QuickVerifyGitMonorepo(ndConfig)
+	scmName, err := scm.ScmName()
+	if err != nil {
+		return seederr.Wrap(err)
+	}
+	switch scmName {
+	case "git":
+		monorepoHome, err := scm.MonorepoHome()
+		if err != nil {
+			return seederr.Wrap(err)
+		}
+		monorepoGitDir, err := scm.MonorepoGitDir()
+		if err != nil {
+			return seederr.Wrap(err)
+		}
+		err = common.QuickVerifyGitMonorepo(ndConfig)
 		if err != nil {
 			return seederr.Wrap(err)
 		}
@@ -28,7 +42,7 @@ func NdDev(args []string, ndConfig *common.NdConfig) error {
 		} else {
 			return seederr.WrapErrorf("nd-dev usage: nd dev [<feature-name>|<index>]")
 		}
-		worktreePath := filepath.Join(ndConfig.MonorepoHome, worktreeName)
+		worktreePath := filepath.Join(monorepoHome, worktreeName)
 		worktreeStat, err := os.Stat(worktreePath)
 		if err != nil && !os.IsNotExist(err) {
 			return seederr.WrapErrorf("failed to stat worktree %v: %v", worktreePath, err)
@@ -37,15 +51,15 @@ func NdDev(args []string, ndConfig *common.NdConfig) error {
 			return seederr.WrapErrorf("worktree %v exists and is not a dir", worktreePath)
 		}
 		if os.IsNotExist(err) {
-			err = seedshell.ImpureRun("git", "--git-dir", ndConfig.MonorepoGitDir, "branch", "--track", "base/"+worktreeName, "origin/main")
+			err = seedshell.ImpureRun("git", "--git-dir", monorepoGitDir, "branch", "--track", "base/"+worktreeName, "origin/main")
 			if err != nil {
 				return seederr.WrapErrorf("failed to create base branch %v: %v", "base/"+worktreeName, err)
 			}
-			err = seedshell.ImpureRun("git", "--git-dir", ndConfig.MonorepoGitDir, "branch", "--track", worktreeName, "base/"+worktreeName)
+			err = seedshell.ImpureRun("git", "--git-dir", monorepoGitDir, "branch", "--track", worktreeName, "base/"+worktreeName)
 			if err != nil {
 				return seederr.WrapErrorf("failed to create worktree branch %v: %v", worktreeName, err)
 			}
-			err = seedshell.ImpureRun("git", "--git-dir", ndConfig.MonorepoGitDir, "worktree", "add", worktreePath, worktreeName)
+			err = seedshell.ImpureRun("git", "--git-dir", monorepoGitDir, "worktree", "add", worktreePath, worktreeName)
 			if err != nil {
 				return seederr.WrapErrorf("failed to add worktree %v: %v", worktreePath, err)
 			}
@@ -59,8 +73,8 @@ func NdDev(args []string, ndConfig *common.NdConfig) error {
 				fmt.Printf("%v", shellEval)
 			}
 		}
-	} else {
-		return seederr.WrapErrorf("nd-dev does not support %v", ndConfig.Scm)
+	default:
+		return seederr.WrapErrorf("nd-dev does not support %v", scmName)
 	}
 	return nil
 }

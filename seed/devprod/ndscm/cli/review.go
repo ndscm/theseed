@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/ndscm/theseed/seed/devprod/ndscm/common"
+	"github.com/ndscm/theseed/seed/devprod/ndscm/scm"
 	"github.com/ndscm/theseed/seed/devprod/ndscm/user"
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
 	"github.com/ndscm/theseed/seed/infra/shell/go/seedshell"
@@ -23,13 +24,22 @@ func NdReview(args []string, ndConfig *common.NdConfig) error {
 	if currentUserHandle == "" {
 		return seederr.WrapErrorf("user handle is not set")
 	}
-	if ndConfig.Scm == "git" {
-		err := common.QuickVerifyGitMonorepo(ndConfig)
+	scmName, err := scm.ScmName()
+	if err != nil {
+		return seederr.Wrap(err)
+	}
+	switch scmName {
+	case "git":
+		monorepoHome, err := scm.MonorepoHome()
+		if err != nil {
+			return seederr.Wrap(err)
+		}
+		err = common.QuickVerifyGitMonorepo(ndConfig)
 		if err != nil {
 			return seederr.Wrap(err)
 		}
 		featureName := strings.TrimSpace(args[1])
-		worktreePath := filepath.Join(ndConfig.MonorepoHome, "review/"+featureName)
+		worktreePath := filepath.Join(monorepoHome, "review/"+featureName)
 		_, err = os.Stat(worktreePath)
 		if err != nil && !os.IsNotExist(err) {
 			return seederr.Wrap(err)
@@ -87,8 +97,8 @@ func NdReview(args []string, ndConfig *common.NdConfig) error {
 		if err != nil {
 			return seederr.Wrap(err)
 		}
-	} else {
-		return seederr.WrapErrorf("nd-review does not support %v", ndConfig.Scm)
+	default:
+		return seederr.WrapErrorf("nd-review does not support %v", scmName)
 	}
 	return nil
 }
