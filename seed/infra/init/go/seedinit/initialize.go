@@ -15,8 +15,34 @@ func RegisterPackageInit(initializer func() error) {
 	packageInitializers = append(packageInitializers, initializer)
 }
 
-func Initialize() error {
-	err := seedflag.Parse()
+type initializeOptions struct {
+	envPrefix         string
+	fallbackEnvPrefix string
+}
+
+type initializeOption func(*initializeOptions)
+
+func WithEnvPrefix(prefix string) initializeOption {
+	return func(o *initializeOptions) {
+		o.envPrefix = prefix
+	}
+}
+
+func WithFallbackEnvPrefix(prefix string) initializeOption {
+	return func(o *initializeOptions) {
+		o.fallbackEnvPrefix = prefix
+	}
+}
+
+func Initialize(opts ...initializeOption) error {
+	o := &initializeOptions{}
+	for _, opt := range opts {
+		opt(o)
+	}
+	err := seedflag.Parse(
+		seedflag.WithEnvPrefix(o.envPrefix),
+		seedflag.WithFallbackEnvPrefix(o.fallbackEnvPrefix),
+	)
 	if err != nil {
 		return err
 	}
