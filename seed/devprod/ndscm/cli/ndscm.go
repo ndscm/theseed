@@ -3,73 +3,71 @@ package main
 import (
 	"flag"
 	"fmt"
-	"log"
 	"os"
 
 	"github.com/ndscm/theseed/seed/devprod/ndscm/common"
+	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
+	"github.com/ndscm/theseed/seed/infra/init/go/seedinit"
+	"github.com/ndscm/theseed/seed/infra/log/go/seedlog"
 )
 
-func parseFlags() ([]string, error) {
-	remainArgs := os.Args
-	finalArgs := []string{}
-	for len(remainArgs) > 0 {
-		finalArgs = append(finalArgs, remainArgs[0])
-		err := flag.CommandLine.Parse(remainArgs[1:])
-		if err != nil {
-			return nil, common.WrapTrace(err)
-		}
-		remainArgs = flag.CommandLine.Args()
-	}
-	return finalArgs[1:], nil
-}
+// TODO(nagi): support subcommand flags, e.g. nd dev --foo, nd review --bar, etc.
 
-func main() {
-	args, err := parseFlags()
+func run() error {
+	err := seedinit.Initialize()
 	if err != nil {
-		log.Fatalf("\x1b[31mERROR: parse flags failed: %v\x1b[0m", err)
+		return seederr.Wrap(err)
 	}
 	ndConfig, err := common.LoadConfig()
 	if err != nil {
-		log.Fatalf("\x1b[31mERROR: load config failed: %v\x1b[0m", err)
+		return seederr.Wrap(err)
 	}
-	if len(args) < 1 {
+	if len(flag.Args()) < 1 {
 		fmt.Printf("ndscm is not-distributed source code manager\n")
-		return
+		return nil
 	}
-	switch args[0] {
+	switch flag.Arg(0) {
 	case "cut":
-		err := NdCut(args, ndConfig)
+		err := NdCut(flag.Args(), ndConfig)
 		if err != nil {
-			log.Fatalf("\x1b[31mERROR: %v\x1b[0m", err)
+			return seederr.Wrap(err)
 		}
 	case "dev":
-		err := NdDev(args, ndConfig)
+		err := NdDev(flag.Args(), ndConfig)
 		if err != nil {
-			log.Fatalf("\x1b[31mERROR: %v\x1b[0m", err)
+			return seederr.Wrap(err)
 		}
 	case "review":
-		err := NdReview(args, ndConfig)
+		err := NdReview(flag.Args(), ndConfig)
 		if err != nil {
-			log.Fatalf("\x1b[31mERROR: %v\x1b[0m", err)
+			return seederr.Wrap(err)
 		}
 	case "setup":
-		err := NdSetup(args, ndConfig)
+		err := NdSetup(flag.Args(), ndConfig)
 		if err != nil {
-			log.Fatalf("\x1b[31mERROR: %v\x1b[0m", err)
+			return seederr.Wrap(err)
 		}
 	case "shell":
-		err := NdShell(args, ndConfig)
+		err := NdShell(flag.Args(), ndConfig)
 		if err != nil {
-			log.Fatalf("\x1b[31mERROR: %v\x1b[0m", err)
+			return seederr.Wrap(err)
 		}
 	case "sync":
-		err := NdSync(args, ndConfig)
+		err := NdSync(flag.Args(), ndConfig)
 		if err != nil {
-			log.Fatalf("\x1b[31mERROR: %v\x1b[0m", err)
+			return seederr.Wrap(err)
 		}
 	default:
-		log.Fatalf("\x1b[31mERROR: Unknown command %v\x1b[0m", args[0])
 		flag.PrintDefaults()
+		return seederr.WrapErrorf("unknown command %v", flag.Arg(0))
+	}
+	return nil
+}
+
+func main() {
+	err := run()
+	if err != nil {
+		seedlog.Errorf("%v", err)
 		os.Exit(1)
 	}
 }

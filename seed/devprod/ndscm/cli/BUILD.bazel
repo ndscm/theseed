@@ -24,5 +24,10 @@ go_library(
     ],
     importpath = "github.com/ndscm/theseed/seed/devprod/ndscm/cli",
     visibility = ["//visibility:private"],
-    deps = ["//seed/devprod/ndscm/common"],
+    deps = [
+        "//seed/devprod/ndscm/common",
+        "//seed/infra/error/go/seederr",
+        "//seed/infra/init/go/seedinit",
+        "//seed/infra/log/go/seedlog",
+    ],
 )
