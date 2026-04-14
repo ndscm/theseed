@@ -142,9 +142,7 @@ class ConfigStore:
         for holder in self._configs.values():
             holder.finalize()
         simplified = {k: v.get() for k, v in self._configs.items()}
-        logger.info(
-            f"MPT Configs: {json.dumps(simplified, indent=2, ensure_ascii=False)}"
-        )
+        logger.info(f"flags: {json.dumps(simplified, indent=2, ensure_ascii=False)}")
         return self
 
 

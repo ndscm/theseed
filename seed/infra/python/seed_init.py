@@ -43,7 +43,7 @@ def initialize() -> seed_flag.ConfigStore:
     logging.basicConfig(force=True, level=logging.INFO)
     for handler in logging.root.handlers:
         handler.setFormatter(seed_log.MptLogFormatter())
-    logger.info(f"MPT Init: {os.path.basename(sys.argv[0])}")
+    logger.info(f"Seed init: {os.path.basename(sys.argv[0])}")
     configs = seed_flag.parse()
     seed_log.load()
     _initializer.initialize()
