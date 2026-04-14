@@ -4,6 +4,8 @@ import (
 	"log"
 	"os"
 	"os/exec"
+
+	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
 )
 
 func ShellRun(dry bool, shellEval bool, name string, arg ...string) error {
@@ -16,14 +18,14 @@ func ShellRun(dry bool, shellEval bool, name string, arg ...string) error {
 	if shellEval {
 		outputBytes, err := cmd.Output()
 		if err != nil {
-			return WrapTrace(err)
+			return seederr.Wrap(err)
 		}
 		log.Printf("Command output: %v", string(outputBytes))
 	} else {
 		cmd.Stdout = os.Stdout
 		err := cmd.Run()
 		if err != nil {
-			return WrapTrace(err)
+			return seederr.Wrap(err)
 		}
 	}
 	return nil
@@ -38,7 +40,7 @@ func ShellOutput(dry bool, name string, arg ...string) ([]byte, error) {
 	cmd.Stderr = os.Stderr
 	outputBytes, err := cmd.Output()
 	if err != nil {
-		return outputBytes, WrapTrace(err)
+		return outputBytes, seederr.Wrap(err)
 	}
 	return outputBytes, nil
 }
