@@ -1,11 +1,11 @@
 package common
 
 import (
-	"fmt"
 	"os"
 	"path/filepath"
 
 	"github.com/joho/godotenv"
+	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
 	"github.com/ndscm/theseed/seed/infra/flag/go/seedflag"
 )
 
@@ -26,26 +26,26 @@ type NdConfig struct {
 func LoadConfig() (*NdConfig, error) {
 	configHome, err := os.UserConfigDir()
 	if err != nil {
-		return nil, WrapTrace(err)
+		return nil, seederr.WrapErrorf("%w", err)
 	}
 	configPath := filepath.Join(configHome, "ndscm", "ndscm.env")
 	_, err = os.Stat(configPath)
 	if os.IsNotExist(err) {
 		if flagDry.Get() {
-			return nil, WrapTrace(fmt.Errorf("ndscm.env config is not found, remove --dry to initialize"))
+			return nil, seederr.WrapErrorf("ndscm.env config is not found, remove --dry to initialize")
 		}
 		err = os.MkdirAll(filepath.Dir(configPath), 0755)
 		if err != nil {
-			return nil, WrapTrace(err)
+			return nil, seederr.WrapErrorf("%w", err)
 		}
 		err = os.WriteFile(configPath, []byte{}, 0644)
 		if err != nil {
-			return nil, WrapTrace(err)
+			return nil, seederr.WrapErrorf("%w", err)
 		}
 	}
 	err = godotenv.Load(configPath)
 	if err != nil {
-		return nil, WrapTrace(err)
+		return nil, seederr.WrapErrorf("%w", err)
 	}
 	ndConfig := &NdConfig{
 		Dry:            false,
@@ -60,13 +60,13 @@ func LoadConfig() (*NdConfig, error) {
 	ndConfig.Scm = flagScm.Get()
 	ndConfig.ShellEval = flagShellEval.Get()
 	if len(ndConfig.MonorepoHome) == 0 {
-		return nil, WrapTrace(fmt.Errorf("ND_MONOREPO_HOME is not set, please set it in %v", configPath))
+		return nil, seederr.WrapErrorf("ND_MONOREPO_HOME is not set, please set it in %v", configPath)
 	}
 	if len(ndConfig.MonorepoGitDir) == 0 {
-		return nil, WrapTrace(fmt.Errorf("ND_MONOREPO_GIT_DIR is not set, please set it in %v", configPath))
+		return nil, seederr.WrapErrorf("ND_MONOREPO_GIT_DIR is not set, please set it in %v", configPath)
 	}
 	if len(ndConfig.UserHandle) == 0 {
-		return nil, WrapTrace(fmt.Errorf("ND_USER_HANDLE is not set, please set it in %v", configPath))
+		return nil, seederr.WrapErrorf("ND_USER_HANDLE is not set, please set it in %v", configPath)
 	}
 	return ndConfig, nil
 }

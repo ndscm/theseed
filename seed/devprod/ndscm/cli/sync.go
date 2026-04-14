@@ -1,20 +1,20 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"path/filepath"
 	"strings"
 
 	"github.com/ndscm/theseed/seed/devprod/ndscm/common"
+	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
 )
 
 func NdSync(args []string, ndConfig *common.NdConfig) error {
 	if ndConfig.ShellEval {
-		return common.WrapTrace(fmt.Errorf("nd-sync should not run with --shell-eval"))
+		return seederr.WrapErrorf("nd-sync should not run with --shell-eval")
 	}
 	if len(args) != 1 {
-		return common.WrapTrace(fmt.Errorf("nd-sync usage: (on dev branch) nd sync"))
+		return seederr.WrapErrorf("nd-sync usage: (on dev branch) nd sync")
 	}
 	if ndConfig.Scm == "git" {
 		err := common.QuickVerifyGitMonorepo(ndConfig)
@@ -26,7 +26,7 @@ func NdSync(args []string, ndConfig *common.NdConfig) error {
 			return err
 		}
 		if strings.TrimSpace(string(checkDirtyOutput)) != "" {
-			return common.WrapTrace(fmt.Errorf("workspace is dirty:\n%v", string(checkDirtyOutput)))
+			return seederr.WrapErrorf("workspace is dirty:\n%v", string(checkDirtyOutput))
 		}
 		devBranchOutput, err := common.ShellOutput(false, "git", "branch", "--show-current")
 		if err != nil {
@@ -34,7 +34,7 @@ func NdSync(args []string, ndConfig *common.NdConfig) error {
 		}
 		devBranch := strings.TrimSpace(string(devBranchOutput))
 		if !strings.HasPrefix(devBranch, "dev") {
-			return common.WrapTrace(fmt.Errorf("workspace branch is not a dev branch: %v", devBranch))
+			return seederr.WrapErrorf("workspace branch is not a dev branch: %v", devBranch)
 		}
 		worktreePathOutput, err := common.ShellOutput(false, "git", "rev-parse", "--show-toplevel")
 		if err != nil {
@@ -43,10 +43,10 @@ func NdSync(args []string, ndConfig *common.NdConfig) error {
 		worktreePath := strings.TrimSpace(string(worktreePathOutput))
 		worktree, err := filepath.Rel(ndConfig.MonorepoHome, worktreePath)
 		if err != nil {
-			return common.WrapTrace(err)
+		return seederr.Wrap(err)
 		}
 		if devBranch != worktree {
-			return common.WrapTrace(fmt.Errorf("worktree (%v) and dev branch (%v) mismatch", worktree, devBranch))
+			return seederr.WrapErrorf("worktree (%v) and dev branch (%v) mismatch", worktree, devBranch)
 		}
 		// # Iterate changes tree
 		chain := []string{devBranch}
@@ -57,10 +57,10 @@ func NdSync(args []string, ndConfig *common.NdConfig) error {
 			}
 			inspectBranch := strings.TrimSpace(string(inspectBranchOutput))
 			if inspectBranch == "" {
-				return common.WrapTrace(fmt.Errorf("tracking upstream is missing for %v", iter))
+				return seederr.WrapErrorf("tracking upstream is missing for %v", iter)
 			}
 			if !strings.HasPrefix(inspectBranch, "change/") && inspectBranch != ("base/"+devBranch) {
-				return common.WrapTrace(fmt.Errorf("tracking chain is broken for %v (point to %v)", iter, inspectBranch))
+				return seederr.WrapErrorf("tracking chain is broken for %v (point to %v)", iter, inspectBranch)
 			}
 			chain = append([]string{inspectBranch}, chain...)
 			iter = inspectBranch
@@ -120,10 +120,10 @@ func NdSync(args []string, ndConfig *common.NdConfig) error {
 			}
 			inspectBranch := strings.TrimSpace(string(inspectBranchOutput))
 			if inspectBranch == "" {
-				return common.WrapTrace(fmt.Errorf("tracking upstream is missing for %v", iter))
+				return seederr.WrapErrorf("tracking upstream is missing for %v", iter)
 			}
 			if !strings.HasPrefix(inspectBranch, "change/") && inspectBranch != ("base/"+devBranch) {
-				return common.WrapTrace(fmt.Errorf("tracking chain is broken for %v (point to %v)", iter, inspectBranch))
+				return seederr.WrapErrorf("tracking chain is broken for %v (point to %v)", iter, inspectBranch)
 			}
 			if inspectBranch == ("base/" + devBranch) {
 				break
@@ -145,7 +145,7 @@ func NdSync(args []string, ndConfig *common.NdConfig) error {
 			nextCommitHash := strings.TrimSpace(string(nextCommitHashOutput))
 			if inspectCommitHash == nextCommitHash {
 				if !strings.HasPrefix(inspectBranch, "change/") {
-					return common.WrapTrace(fmt.Errorf("unexpected empty branch %v", inspectBranch))
+					return seederr.WrapErrorf("unexpected empty branch %v", inspectBranch)
 				}
 				err := common.ShellRun(ndConfig.Dry, ndConfig.ShellEval, "git", "branch", "-d", inspectBranch)
 				if err != nil {
@@ -160,7 +160,7 @@ func NdSync(args []string, ndConfig *common.NdConfig) error {
 			}
 		}
 	} else {
-		return common.WrapTrace(fmt.Errorf("nd-sync does not support %v", ndConfig.Scm))
+		return seederr.WrapErrorf("nd-sync does not support %v", ndConfig.Scm)
 	}
 	return nil
 }

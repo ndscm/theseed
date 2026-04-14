@@ -5,6 +5,7 @@ import (
 	"log"
 
 	"github.com/ndscm/theseed/seed/devprod/ndscm/common"
+	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
 )
 
 func NdShell(args []string, ndConfig *common.NdConfig) error {
@@ -12,7 +13,7 @@ func NdShell(args []string, ndConfig *common.NdConfig) error {
 		log.Printf("\x1b[33mWarning: It's recommended to run nd-shell with --shell-eval\x1b[0m")
 	}
 	if len(args) != 1 {
-		return common.WrapTrace(fmt.Errorf("nd-shell usage: eval \"$(ndscm --shell-eval shell)\""))
+		return seederr.WrapErrorf("nd-shell usage: eval \"$(ndscm --shell-eval shell)\"")
 	}
 	shellEval := `
 function nd {

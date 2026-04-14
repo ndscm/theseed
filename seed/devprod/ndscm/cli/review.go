@@ -1,21 +1,21 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"os"
 	"path/filepath"
 	"strings"
 
 	"github.com/ndscm/theseed/seed/devprod/ndscm/common"
+	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
 )
 
 func NdReview(args []string, ndConfig *common.NdConfig) error {
 	if ndConfig.ShellEval {
-		return common.WrapTrace(fmt.Errorf("nd-review should not run with --shell-eval"))
+		return seederr.WrapErrorf("nd-review should not run with --shell-eval")
 	}
 	if len(args) != 2 {
-		return common.WrapTrace(fmt.Errorf("nd-review usage: nd review <feature-name>"))
+		return seederr.WrapErrorf("nd-review usage: nd review <feature-name>")
 	}
 	if ndConfig.Scm == "git" {
 		err := common.QuickVerifyGitMonorepo(ndConfig)
@@ -26,7 +26,7 @@ func NdReview(args []string, ndConfig *common.NdConfig) error {
 		worktreePath := filepath.Join(ndConfig.MonorepoHome, "review/"+featureName)
 		_, err = os.Stat(worktreePath)
 		if err != nil && !os.IsNotExist(err) {
-			return common.WrapTrace(err)
+			return seederr.Wrap(err)
 		}
 		if err == nil {
 			log.Printf("Worktree %v already exists, removing...\n", worktreePath)
@@ -45,12 +45,12 @@ func NdReview(args []string, ndConfig *common.NdConfig) error {
 		}
 		trackingBranchOutput, err := common.ShellOutput(false, "git", "rev-parse", "--abbrev-ref", "--symbolic-full-name", "change/"+featureName+"@{upstream}")
 		if err != nil {
-			return common.WrapTrace(fmt.Errorf("tracking upstream is missing for change/%v", featureName))
+			return seederr.WrapErrorf("tracking upstream is missing for change/%v", featureName)
 		}
 		trackingBranch := strings.TrimSpace(string(trackingBranchOutput))
 		mergeBaseHashOutput, err := common.ShellOutput(false, "git", "merge-base", "origin/main", "change/"+featureName)
 		if err != nil {
-			return common.WrapTrace(fmt.Errorf("merge base is missing for change/%v", featureName))
+			return seederr.WrapErrorf("merge base is missing for change/%v", featureName)
 		}
 		mergeBaseHash := strings.TrimSpace(string(mergeBaseHashOutput))
 		err = common.ShellRun(ndConfig.Dry, ndConfig.ShellEval, "git", "branch", "review/"+featureName, mergeBaseHash)
@@ -82,7 +82,7 @@ func NdReview(args []string, ndConfig *common.NdConfig) error {
 			return err
 		}
 	} else {
-		return common.WrapTrace(fmt.Errorf("nd-review does not support %v", ndConfig.Scm))
+		return seederr.WrapErrorf("nd-review does not support %v", ndConfig.Scm)
 	}
 	return nil
 }
