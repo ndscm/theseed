@@ -16,6 +16,9 @@ import (
 func run() error {
 	err := seedinit.Initialize(
 		seedinit.WithEnvPrefix("ND_"),
+		seedinit.WithSystemEnv("ndscm/ndscm.env"),
+		seedinit.WithUserEnv("ndscm/ndscm.env"),
+		seedinit.WithAncestorEnv("ndscm.env"),
 	)
 	if err != nil {
 		return seederr.Wrap(err)
