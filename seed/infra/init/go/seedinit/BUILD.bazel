@@ -4,9 +4,14 @@ package(default_visibility = ["//visibility:public"])
 
 go_library(
     name = "seedinit",
-    srcs = ["initialize.go"],
+    srcs = [
+        "env.go",
+        "initialize.go",
+    ],
     importpath = "github.com/ndscm/theseed/seed/infra/init/go/seedinit",
     deps = [
+        "//seed/infra/dotenv/go/dotenv",
+        "//seed/infra/error/go/seederr",
         "//seed/infra/flag/go/seedflag",
         "//seed/infra/log/go/seedlog",
     ],
