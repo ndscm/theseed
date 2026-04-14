@@ -30,5 +30,6 @@ go_library(
         "//seed/infra/error/go/seederr",
         "//seed/infra/init/go/seedinit",
         "//seed/infra/log/go/seedlog",
+        "//seed/infra/shell/go/seedshell",
     ],
 )
