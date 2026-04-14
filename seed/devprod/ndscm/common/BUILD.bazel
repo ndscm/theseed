@@ -4,7 +4,6 @@ go_library(
     name = "common",
     srcs = [
         "config.go",
-        "system.go",
         "verify.go",
     ],
     importpath = "github.com/ndscm/theseed/seed/devprod/ndscm/common",

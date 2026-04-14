@@ -8,10 +8,11 @@ import (
 
 	"github.com/ndscm/theseed/seed/devprod/ndscm/common"
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
+	"github.com/ndscm/theseed/seed/infra/shell/go/seedshell"
 )
 
 func NdDev(args []string, ndConfig *common.NdConfig) error {
-	if !ndConfig.ShellEval {
+	if !seedshell.ShellEval() {
 		log.Printf("\x1b[33mWarning: It's recommended to run nd-dev with --shell-eval\x1b[0m")
 	}
 	if ndConfig.Scm == "git" {
@@ -36,25 +37,25 @@ func NdDev(args []string, ndConfig *common.NdConfig) error {
 			return seederr.WrapErrorf("worktree %v exists and is not a dir", worktreePath)
 		}
 		if os.IsNotExist(err) {
-			err = common.ShellRun(ndConfig.Dry, ndConfig.ShellEval, "git", "--git-dir", ndConfig.MonorepoGitDir, "branch", "--track", "base/"+worktreeName, "origin/main")
+			err = seedshell.ImpureRun("git", "--git-dir", ndConfig.MonorepoGitDir, "branch", "--track", "base/"+worktreeName, "origin/main")
 			if err != nil {
 				return seederr.WrapErrorf("failed to create base branch %v: %v", "base/"+worktreeName, err)
 			}
-			err = common.ShellRun(ndConfig.Dry, ndConfig.ShellEval, "git", "--git-dir", ndConfig.MonorepoGitDir, "branch", "--track", worktreeName, "base/"+worktreeName)
+			err = seedshell.ImpureRun("git", "--git-dir", ndConfig.MonorepoGitDir, "branch", "--track", worktreeName, "base/"+worktreeName)
 			if err != nil {
 				return seederr.WrapErrorf("failed to create worktree branch %v: %v", worktreeName, err)
 			}
-			err = common.ShellRun(ndConfig.Dry, ndConfig.ShellEval, "git", "--git-dir", ndConfig.MonorepoGitDir, "worktree", "add", worktreePath, worktreeName)
+			err = seedshell.ImpureRun("git", "--git-dir", ndConfig.MonorepoGitDir, "worktree", "add", worktreePath, worktreeName)
 			if err != nil {
 				return seederr.WrapErrorf("failed to add worktree %v: %v", worktreePath, err)
 			}
 		}
 		shellEval := fmt.Sprintf("\ncd \"%v\"\n", worktreePath)
-		if ndConfig.Dry {
+		if seedshell.Dry() {
 			log.Printf("Shell eval: %v", shellEval)
 		}
-		if ndConfig.ShellEval {
-			if !ndConfig.Dry {
+		if seedshell.ShellEval() {
+			if !seedshell.Dry() {
 				fmt.Printf("%v", shellEval)
 			}
 		}

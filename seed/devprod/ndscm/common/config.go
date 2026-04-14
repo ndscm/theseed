@@ -10,21 +10,17 @@ import (
 	"github.com/ndscm/theseed/seed/infra/flag/go/seedflag"
 )
 
-var flagDry = seedflag.DefineBool("dry", false, "make no external changes")
 var flagScm = seedflag.DefineString("scm", "git", "the scm backend")
-var flagShellEval = seedflag.DefineBool("shell-eval", false, "only output shell command")
 
 var flagMonorepoHome = seedflag.DefineString("monorepo_home", "", "the monorepo home directory")
 var flagMonorepoGitDir = seedflag.DefineString("monorepo_git_dir", "", "the monorepo git directory")
 var flagUserHandle = seedflag.DefineString("user_handle", "", "the user handle")
 
 type NdConfig struct {
-	Dry            bool
 	MonorepoGitDir string
 	MonorepoHome   string
 	MountHome      string // Reserved for single mount point
 	Scm            string
-	ShellEval      bool
 	UserHandle     string
 }
 
@@ -53,17 +49,13 @@ func LoadConfig() (*NdConfig, error) {
 	}
 	userHandle := flagUserHandle.Get()
 	ndConfig := &NdConfig{
-		Dry:            false,
 		MountHome:      "",
 		MonorepoHome:   monorepoHome,
 		MonorepoGitDir: monorepoGitDir,
 		Scm:            "",
-		ShellEval:      false,
 		UserHandle:     userHandle,
 	}
-	ndConfig.Dry = flagDry.Get()
 	ndConfig.Scm = flagScm.Get()
-	ndConfig.ShellEval = flagShellEval.Get()
 	if len(ndConfig.MonorepoHome) == 0 {
 		return nil, seederr.WrapErrorf("ND_MONOREPO_HOME is not set")
 	}
