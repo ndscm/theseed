@@ -7,6 +7,7 @@ import (
 	"path/filepath"
 
 	"github.com/ndscm/theseed/seed/devprod/ndscm/common"
+	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
 )
 
 func NdDev(args []string, ndConfig *common.NdConfig) error {
@@ -24,28 +25,28 @@ func NdDev(args []string, ndConfig *common.NdConfig) error {
 		} else if len(args) == 2 {
 			worktreeName = "dev-" + args[1]
 		} else {
-			return common.WrapTrace(fmt.Errorf("nd-dev usage: nd dev [<feature-name>|<index>]"))
+			return seederr.WrapErrorf("nd-dev usage: nd dev [<feature-name>|<index>]")
 		}
 		worktreePath := filepath.Join(ndConfig.MonorepoHome, worktreeName)
 		worktreeStat, err := os.Stat(worktreePath)
 		if err != nil && !os.IsNotExist(err) {
-			return common.WrapTrace(err)
+			return seederr.WrapErrorf("failed to stat worktree %v: %v", worktreePath, err)
 		}
 		if err == nil && !worktreeStat.IsDir() {
-			return common.WrapTrace(fmt.Errorf("worktree %v exists and is not a dir", worktreePath))
+			return seederr.WrapErrorf("worktree %v exists and is not a dir", worktreePath)
 		}
 		if os.IsNotExist(err) {
 			err = common.ShellRun(ndConfig.Dry, ndConfig.ShellEval, "git", "--git-dir", ndConfig.MonorepoGitDir, "branch", "--track", "base/"+worktreeName, "origin/main")
 			if err != nil {
-				return err
+				return seederr.WrapErrorf("failed to create base branch %v: %v", "base/"+worktreeName, err)
 			}
 			err = common.ShellRun(ndConfig.Dry, ndConfig.ShellEval, "git", "--git-dir", ndConfig.MonorepoGitDir, "branch", "--track", worktreeName, "base/"+worktreeName)
 			if err != nil {
-				return err
+				return seederr.WrapErrorf("failed to create worktree branch %v: %v", worktreeName, err)
 			}
 			err = common.ShellRun(ndConfig.Dry, ndConfig.ShellEval, "git", "--git-dir", ndConfig.MonorepoGitDir, "worktree", "add", worktreePath, worktreeName)
 			if err != nil {
-				return err
+				return seederr.WrapErrorf("failed to add worktree %v: %v", worktreePath, err)
 			}
 		}
 		shellEval := fmt.Sprintf("\ncd \"%v\"\n", worktreePath)
@@ -58,7 +59,7 @@ func NdDev(args []string, ndConfig *common.NdConfig) error {
 			}
 		}
 	} else {
-		return common.WrapTrace(fmt.Errorf("nd-dev does not support %v", ndConfig.Scm))
+		return seederr.WrapErrorf("nd-dev does not support %v", ndConfig.Scm)
 	}
 	return nil
 }

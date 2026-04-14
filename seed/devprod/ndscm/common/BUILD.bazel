@@ -4,13 +4,13 @@ go_library(
     name = "common",
     srcs = [
         "config.go",
-        "error.go",
         "system.go",
         "verify.go",
     ],
     importpath = "github.com/ndscm/theseed/seed/devprod/ndscm/common",
     visibility = ["//visibility:public"],
     deps = [
+        "//seed/infra/error/go/seederr",
         "//seed/infra/flag/go/seedflag",
         "@com_github_joho_godotenv//:godotenv",
     ],
