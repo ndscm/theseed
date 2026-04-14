@@ -27,6 +27,7 @@ go_library(
     deps = [
         "//seed/devprod/ndscm/cli/shelleval",
         "//seed/devprod/ndscm/common",
+        "//seed/devprod/ndscm/scm",
         "//seed/devprod/ndscm/user",
         "//seed/infra/error/go/seederr",
         "//seed/infra/init/go/seedinit",
