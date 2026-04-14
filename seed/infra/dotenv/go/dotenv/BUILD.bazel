@@ -1,4 +1,4 @@
-load("@rules_go//go:def.bzl", "go_library")
+load("@rules_go//go:def.bzl", "go_library", "go_test")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -11,4 +11,10 @@ go_library(
     deps = [
         "//seed/infra/error/go/seederr",
     ],
+)
+
+go_test(
+    name = "dotenv_test",
+    srcs = ["parse_test.go"],
+    embed = [":dotenv"],
 )
