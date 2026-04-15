@@ -4,10 +4,10 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"path/filepath"
 
 	"github.com/ndscm/theseed/seed/devprod/ndscm/common"
 	"github.com/ndscm/theseed/seed/devprod/ndscm/scm"
+	"github.com/ndscm/theseed/seed/devprod/ndscm/scm/git"
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
 	"github.com/ndscm/theseed/seed/infra/shell/go/seedshell"
 )
@@ -42,7 +42,7 @@ func NdDev(args []string, ndConfig *common.NdConfig) error {
 		} else {
 			return seederr.WrapErrorf("nd-dev usage: nd dev [<feature-name>|<index>]")
 		}
-		worktreePath := filepath.Join(monorepoHome, worktreeName)
+		worktreePath := git.GetBranchWorktreePath(monorepoHome, worktreeName)
 		worktreeStat, err := os.Stat(worktreePath)
 		if err != nil && !os.IsNotExist(err) {
 			return seederr.WrapErrorf("failed to stat worktree %v: %v", worktreePath, err)
@@ -51,17 +51,20 @@ func NdDev(args []string, ndConfig *common.NdConfig) error {
 			return seederr.WrapErrorf("worktree %v exists and is not a dir", worktreePath)
 		}
 		if os.IsNotExist(err) {
-			err = seedshell.ImpureRun("git", "--git-dir", monorepoGitDir, "branch", "--track", "base/"+worktreeName, "origin/main")
+			err = git.CreateBranch(monorepoGitDir, "base/"+worktreeName, "origin/main", "origin/main")
 			if err != nil {
 				return seederr.WrapErrorf("failed to create base branch %v: %v", "base/"+worktreeName, err)
 			}
-			err = seedshell.ImpureRun("git", "--git-dir", monorepoGitDir, "branch", "--track", worktreeName, "base/"+worktreeName)
+			err = git.CreateBranch(monorepoGitDir, worktreeName, "base/"+worktreeName, "base/"+worktreeName)
 			if err != nil {
 				return seederr.WrapErrorf("failed to create worktree branch %v: %v", worktreeName, err)
 			}
-			err = seedshell.ImpureRun("git", "--git-dir", monorepoGitDir, "worktree", "add", worktreePath, worktreeName)
+			newWorktreePath, err := git.CreateBranchWorktree(monorepoGitDir, monorepoHome, worktreeName)
 			if err != nil {
-				return seederr.WrapErrorf("failed to add worktree %v: %v", worktreePath, err)
+				return seederr.WrapErrorf("failed to add branch worktree %v: %v", worktreeName, err)
+			}
+			if newWorktreePath != worktreePath {
+				return seederr.WrapErrorf("unexpected new worktree path: %v (expected: %v)", newWorktreePath, worktreePath)
 			}
 		}
 		shellEval := fmt.Sprintf("\ncd \"%v\"\n", worktreePath)

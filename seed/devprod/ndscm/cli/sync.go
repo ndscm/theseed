@@ -2,11 +2,11 @@ package main
 
 import (
 	"log"
-	"path/filepath"
 	"strings"
 
 	"github.com/ndscm/theseed/seed/devprod/ndscm/common"
 	"github.com/ndscm/theseed/seed/devprod/ndscm/scm"
+	"github.com/ndscm/theseed/seed/devprod/ndscm/scm/git"
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
 	"github.com/ndscm/theseed/seed/infra/shell/go/seedshell"
 )
@@ -32,27 +32,25 @@ func NdSync(args []string, ndConfig *common.NdConfig) error {
 		if err != nil {
 			return seederr.Wrap(err)
 		}
-		checkDirtyOutput, err := seedshell.PureOutput("git", "status", "--porcelain")
+		dirtyFiles, err := git.GetStatus("")
 		if err != nil {
 			return seederr.Wrap(err)
 		}
-		if strings.TrimSpace(string(checkDirtyOutput)) != "" {
-			return seederr.WrapErrorf("workspace is dirty:\n%v", string(checkDirtyOutput))
+		if len(dirtyFiles) > 0 {
+			return seederr.WrapErrorf("workspace is dirty:\n%v", dirtyFiles)
 		}
-		devBranchOutput, err := seedshell.PureOutput("git", "branch", "--show-current")
+		devBranch, err := git.GetCurrentBranch("")
 		if err != nil {
 			return seederr.Wrap(err)
 		}
-		devBranch := strings.TrimSpace(string(devBranchOutput))
 		if !strings.HasPrefix(devBranch, "dev") {
 			return seederr.WrapErrorf("workspace branch is not a dev branch: %v", devBranch)
 		}
-		worktreePathOutput, err := seedshell.PureOutput("git", "rev-parse", "--show-toplevel")
+		worktreePath, err := git.GetCurrentWorktreePath()
 		if err != nil {
 			return seederr.Wrap(err)
 		}
-		worktreePath := strings.TrimSpace(string(worktreePathOutput))
-		worktree, err := filepath.Rel(monorepoHome, worktreePath)
+		worktree, err := git.GetBranchWorktreeBranch(monorepoHome, worktreePath)
 		if err != nil {
 			return seederr.Wrap(err)
 		}
@@ -62,11 +60,10 @@ func NdSync(args []string, ndConfig *common.NdConfig) error {
 		// # Iterate changes tree
 		chain := []string{devBranch}
 		for iter := devBranch; iter != ("base/" + devBranch); {
-			inspectBranchOutput, err := seedshell.PureOutput("git", "rev-parse", "--abbrev-ref", "--symbolic-full-name", iter+"@{upstream}")
+			inspectBranch, err := git.GetBranchTracking("", iter)
 			if err != nil {
 				return seederr.Wrap(err)
 			}
-			inspectBranch := strings.TrimSpace(string(inspectBranchOutput))
 			if inspectBranch == "" {
 				return seederr.WrapErrorf("tracking upstream is missing for %v", iter)
 			}
@@ -77,46 +74,39 @@ func NdSync(args []string, ndConfig *common.NdConfig) error {
 			iter = inspectBranch
 		}
 		// # Fetch upstream changes
-		err = seedshell.ImpureRun("git", "fetch", "--all", "--prune")
+		err = git.Fetch("", "--all")
 		if err != nil {
 			return seederr.Wrap(err)
 		}
 		// # Rebase dev branch
 		log.Printf("\x1b[34mRebasing: %v\x1b[0m", chain)
-		incomingCommits := []string{}
-		incomingCommitsOutput, err := seedshell.PureOutput("git", "rev-list", "--ancestry-path", "base/"+devBranch+"..origin/main")
+		incomingCommits, err := git.ListCommitHash("", "base/"+devBranch, "origin/main")
 		if err != nil {
 			return seederr.Wrap(err)
 		}
-		for _, commitHash := range strings.Split(string(incomingCommitsOutput), "\n") {
-			commitHash = strings.TrimSpace(commitHash)
-			if commitHash != "" {
-				incomingCommits = append(incomingCommits, commitHash)
-			}
-		}
-		baseCommitHashOutput, err := seedshell.PureOutput("git", "rev-parse", "base/"+devBranch)
+		baseCommitHash, err := git.GetCommitHash("", "base/"+devBranch)
 		if err != nil {
 			return seederr.Wrap(err)
 		}
-		incomingCommits = append(incomingCommits, strings.TrimSpace(string(baseCommitHashOutput)))
+		incomingCommits = append(incomingCommits, baseCommitHash)
 		for i := len(incomingCommits) - 1; i >= 0; i-- {
 			// Reverse iteration
 			incommingCommitHash := incomingCommits[i]
 			log.Printf("\x1b[34mRebasing to: %v\x1b[0m", incommingCommitHash)
-			err := seedshell.ImpureRun("git", "checkout", "base/"+devBranch)
+			err := git.Checkout("", "base/"+devBranch)
 			if err != nil {
 				return seederr.Wrap(err)
 			}
-			err = seedshell.ImpureRun("git", "rebase", incommingCommitHash)
+			err = git.Rebase("", incommingCommitHash)
 			if err != nil {
 				return seederr.Wrap(err)
 			}
 			for _, chainBranch := range chain[1:] {
-				err := seedshell.ImpureRun("git", "checkout", chainBranch)
+				err := git.Checkout("", chainBranch)
 				if err != nil {
 					return seederr.Wrap(err)
 				}
-				err = seedshell.ImpureRun("git", "pull", "--rebase")
+				err = git.PullRebase("")
 				if err != nil {
 					return seederr.Wrap(err)
 				}
@@ -125,11 +115,10 @@ func NdSync(args []string, ndConfig *common.NdConfig) error {
 		}
 		// # Cleanup local change branches
 		for iter := devBranch; iter != ("base/" + devBranch); {
-			inspectBranchOutput, err := seedshell.PureOutput("git", "rev-parse", "--abbrev-ref", "--symbolic-full-name", iter+"@{upstream}")
+			inspectBranch, err := git.GetBranchTracking("", iter)
 			if err != nil {
 				return seederr.Wrap(err)
 			}
-			inspectBranch := strings.TrimSpace(string(inspectBranchOutput))
 			if inspectBranch == "" {
 				return seederr.WrapErrorf("tracking upstream is missing for %v", iter)
 			}
@@ -139,30 +128,27 @@ func NdSync(args []string, ndConfig *common.NdConfig) error {
 			if inspectBranch == ("base/" + devBranch) {
 				break
 			}
-			nextBranchOutput, err := seedshell.PureOutput("git", "rev-parse", "--abbrev-ref", "--symbolic-full-name", inspectBranch+"@{upstream}")
+			nextBranch, err := git.GetBranchTracking("", inspectBranch)
 			if err != nil {
 				return seederr.Wrap(err)
 			}
-			nextBranch := strings.TrimSpace(string(nextBranchOutput))
-			inspectCommitHashOutput, err := seedshell.PureOutput("git", "rev-parse", inspectBranch)
+			inspectCommitHash, err := git.GetCommitHash("", inspectBranch)
 			if err != nil {
 				return seederr.Wrap(err)
 			}
-			inspectCommitHash := strings.TrimSpace(string(inspectCommitHashOutput))
-			nextCommitHashOutput, err := seedshell.PureOutput("git", "rev-parse", nextBranch)
+			nextCommitHash, err := git.GetCommitHash("", nextBranch)
 			if err != nil {
 				return seederr.Wrap(err)
 			}
-			nextCommitHash := strings.TrimSpace(string(nextCommitHashOutput))
 			if inspectCommitHash == nextCommitHash {
 				if !strings.HasPrefix(inspectBranch, "change/") {
 					return seederr.WrapErrorf("unexpected empty branch %v", inspectBranch)
 				}
-				err := seedshell.ImpureRun("git", "branch", "-d", inspectBranch)
+				err := git.DeleteMergedBranch("", inspectBranch)
 				if err != nil {
 					return seederr.Wrap(err)
 				}
-				err = seedshell.ImpureRun("git", "branch", "--set-upstream-to="+nextBranch, iter)
+				err = git.SetBranchTracking("", iter, nextBranch)
 				if err != nil {
 					return seederr.Wrap(err)
 				}
