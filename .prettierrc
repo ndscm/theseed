@@ -11,12 +11,23 @@
   "importOrderSeparation": true,
   "importOrderSideEffects": false,
   "importOrderSortSpecifiers": true,
-  "plugins": ["@trivago/prettier-plugin-sort-imports"],
+  "plugins": [
+    "@trivago/prettier-plugin-sort-imports",
+    "prettier-plugin-groovy"
+  ],
   "printWidth": 80,
   "proseWrap": "always",
   "semi": false,
   "singleQuote": false,
   "tabWidth": 2,
   "trailingComma": "all",
-  "useTabs": false
+  "useTabs": false,
+  "overrides": [
+    {
+      "files": ["Jenkinsfile", "Jenkinsfile.*", "*.Jenkinsfile"],
+      "options": {
+        "parser": "groovy"
+      }
+    }
+  ]
 }
