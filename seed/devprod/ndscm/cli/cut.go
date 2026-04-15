@@ -48,7 +48,7 @@ func NdCut(args []string, ndConfig *common.NdConfig) error {
 		if !strings.HasPrefix(trackingBranch, "change/") && !strings.HasPrefix(trackingBranch, "base/") {
 			return seederr.WrapErrorf("tracking chain is broken for %v (point to %v)", currentBranch, trackingBranch)
 		}
-		mergeCommitsOutput, err := seedshell.PureOutput("git", "rev-list", "--merges", trackingBranch+".."+currentBranch)
+		mergeCommitsOutput, err := seedshell.PureOutput("git", "rev-list", "--ancestry-path", "--merges", trackingBranch+".."+currentBranch)
 		if err != nil {
 			return seederr.Wrap(err)
 		}
