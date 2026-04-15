@@ -62,11 +62,11 @@ func NdSetup(args []string, ndConfig *common.NdConfig) error {
 	}
 	err = injectShrcLine(ndConfig.Dry, filepath.Join(userHome, ".bashrc"), injectionCommand)
 	if err != nil {
-		return err
+		return seederr.Wrap(err)
 	}
 	err = injectShrcLine(ndConfig.Dry, filepath.Join(userHome, ".zshrc"), injectionCommand)
 	if err != nil {
-		return err
+		return seederr.Wrap(err)
 	}
 	return nil
 }
