@@ -84,7 +84,7 @@ func NdSync(args []string, ndConfig *common.NdConfig) error {
 		// # Rebase dev branch
 		log.Printf("\x1b[34mRebasing: %v\x1b[0m", chain)
 		incomingCommits := []string{}
-		incomingCommitsOutput, err := seedshell.PureOutput("git", "rev-list", "base/"+devBranch+"..origin/main")
+		incomingCommitsOutput, err := seedshell.PureOutput("git", "rev-list", "--ancestry-path", "base/"+devBranch+"..origin/main")
 		if err != nil {
 			return seederr.Wrap(err)
 		}
