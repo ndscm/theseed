@@ -1,0 +1,97 @@
+pipeline {
+  agent any
+  triggers {
+    GenericTrigger(
+      causeString: 'Pull Request',
+      genericHeaderVariables: [[
+        key: 'x-github-event', defaultValue: '',
+      ]],
+      genericVariables: [[
+        key: 'action', value: '$.action', defaultValue: '',
+      ], [
+        key: 'pull_request_id', value: '$.pull_request.id', defaultValue: '',
+      ], [
+        key: 'pull_request_number', value: '$.pull_request.number', defaultValue: '',
+      ], [
+        key: 'pull_request_state', value: '$.pull_request.state', defaultValue: '',
+      ], [
+        key: 'pull_request_title', value: '$.pull_request.title', defaultValue: '',
+      ], [
+        key: 'pull_request_head_ref', value: '$.pull_request.head.ref', defaultValue: '',
+      ], [
+        key: 'pull_request_head_sha', value: '$.pull_request.head.sha', defaultValue: '',
+      ], [
+        key: 'pull_request_head_repo_git_url', value: '$.pull_request.head.repo.git_url', defaultValue: '',
+      ], [
+        key: 'pull_request_base_ref', value: '$.pull_request.base.ref', defaultValue: '',
+      ], [
+        key: 'pull_request_base_sha', value: '$.pull_request.base.sha', defaultValue: '',
+      ], [
+        key: 'pull_request_base_repo_git_url', value: '$.pull_request.base.repo.git_url', defaultValue: '',
+      ], [
+        key: 'repository_html_url', value: '$.repository.html_url', defaultValue: '',
+      ], [
+        key: 'repository_fork', value: '$.repository.fork', defaultValue: '',
+      ], [
+        key: 'repository_git_url', value: '$.repository.git_url', defaultValue: '',
+      ], [
+        key: 'repository_clone_url', value: '$.repository.clone_url', defaultValue: '',
+      ]],
+      regexpFilterText: '$x_github_event $action',
+      regexpFilterExpression: '^pull_request (opened|reopened|synchronize)$',
+    )
+  }
+  stages {
+    stage('Validate') {
+      steps {
+        echo "Event: ${env.x_github_event}"
+        echo "Action: ${env.action}"
+        echo "Pull request ID: ${env.pull_request_id}"
+        echo "Pull request number: ${env.pull_request_number}"
+        echo "Pull request state: ${env.pull_request_state}"
+        echo "Pull request title: ${env.pull_request_title}"
+        echo "Pull request head ref: ${env.pull_request_head_ref}"
+        echo "Pull request head SHA: ${env.pull_request_head_sha}"
+        echo "Pull request head repo git URL: ${env.pull_request_head_repo_git_url}"
+        echo "Pull request base ref: ${env.pull_request_base_ref}"
+        echo "Pull request base SHA: ${env.pull_request_base_sha}"
+        echo "Pull request base repo git URL: ${env.pull_request_base_repo_git_url}"
+        echo "Repository HTML URL: ${env.repository_html_url}"
+        echo "Repository fork: ${env.repository_fork}"
+        echo "Repository git URL: ${env.repository_git_url}"
+        echo "Repository clone URL: ${env.repository_clone_url}"
+      }
+    }
+    stage('Start') {
+      steps {
+        script {
+          if (env.repository_html_url != 'https://github.com/ndscm/theseed') {
+            echo "Skipping non-canonical repository: ${env.repository_html_url}"
+            currentBuild.result = 'SUCCESS'
+            return
+          }
+          build job: 'theseed-request', wait: false, parameters: [
+            string(name: 'repository_url', value: env.repository_html_url),
+            string(name: 'request_number', value: env.pull_request_number),
+            string(name: 'request_branch', value: env.pull_request_head_ref),
+            string(name: 'request_commit_hash', value: env.pull_request_head_sha),
+            string(name: 'base_branch', value: env.pull_request_base_ref),
+            string(name: 'base_commit_hash', value: env.pull_request_base_sha),
+          ]
+        }
+      }
+    }
+  }
+  post {
+    failure {
+      withCredentials([usernamePassword(credentialsId: 'ndscm', usernameVariable: 'GH_USER', passwordVariable: 'GH_TOKEN')]) {
+        sh '''#!/usr/bin/env bash
+gh api --method POST /repos/ndscm/theseed/statuses/"$pull_request_head_sha" \
+  -f state=failure \
+  -f context=theseed/github \
+  -f description='Failed to trigger workflows from webhook'
+'''
+      }
+    }
+  }
+}
