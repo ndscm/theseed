@@ -29,6 +29,7 @@
   },
   "go.toolsManagement.autoUpdate": true,
   "isort.args": ["--profile", "black"],
+  "prettier.documentSelectors": ["**/Jenkinsfile"],
   "prettier.proseWrap": "always",
   "prettier.semi": false,
   "typescript.updateImportsOnFileMove.enabled": "always",
@@ -43,6 +44,9 @@
   },
   "[dockerfile]": {
     "editor.defaultFormatter": "ms-azuretools.vscode-containers"
+  },
+  "[groovy]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
   "[html]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
