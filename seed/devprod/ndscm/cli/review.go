@@ -3,11 +3,11 @@ package main
 import (
 	"log"
 	"os"
-	"path/filepath"
 	"strings"
 
 	"github.com/ndscm/theseed/seed/devprod/ndscm/common"
 	"github.com/ndscm/theseed/seed/devprod/ndscm/scm"
+	"github.com/ndscm/theseed/seed/devprod/ndscm/scm/git"
 	"github.com/ndscm/theseed/seed/devprod/ndscm/user"
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
 	"github.com/ndscm/theseed/seed/infra/shell/go/seedshell"
@@ -34,66 +34,64 @@ func NdReview(args []string, ndConfig *common.NdConfig) error {
 		if err != nil {
 			return seederr.Wrap(err)
 		}
+		monorepoGitDir, err := scm.MonorepoGitDir()
+		if err != nil {
+			return seederr.Wrap(err)
+		}
 		err = common.QuickVerifyGitMonorepo()
 		if err != nil {
 			return seederr.Wrap(err)
 		}
 		featureName := strings.TrimSpace(args[1])
-		worktreePath := filepath.Join(monorepoHome, "review/"+featureName)
+		worktreePath := git.GetBranchWorktreePath(monorepoHome, "review/"+featureName)
 		_, err = os.Stat(worktreePath)
 		if err != nil && !os.IsNotExist(err) {
 			return seederr.Wrap(err)
 		}
 		if err == nil {
 			log.Printf("Worktree %v already exists, removing...\n", worktreePath)
-			err = seedshell.ImpureRun("git", "worktree", "remove", worktreePath)
+			err = git.RemoveWorktree(monorepoGitDir, worktreePath)
 			if err != nil {
 				return seederr.Wrap(err)
 			}
 		}
-		_, err = seedshell.PureOutput("git", "rev-parse", "--verify", "review/"+featureName)
+		_, err = git.GetCommitHash(monorepoGitDir, "review/"+featureName)
 		if err == nil {
 			log.Printf("Branch review/%v already exists, removing...\n", featureName)
-			err = seedshell.ImpureRun("git", "branch", "--delete", "--force", "review/"+featureName)
+			err = git.DeleteBranch(monorepoGitDir, "review/"+featureName)
 			if err != nil {
 				return seederr.Wrap(err)
 			}
 		}
-		trackingBranchOutput, err := seedshell.PureOutput("git", "rev-parse", "--abbrev-ref", "--symbolic-full-name", "change/"+featureName+"@{upstream}")
+		trackingBranch, err := git.GetBranchTracking(monorepoGitDir, "change/"+featureName)
 		if err != nil {
 			return seederr.WrapErrorf("tracking upstream is missing for change/%v", featureName)
 		}
-		trackingBranch := strings.TrimSpace(string(trackingBranchOutput))
-		mergeBaseHashOutput, err := seedshell.PureOutput("git", "merge-base", "origin/main", "change/"+featureName)
+		mergeBaseHash, err := git.GetMergeBaseHash(monorepoGitDir, "origin/main", "change/"+featureName)
 		if err != nil {
 			return seederr.WrapErrorf("merge base is missing for change/%v", featureName)
 		}
-		mergeBaseHash := strings.TrimSpace(string(mergeBaseHashOutput))
-		err = seedshell.ImpureRun("git", "branch", "review/"+featureName, mergeBaseHash)
+		err = git.CreateBranch(monorepoGitDir, "review/"+featureName, mergeBaseHash, "origin/main")
 		if err != nil {
 			return seederr.Wrap(err)
 		}
-		err = seedshell.ImpureRun("git", "branch", "--set-upstream-to=origin/main", "review/"+featureName)
+		worktreePath, err = git.CreateBranchWorktree(monorepoGitDir, monorepoHome, "review/"+featureName)
 		if err != nil {
 			return seederr.Wrap(err)
 		}
-		err = seedshell.ImpureRun("git", "worktree", "add", worktreePath, "review/"+featureName)
+		err = git.CherryPickRange(worktreePath, trackingBranch, "change/"+featureName)
 		if err != nil {
 			return seederr.Wrap(err)
 		}
-		err = seedshell.ImpureRun("git", "-C", worktreePath, "cherry-pick", trackingBranch+"..change/"+featureName)
+		err = git.PushBranch(monorepoGitDir, "review/"+featureName, "origin", currentUserHandle+"/"+featureName)
 		if err != nil {
 			return seederr.Wrap(err)
 		}
-		err = seedshell.ImpureRun("git", "push", "--force", "origin", "review/"+featureName+":"+currentUserHandle+"/"+featureName)
+		err = git.RemoveWorktree(monorepoGitDir, worktreePath)
 		if err != nil {
 			return seederr.Wrap(err)
 		}
-		err = seedshell.ImpureRun("git", "worktree", "remove", worktreePath)
-		if err != nil {
-			return seederr.Wrap(err)
-		}
-		err = seedshell.ImpureRun("git", "branch", "--delete", "--force", "review/"+featureName)
+		err = git.DeleteBranch(monorepoGitDir, "review/"+featureName)
 		if err != nil {
 			return seederr.Wrap(err)
 		}

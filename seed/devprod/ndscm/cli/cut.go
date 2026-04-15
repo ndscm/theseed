@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/ndscm/theseed/seed/devprod/ndscm/common"
+	"github.com/ndscm/theseed/seed/devprod/ndscm/scm/git"
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
 	"github.com/ndscm/theseed/seed/infra/shell/go/seedshell"
 )
@@ -18,50 +19,43 @@ func NdCut(args []string, ndConfig *common.NdConfig) error {
 	}
 	featureName := strings.TrimSpace(args[1])
 	target := strings.TrimSpace(args[2])
-	checkDirtyOutput, err := seedshell.PureOutput("git", "status", "--porcelain")
+	dirtyFiles, err := git.GetStatus("")
 	if err != nil {
 		return seederr.Wrap(err)
 	}
-	if strings.TrimSpace(string(checkDirtyOutput)) != "" {
-		return seederr.WrapErrorf("workspace is dirty:\n%v", string(checkDirtyOutput))
+	if len(dirtyFiles) > 0 {
+		return seederr.WrapErrorf("workspace is dirty:\n%v", dirtyFiles)
 	}
-	devBranchOutput, err := seedshell.PureOutput("git", "branch", "--show-current")
+	devBranch, err := git.GetCurrentBranch("")
 	if err != nil {
 		return seederr.Wrap(err)
 	}
-	devBranch := strings.TrimSpace(string(devBranchOutput))
 	if !strings.HasPrefix(devBranch, "dev") {
 		return seederr.WrapErrorf("workspace branch is not a dev branch: %v", devBranch)
 	}
-	targetCommitHashOutput, err := seedshell.PureOutput("git", "rev-parse", target)
+	targetCommitHash, err := git.GetCommitHash("", target)
 	if err != nil {
 		return seederr.Wrap(err)
 	}
-	targetCommitHash := strings.TrimSpace(string(targetCommitHashOutput))
 	currentBranch := devBranch
 	for !strings.HasPrefix(currentBranch, "base/") {
-		trackingBranchOutput, err := seedshell.PureOutput("git", "rev-parse", "--abbrev-ref", "--symbolic-full-name", currentBranch+"@{upstream}")
+		trackingBranch, err := git.GetBranchTracking("", currentBranch)
 		if err != nil {
-			return seederr.WrapErrorf("tracking upstream is missing for %v", currentBranch)
+			return seederr.Wrap(err)
 		}
-		trackingBranch := strings.TrimSpace(string(trackingBranchOutput))
 		if !strings.HasPrefix(trackingBranch, "change/") && !strings.HasPrefix(trackingBranch, "base/") {
 			return seederr.WrapErrorf("tracking chain is broken for %v (point to %v)", currentBranch, trackingBranch)
 		}
-		mergeCommitsOutput, err := seedshell.PureOutput("git", "rev-list", "--ancestry-path", "--merges", trackingBranch+".."+currentBranch)
+		mergeCommits, err := git.ListMergeCommitHash("", trackingBranch, currentBranch)
 		if err != nil {
 			return seederr.Wrap(err)
 		}
-		if strings.TrimSpace(string(mergeCommitsOutput)) != "" {
-			return seederr.WrapErrorf("current dev branch (%v) is not a pure branch and contains merge commit:\n%v", currentBranch, string(mergeCommitsOutput))
+		if len(mergeCommits) > 0 {
+			return seederr.WrapErrorf("current dev branch (%v) is not a pure branch and contains merge commit:\n%v", currentBranch, mergeCommits)
 		}
-		branchCommitsOutput, err := seedshell.PureOutput("git", "rev-list", "--ancestry-path", trackingBranch+".."+currentBranch)
+		branchCommits, err := git.ListCommitHash("", trackingBranch, currentBranch)
 		if err != nil {
 			return seederr.Wrap(err)
-		}
-		branchCommits := strings.Split(strings.TrimSpace(string(branchCommitsOutput)), "\n")
-		for i, commitHash := range branchCommits {
-			branchCommits[i] = strings.TrimSpace(commitHash)
 		}
 		found := false
 		for _, commitHash := range branchCommits {
@@ -71,15 +65,11 @@ func NdCut(args []string, ndConfig *common.NdConfig) error {
 			}
 		}
 		if found {
-			err := seedshell.ImpureRun("git", "branch", "change/"+featureName, targetCommitHash)
+			err := git.CreateBranch("", "change/"+featureName, targetCommitHash, trackingBranch)
 			if err != nil {
 				return seederr.Wrap(err)
 			}
-			err = seedshell.ImpureRun("git", "branch", "--set-upstream-to="+trackingBranch, "change/"+featureName)
-			if err != nil {
-				return seederr.Wrap(err)
-			}
-			err = seedshell.ImpureRun("git", "branch", "--set-upstream-to=change/"+featureName, currentBranch)
+			err = git.SetBranchTracking("", currentBranch, "change/"+featureName)
 			if err != nil {
 				return seederr.Wrap(err)
 			}
