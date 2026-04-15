@@ -1,0 +1,22 @@
+load("@rules_go//go:def.bzl", "go_library")
+
+package(default_visibility = [
+    "//seed/devprod/ndscm:__subpackages__",
+])
+
+go_library(
+    name = "git",
+    srcs = [
+        "branch.go",
+        "commit.go",
+        "rebase.go",
+        "remote.go",
+        "status.go",
+        "worktree.go",
+    ],
+    importpath = "github.com/ndscm/theseed/seed/devprod/ndscm/scm/git",
+    deps = [
+        "//seed/infra/error/go/seederr",
+        "//seed/infra/shell/go/seedshell",
+    ],
+)
