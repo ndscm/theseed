@@ -20,7 +20,7 @@ func NdReview(args []string, ndConfig *common.NdConfig) error {
 	if ndConfig.Scm == "git" {
 		err := common.QuickVerifyGitMonorepo(ndConfig)
 		if err != nil {
-			return err
+			return seederr.Wrap(err)
 		}
 		featureName := strings.TrimSpace(args[1])
 		worktreePath := filepath.Join(ndConfig.MonorepoHome, "review/"+featureName)
@@ -32,7 +32,7 @@ func NdReview(args []string, ndConfig *common.NdConfig) error {
 			log.Printf("Worktree %v already exists, removing...\n", worktreePath)
 			err = common.ShellRun(ndConfig.Dry, ndConfig.ShellEval, "git", "worktree", "remove", worktreePath)
 			if err != nil {
-				return err
+				return seederr.Wrap(err)
 			}
 		}
 		_, err = common.ShellOutput(false, "git", "rev-parse", "--verify", "review/"+featureName)
@@ -40,7 +40,7 @@ func NdReview(args []string, ndConfig *common.NdConfig) error {
 			log.Printf("Branch review/%v already exists, removing...\n", featureName)
 			err = common.ShellRun(ndConfig.Dry, ndConfig.ShellEval, "git", "branch", "--delete", "--force", "review/"+featureName)
 			if err != nil {
-				return err
+				return seederr.Wrap(err)
 			}
 		}
 		trackingBranchOutput, err := common.ShellOutput(false, "git", "rev-parse", "--abbrev-ref", "--symbolic-full-name", "change/"+featureName+"@{upstream}")
@@ -55,31 +55,31 @@ func NdReview(args []string, ndConfig *common.NdConfig) error {
 		mergeBaseHash := strings.TrimSpace(string(mergeBaseHashOutput))
 		err = common.ShellRun(ndConfig.Dry, ndConfig.ShellEval, "git", "branch", "review/"+featureName, mergeBaseHash)
 		if err != nil {
-			return err
+			return seederr.Wrap(err)
 		}
 		err = common.ShellRun(ndConfig.Dry, ndConfig.ShellEval, "git", "branch", "--set-upstream-to=origin/main", "review/"+featureName)
 		if err != nil {
-			return err
+			return seederr.Wrap(err)
 		}
 		err = common.ShellRun(ndConfig.Dry, ndConfig.ShellEval, "git", "worktree", "add", worktreePath, "review/"+featureName)
 		if err != nil {
-			return err
+			return seederr.Wrap(err)
 		}
 		err = common.ShellRun(ndConfig.Dry, ndConfig.ShellEval, "git", "-C", worktreePath, "cherry-pick", trackingBranch+"..change/"+featureName)
 		if err != nil {
-			return err
+			return seederr.Wrap(err)
 		}
 		err = common.ShellRun(ndConfig.Dry, ndConfig.ShellEval, "git", "push", "--force", "origin", "review/"+featureName+":"+ndConfig.UserHandle+"/"+featureName)
 		if err != nil {
-			return err
+			return seederr.Wrap(err)
 		}
 		err = common.ShellRun(ndConfig.Dry, ndConfig.ShellEval, "git", "worktree", "remove", worktreePath)
 		if err != nil {
-			return err
+			return seederr.Wrap(err)
 		}
 		err = common.ShellRun(ndConfig.Dry, ndConfig.ShellEval, "git", "branch", "--delete", "--force", "review/"+featureName)
 		if err != nil {
-			return err
+			return seederr.Wrap(err)
 		}
 	} else {
 		return seederr.WrapErrorf("nd-review does not support %v", ndConfig.Scm)

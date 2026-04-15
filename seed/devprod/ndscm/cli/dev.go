@@ -17,7 +17,7 @@ func NdDev(args []string, ndConfig *common.NdConfig) error {
 	if ndConfig.Scm == "git" {
 		err := common.QuickVerifyGitMonorepo(ndConfig)
 		if err != nil {
-			return err
+			return seederr.Wrap(err)
 		}
 		worktreeName := "dev"
 		if len(args) == 1 {
