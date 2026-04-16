@@ -166,7 +166,7 @@ manifest:
     key_value: py_key_value_aio
     keyring: keyring
     markdown_it: markdown_it_py
-    markupsafe: MarkupSafe
+    markupsafe: markupsafe
     mcp: mcp
     mdurl: mdurl
     more_itertools: more_itertools
@@ -232,8 +232,8 @@ manifest:
     setuptools: setuptools
     six: six
     sniffio: sniffio
-    socks: PySocks
-    sockshandler: PySocks
+    socks: pysocks
+    sockshandler: pysocks
     sortedcontainers: sortedcontainers
     soupsieve: soupsieve
     srt: srt
@@ -257,4 +257,4 @@ manifest:
     zipp: zipp
   pip_repository:
     name: pypi
-integrity: 6ba777708fa6a5fcf241e37a27ee1b5dd91a8bb10f882a1f1e974fd6364e45fe
+integrity: 6cddc678af4f4b526b24614c7668df1542e033fcaab8767783558b34b864d69b
