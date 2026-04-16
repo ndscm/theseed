@@ -1,0 +1,160 @@
+pipeline {
+  agent any
+  parameters {
+    // repository_url is kept for compatibility with callers that pass it through;
+    // the Validate stage rejects anything other than the default.
+    string name: 'repository_url', defaultValue: 'https://github.com/ndscm/theseed'
+    string name: 'request_number'
+    string name: 'request_branch', defaultValue: ''
+    string name: 'request_commit_hash', defaultValue: ''
+    string name: 'base_branch', defaultValue: ''
+    string name: 'base_commit_hash', defaultValue: ''
+  }
+  stages {
+    stage('Validate') {
+      steps {
+        echo "Repository URL: ${env.repository_url}"
+        echo "Request number: ${env.request_number}"
+        echo "Request branch: ${env.request_branch}"
+        echo "Request commit hash: ${env.request_commit_hash}"
+        echo "Base branch: ${env.base_branch}"
+        echo "Base commit hash: ${env.base_commit_hash}"
+        script {
+          if (env.repository_url != 'https://github.com/ndscm/theseed') {
+            error "Unexpected repository_url: ${env.repository_url}"
+          }
+        }
+        script {
+          withCredentials([usernamePassword(credentialsId: 'ndscm', usernameVariable: 'GH_USER', passwordVariable: 'GH_TOKEN')]) {
+            if (!env.request_branch) {
+              env.request_branch = sh(
+                script: '''#!/usr/bin/env bash
+gh api /repos/ndscm/theseed/pulls/"$request_number" --jq '.head.ref'
+''',
+                returnStdout: true
+              ).trim()
+            }
+            if (!env.request_commit_hash) {
+              env.request_commit_hash = sh(
+                script: '''#!/usr/bin/env bash
+gh api /repos/ndscm/theseed/pulls/"$request_number" --jq '.head.sha'
+''',
+                returnStdout: true
+              ).trim()
+            }
+            if (!env.base_branch) {
+              env.base_branch = sh(
+                script: '''#!/usr/bin/env bash
+gh api /repos/ndscm/theseed/pulls/"$request_number" --jq '.base.ref'
+''',
+                returnStdout: true
+              ).trim()
+            }
+            if (!env.base_commit_hash) {
+              env.base_commit_hash = sh(
+                script: '''#!/usr/bin/env bash
+gh api /repos/ndscm/theseed/pulls/"$request_number" --jq '.base.sha'
+''',
+                returnStdout: true
+              ).trim()
+            }
+            if (!env.request_branch || !env.request_commit_hash || !env.base_branch || !env.base_commit_hash) {
+              error "Failed to resolve PR ${env.request_number}: missing one of request_branch, request_commit_hash, base_branch, base_commit_hash"
+            }
+            sh '''#!/usr/bin/env bash
+gh api --method POST /repos/ndscm/theseed/statuses/"$request_commit_hash" \
+  -f state=pending \
+  -f context=theseed/request \
+  -f description='Triggering per-commit workflows'
+'''
+          }
+        }
+      }
+    }
+    stage('Checkout') {
+      steps {
+        checkout scmGit(
+          branches: [[name: "${env.request_commit_hash}"]],
+          userRemoteConfigs: [[url: "${env.repository_url}.git", credentialsId: 'ndscm']],
+        )
+      }
+    }
+    stage('Start') {
+      steps {
+        script {
+          def commits = sh(
+            script: '''#!/usr/bin/env bash
+git rev-list "$base_commit_hash".."$request_commit_hash"
+''',
+            returnStdout: true
+          ).trim().split('\n')
+          for (commit_hash in commits) {
+            if (!commit_hash) {
+              continue
+            }
+            withCredentials([usernamePassword(credentialsId: 'ndscm', usernameVariable: 'GH_USER', passwordVariable: 'GH_TOKEN')]) {
+              withEnv(["COMMIT_HASH=${commit_hash}"]) {
+                sh '''#!/usr/bin/env bash
+gh api --method POST /repos/ndscm/theseed/statuses/"$COMMIT_HASH" \
+  -f state=pending \
+  -f context=theseed/format \
+  -f description='Scheduling format check'
+'''
+                sh '''#!/usr/bin/env bash
+gh api --method POST /repos/ndscm/theseed/statuses/"$COMMIT_HASH" \
+  -f state=pending \
+  -f context=theseed/tidy \
+  -f description='Scheduling tidy check'
+'''
+                sh '''#!/usr/bin/env bash
+gh api --method POST /repos/ndscm/theseed/statuses/"$COMMIT_HASH" \
+  -f state=pending \
+  -f context=theseed/unittest \
+  -f description='Scheduling unittest check'
+'''
+              }
+            }
+            build job: 'theseed-format', wait: false, parameters: [
+              string(name: 'repository_url', value: env.repository_url),
+              string(name: 'commit_hash', value: commit_hash),
+            ]
+            build job: 'theseed-tidy', wait: false, parameters: [
+              string(name: 'repository_url', value: env.repository_url),
+              string(name: 'commit_hash', value: commit_hash),
+            ]
+            build job: 'theseed-unittest', wait: false, parameters: [
+              string(name: 'repository_url', value: env.repository_url),
+              string(name: 'commit_hash', value: commit_hash),
+            ]
+          }
+        }
+      }
+    }
+  }
+  post {
+    success {
+      withCredentials([usernamePassword(credentialsId: 'ndscm', usernameVariable: 'GH_USER', passwordVariable: 'GH_TOKEN')]) {
+        sh '''#!/usr/bin/env bash
+gh api --method POST /repos/ndscm/theseed/statuses/"$request_commit_hash" \
+  -f state=success \
+  -f context=theseed/request \
+  -f description='Triggered per-commit workflows'
+'''
+      }
+    }
+    failure {
+      script {
+        if (env.request_commit_hash) {
+          withCredentials([usernamePassword(credentialsId: 'ndscm', usernameVariable: 'GH_USER', passwordVariable: 'GH_TOKEN')]) {
+            sh '''#!/usr/bin/env bash
+gh api --method POST /repos/ndscm/theseed/statuses/"$request_commit_hash" \
+  -f state=failure \
+  -f context=theseed/request \
+  -f description='Request pipeline failed'
+'''
+          }
+        }
+      }
+    }
+  }
+}
