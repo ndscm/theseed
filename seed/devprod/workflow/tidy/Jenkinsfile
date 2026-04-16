@@ -1,0 +1,89 @@
+pipeline {
+  agent any
+  parameters {
+    // repository_url is kept for compatibility with callers that pass it through;
+    // the Validate stage rejects anything other than the default.
+    string name: 'repository_url', defaultValue: 'https://github.com/ndscm/theseed'
+    string name: 'commit_hash'
+  }
+  stages {
+    stage('Validate') {
+      steps {
+        echo "Repository URL: ${env.repository_url}"
+        echo "Commit hash: ${env.commit_hash}"
+        script {
+          if (env.repository_url != 'https://github.com/ndscm/theseed') {
+            error "Unexpected repository_url: ${env.repository_url}"
+          }
+        }
+        withCredentials([usernamePassword(credentialsId: 'ndscm', usernameVariable: 'GH_USER', passwordVariable: 'GH_TOKEN')]) {
+          sh '''#!/usr/bin/env bash
+gh api --method POST /repos/ndscm/theseed/statuses/"$commit_hash" \
+  -f state=pending \
+  -f context=theseed/tidy \
+  -f description='Running tidy checks'
+'''
+        }
+      }
+    }
+    stage('Checkout') {
+      steps {
+        checkout scmGit(
+          branches: [[name: "${env.commit_hash}"]],
+          extensions: [
+            cleanBeforeCheckout(),
+            cleanAfterCheckout()
+          ],
+          userRemoteConfigs: [[url: "${env.repository_url}.git", credentialsId: 'ndscm']],
+        )
+      }
+    }
+    stage('Bootstrap') {
+      steps {
+        sh '''#!/usr/bin/env bash
+./bootstrap.sh
+'''
+      }
+    }
+    stage('Tidy') {
+      steps {
+        sh '''#!/usr/bin/env bash
+SEED_TIDY_FULL=1 ./tidy.sh
+'''
+      }
+    }
+    stage('Test') {
+      steps {
+        sh '''#!/usr/bin/env bash
+if [ -n "$(git status --porcelain)" ]; then
+  echo "Worktree is dirty after tidying:"
+  git diff
+  exit 1
+fi
+'''
+      }
+    }
+  }
+  post {
+    success {
+      withCredentials([usernamePassword(credentialsId: 'ndscm', usernameVariable: 'GH_USER', passwordVariable: 'GH_TOKEN')]) {
+        sh '''#!/usr/bin/env bash
+gh api --method POST /repos/ndscm/theseed/statuses/"$commit_hash" \
+  -f state=success \
+  -f context=theseed/tidy \
+  -f description='Worktree is tidy'
+'''
+      }
+    }
+    failure {
+      withCredentials([usernamePassword(credentialsId: 'ndscm', usernameVariable: 'GH_USER', passwordVariable: 'GH_TOKEN')]) {
+        sh '''#!/usr/bin/env bash
+gh api --method POST /repos/ndscm/theseed/statuses/"$commit_hash" \
+  -f state=failure \
+  -f context=theseed/tidy \
+  -f description='Tidy pipeline failed'
+'''
+      }
+    }
+  }
+}
