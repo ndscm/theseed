@@ -14,7 +14,8 @@ async def main():
     with open(
         "seed/devprod/python/modules_mapping/local_modules_mapping.json", "r"
     ) as f:
-        mapping = json.load(f)
+        mapping: dict[str, str] = json.load(f)
+    mapping = {k: v.lower() for k, v in mapping.items()}
     if platform.system() == "Linux":
         output = (
             f"{build_workspace_directory}/gazelle_python_modules_mapping_linux.json"
