@@ -3,7 +3,7 @@ name = "theseed"
 version = "0.0.0"
 description = "theseed monorepo"
 readme = "README.md"
-requires-python = "~=3.11"
+requires-python = "~=3.11.13"
 dependencies = [
     "confluent-kafka>=2.10.1",
     "fastapi>=0.115.12",
