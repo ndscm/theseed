@@ -1,0 +1,16 @@
+load("@rules_go//go:def.bzl", "go_library")
+
+package(default_visibility = ["//visibility:public"])
+
+go_library(
+    name = "eventstream",
+    srcs = [
+        "client.go",
+        "event.go",
+    ],
+    importpath = "github.com/ndscm/theseed/seed/infra/http/go/eventstream",
+    deps = [
+        "//seed/infra/error/go/seederr",
+        "//seed/infra/log/go/seedlog",
+    ],
+)
