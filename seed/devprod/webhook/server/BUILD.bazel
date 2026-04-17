@@ -1,0 +1,27 @@
+load("@rules_go//go:def.bzl", "go_binary", "go_library")
+
+alias(
+    name = "server",
+    actual = ":webhook-server",
+)
+
+go_library(
+    name = "server_lib",
+    srcs = ["server.go"],
+    importpath = "github.com/ndscm/theseed/seed/devprod/webhook/server",
+    visibility = ["//visibility:private"],
+    deps = [
+        "//seed/devprod/webhook/go/webhook",
+        "//seed/infra/error/go/seederr",
+        "//seed/infra/flag/go/seedflag",
+        "//seed/infra/init/go/seedinit",
+        "//seed/infra/log/go/seedlog",
+    ],
+)
+
+go_binary(
+    name = "webhook-server",
+    embed = [":server_lib"],
+    pure = "on",
+    visibility = ["//visibility:public"],
+)
