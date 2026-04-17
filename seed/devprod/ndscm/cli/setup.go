@@ -6,7 +6,6 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/ndscm/theseed/seed/devprod/ndscm/common"
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
 	"github.com/ndscm/theseed/seed/infra/shell/go/seedshell"
 )
@@ -49,7 +48,7 @@ func injectShrcLine(shrcPath string, line string) error {
 	return nil
 }
 
-func NdSetup(args []string, ndConfig *common.NdConfig) error {
+func NdSetup(args []string) error {
 	if seedshell.ShellEval() {
 		return seederr.WrapErrorf("nd-setup should not run with --shell-eval")
 	}

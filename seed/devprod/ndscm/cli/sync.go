@@ -11,7 +11,7 @@ import (
 	"github.com/ndscm/theseed/seed/infra/shell/go/seedshell"
 )
 
-func NdSync(args []string, ndConfig *common.NdConfig) error {
+func NdSync(args []string) error {
 	if seedshell.ShellEval() {
 		return seederr.WrapErrorf("nd-sync should not run with --shell-eval")
 	}

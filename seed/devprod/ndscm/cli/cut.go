@@ -4,13 +4,12 @@ import (
 	"log"
 	"strings"
 
-	"github.com/ndscm/theseed/seed/devprod/ndscm/common"
 	"github.com/ndscm/theseed/seed/devprod/ndscm/scm/git"
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
 	"github.com/ndscm/theseed/seed/infra/shell/go/seedshell"
 )
 
-func NdCut(args []string, ndConfig *common.NdConfig) error {
+func NdCut(args []string) error {
 	if seedshell.ShellEval() {
 		return seederr.WrapErrorf("nd-cut should not run with --shell-eval")
 	}
