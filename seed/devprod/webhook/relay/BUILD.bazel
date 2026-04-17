@@ -1,0 +1,27 @@
+load("@rules_go//go:def.bzl", "go_binary", "go_library")
+
+alias(
+    name = "relay",
+    actual = ":webhook-relay",
+)
+
+go_library(
+    name = "relay_lib",
+    srcs = ["relay.go"],
+    importpath = "github.com/ndscm/theseed/seed/devprod/webhook/relay",
+    visibility = ["//visibility:private"],
+    deps = [
+        "//seed/infra/error/go/seederr",
+        "//seed/infra/flag/go/seedflag",
+        "//seed/infra/http/go/eventstream",
+        "//seed/infra/init/go/seedinit",
+        "//seed/infra/log/go/seedlog",
+    ],
+)
+
+go_binary(
+    name = "webhook-relay",
+    embed = [":relay_lib"],
+    pure = "on",
+    visibility = ["//visibility:public"],
+)
