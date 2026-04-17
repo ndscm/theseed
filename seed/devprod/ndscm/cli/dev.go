@@ -12,7 +12,7 @@ import (
 	"github.com/ndscm/theseed/seed/infra/shell/go/seedshell"
 )
 
-func NdDev(args []string, ndConfig *common.NdConfig) error {
+func NdDev(args []string) error {
 	if !seedshell.ShellEval() {
 		log.Printf("\x1b[33mWarning: It's recommended to run nd-dev with --shell-eval\x1b[0m")
 	}
