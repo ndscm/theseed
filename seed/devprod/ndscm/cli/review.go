@@ -13,7 +13,7 @@ import (
 	"github.com/ndscm/theseed/seed/infra/shell/go/seedshell"
 )
 
-func NdReview(args []string, ndConfig *common.NdConfig) error {
+func NdReview(args []string) error {
 	if seedshell.ShellEval() {
 		return seederr.WrapErrorf("nd-review should not run with --shell-eval")
 	}

@@ -2,15 +2,11 @@ load("@rules_go//go:def.bzl", "go_library")
 
 go_library(
     name = "common",
-    srcs = [
-        "config.go",
-        "verify.go",
-    ],
+    srcs = ["verify.go"],
     importpath = "github.com/ndscm/theseed/seed/devprod/ndscm/common",
     visibility = ["//visibility:public"],
     deps = [
         "//seed/devprod/ndscm/scm",
         "//seed/infra/error/go/seederr",
-        "@com_github_joho_godotenv//:godotenv",
     ],
 )
