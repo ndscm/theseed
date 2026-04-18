@@ -1,0 +1,38 @@
+#!/bin/sh
+set -u
+
+if test "$#" != 1; then
+  printf "missing commit message file argument\n"
+  exit 1
+fi
+
+if test ! -f "${1}"; then
+  printf "missing commit message file: %s\n" "${1}"
+  exit 1
+fi
+
+if git interpret-trailers --no-divider --parse <"${1}" | grep -q "^Change-uuid: .*$"; then
+  exit 0
+fi
+
+generate_uuidv4() {
+  # Byte 17 produces the UUID variant nibble (8, 9, a, or b) at index 9.
+  set -- $(od -An -tx1 -N17 /dev/urandom)
+  if test "$#" != 17; then
+    printf 'failed to read random bytes from /dev/urandom\n' >&2
+    exit 1
+  fi
+  printf '%s%s%s%s-%s%s-4%x%s-%x%x%s-%s%s%s%s%s%s' \
+    "${1}" "${2}" "${3}" "${4}" \
+    "${5}" "${6}" \
+    "$((0x${7} % 16))" "${8}" \
+    "$((0x${17} % 4 + 8))" "$((0x${9} % 16))" "${10}" \
+    "${11}" "${12}" "${13}" "${14}" "${15}" "${16}"
+}
+
+change_uuid="$(generate_uuidv4)"
+
+if ! git interpret-trailers --in-place --where "start" --no-divider --trailer "Change-uuid: ${change_uuid}" "${1}"; then
+  printf "failed to insert Change-uuid: trailer in %s\n" "${1}"
+  exit 1
+fi
