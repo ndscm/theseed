@@ -1,0 +1,29 @@
+load("@rules_go//go:def.bzl", "go_binary", "go_library")
+
+package(default_visibility = ["//visibility:private"])
+
+alias(
+    name = "server",
+    actual = ":amadeus-server",
+)
+
+go_library(
+    name = "server_lib",
+    srcs = ["amadeus_server.go"],
+    importpath = "github.com/ndscm/theseed/seed/newtype/amadeus/server",
+    deps = [
+        "//seed/infra/error/go/seederr",
+        "//seed/infra/flag/go/seedflag",
+        "//seed/infra/grpc/go/seedgrpc",
+        "//seed/infra/init/go/seedinit",
+        "//seed/infra/log/go/seedlog",
+        "//seed/newtype/amadeus/wake/proto:wake_go_connect",
+        "//seed/newtype/amadeus/wake/service",
+    ],
+)
+
+go_binary(
+    name = "amadeus-server",
+    embed = [":server_lib"],
+    pure = "on",
+)
