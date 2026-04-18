@@ -1,0 +1,22 @@
+load("@rules_python//python:defs.bzl", "py_binary")
+
+package(default_visibility = ["//visibility:private"])
+
+py_binary(
+    name = "ndscm",
+    srcs = ["ndscm.py"],
+    deps = [
+        "//seed/devprod/openfork:clean",
+        "//seed/devprod/openfork:diffedit",
+        "//seed/devprod/openfork:diffpath",
+        "//seed/devprod/openfork:export",
+        "//seed/devprod/openfork:git",
+        "//seed/devprod/openfork:patch",
+        "//seed/devprod/openfork:prepare",
+        "//seed/devprod/openfork:rebuild",
+        "//seed/devprod/openfork:walk",
+        "//seed/devprod/openfork:worktree",
+        "//seed/infra/python:seed_flag",
+        "//seed/infra/python:seed_init",
+    ],
+)
