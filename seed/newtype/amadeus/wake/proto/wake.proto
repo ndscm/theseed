@@ -1,0 +1,52 @@
+syntax = "proto3";
+
+package seed.newtype.amadeus.wake.proto;
+
+import "google/protobuf/empty.proto";
+
+option go_package = "github.com/ndscm/theseed/seed/newtype/amadeus/wake/proto/wakepb";
+
+// WakeRequest instructs the Amadeus container to wake up its agent and
+// commute to a hooin service to start receiving `BrainInput`s.
+message WakeRequest {
+  // Address of the hooin service the agent should commute to.
+  string hooin_direct_server = 1;
+
+  // Token for the commute session. See
+  // `seed.newtype.hooin.commute.proto.CommuteRequest`.
+  string token = 2;
+}
+
+// RestartBrainRequest asks the Amadeus container to restart every
+// per-topic runner on the brain.
+message RestartBrainRequest {
+  // If true, block until the restart has completed before returning.
+  bool wait = 1;
+
+  // If true, perform a hot upgrade: preserve in-memory state across the
+  // restart where possible.
+  bool hot_upgrade = 2;
+}
+
+// HibernateRequest asks the Amadeus container to put its agent to sleep.
+message HibernateRequest {
+  // If true, block until the agent has fully hibernated before returning.
+  bool wait = 1;
+}
+
+// AmadeusWakeService is the portal for controlling the agent in one container.
+//
+// Brain message types are defined in
+// `seed/newtype/gajetto/proto/brain.proto`.
+service AmadeusWakeService {
+  // Wake starts the agent and returns once it has commuted to the hooin
+  // service and is ready to process inputs.
+  rpc Wake(WakeRequest) returns (google.protobuf.Empty) {}
+
+  // RestartBrain restarts every per-topic runner on the brain.
+  rpc RestartBrain(RestartBrainRequest) returns (google.protobuf.Empty) {}
+
+  // Hibernate stops the agent, closes any active commute session, and
+  // puts the container into a quiescent state.
+  rpc Hibernate(HibernateRequest) returns (google.protobuf.Empty) {}
+}

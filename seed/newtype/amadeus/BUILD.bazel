@@ -1,0 +1,1 @@
+# gazelle:resolve go github.com/ndscm/theseed/seed/newtype/amadeus/wake/proto/wakepbconnect //seed/newtype/amadeus/wake/proto:wake_go_connect
