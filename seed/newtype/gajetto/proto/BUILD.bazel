@@ -1,0 +1,22 @@
+load("@protobuf//bazel:proto_library.bzl", "proto_library")
+load("@rules_go//proto:def.bzl", "go_proto_library")
+
+package(default_visibility = [
+    "//seed/newtype/amadeus:__subpackages__",
+    "//seed/newtype/hooin:__subpackages__",
+])
+
+proto_library(
+    name = "brain_proto",
+    srcs = ["brain.proto"],
+    deps = [
+        "@protobuf//:struct_proto",
+        "@protobuf//:timestamp_proto",
+    ],
+)
+
+go_proto_library(
+    name = "brain_go_proto",
+    importpath = "github.com/ndscm/theseed/seed/newtype/gajetto/proto/brainpb",
+    proto = ":brain_proto",
+)

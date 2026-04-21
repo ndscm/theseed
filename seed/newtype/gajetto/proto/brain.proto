@@ -1,0 +1,162 @@
+syntax = "proto3";
+
+package seed.newtype.gajetto.proto;
+
+import "google/protobuf/struct.proto";
+import "google/protobuf/timestamp.proto";
+
+option go_package = "github.com/ndscm/theseed/seed/newtype/gajetto/proto/brainpb";
+
+// FileInput represents a generic file attachment supplied to the brain.
+message FileInput {
+  // Unique identifier for this input.
+  string uuid = 1;
+
+  // When the input was produced.
+  google.protobuf.Timestamp timestamp = 2;
+
+  // Suggested path of the file.
+  //
+  // - It is a hint only.
+  // - It is not guaranteed to exist on the filesystem.
+  // - It does not imply the MIME type.
+  string path = 3;
+
+  // MIME type of the file contents.
+  //
+  // - It must be set explicitly.
+  // - It is not inferred from `path`.
+  string mime = 4;
+
+  // Arbitrary key/value metadata associated with the file.
+  map<string, string> metadata = 5;
+
+  // Raw file bytes.
+  bytes data = 6;
+}
+
+// VisualInput represents a visual attachment supplied to the brain.
+//
+// A visual may be an image or a video.
+message VisualInput {
+  // Unique identifier for this input.
+  string uuid = 1;
+
+  // When the input was produced.
+  google.protobuf.Timestamp timestamp = 2;
+
+  // Suggested path of the visual asset.
+  //
+  // - It is a hint only.
+  // - It is not guaranteed to exist on the filesystem.
+  // - It does not imply the MIME type.
+  string path = 3;
+
+  // MIME type of the visual asset.
+  //
+  // - It must be set explicitly.
+  // - It is not inferred from `path`.
+  string mime = 4;
+
+  // Arbitrary key/value metadata associated with the visual asset.
+  //
+  // Recognized keys:
+  // - "audio": "true" | "false". Whether the visual carries an audio track.
+  //   Defaults to "false" when missing.
+  map<string, string> metadata = 5;
+
+  // Raw visual bytes.
+  bytes data = 6;
+}
+
+// AudioInput represents an audio attachment supplied to the brain.
+message AudioInput {
+  // Unique identifier for this input.
+  string uuid = 1;
+
+  // When the input was produced.
+  google.protobuf.Timestamp timestamp = 2;
+
+  // Suggested path of the audio asset.
+  //
+  // - It is a hint only.
+  // - It is not guaranteed to exist on the filesystem.
+  // - It does not imply the MIME type.
+  string path = 3;
+
+  // MIME type of the audio asset.
+  //
+  // - It must be set explicitly.
+  // - It is not inferred from `path`.
+  string mime = 4;
+
+  // Arbitrary key/value metadata associated with the audio asset.
+  map<string, string> metadata = 5;
+
+  // Raw audio bytes.
+  bytes data = 6;
+}
+
+// BrainInput is a single multimodal input delivered to the brain.
+message BrainInput {
+  // Unique identifier for this input.
+  string uuid = 1;
+
+  // When the input was produced.
+  google.protobuf.Timestamp timestamp = 2;
+
+  // Input type discriminator.
+  string type = 3;
+
+  // Topic or channel this input belongs to.
+  string topic = 4;
+
+  // Whether to wait for the brain to process this input before returning.
+  bool wait = 5;
+
+  // Arbitrary key/value metadata for the input.
+  //
+  // Recognized keys:
+  // - "first-person": "true" | "false". Whether the "I" in `text` refers to
+  //   the agent ("true") or the user ("false"). Defaults to "false" when
+  //   missing.
+  map<string, string> metadata = 6;
+
+  // Textual content of the input.
+  string text = 7;
+
+  // File attachments keyed by caller-defined name.
+  //
+  // General images and videos belong here, not in `visual` or `audio`.
+  map<string, FileInput> files = 8;
+
+  // Visual attachments keyed by caller-defined name.
+  //
+  // Only for multimodal input consumed directly by the brain. General images
+  // and videos should go into `files`.
+  map<string, VisualInput> visual = 9;
+
+  // Audio attachments keyed by caller-defined name.
+  //
+  // Only for multimodal input consumed directly by the brain. General audio
+  // files should go into `files`.
+  map<string, AudioInput> audio = 10;
+}
+
+// BrainStep represents a single step emitted by the brain while processing.
+message BrainStep {
+  // Unique identifier for this step.
+  string uuid = 1;
+
+  // When the step was emitted.
+  google.protobuf.Timestamp timestamp = 2;
+
+  // Step type discriminator.
+  string type = 3;
+
+  // Topic or channel this step belongs to.
+  string topic = 4;
+
+  // Arbitrary key/value payload associated with the step.
+  google.protobuf.Struct data = 5;
+}
