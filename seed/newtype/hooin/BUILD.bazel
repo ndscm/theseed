@@ -1,0 +1,2 @@
+# gazelle:resolve go github.com/ndscm/theseed/seed/newtype/hooin/commute/proto/commutepbconnect //seed/newtype/hooin/commute/proto:commute_go_connect
+# gazelle:resolve go github.com/ndscm/theseed/seed/newtype/hooin/dictate/proto/dictatepbconnect //seed/newtype/hooin/dictate/proto:dictate_go_connect
