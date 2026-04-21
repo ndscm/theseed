@@ -58,3 +58,14 @@ else
     printf '%s\n' "$prettier_changes" | xargs -d '\n' realpath | tr '\n' '\0' | xargs -0 bazel run //seed/devprod/format/prettier -- --write
   fi
 fi
+
+# Fix Jenkinsfiles that don't end with a newline, which can cause problems with some tools.
+new_changed_files=$(get_changed_files)
+jenkins_changed_files=$(printf '%s\n' "$new_changed_files" | grep -E "(^|/)Jenkinsfile$" || true)
+if [[ -n "$jenkins_changed_files" ]]; then
+  while IFS= read -r file; do
+    if [[ -f "$file" && -n $(tail -c1 "$file") ]]; then
+      printf '\n' >>"$file"
+    fi
+  done <<<"$jenkins_changed_files"
+fi
