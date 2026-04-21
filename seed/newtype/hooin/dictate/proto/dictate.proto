@@ -1,0 +1,54 @@
+syntax = "proto3";
+
+package seed.newtype.hooin.dictate.proto;
+
+import "seed/newtype/gajetto/proto/brain.proto";
+
+option go_package = "github.com/ndscm/theseed/seed/newtype/hooin/dictate/proto/dictatepb";
+
+message PersonTopic {
+  // Identifier of the person. May be a UUID or a user-defined short
+  // identifier (e.g. handle).
+  string person_id = 1;
+
+  // Topic the subscription is scoped to. Maps to `BrainStep.topic`.
+  string topic = 2;
+}
+
+// SendBrainInputRequest submits a single `BrainInput` on behalf of a person
+// to the hooin service.
+message SendBrainInputRequest {
+  // Identifier of the person the input is attributed to. May be a UUID or
+  // a user-defined short identifier (e.g. handle).
+  string person_id = 1;
+
+  // The brain input to deliver. See `seed.newtype.gajetto.proto.BrainInput`.
+  seed.newtype.gajetto.proto.BrainInput brain_input = 2;
+}
+
+// SubscribeBrainStepRequest opens a subscription that streams `BrainStep`s
+// emitted while processing inputs associated with one or more persons.
+message SubscribeBrainStepRequest {
+  repeated PersonTopic person_topics = 1;
+}
+
+// HooinDictateService is the external-facing side of the hooin portal.
+//
+// Agent-facing RPCs (commute and step reporting) live on
+// `HooinCommuteService`.
+service HooinDictateService {
+  // SendBrainInput delivers a single `BrainInput` and returns the
+  // terminal `result` `BrainStep` once processing completes.
+  rpc SendBrainInput(SendBrainInputRequest)
+      returns (seed.newtype.gajetto.proto.BrainStep) {}
+
+  // SendBrainInputStreamBrainStep delivers a single `BrainInput` and
+  // streams every `BrainStep` emitted while it is being processed.
+  rpc SendBrainInputStreamBrainStep(SendBrainInputRequest)
+      returns (stream seed.newtype.gajetto.proto.BrainStep) {}
+
+  // SubscribeBrainStep opens a long-lived stream of `BrainStep`s emitted
+  // while processing any input for the specified persons.
+  rpc SubscribeBrainStep(SubscribeBrainStepRequest)
+      returns (stream seed.newtype.gajetto.proto.BrainStep) {}
+}

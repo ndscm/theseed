@@ -1,0 +1,17 @@
+load("@rules_go//go:def.bzl", "go_library")
+
+package(default_visibility = ["//seed/newtype/hooin:__subpackages__"])
+
+go_library(
+    name = "service",
+    srcs = ["commute_service.go"],
+    importpath = "github.com/ndscm/theseed/seed/newtype/hooin/commute/service",
+    deps = [
+        "//seed/infra/error/go/seederr",
+        "//seed/newtype/gajetto/proto:brain_go_proto",
+        "//seed/newtype/hooin/commute/proto:commute_go_proto",
+        "@com_connectrpc_connect//:connect",
+        "@org_golang_google_grpc//codes",
+        "@org_golang_google_protobuf//types/known/emptypb",
+    ],
+)
