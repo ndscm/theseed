@@ -1,0 +1,19 @@
+load("@rules_go//go:def.bzl", "go_library")
+
+package(default_visibility = [
+    "//seed/newtype/amadeus:__subpackages__",
+    "//seed/newtype/gajetto:__subpackages__",
+    "//seed/newtype/hooin:__subpackages__",
+])
+
+go_library(
+    name = "staticteam",
+    srcs = ["static_team.go"],
+    importpath = "github.com/ndscm/theseed/seed/newtype/gajetto/team/staticteam",
+    deps = [
+        "//seed/infra/error/go/seederr",
+        "//seed/infra/flag/go/seedflag",
+        "//seed/newtype/gajetto/team",
+        "@org_golang_google_grpc//codes",
+    ],
+)
