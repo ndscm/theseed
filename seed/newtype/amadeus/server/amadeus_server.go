@@ -9,6 +9,7 @@ import (
 	"github.com/ndscm/theseed/seed/infra/grpc/go/seedgrpc"
 	"github.com/ndscm/theseed/seed/infra/init/go/seedinit"
 	"github.com/ndscm/theseed/seed/infra/log/go/seedlog"
+	"github.com/ndscm/theseed/seed/newtype/amadeus/onduty"
 	"github.com/ndscm/theseed/seed/newtype/amadeus/wake/proto/wakepbconnect"
 	wakeservice "github.com/ndscm/theseed/seed/newtype/amadeus/wake/service"
 )
@@ -17,6 +18,12 @@ var flagPort = seedflag.DefineString("port", "2623", "Server port") // Default p
 
 func run() error {
 	_, err := seedinit.Initialize()
+	if err != nil {
+		return seederr.Wrap(err)
+	}
+
+	conscious := onduty.NewConscious()
+	err = conscious.Initialize()
 	if err != nil {
 		return seederr.Wrap(err)
 	}
@@ -32,7 +39,7 @@ func run() error {
 	}
 
 	wakeSvc := &wakeservice.AmadeusWakeService{}
-	err = wakeSvc.Initialize()
+	err = wakeSvc.Initialize(conscious)
 	if err != nil {
 		return seederr.Wrap(err)
 	}
