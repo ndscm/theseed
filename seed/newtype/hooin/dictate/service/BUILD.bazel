@@ -7,9 +7,11 @@ go_library(
     srcs = ["dictate_service.go"],
     importpath = "github.com/ndscm/theseed/seed/newtype/hooin/dictate/service",
     deps = [
+        "//seed/cloud/login/go/login",
         "//seed/infra/error/go/seederr",
         "//seed/newtype/gajetto/proto:brain_go_proto",
         "//seed/newtype/hooin/dictate/proto:dictate_go_proto",
+        "//seed/newtype/hooin/onsite",
         "@com_connectrpc_connect//:connect",
         "@org_golang_google_grpc//codes",
     ],
