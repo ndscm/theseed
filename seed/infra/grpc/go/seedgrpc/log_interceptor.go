@@ -42,19 +42,71 @@ func (i *logInterceptor) WrapUnary(next connect.UnaryFunc) connect.UnaryFunc {
 	}
 }
 
+type loggingStreamingClientConn struct {
+	connect.StreamingClientConn
+}
+
+func (c *loggingStreamingClientConn) Send(msg any) error {
+	seedlog.Debugf("Grpc client send: (%T) %+v", msg, msg)
+	return c.StreamingClientConn.Send(msg)
+}
+
+func (c *loggingStreamingClientConn) Receive(msg any) error {
+	err := c.StreamingClientConn.Receive(msg)
+	if err != nil {
+		return err
+	}
+	seedlog.Debugf("Grpc client receive: (%T) %+v", msg, msg)
+	return nil
+}
+
 // WrapStreamingClient implements connect.Interceptor.
 func (i *logInterceptor) WrapStreamingClient(next connect.StreamingClientFunc) connect.StreamingClientFunc {
 	return func(ctx context.Context, spec connect.Spec) connect.StreamingClientConn {
-		// TODO(nagi): add logging for streaming RPCs
-		return next(ctx, spec)
+		seedlog.Infof("Grpc stream (client): %s", spec.Procedure)
+		conn := next(ctx, spec)
+		return &loggingStreamingClientConn{StreamingClientConn: conn}
 	}
+}
+
+type loggingStreamingHandlerConn struct {
+	connect.StreamingHandlerConn
+}
+
+func (c *loggingStreamingHandlerConn) Receive(msg any) error {
+	err := c.StreamingHandlerConn.Receive(msg)
+	if err != nil {
+		return err
+	}
+	seedlog.Debugf("Grpc server receive: (%T) %+v", msg, msg)
+	return nil
+}
+
+func (c *loggingStreamingHandlerConn) Send(msg any) error {
+	seedlog.Debugf("Grpc server send: (%T) %+v", msg, msg)
+	return c.StreamingHandlerConn.Send(msg)
 }
 
 // WrapStreamingHandler implements connect.Interceptor.
 func (i *logInterceptor) WrapStreamingHandler(next connect.StreamingHandlerFunc) connect.StreamingHandlerFunc {
 	return func(ctx context.Context, conn connect.StreamingHandlerConn) error {
-		// TODO(nagi): add logging for streaming RPCs
-		return next(ctx, conn)
+		seedlog.Infof("Grpc stream (server): %s", conn.Spec().Procedure)
+		seedlog.Debugf("Grpc headers: %+v", conn.RequestHeader())
+		seedErrorCode := uint32(0)
+		err := next(ctx, &loggingStreamingHandlerConn{StreamingHandlerConn: conn})
+		if err != nil {
+			seedlog.Errorf("%s error: %v", conn.Spec().Procedure, err)
+			seedErr := &seederr.SeedError{}
+			if errors.As(err, &seedErr) {
+				seedErrorCode = seedErr.Code()
+				err = seedErr.Unwrap()
+			}
+		}
+		grpcErrorCode := seedErrorCode & 0xff
+		if grpcErrorCode != 0 {
+			return connect.NewError(connect.Code(grpcErrorCode), err)
+		}
+		return err
 	}
 }
 
