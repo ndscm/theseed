@@ -4,7 +4,10 @@ package(default_visibility = ["//seed/newtype/amadeus:__subpackages__"])
 
 go_library(
     name = "claudecli",
-    srcs = ["claude_cli_brain.go"],
+    srcs = [
+        "claude_cli_brain.go",
+        "register.go",
+    ],
     importpath = "github.com/ndscm/theseed/seed/newtype/amadeus/brain/claudecli",
     deps = [
         "//seed/newtype/amadeus/brain",
