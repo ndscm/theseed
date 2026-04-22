@@ -17,10 +17,12 @@ go_library(
         "//seed/infra/grpc/go/seedgrpc",
         "//seed/infra/init/go/seedinit",
         "//seed/infra/log/go/seedlog",
+        "//seed/newtype/gajetto/team/staticteam",
         "//seed/newtype/hooin/commute/proto:commute_go_connect",
         "//seed/newtype/hooin/commute/service",
         "//seed/newtype/hooin/dictate/proto:dictate_go_connect",
         "//seed/newtype/hooin/dictate/service",
+        "//seed/newtype/hooin/onsite",
     ],
 )
 
