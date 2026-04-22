@@ -1,0 +1,21 @@
+load("@rules_go//go:def.bzl", "go_library")
+
+package(default_visibility = [
+    "//seed/newtype/amadeus:__subpackages__",
+    "//seed/newtype/hooin:__subpackages__",
+])
+
+go_library(
+    name = "dictateclient",
+    srcs = ["dictate_client.go"],
+    importpath = "github.com/ndscm/theseed/seed/newtype/hooin/dictate/client/go/dictateclient",
+    deps = [
+        "//seed/infra/flag/go/seedflag",
+        "//seed/infra/grpc/go/seedgrpc",
+        "//seed/infra/http/go/seedbearer",
+        "//seed/newtype/gajetto/proto:brain_go_proto",
+        "//seed/newtype/hooin/dictate/proto:dictate_go_connect",
+        "//seed/newtype/hooin/dictate/proto:dictate_go_proto",
+        "@com_connectrpc_connect//:connect",
+    ],
+)
