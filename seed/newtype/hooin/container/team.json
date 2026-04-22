@@ -1,0 +1,30 @@
+{
+  "handle": "ndscm",
+  "displayName": "Team Ndscm",
+  "members": {
+    "christina": {
+      "handle": "christina",
+      "displayName": "Christina",
+      "role": "reviewer",
+      "token": "christina:unsecure"
+    },
+    "okarin": {
+      "handle": "okarin",
+      "displayName": "Okarin",
+      "role": "lead",
+      "token": "okarin:unsecure"
+    },
+    "daru": {
+      "handle": "daru",
+      "displayName": "Daru",
+      "role": "coder",
+      "token": "daru:unsecure"
+    },
+    "mayushii": {
+      "handle": "mayushii",
+      "displayName": "Mayushii",
+      "role": "pm",
+      "token": "mayushii:unsecure"
+    }
+  }
+}
