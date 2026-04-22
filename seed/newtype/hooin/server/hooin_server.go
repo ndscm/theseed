@@ -49,7 +49,7 @@ func run() error {
 	}
 
 	dictateSvc := &dictateservice.HooinDictateService{}
-	err = dictateSvc.Initialize()
+	err = dictateSvc.Initialize(office)
 	if err != nil {
 		return seederr.Wrap(err)
 	}
