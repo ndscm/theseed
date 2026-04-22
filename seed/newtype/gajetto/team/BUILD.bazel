@@ -1,0 +1,13 @@
+load("@rules_go//go:def.bzl", "go_library")
+
+package(default_visibility = [
+    "//seed/newtype/amadeus:__subpackages__",
+    "//seed/newtype/gajetto:__subpackages__",
+    "//seed/newtype/hooin:__subpackages__",
+])
+
+go_library(
+    name = "team",
+    srcs = ["team.go"],
+    importpath = "github.com/ndscm/theseed/seed/newtype/gajetto/team",
+)
