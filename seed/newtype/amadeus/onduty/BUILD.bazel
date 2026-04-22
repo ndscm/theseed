@@ -13,6 +13,7 @@ go_library(
     deps = [
         "//seed/infra/error/go/seederr",
         "//seed/infra/log/go/seedlog",
+        "//seed/newtype/amadeus/brain",
         "//seed/newtype/gajetto/proto:brain_go_proto",
         "//seed/newtype/hooin/commute/client/go/commuteclient",
         "@com_connectrpc_connect//:connect",
