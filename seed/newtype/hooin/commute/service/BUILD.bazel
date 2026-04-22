@@ -10,6 +10,7 @@ go_library(
         "//seed/infra/error/go/seederr",
         "//seed/newtype/gajetto/proto:brain_go_proto",
         "//seed/newtype/hooin/commute/proto:commute_go_proto",
+        "//seed/newtype/hooin/onsite",
         "@com_connectrpc_connect//:connect",
         "@org_golang_google_grpc//codes",
         "@org_golang_google_protobuf//types/known/emptypb",
