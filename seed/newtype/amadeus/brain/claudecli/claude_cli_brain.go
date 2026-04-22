@@ -2,12 +2,20 @@ package claudecli
 
 import (
 	"context"
+	"os"
+	"path/filepath"
+	"strings"
 
+	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
+	"github.com/ndscm/theseed/seed/infra/flag/go/seedflag"
 	"github.com/ndscm/theseed/seed/newtype/amadeus/brain"
 	"github.com/ndscm/theseed/seed/newtype/gajetto/proto/brainpb"
 )
 
+var flagClaudeCliTopicHome = seedflag.DefineString("claude_cli_topic_home", "~/topic/", "Path to topic home")
+
 type claudeCliBrain struct {
+	topicHome string
 }
 
 func NewClaudeCliBrain() brain.Brain {
@@ -15,7 +23,16 @@ func NewClaudeCliBrain() brain.Brain {
 }
 
 func (b *claudeCliBrain) Initialize() error {
-	panic("Initialize is not implemented")
+	topicHome := flagClaudeCliTopicHome.Get()
+	if strings.HasPrefix(topicHome, "~/") {
+		homeDir, err := os.UserHomeDir()
+		if err != nil {
+			return seederr.Wrap(err)
+		}
+		topicHome = filepath.Join(homeDir, topicHome[2:])
+	}
+	b.topicHome = topicHome
+	return nil
 }
 
 func (b *claudeCliBrain) RegisterStepHandler(

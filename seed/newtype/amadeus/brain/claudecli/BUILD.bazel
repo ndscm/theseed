@@ -10,6 +10,8 @@ go_library(
     ],
     importpath = "github.com/ndscm/theseed/seed/newtype/amadeus/brain/claudecli",
     deps = [
+        "//seed/infra/error/go/seederr",
+        "//seed/infra/flag/go/seedflag",
         "//seed/newtype/amadeus/brain",
         "//seed/newtype/gajetto/proto:brain_go_proto",
     ],
