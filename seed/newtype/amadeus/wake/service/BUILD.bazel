@@ -9,6 +9,7 @@ go_library(
     deps = [
         "//seed/cloud/login/go/login",
         "//seed/infra/error/go/seederr",
+        "//seed/newtype/amadeus/brain/claudecli",
         "//seed/newtype/amadeus/onduty",
         "//seed/newtype/amadeus/wake/proto:wake_go_proto",
         "@com_connectrpc_connect//:connect",

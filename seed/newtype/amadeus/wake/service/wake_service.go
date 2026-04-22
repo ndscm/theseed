@@ -6,6 +6,7 @@ import (
 	"connectrpc.com/connect"
 	"github.com/ndscm/theseed/seed/cloud/login/go/login"
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
+	_ "github.com/ndscm/theseed/seed/newtype/amadeus/brain/claudecli"
 	"github.com/ndscm/theseed/seed/newtype/amadeus/onduty"
 	"github.com/ndscm/theseed/seed/newtype/amadeus/wake/proto/wakepb"
 	"google.golang.org/grpc/codes"
