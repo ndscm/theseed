@@ -1,0 +1,17 @@
+load("@rules_go//go:def.bzl", "go_library")
+
+package(default_visibility = [
+    "//seed/newtype/amadeus:__subpackages__",
+    "//seed/newtype/gajetto:__subpackages__",
+    "//seed/newtype/hooin:__subpackages__",
+])
+
+go_library(
+    name = "claudepayload",
+    srcs = ["payload.go"],
+    importpath = "github.com/ndscm/theseed/seed/newtype/gajetto/payload/claudepayload",
+    deps = [
+        "//seed/infra/error/go/seederr",
+        "@org_golang_google_protobuf//types/known/structpb",
+    ],
+)
