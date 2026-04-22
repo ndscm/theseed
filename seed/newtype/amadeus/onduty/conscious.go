@@ -8,12 +8,15 @@ import (
 	"connectrpc.com/connect"
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
 	"github.com/ndscm/theseed/seed/infra/log/go/seedlog"
+	"github.com/ndscm/theseed/seed/newtype/amadeus/brain"
 	"github.com/ndscm/theseed/seed/newtype/gajetto/proto/brainpb"
 	"github.com/ndscm/theseed/seed/newtype/hooin/commute/client/go/commuteclient"
 	"google.golang.org/grpc/codes"
 )
 
 type Conscious struct {
+	brain brain.Brain
+
 	hooinClientMutex sync.Mutex
 	hooinClient      *commuteclient.HooinCommuteClient
 
@@ -31,6 +34,11 @@ func NewConscious() *Conscious {
 }
 
 func (s *Conscious) Initialize() error {
+	b, err := brain.DefaultBrain()
+	if err != nil {
+		return seederr.Wrap(err)
+	}
+	s.brain = b
 	return nil
 }
 
@@ -56,6 +64,10 @@ func (s *Conscious) ensureTopicStarted(
 	}
 
 	reporter := &StepReporter{client: client, token: token}
+	err := s.brain.RegisterStepHandler(topic, reporter)
+	if err != nil {
+		return seederr.Wrap(err)
+	}
 
 	s.topicsMutex.Lock()
 	defer s.topicsMutex.Unlock()
@@ -83,7 +95,10 @@ func (s *Conscious) commute(token string) {
 			wg.Add(1)
 			go func(topic string) {
 				defer wg.Done()
-				// TODO(nagi): hibernate topic
+				err := s.brain.Hibernate(topic, true)
+				if err != nil {
+					seedlog.Errorf("Hibernate topic %q failed: %v", topic, err)
+				}
 			}(topic)
 		}
 		wg.Wait()
@@ -122,11 +137,7 @@ func (s *Conscious) Input(
 		return seederr.Wrap(err)
 	}
 
-	// Acknowledge the input with an empty result step so the hooin
-	// side's SendBrainInput / SendBrainInputStreamBrainStep callers
-	// can unblock.
-	err = s.hooinClient.ReportBrainStep(
-		s.commuteCtx, token, &brainpb.BrainStep{Type: "result"})
+	err = s.brain.Input(s.commuteCtx, topic, input)
 	if err != nil {
 		return seederr.Wrap(err)
 	}
