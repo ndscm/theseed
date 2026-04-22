@@ -7,12 +7,17 @@ go_library(
     srcs = [
         "claude_cli_brain.go",
         "register.go",
+        "topic_runner.go",
     ],
     importpath = "github.com/ndscm/theseed/seed/newtype/amadeus/brain/claudecli",
     deps = [
         "//seed/infra/error/go/seederr",
         "//seed/infra/flag/go/seedflag",
+        "//seed/infra/log/go/seedlog",
         "//seed/newtype/amadeus/brain",
+        "//seed/newtype/gajetto/payload/claudepayload",
         "//seed/newtype/gajetto/proto:brain_go_proto",
+        "@com_github_google_uuid//:uuid",
+        "@org_golang_google_protobuf//types/known/timestamppb",
     ],
 )
