@@ -18,6 +18,7 @@ go_library(
         "//seed/infra/grpc/go/seedgrpc",
         "//seed/infra/init/go/seedinit",
         "//seed/infra/log/go/seedlog",
+        "//seed/newtype/amadeus/onduty",
         "//seed/newtype/amadeus/wake/proto:wake_go_connect",
         "//seed/newtype/amadeus/wake/service",
     ],
