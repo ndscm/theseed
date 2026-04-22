@@ -8,10 +8,12 @@ import (
 	"github.com/ndscm/theseed/seed/infra/grpc/go/seedgrpc"
 	"github.com/ndscm/theseed/seed/infra/init/go/seedinit"
 	"github.com/ndscm/theseed/seed/infra/log/go/seedlog"
+	"github.com/ndscm/theseed/seed/newtype/gajetto/team/staticteam"
 	"github.com/ndscm/theseed/seed/newtype/hooin/commute/proto/commutepbconnect"
 	commuteservice "github.com/ndscm/theseed/seed/newtype/hooin/commute/service"
 	"github.com/ndscm/theseed/seed/newtype/hooin/dictate/proto/dictatepbconnect"
 	dictateservice "github.com/ndscm/theseed/seed/newtype/hooin/dictate/service"
+	"github.com/ndscm/theseed/seed/newtype/hooin/onsite"
 )
 
 var flagPort = seedflag.DefineString("port", "4664", "Server port") // Default port assignment word: HOOI (4664)
@@ -22,10 +24,19 @@ func run() error {
 		return seederr.Wrap(err)
 	}
 
+	team, err := staticteam.LoadTeam()
+	if err != nil {
+		return seederr.Wrap(err)
+	}
+	office, err := onsite.NewOffice(team)
+	if err != nil {
+		return seederr.Wrap(err)
+	}
+
 	mux := &seedgrpc.GrpcMux{}
 
 	commuteSvc := &commuteservice.HooinCommuteService{}
-	err = commuteSvc.Initialize()
+	err = commuteSvc.Initialize(office)
 	if err != nil {
 		return seederr.Wrap(err)
 	}
