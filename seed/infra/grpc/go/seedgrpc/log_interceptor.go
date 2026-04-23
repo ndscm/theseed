@@ -15,9 +15,9 @@ type logInterceptor struct {
 
 func (i *logInterceptor) WrapUnary(next connect.UnaryFunc) connect.UnaryFunc {
 	return func(ctx context.Context, request connect.AnyRequest) (connect.AnyResponse, error) {
-		seedlog.Infof("Grpc: %s", request.Spec().Procedure)
-		seedlog.Debugf("Headers: %+v", request.Header())
-		seedlog.Debugf("Message: (%T) %+v", request.Any(), request.Any())
+		seedlog.Infof("Grpc unary: %s", request.Spec().Procedure)
+		seedlog.Debugf("Grpc headers: %+v", request.Header())
+		seedlog.Debugf("Grpc request: (%T) %+v", request.Any(), request.Any())
 		seedErrorCode := uint32(0)
 		response, err := next(ctx, request)
 		if err != nil {
@@ -29,7 +29,7 @@ func (i *logInterceptor) WrapUnary(next connect.UnaryFunc) connect.UnaryFunc {
 			}
 		}
 		if !reflect.ValueOf(response).IsNil() {
-			seedlog.Debugf("Response: (%T) %+v", response.Any(), response.Any())
+			seedlog.Debugf("Grpc response: (%T) %+v", response.Any(), response.Any())
 		}
 		grpcErrorCode := seedErrorCode & 0xff
 		if grpcErrorCode != 0 {
