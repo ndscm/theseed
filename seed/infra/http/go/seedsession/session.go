@@ -5,9 +5,9 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/ndscm/theseed/seed/infra/flag/go/seedflag"
 	"github.com/ndscm/theseed/seed/infra/context/go/seedctx"
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
+	"github.com/ndscm/theseed/seed/infra/flag/go/seedflag"
 	"github.com/ndscm/theseed/seed/infra/log/go/seedlog"
 )
 
@@ -42,7 +42,7 @@ func Session(ctx context.Context) (SessionAdapter, error) {
 	if ctx == nil {
 		return nil, seederr.WrapErrorf("nil context provided")
 	}
-	session, ok := ctx.Value(seedctx.MptContextKey("session")).(SessionAdapter)
+	session, ok := ctx.Value(seedctx.SeedContextKey("session")).(SessionAdapter)
 	if !ok {
 		return nil, seederr.WrapErrorf("session not found in context")
 	}
@@ -50,7 +50,7 @@ func Session(ctx context.Context) (SessionAdapter, error) {
 }
 
 func withSession(parent context.Context, session SessionAdapter) context.Context {
-	return context.WithValue(parent, seedctx.MptContextKey("session"), session)
+	return context.WithValue(parent, seedctx.SeedContextKey("session"), session)
 }
 
 type sessionMiddleware struct {
