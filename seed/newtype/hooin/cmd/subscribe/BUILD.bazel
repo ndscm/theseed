@@ -1,0 +1,28 @@
+load("@rules_go//go:def.bzl", "go_binary", "go_library")
+
+package(default_visibility = [
+    "//seed/newtype/amadeus:__subpackages__",
+    "//seed/newtype/hooin:__subpackages__",
+])
+
+go_library(
+    name = "subscribe_lib",
+    srcs = ["subscribe.go"],
+    importpath = "github.com/ndscm/theseed/seed/newtype/hooin/cmd/subscribe",
+    visibility = ["//visibility:private"],
+    deps = [
+        "//seed/infra/error/go/seederr",
+        "//seed/infra/flag/go/seedflag",
+        "//seed/infra/init/go/initctx",
+        "//seed/infra/init/go/seedinit",
+        "//seed/infra/log/go/seedlog",
+        "//seed/newtype/hooin/dictate/client/go/dictateclient",
+        "//seed/newtype/hooin/dictate/proto:dictate_go_proto",
+        "@org_golang_google_grpc//codes",
+    ],
+)
+
+go_binary(
+    name = "subscribe",
+    embed = [":subscribe_lib"],
+)
