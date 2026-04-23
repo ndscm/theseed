@@ -59,7 +59,7 @@ func JwtUser(ctx context.Context) (*OpenidUserInfo, error) {
 	if ctx == nil {
 		return nil, seederr.WrapErrorf("nil context provided")
 	}
-	userInfo, ok := ctx.Value(seedctx.MptContextKey("jwtuser")).(*OpenidUserInfo)
+	userInfo, ok := ctx.Value(seedctx.SeedContextKey("jwtuser")).(*OpenidUserInfo)
 	if !ok {
 		return nil, nil
 	}
@@ -67,7 +67,7 @@ func JwtUser(ctx context.Context) (*OpenidUserInfo, error) {
 }
 
 func withJwtUser(parent context.Context, userInfo *OpenidUserInfo) context.Context {
-	return context.WithValue(parent, seedctx.MptContextKey("jwtuser"), userInfo)
+	return context.WithValue(parent, seedctx.SeedContextKey("jwtuser"), userInfo)
 }
 
 type jwtMiddleware struct {
