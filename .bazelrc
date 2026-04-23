@@ -1,5 +1,6 @@
 common --@aspect_rules_ts//ts:skipLibCheck=honor_tsconfig
 common --incompatible_strict_action_env
+common --remote_cache=http://cache.rbe.ndscm.com:22243 --remote_timeout=60
 
 
 build --cxxopt=-std=c++17
