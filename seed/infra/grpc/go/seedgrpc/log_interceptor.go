@@ -28,8 +28,11 @@ func (i *logInterceptor) WrapUnary(next connect.UnaryFunc) connect.UnaryFunc {
 				err = seedErr.Unwrap()
 			}
 		}
-		if !reflect.ValueOf(response).IsNil() {
-			seedlog.Debugf("Grpc response: (%T) %+v", response.Any(), response.Any())
+		if response != nil {
+			v := reflect.ValueOf(response)
+			if v.Kind() != reflect.Ptr || !v.IsNil() {
+				seedlog.Debugf("Grpc response: (%T) %+v", response.Any(), response.Any())
+			}
 		}
 		grpcErrorCode := seedErrorCode & 0xff
 		if grpcErrorCode != 0 {
