@@ -7,13 +7,13 @@ import (
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
 )
 
-type MptContextKey string
+type SeedContextKey string
 
 func Performer(ctx context.Context) (string, error) {
 	if ctx == nil {
 		return "", seederr.WrapErrorf("nil context provided")
 	}
-	performer, ok := ctx.Value(MptContextKey("performer")).(string)
+	performer, ok := ctx.Value(SeedContextKey("performer")).(string)
 	if !ok {
 		return "", seederr.WrapErrorf("performer not found in context")
 	}
@@ -21,7 +21,7 @@ func Performer(ctx context.Context) (string, error) {
 }
 
 func WithPerformer(parent context.Context, performer string) context.Context {
-	return context.WithValue(parent, MptContextKey("performer"), performer)
+	return context.WithValue(parent, SeedContextKey("performer"), performer)
 }
 
 func Background() context.Context {
