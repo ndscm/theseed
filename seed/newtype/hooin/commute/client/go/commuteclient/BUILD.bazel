@@ -1,0 +1,21 @@
+load("@rules_go//go:def.bzl", "go_library")
+
+package(default_visibility = [
+    "//seed/newtype/amadeus:__subpackages__",
+    "//seed/newtype/hooin:__subpackages__",
+])
+
+go_library(
+    name = "commuteclient",
+    srcs = ["commute_client.go"],
+    importpath = "github.com/ndscm/theseed/seed/newtype/hooin/commute/client/go/commuteclient",
+    deps = [
+        "//seed/infra/error/go/seederr",
+        "//seed/infra/flag/go/seedflag",
+        "//seed/infra/grpc/go/seedgrpc",
+        "//seed/newtype/gajetto/proto:brain_go_proto",
+        "//seed/newtype/hooin/commute/proto:commute_go_connect",
+        "//seed/newtype/hooin/commute/proto:commute_go_proto",
+        "@com_connectrpc_connect//:connect",
+    ],
+)
