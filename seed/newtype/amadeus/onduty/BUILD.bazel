@@ -1,0 +1,21 @@
+load("@rules_go//go:def.bzl", "go_library")
+
+package(default_visibility = ["//seed/newtype/amadeus:__subpackages__"])
+
+go_library(
+    name = "onduty",
+    srcs = [
+        "conscious.go",
+        "live_topic.go",
+        "step_reporter.go",
+    ],
+    importpath = "github.com/ndscm/theseed/seed/newtype/amadeus/onduty",
+    deps = [
+        "//seed/infra/error/go/seederr",
+        "//seed/infra/log/go/seedlog",
+        "//seed/newtype/gajetto/proto:brain_go_proto",
+        "//seed/newtype/hooin/commute/client/go/commuteclient",
+        "@com_connectrpc_connect//:connect",
+        "@org_golang_google_grpc//codes",
+    ],
+)
