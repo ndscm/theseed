@@ -121,7 +121,7 @@ func Parse(opts ...parseOption) error {
 		if len(parts) != 2 {
 			continue
 		}
-		if strings.HasPrefix(parts[0], o.envPrefix) {
+		if o.envPrefix != "" && strings.HasPrefix(parts[0], o.envPrefix) {
 			pure := strings.TrimPrefix(parts[0], o.envPrefix)
 			name := strings.ToLower(strings.TrimSpace(pure))
 			value := strings.TrimSpace(parts[1])
