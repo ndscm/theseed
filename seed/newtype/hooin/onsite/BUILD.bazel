@@ -1,0 +1,22 @@
+load("@rules_go//go:def.bzl", "go_library")
+
+package(default_visibility = ["//seed/newtype/hooin:__subpackages__"])
+
+go_library(
+    name = "onsite",
+    srcs = [
+        "duty.go",
+        "office.go",
+        "step_subscriber.go",
+    ],
+    importpath = "github.com/ndscm/theseed/seed/newtype/hooin/onsite",
+    deps = [
+        "//seed/infra/error/go/seederr",
+        "//seed/infra/log/go/seedlog",
+        "//seed/newtype/gajetto/proto:brain_go_proto",
+        "//seed/newtype/gajetto/team",
+        "@com_connectrpc_connect//:connect",
+        "@com_github_google_uuid//:uuid",
+        "@org_golang_google_grpc//codes",
+    ],
+)
