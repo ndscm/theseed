@@ -5,7 +5,8 @@ import (
 	"github.com/ndscm/theseed/seed/infra/flag/go/seedflag"
 )
 
-var flagScm = seedflag.DefineString("scm", "ndscm", "the scm backend")
+// The default SCM provider is "ndscm", which is used to force the user to set git explicitly.
+var flagScm = seedflag.DefineString("scm", "ndscm", "The SCM provider to use (e.g. git)")
 
 func ScmName() (string, error) {
 	scm := flagScm.Get()
