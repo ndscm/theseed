@@ -1,6 +1,7 @@
 package git
 
 import (
+	"github.com/ndscm/theseed/seed/devprod/ndscm/scm"
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
 )
 
@@ -14,6 +15,59 @@ func (g *GitProvider) Initialize() error {
 
 func (g *GitProvider) QuickVerifyMonorepo() error {
 	return QuickVerifyMonorepo()
+}
+
+// # branch
+
+func (g *GitProvider) CreateBranch(branchName string, startPoint string, tracking string) error {
+	return CreateBranch("", branchName, startPoint, tracking)
+}
+
+func (g *GitProvider) GetBranchTracking(branchName string) (string, error) {
+	return GetBranchTracking("", branchName)
+}
+
+func (g *GitProvider) SetBranchTracking(branchName string, tracking string) error {
+	return SetBranchTracking("", branchName, tracking)
+}
+
+// # commit
+
+func (g *GitProvider) GetCommitId(commit string) (string, error) {
+	return GetCommitHash("", commit)
+}
+
+func (g *GitProvider) ListCommitIds(from string, to string) ([]string, error) {
+	mergeCommits, err := ListMergeCommitHash("", from, to)
+	if err != nil {
+		return nil, seederr.Wrap(err)
+	}
+	if len(mergeCommits) > 0 {
+		return nil, seederr.WrapErrorf("current segment (%v..%v) is not pure and contains merge commit:\n%v", from, to, mergeCommits)
+	}
+	return ListCommitHash("", from, to)
+}
+
+// # status
+
+func (g *GitProvider) GetWorktreeDirtyFiles(worktreePath string) ([]scm.DirtyFile, error) {
+	files, err := GetStatus(worktreePath)
+	if err != nil {
+		return nil, seederr.Wrap(err)
+	}
+	result := []scm.DirtyFile{}
+	for _, s := range files {
+		result = append(result, scm.DirtyFile{
+			Status: s.Status,
+			To:     s.To,
+			From:   s.From,
+		})
+	}
+	return result, nil
+}
+
+func (g *GitProvider) GetWorktreeBranch(worktreePath string) (string, error) {
+	return GetCurrentBranch(worktreePath)
 }
 
 // # worktree
