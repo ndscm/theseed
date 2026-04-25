@@ -4,6 +4,7 @@ go_library(
     name = "clientcore",
     srcs = [
         "client_core.go",
+        "nd_cut.go",
         "nd_dev.go",
         "nd_setup.go",
         "nd_shell.go",
