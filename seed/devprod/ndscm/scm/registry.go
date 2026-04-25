@@ -12,18 +12,6 @@ import (
 // User can also provide empty value to use the default provider if there is only one provider registered.
 var flagScm = seedflag.DefineString("scm", "ndscm", "The SCM provider to use (e.g. git)")
 
-func ScmName() (string, error) {
-	// TODO(nagi): remove this flag getter after all the checks are migrated.
-	scm := flagScm.Get()
-	switch scm {
-	case "git":
-		return "git", nil
-	case "":
-		return "", nil
-	}
-	return "", seederr.WrapErrorf("scm is unsupported: %v", scm)
-}
-
 type ProviderEntry struct {
 	provider Provider
 
