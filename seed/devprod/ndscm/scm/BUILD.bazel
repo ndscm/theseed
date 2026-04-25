@@ -15,5 +15,6 @@ go_library(
     deps = [
         "//seed/infra/error/go/seederr",
         "//seed/infra/flag/go/seedflag",
+        "//seed/infra/log/go/seedlog",
     ],
 )
