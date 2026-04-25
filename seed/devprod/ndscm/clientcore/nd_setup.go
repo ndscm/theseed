@@ -1,4 +1,4 @@
-package main
+package clientcore
 
 import (
 	"log"
@@ -52,7 +52,7 @@ func NdSetup(args []string) error {
 	if seedshell.ShellEval() {
 		return seederr.WrapErrorf("nd-setup should not run with --shell-eval")
 	}
-	if len(args) != 1 {
+	if len(args) != 0 {
 		return seederr.WrapErrorf("nd-setup usage: ndscm setup")
 	}
 	injectionCommand := "eval \"$(ndscm --shell-eval shell)\""

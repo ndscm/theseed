@@ -4,6 +4,7 @@ go_library(
     name = "clientcore",
     srcs = [
         "client_core.go",
+        "nd_setup.go",
         "nd_shell.go",
     ],
     importpath = "github.com/ndscm/theseed/seed/devprod/ndscm/clientcore",
