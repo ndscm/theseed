@@ -18,7 +18,6 @@ go_library(
         "dev.go",
         "ndscm.go",
         "review.go",
-        "setup.go",
         "sync.go",
     ],
     importpath = "github.com/ndscm/theseed/seed/devprod/ndscm/cli",
