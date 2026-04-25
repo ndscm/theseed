@@ -8,6 +8,7 @@ go_library(
     name = "scm",
     srcs = [
         "monorepo.go",
+        "provider.go",
         "scm.go",
     ],
     importpath = "github.com/ndscm/theseed/seed/devprod/ndscm/scm",
