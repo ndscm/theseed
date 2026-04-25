@@ -14,12 +14,12 @@ function _nd_completions {
   fi
 
   if [[ $cword -eq 1 ]]; then
-    COMPREPLY=($(compgen -W "cut dev review setup shell sync" -- "$cur"))
+    COMPREPLY=($(compgen -W "cut dev setup shell submit sync" -- "$cur"))
     return
   fi
 
   case "${words[1]}" in
-  review)
+  submit)
     local branches=$(git branch --list 'change/*' 2>/dev/null | sed 's/^[* ]*//' | sed 's|^change/||')
     COMPREPLY=($(compgen -W "$branches" -- "$cur"))
     ;;

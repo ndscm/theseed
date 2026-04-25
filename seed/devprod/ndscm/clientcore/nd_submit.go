@@ -13,10 +13,10 @@ import (
 
 func NdSubmit(scmProvider scm.Provider, args []string) error {
 	if seedshell.ShellEval() {
-		return seederr.WrapErrorf("nd-review should not run with --shell-eval")
+		return seederr.WrapErrorf("nd-submit should not run with --shell-eval")
 	}
 	if len(args) != 1 {
-		return seederr.WrapErrorf("nd-review usage: nd review <feature-name>")
+		return seederr.WrapErrorf("nd-submit usage: nd submit <feature-name>")
 	}
 	currentUserHandle := user.CurrentUserHandle()
 	if currentUserHandle == "" {
