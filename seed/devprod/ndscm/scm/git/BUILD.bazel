@@ -13,10 +13,12 @@ go_library(
         "rebase.go",
         "remote.go",
         "status.go",
+        "verify.go",
         "worktree.go",
     ],
     importpath = "github.com/ndscm/theseed/seed/devprod/ndscm/scm/git",
     deps = [
+        "//seed/devprod/ndscm/scm",
         "//seed/infra/error/go/seederr",
         "//seed/infra/flag/go/seedflag",
         "//seed/infra/shell/go/seedshell",

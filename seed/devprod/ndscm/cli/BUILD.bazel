@@ -26,7 +26,6 @@ go_library(
     visibility = ["//visibility:private"],
     deps = [
         "//seed/devprod/ndscm/cli/shelleval",
-        "//seed/devprod/ndscm/common",
         "//seed/devprod/ndscm/scm",
         "//seed/devprod/ndscm/scm/git",
         "//seed/devprod/ndscm/user",
