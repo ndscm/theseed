@@ -1,4 +1,4 @@
-package main
+package clientcore
 
 import (
 	"log"
@@ -6,24 +6,23 @@ import (
 	"strings"
 
 	"github.com/ndscm/theseed/seed/devprod/ndscm/scm"
-	"github.com/ndscm/theseed/seed/devprod/ndscm/scm/git"
 	"github.com/ndscm/theseed/seed/devprod/ndscm/user"
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
 	"github.com/ndscm/theseed/seed/infra/shell/go/seedshell"
 )
 
-func NdReview(args []string) error {
+func NdReview(scmProvider scm.Provider, args []string) error {
 	if seedshell.ShellEval() {
 		return seederr.WrapErrorf("nd-review should not run with --shell-eval")
 	}
-	if len(args) != 2 {
+	if len(args) != 1 {
 		return seederr.WrapErrorf("nd-review usage: nd review <feature-name>")
 	}
 	currentUserHandle := user.CurrentUserHandle()
 	if currentUserHandle == "" {
 		return seederr.WrapErrorf("user handle is not set")
 	}
-	scmName, err := scm.ScmName()
+	scmName, err := scm.GetIdentifier(scmProvider)
 	if err != nil {
 		return seederr.Wrap(err)
 	}
@@ -33,64 +32,62 @@ func NdReview(args []string) error {
 		if err != nil {
 			return seederr.Wrap(err)
 		}
-		monorepoGitDir, err := git.MonorepoGitDir()
+		err = scmProvider.QuickVerifyMonorepo()
 		if err != nil {
 			return seederr.Wrap(err)
 		}
-		err = git.QuickVerifyMonorepo()
-		if err != nil {
-			return seederr.Wrap(err)
-		}
-		featureName := strings.TrimSpace(args[1])
-		worktreePath := git.GetBranchWorktreePath(monorepoHome, "review/"+featureName)
+		featureName := strings.TrimSpace(args[0])
+		reviewBranch := "review/" + featureName
+		changeBranch := "change/" + featureName
+		worktreePath := scmProvider.GetBranchWorktree(monorepoHome, reviewBranch)
 		_, err = os.Stat(worktreePath)
 		if err != nil && !os.IsNotExist(err) {
 			return seederr.Wrap(err)
 		}
 		if err == nil {
 			log.Printf("Worktree %v already exists, removing...\n", worktreePath)
-			err = git.RemoveWorktree(monorepoGitDir, worktreePath)
+			err = scmProvider.RemoveWorktree(worktreePath)
 			if err != nil {
 				return seederr.Wrap(err)
 			}
 		}
-		_, err = git.GetCommitHash(monorepoGitDir, "review/"+featureName)
+		_, err = scmProvider.GetCommitId(reviewBranch)
 		if err == nil {
-			log.Printf("Branch review/%v already exists, removing...\n", featureName)
-			err = git.DeleteBranch(monorepoGitDir, "review/"+featureName)
+			log.Printf("Branch %v already exists, removing...\n", reviewBranch)
+			err = scmProvider.DeleteBranch(reviewBranch)
 			if err != nil {
 				return seederr.Wrap(err)
 			}
 		}
-		trackingBranch, err := git.GetBranchTracking(monorepoGitDir, "change/"+featureName)
+		trackingBranch, err := scmProvider.GetBranchTracking(changeBranch)
 		if err != nil {
-			return seederr.WrapErrorf("tracking upstream is missing for change/%v", featureName)
+			return seederr.WrapErrorf("tracking upstream is missing for %v", changeBranch)
 		}
-		mergeBaseHash, err := git.GetMergeBaseHash(monorepoGitDir, "origin/main", "change/"+featureName)
+		mergeBaseCommitId, err := scmProvider.GetMergeBaseCommitId("origin/main", changeBranch)
 		if err != nil {
-			return seederr.WrapErrorf("merge base is missing for change/%v", featureName)
+			return seederr.WrapErrorf("merge base is missing for %v", changeBranch)
 		}
-		err = git.CreateBranch(monorepoGitDir, "review/"+featureName, mergeBaseHash, "origin/main")
-		if err != nil {
-			return seederr.Wrap(err)
-		}
-		worktreePath, err = git.CreateBranchWorktree(monorepoGitDir, monorepoHome, "review/"+featureName)
+		err = scmProvider.CreateBranch(reviewBranch, mergeBaseCommitId, "origin/main")
 		if err != nil {
 			return seederr.Wrap(err)
 		}
-		err = git.CherryPickRange(worktreePath, trackingBranch, "change/"+featureName)
+		worktreePath, err = scmProvider.CreateBranchWorktree(monorepoHome, reviewBranch)
 		if err != nil {
 			return seederr.Wrap(err)
 		}
-		err = git.PushBranch(monorepoGitDir, "review/"+featureName, "origin", currentUserHandle+"/"+featureName)
+		err = scmProvider.ApplyCommitRange(worktreePath, trackingBranch, changeBranch)
 		if err != nil {
 			return seederr.Wrap(err)
 		}
-		err = git.RemoveWorktree(monorepoGitDir, worktreePath)
+		err = scmProvider.PushBranch(reviewBranch, "origin", currentUserHandle+"/"+featureName)
 		if err != nil {
 			return seederr.Wrap(err)
 		}
-		err = git.DeleteBranch(monorepoGitDir, "review/"+featureName)
+		err = scmProvider.RemoveWorktree(worktreePath)
+		if err != nil {
+			return seederr.Wrap(err)
+		}
+		err = scmProvider.DeleteBranch(reviewBranch)
 		if err != nil {
 			return seederr.Wrap(err)
 		}
