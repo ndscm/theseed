@@ -1,14 +1,13 @@
-package common
+package git
 
 import (
 	"os"
 
 	"github.com/ndscm/theseed/seed/devprod/ndscm/scm"
-	"github.com/ndscm/theseed/seed/devprod/ndscm/scm/git"
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
 )
 
-func QuickVerifyGitMonorepo() error {
+func QuickVerifyMonorepo() error {
 	monorepoHome, err := scm.MonorepoHome()
 	if err != nil {
 		return seederr.Wrap(err)
@@ -27,18 +26,7 @@ func QuickVerifyGitMonorepo() error {
 		return seederr.WrapErrorf("monorepo home (%v) is not a folder", monorepoHome)
 	}
 
-	scmName, err := scm.ScmName()
-	if err != nil {
-		return seederr.Wrap(err)
-	}
-	switch scmName {
-	case "git":
-		// pass
-	default:
-		return seederr.WrapErrorf("scm is unsupported: %v", scmName)
-	}
-
-	monorepoGitDir, err := git.MonorepoGitDir()
+	monorepoGitDir, err := MonorepoGitDir()
 	if err != nil {
 		return seederr.Wrap(err)
 	}
