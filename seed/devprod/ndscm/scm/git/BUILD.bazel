@@ -10,6 +10,7 @@ go_library(
         "branch.go",
         "commit.go",
         "monorepo.go",
+        "provider.go",
         "rebase.go",
         "remote.go",
         "status.go",
