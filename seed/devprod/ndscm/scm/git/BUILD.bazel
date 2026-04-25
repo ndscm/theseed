@@ -12,6 +12,7 @@ go_library(
         "monorepo.go",
         "provider.go",
         "rebase.go",
+        "register.go",
         "remote.go",
         "status.go",
         "verify.go",
