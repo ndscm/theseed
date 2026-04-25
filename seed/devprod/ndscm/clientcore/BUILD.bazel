@@ -1,0 +1,16 @@
+load("@rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "clientcore",
+    srcs = [
+        "client_core.go",
+        "nd_shell.go",
+    ],
+    importpath = "github.com/ndscm/theseed/seed/devprod/ndscm/clientcore",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//seed/devprod/ndscm/clientcore/shelleval",
+        "//seed/infra/error/go/seederr",
+        "//seed/infra/shell/go/seedshell",
+    ],
+)
