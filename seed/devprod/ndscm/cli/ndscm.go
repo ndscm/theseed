@@ -15,6 +15,10 @@ import (
 
 func clientCommand(command string, args []string) error {
 	cc := &clientcore.ClientCore{}
+	err := cc.Initialize()
+	if err != nil {
+		return seederr.Wrap(err)
+	}
 	switch command {
 	case "setup":
 		err := cc.NdSetup(args)

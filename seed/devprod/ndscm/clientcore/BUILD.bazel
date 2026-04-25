@@ -11,6 +11,7 @@ go_library(
     visibility = ["//visibility:public"],
     deps = [
         "//seed/devprod/ndscm/clientcore/shelleval",
+        "//seed/devprod/ndscm/scm",
         "//seed/infra/error/go/seederr",
         "//seed/infra/shell/go/seedshell",
     ],
