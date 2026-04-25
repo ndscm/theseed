@@ -16,6 +16,11 @@ import (
 func clientCommand(command string, args []string) error {
 	cc := &clientcore.ClientCore{}
 	switch command {
+	case "setup":
+		err := cc.NdSetup(args)
+		if err != nil {
+			return seederr.Wrap(err)
+		}
 	case "shell":
 		err := cc.NdShell(args)
 		if err != nil {
@@ -56,7 +61,7 @@ func run() error {
 			return seederr.Wrap(err)
 		}
 	case "setup":
-		err := NdSetup(flag.Args())
+		err := clientCommand("setup", flag.Args()[1:])
 		if err != nil {
 			return seederr.Wrap(err)
 		}
