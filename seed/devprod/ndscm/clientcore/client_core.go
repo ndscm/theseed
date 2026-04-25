@@ -26,6 +26,10 @@ func (cc *ClientCore) NdDev(args []string) error {
 	return NdDev(cc.scmProvider, args)
 }
 
+func (cc *ClientCore) NdReview(args []string) error {
+	return NdReview(cc.scmProvider, args)
+}
+
 func (cc *ClientCore) NdSetup(args []string) error {
 	return NdSetup(args)
 }

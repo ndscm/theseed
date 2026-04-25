@@ -15,7 +15,6 @@ go_library(
     name = "cli_lib",
     srcs = [
         "ndscm.go",
-        "review.go",
         "sync.go",
     ],
     importpath = "github.com/ndscm/theseed/seed/devprod/ndscm/cli",
@@ -24,7 +23,6 @@ go_library(
         "//seed/devprod/ndscm/clientcore",
         "//seed/devprod/ndscm/scm",
         "//seed/devprod/ndscm/scm/git",
-        "//seed/devprod/ndscm/user",
         "//seed/infra/error/go/seederr",
         "//seed/infra/init/go/seedinit",
         "//seed/infra/log/go/seedlog",

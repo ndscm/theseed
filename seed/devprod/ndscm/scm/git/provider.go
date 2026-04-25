@@ -23,12 +23,20 @@ func (g *GitProvider) CreateBranch(branchName string, startPoint string, trackin
 	return CreateBranch("", branchName, startPoint, tracking)
 }
 
+func (g *GitProvider) DeleteBranch(branchName string) error {
+	return DeleteBranch("", branchName)
+}
+
 func (g *GitProvider) GetBranchTracking(branchName string) (string, error) {
 	return GetBranchTracking("", branchName)
 }
 
 func (g *GitProvider) SetBranchTracking(branchName string, tracking string) error {
 	return SetBranchTracking("", branchName, tracking)
+}
+
+func (g *GitProvider) GetMergeBaseCommitId(base string, target string) (string, error) {
+	return GetMergeBaseHash("", base, target)
 }
 
 // # commit
@@ -46,6 +54,18 @@ func (g *GitProvider) ListCommitIds(from string, to string) ([]string, error) {
 		return nil, seederr.WrapErrorf("current segment (%v..%v) is not pure and contains merge commit:\n%v", from, to, mergeCommits)
 	}
 	return ListCommitHash("", from, to)
+}
+
+// # rebase
+
+func (g *GitProvider) ApplyCommitRange(worktreePath string, from string, to string) error {
+	return CherryPickRange(worktreePath, from, to)
+}
+
+// # remote
+
+func (g *GitProvider) PushBranch(branchName string, remote string, remoteBranchName string) error {
+	return PushBranch("", branchName, remote, remoteBranchName)
 }
 
 // # status
@@ -72,8 +92,24 @@ func (g *GitProvider) GetWorktreeBranch(worktreePath string) (string, error) {
 
 // # worktree
 
+func (g *GitProvider) CreateBranchWorktree(monorepoHome string, branchName string) (string, error) {
+	monorepoGitDir, err := MonorepoGitDir()
+	if err != nil {
+		return "", seederr.Wrap(err)
+	}
+	return CreateBranchWorktree(monorepoGitDir, monorepoHome, branchName)
+}
+
 func (g *GitProvider) GetBranchWorktree(monorepoHome string, branchName string) string {
 	return GetBranchWorktreePath(monorepoHome, branchName)
+}
+
+func (g *GitProvider) RemoveWorktree(worktreePath string) error {
+	monorepoGitDir, err := MonorepoGitDir()
+	if err != nil {
+		return seederr.Wrap(err)
+	}
+	return RemoveWorktree(monorepoGitDir, worktreePath)
 }
 
 func (g *GitProvider) CreateDevWorktree(monorepoHome string, worktreeName string) (string, error) {

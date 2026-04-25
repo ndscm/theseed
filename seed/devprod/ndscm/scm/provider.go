@@ -30,11 +30,18 @@ type Provider interface {
 	// the new branch is configured to track it.
 	CreateBranch(branchName string, startPoint string, tracking string) error
 
+	// DeleteBranch removes branchName even if it has unmerged commits.
+	DeleteBranch(branchName string) error
+
 	// GetBranchTracking returns the upstream branch that branchName tracks.
 	GetBranchTracking(branchName string) (string, error)
 
 	// SetBranchTracking configures branchName to track tracking.
 	SetBranchTracking(branchName string, tracking string) error
+
+	// GetMergeBaseCommitId returns the commit id of the most recent common
+	// ancestor of base and target.
+	GetMergeBaseCommitId(base string, target string) (string, error)
 
 	// # commit
 
@@ -45,6 +52,18 @@ type Provider interface {
 	// ListCommitIds returns the commit ids in the linear range (from, to].
 	// It fails if the segment is not pure (e.g. contains a merge commit).
 	ListCommitIds(from string, to string) ([]string, error)
+
+	// # rebase
+
+	// ApplyCommitRange replays the commits in (from, to] onto the worktree's
+	// current branch.
+	ApplyCommitRange(worktreePath string, from string, to string) error
+
+	// # remote
+
+	// PushBranch force-pushes the local branchName to remote as
+	// remoteBranchName.
+	PushBranch(branchName string, remote string, remoteBranchName string) error
 
 	// # status
 
@@ -58,9 +77,16 @@ type Provider interface {
 
 	// # worktree
 
+	// CreateBranchWorktree materializes branchName as a worktree at the
+	// conventional path under monorepoHome and returns that path.
+	CreateBranchWorktree(monorepoHome string, branchName string) (string, error)
+
 	// GetBranchWorktree returns the conventional worktree path for branchName
 	// under monorepoHome. It does not check whether the worktree exists.
 	GetBranchWorktree(monorepoHome string, branchName string) string
+
+	// RemoveWorktree deletes the worktree at worktreePath.
+	RemoveWorktree(worktreePath string) error
 
 	// CreateDevWorktree creates the worktree pair for a dev branch under
 	// monorepoHome: a base/<branchName> branch tracking origin/main, and the

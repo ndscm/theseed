@@ -30,6 +30,11 @@ func clientCommand(command string, args []string) error {
 		if err != nil {
 			return seederr.Wrap(err)
 		}
+	case "review":
+		err := cc.NdReview(args)
+		if err != nil {
+			return seederr.Wrap(err)
+		}
 	case "setup":
 		err := cc.NdSetup(args)
 		if err != nil {
@@ -70,7 +75,7 @@ func run() error {
 			return seederr.Wrap(err)
 		}
 	case "review":
-		err := NdReview(flag.Args())
+		err := clientCommand("review", flag.Args()[1:])
 		if err != nil {
 			return seederr.Wrap(err)
 		}
