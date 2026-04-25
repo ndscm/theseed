@@ -88,3 +88,14 @@ func InitializeDefaultProvider() (Provider, error) {
 	}
 	return entry.provider, nil
 }
+
+func GetIdentifier(scmProvider Provider) (string, error) {
+	scmRegistryMutex.Lock()
+	defer scmRegistryMutex.Unlock()
+	for identifier, entry := range scmRegistry {
+		if entry.provider == scmProvider {
+			return identifier, nil
+		}
+	}
+	return "", seederr.WrapErrorf("SCM provider not found")
+}
