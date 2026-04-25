@@ -11,5 +11,5 @@ go_library(
         "nd_snippet.sh",
         "nd_completions_snippet.sh",
     ],
-    importpath = "github.com/ndscm/theseed/seed/devprod/ndscm/cli/shelleval",
+    importpath = "github.com/ndscm/theseed/seed/devprod/ndscm/clientcore/shelleval",
 )
