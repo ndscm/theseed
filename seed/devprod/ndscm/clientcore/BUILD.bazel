@@ -9,6 +9,7 @@ go_library(
         "nd_review.go",
         "nd_setup.go",
         "nd_shell.go",
+        "nd_sync.go",
     ],
     importpath = "github.com/ndscm/theseed/seed/devprod/ndscm/clientcore",
     visibility = ["//visibility:public"],

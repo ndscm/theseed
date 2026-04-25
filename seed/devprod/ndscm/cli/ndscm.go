@@ -6,6 +6,7 @@ import (
 	"os"
 
 	"github.com/ndscm/theseed/seed/devprod/ndscm/clientcore"
+	_ "github.com/ndscm/theseed/seed/devprod/ndscm/scm/git"
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
 	"github.com/ndscm/theseed/seed/infra/init/go/seedinit"
 	"github.com/ndscm/theseed/seed/infra/log/go/seedlog"
@@ -42,6 +43,11 @@ func clientCommand(command string, args []string) error {
 		}
 	case "shell":
 		err := cc.NdShell(args)
+		if err != nil {
+			return seederr.Wrap(err)
+		}
+	case "sync":
+		err := cc.NdSync(args)
 		if err != nil {
 			return seederr.Wrap(err)
 		}
@@ -90,7 +96,7 @@ func run() error {
 			return seederr.Wrap(err)
 		}
 	case "sync":
-		err := NdSync(flag.Args())
+		err := clientCommand("sync", flag.Args()[1:])
 		if err != nil {
 			return seederr.Wrap(err)
 		}

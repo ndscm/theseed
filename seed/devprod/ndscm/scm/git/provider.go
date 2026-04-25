@@ -27,6 +27,10 @@ func (g *GitProvider) DeleteBranch(branchName string) error {
 	return DeleteBranch("", branchName)
 }
 
+func (g *GitProvider) DeleteMergedBranch(branchName string) error {
+	return DeleteMergedBranch("", branchName)
+}
+
 func (g *GitProvider) GetBranchTracking(branchName string) (string, error) {
 	return GetBranchTracking("", branchName)
 }
@@ -58,11 +62,23 @@ func (g *GitProvider) ListCommitIds(from string, to string) ([]string, error) {
 
 // # rebase
 
+func (g *GitProvider) Rebase(worktreePath string, upstream string) error {
+	return Rebase(worktreePath, upstream)
+}
+
+func (g *GitProvider) PullRebase(worktreePath string) error {
+	return PullRebase(worktreePath)
+}
+
 func (g *GitProvider) ApplyCommitRange(worktreePath string, from string, to string) error {
 	return CherryPickRange(worktreePath, from, to)
 }
 
 // # remote
+
+func (g *GitProvider) FetchAll() error {
+	return FetchAll("")
+}
 
 func (g *GitProvider) PushBranch(branchName string, remote string, remoteBranchName string) error {
 	return PushBranch("", branchName, remote, remoteBranchName)
@@ -92,6 +108,14 @@ func (g *GitProvider) GetWorktreeBranch(worktreePath string) (string, error) {
 
 // # worktree
 
+func (g *GitProvider) GetCurrentWorktree() (string, error) {
+	return GetCurrentWorktreePath()
+}
+
+func (g *GitProvider) Checkout(worktreePath string, branchName string) error {
+	return Checkout(worktreePath, branchName)
+}
+
 func (g *GitProvider) CreateBranchWorktree(monorepoHome string, branchName string) (string, error) {
 	monorepoGitDir, err := MonorepoGitDir()
 	if err != nil {
@@ -102,6 +126,10 @@ func (g *GitProvider) CreateBranchWorktree(monorepoHome string, branchName strin
 
 func (g *GitProvider) GetBranchWorktree(monorepoHome string, branchName string) string {
 	return GetBranchWorktreePath(monorepoHome, branchName)
+}
+
+func (g *GitProvider) GetBranchWorktreeBranch(monorepoHome string, worktreePath string) (string, error) {
+	return GetBranchWorktreeBranch(monorepoHome, worktreePath)
 }
 
 func (g *GitProvider) RemoveWorktree(worktreePath string) error {

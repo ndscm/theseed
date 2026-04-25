@@ -1,23 +1,22 @@
-package main
+package clientcore
 
 import (
 	"log"
 	"strings"
 
 	"github.com/ndscm/theseed/seed/devprod/ndscm/scm"
-	"github.com/ndscm/theseed/seed/devprod/ndscm/scm/git"
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
 	"github.com/ndscm/theseed/seed/infra/shell/go/seedshell"
 )
 
-func NdSync(args []string) error {
+func NdSync(scmProvider scm.Provider, args []string) error {
 	if seedshell.ShellEval() {
 		return seederr.WrapErrorf("nd-sync should not run with --shell-eval")
 	}
-	if len(args) != 1 {
+	if len(args) != 0 {
 		return seederr.WrapErrorf("nd-sync usage: (on dev branch) nd sync")
 	}
-	scmName, err := scm.ScmName()
+	scmName, err := scm.GetIdentifier(scmProvider)
 	if err != nil {
 		return seederr.Wrap(err)
 	}
@@ -27,29 +26,29 @@ func NdSync(args []string) error {
 		if err != nil {
 			return seederr.Wrap(err)
 		}
-		err = git.QuickVerifyMonorepo()
+		err = scmProvider.QuickVerifyMonorepo()
 		if err != nil {
 			return seederr.Wrap(err)
 		}
-		dirtyFiles, err := git.GetStatus("")
+		dirtyFiles, err := scmProvider.GetWorktreeDirtyFiles("")
 		if err != nil {
 			return seederr.Wrap(err)
 		}
 		if len(dirtyFiles) > 0 {
 			return seederr.WrapErrorf("workspace is dirty:\n%v", dirtyFiles)
 		}
-		devBranch, err := git.GetCurrentBranch("")
+		devBranch, err := scmProvider.GetWorktreeBranch("")
 		if err != nil {
 			return seederr.Wrap(err)
 		}
 		if !strings.HasPrefix(devBranch, "dev") {
 			return seederr.WrapErrorf("workspace branch is not a dev branch: %v", devBranch)
 		}
-		worktreePath, err := git.GetCurrentWorktreePath()
+		worktreePath, err := scmProvider.GetCurrentWorktree()
 		if err != nil {
 			return seederr.Wrap(err)
 		}
-		worktree, err := git.GetBranchWorktreeBranch(monorepoHome, worktreePath)
+		worktree, err := scmProvider.GetBranchWorktreeBranch(monorepoHome, worktreePath)
 		if err != nil {
 			return seederr.Wrap(err)
 		}
@@ -59,7 +58,7 @@ func NdSync(args []string) error {
 		// # Iterate changes tree
 		chain := []string{devBranch}
 		for iter := devBranch; iter != ("base/" + devBranch); {
-			inspectBranch, err := git.GetBranchTracking("", iter)
+			inspectBranch, err := scmProvider.GetBranchTracking(iter)
 			if err != nil {
 				return seederr.Wrap(err)
 			}
@@ -73,48 +72,48 @@ func NdSync(args []string) error {
 			iter = inspectBranch
 		}
 		// # Fetch upstream changes
-		err = git.FetchAll("")
+		err = scmProvider.FetchAll()
 		if err != nil {
 			return seederr.Wrap(err)
 		}
 		// # Rebase dev branch
 		log.Printf("\x1b[34mRebasing: %v\x1b[0m", chain)
-		incomingCommits, err := git.ListCommitHash("", "base/"+devBranch, "origin/main")
+		incomingCommits, err := scmProvider.ListCommitIds("base/"+devBranch, "origin/main")
 		if err != nil {
 			return seederr.Wrap(err)
 		}
-		baseCommitHash, err := git.GetCommitHash("", "base/"+devBranch)
+		baseCommitId, err := scmProvider.GetCommitId("base/" + devBranch)
 		if err != nil {
 			return seederr.Wrap(err)
 		}
-		incomingCommits = append(incomingCommits, baseCommitHash)
+		incomingCommits = append(incomingCommits, baseCommitId)
 		for i := len(incomingCommits) - 1; i >= 0; i-- {
 			// Reverse iteration
-			incommingCommitHash := incomingCommits[i]
-			log.Printf("\x1b[34mRebasing to: %v\x1b[0m", incommingCommitHash)
-			err := git.Checkout("", "base/"+devBranch)
+			incomingCommitId := incomingCommits[i]
+			log.Printf("\x1b[34mRebasing to: %v\x1b[0m", incomingCommitId)
+			err := scmProvider.Checkout("", "base/"+devBranch)
 			if err != nil {
 				return seederr.Wrap(err)
 			}
-			err = git.Rebase("", incommingCommitHash)
+			err = scmProvider.Rebase("", incomingCommitId)
 			if err != nil {
 				return seederr.Wrap(err)
 			}
 			for _, chainBranch := range chain[1:] {
-				err := git.Checkout("", chainBranch)
+				err := scmProvider.Checkout("", chainBranch)
 				if err != nil {
 					return seederr.Wrap(err)
 				}
-				err = git.PullRebase("")
+				err = scmProvider.PullRebase("")
 				if err != nil {
 					return seederr.Wrap(err)
 				}
 			}
-			log.Printf("\x1b[32mRebased to: %v\x1b[0m", incommingCommitHash)
+			log.Printf("\x1b[32mRebased to: %v\x1b[0m", incomingCommitId)
 		}
 		// # Cleanup local change branches
 		for iter := devBranch; iter != ("base/" + devBranch); {
-			inspectBranch, err := git.GetBranchTracking("", iter)
+			inspectBranch, err := scmProvider.GetBranchTracking(iter)
 			if err != nil {
 				return seederr.Wrap(err)
 			}
@@ -127,27 +126,27 @@ func NdSync(args []string) error {
 			if inspectBranch == ("base/" + devBranch) {
 				break
 			}
-			nextBranch, err := git.GetBranchTracking("", inspectBranch)
+			nextBranch, err := scmProvider.GetBranchTracking(inspectBranch)
 			if err != nil {
 				return seederr.Wrap(err)
 			}
-			inspectCommitHash, err := git.GetCommitHash("", inspectBranch)
+			inspectCommitId, err := scmProvider.GetCommitId(inspectBranch)
 			if err != nil {
 				return seederr.Wrap(err)
 			}
-			nextCommitHash, err := git.GetCommitHash("", nextBranch)
+			nextCommitId, err := scmProvider.GetCommitId(nextBranch)
 			if err != nil {
 				return seederr.Wrap(err)
 			}
-			if inspectCommitHash == nextCommitHash {
+			if inspectCommitId == nextCommitId {
 				if !strings.HasPrefix(inspectBranch, "change/") {
 					return seederr.WrapErrorf("unexpected empty branch %v", inspectBranch)
 				}
-				err := git.DeleteMergedBranch("", inspectBranch)
+				err := scmProvider.DeleteMergedBranch(inspectBranch)
 				if err != nil {
 					return seederr.Wrap(err)
 				}
-				err = git.SetBranchTracking("", iter, nextBranch)
+				err = scmProvider.SetBranchTracking(iter, nextBranch)
 				if err != nil {
 					return seederr.Wrap(err)
 				}

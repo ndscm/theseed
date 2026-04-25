@@ -33,6 +33,10 @@ type Provider interface {
 	// DeleteBranch removes branchName even if it has unmerged commits.
 	DeleteBranch(branchName string) error
 
+	// DeleteMergedBranch removes branchName only if its commits are reachable
+	// from its upstream; it fails for unmerged branches.
+	DeleteMergedBranch(branchName string) error
+
 	// GetBranchTracking returns the upstream branch that branchName tracks.
 	GetBranchTracking(branchName string) (string, error)
 
@@ -55,11 +59,23 @@ type Provider interface {
 
 	// # rebase
 
+	// Rebase replays the commits of the worktree's current branch on top of
+	// upstream.
+	Rebase(worktreePath string, upstream string) error
+
+	// PullRebase fetches the worktree branch's tracking remote and rebases
+	// onto the updated tracking branch.
+	PullRebase(worktreePath string) error
+
 	// ApplyCommitRange replays the commits in (from, to] onto the worktree's
 	// current branch.
 	ApplyCommitRange(worktreePath string, from string, to string) error
 
 	// # remote
+
+	// FetchAll fetches updates from every configured remote and prunes
+	// remote-tracking refs that no longer exist upstream.
+	FetchAll() error
 
 	// PushBranch force-pushes the local branchName to remote as
 	// remoteBranchName.
@@ -77,6 +93,13 @@ type Provider interface {
 
 	// # worktree
 
+	// GetCurrentWorktree returns the path of the worktree containing the
+	// current working directory.
+	GetCurrentWorktree() (string, error)
+
+	// Checkout switches worktreePath to branchName.
+	Checkout(worktreePath string, branchName string) error
+
 	// CreateBranchWorktree materializes branchName as a worktree at the
 	// conventional path under monorepoHome and returns that path.
 	CreateBranchWorktree(monorepoHome string, branchName string) (string, error)
@@ -84,6 +107,11 @@ type Provider interface {
 	// GetBranchWorktree returns the conventional worktree path for branchName
 	// under monorepoHome. It does not check whether the worktree exists.
 	GetBranchWorktree(monorepoHome string, branchName string) string
+
+	// GetBranchWorktreeBranch returns the branch name implied by worktreePath
+	// under monorepoHome (the inverse of GetBranchWorktree). It fails if
+	// worktreePath is not under monorepoHome.
+	GetBranchWorktreeBranch(monorepoHome string, worktreePath string) (string, error)
 
 	// RemoveWorktree deletes the worktree at worktreePath.
 	RemoveWorktree(worktreePath string) error
