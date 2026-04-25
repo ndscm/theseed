@@ -5,7 +5,6 @@ import (
 	"log"
 	"os"
 
-	"github.com/ndscm/theseed/seed/devprod/ndscm/common"
 	"github.com/ndscm/theseed/seed/devprod/ndscm/scm"
 	"github.com/ndscm/theseed/seed/devprod/ndscm/scm/git"
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
@@ -30,7 +29,7 @@ func NdDev(args []string) error {
 		if err != nil {
 			return seederr.Wrap(err)
 		}
-		err = common.QuickVerifyGitMonorepo()
+		err = git.QuickVerifyMonorepo()
 		if err != nil {
 			return seederr.Wrap(err)
 		}
