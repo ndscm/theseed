@@ -20,6 +20,11 @@ func clientCommand(command string, args []string) error {
 		return seederr.Wrap(err)
 	}
 	switch command {
+	case "cut":
+		err := cc.NdCut(args)
+		if err != nil {
+			return seederr.Wrap(err)
+		}
 	case "dev":
 		err := cc.NdDev(args)
 		if err != nil {
@@ -55,7 +60,7 @@ func run() error {
 	}
 	switch flag.Arg(0) {
 	case "cut":
-		err := NdCut(flag.Args())
+		err := clientCommand("cut", flag.Args()[1:])
 		if err != nil {
 			return seederr.Wrap(err)
 		}

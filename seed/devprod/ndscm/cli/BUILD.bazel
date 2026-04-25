@@ -14,7 +14,6 @@ go_binary(
 go_library(
     name = "cli_lib",
     srcs = [
-        "cut.go",
         "ndscm.go",
         "review.go",
         "sync.go",
