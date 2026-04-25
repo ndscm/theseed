@@ -11,7 +11,7 @@ import (
 	"github.com/ndscm/theseed/seed/infra/shell/go/seedshell"
 )
 
-func NdReview(scmProvider scm.Provider, args []string) error {
+func NdSubmit(scmProvider scm.Provider, args []string) error {
 	if seedshell.ShellEval() {
 		return seederr.WrapErrorf("nd-review should not run with --shell-eval")
 	}
@@ -31,9 +31,9 @@ func NdReview(scmProvider scm.Provider, args []string) error {
 		return seederr.Wrap(err)
 	}
 	featureName := strings.TrimSpace(args[0])
-	reviewBranch := "review/" + featureName
+	submitBranch := "submit/" + featureName
 	changeBranch := "change/" + featureName
-	worktreePath := scmProvider.GetBranchWorktree(monorepoHome, reviewBranch)
+	worktreePath := scmProvider.GetBranchWorktree(monorepoHome, submitBranch)
 	_, err = os.Stat(worktreePath)
 	if err != nil && !os.IsNotExist(err) {
 		return seederr.Wrap(err)
@@ -45,10 +45,10 @@ func NdReview(scmProvider scm.Provider, args []string) error {
 			return seederr.Wrap(err)
 		}
 	}
-	_, err = scmProvider.GetCommitId(reviewBranch)
+	_, err = scmProvider.GetCommitId(submitBranch)
 	if err == nil {
-		log.Printf("Branch %v already exists, removing...\n", reviewBranch)
-		err = scmProvider.DeleteBranch(reviewBranch)
+		log.Printf("Branch %v already exists, removing...\n", submitBranch)
+		err = scmProvider.DeleteBranch(submitBranch)
 		if err != nil {
 			return seederr.Wrap(err)
 		}
@@ -61,11 +61,11 @@ func NdReview(scmProvider scm.Provider, args []string) error {
 	if err != nil {
 		return seederr.WrapErrorf("merge base is missing for %v", changeBranch)
 	}
-	err = scmProvider.CreateBranch(reviewBranch, mergeBaseCommitId, "origin/main")
+	err = scmProvider.CreateBranch(submitBranch, mergeBaseCommitId, "origin/main")
 	if err != nil {
 		return seederr.Wrap(err)
 	}
-	worktreePath, err = scmProvider.CreateBranchWorktree(monorepoHome, reviewBranch)
+	worktreePath, err = scmProvider.CreateBranchWorktree(monorepoHome, submitBranch)
 	if err != nil {
 		return seederr.Wrap(err)
 	}
@@ -73,7 +73,7 @@ func NdReview(scmProvider scm.Provider, args []string) error {
 	if err != nil {
 		return seederr.Wrap(err)
 	}
-	err = scmProvider.PushBranch(reviewBranch, "origin", currentUserHandle+"/"+featureName)
+	err = scmProvider.PushBranch(submitBranch, "origin", currentUserHandle+"/"+featureName)
 	if err != nil {
 		return seederr.Wrap(err)
 	}
@@ -81,7 +81,7 @@ func NdReview(scmProvider scm.Provider, args []string) error {
 	if err != nil {
 		return seederr.Wrap(err)
 	}
-	err = scmProvider.DeleteBranch(reviewBranch)
+	err = scmProvider.DeleteBranch(submitBranch)
 	if err != nil {
 		return seederr.Wrap(err)
 	}
