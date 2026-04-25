@@ -37,3 +37,7 @@ func (cc *ClientCore) NdSetup(args []string) error {
 func (cc *ClientCore) NdShell(args []string) error {
 	return NdShell(args)
 }
+
+func (cc *ClientCore) NdSync(args []string) error {
+	return NdSync(cc.scmProvider, args)
+}
