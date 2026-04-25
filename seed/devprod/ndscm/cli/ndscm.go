@@ -12,7 +12,7 @@ import (
 	"github.com/ndscm/theseed/seed/infra/log/go/seedlog"
 )
 
-// TODO(nagi): support subcommand flags, e.g. nd dev --foo, nd review --bar, etc.
+// TODO(nagi): support subcommand flags, e.g. nd dev --foo, nd submit --bar, etc.
 
 func clientCommand(command string, args []string) error {
 	cc := &clientcore.ClientCore{}
@@ -80,11 +80,6 @@ func run() error {
 		if err != nil {
 			return seederr.Wrap(err)
 		}
-	case "review":
-		err := clientCommand("submit", flag.Args()[1:])
-		if err != nil {
-			return seederr.Wrap(err)
-		}
 	case "setup":
 		err := clientCommand("setup", flag.Args()[1:])
 		if err != nil {
@@ -92,6 +87,11 @@ func run() error {
 		}
 	case "shell":
 		err := clientCommand("shell", flag.Args()[1:])
+		if err != nil {
+			return seederr.Wrap(err)
+		}
+	case "submit":
+		err := clientCommand("submit", flag.Args()[1:])
 		if err != nil {
 			return seederr.Wrap(err)
 		}
