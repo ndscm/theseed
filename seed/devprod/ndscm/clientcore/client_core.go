@@ -1,6 +1,21 @@
 package clientcore
 
+import (
+	"github.com/ndscm/theseed/seed/devprod/ndscm/scm"
+	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
+)
+
 type ClientCore struct {
+	scmProvider scm.Provider
+}
+
+func (cc *ClientCore) Initialize() error {
+	scmProvider, err := scm.InitializeDefaultProvider()
+	if err != nil {
+		return seederr.Wrap(err)
+	}
+	cc.scmProvider = scmProvider
+	return nil
 }
 
 func (cc *ClientCore) NdSetup(args []string) error {
