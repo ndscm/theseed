@@ -26,7 +26,7 @@ func NdDev(args []string) error {
 		if err != nil {
 			return seederr.Wrap(err)
 		}
-		monorepoGitDir, err := scm.MonorepoGitDir()
+		monorepoGitDir, err := git.MonorepoGitDir()
 		if err != nil {
 			return seederr.Wrap(err)
 		}

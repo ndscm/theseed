@@ -4,6 +4,7 @@ import (
 	"os"
 
 	"github.com/ndscm/theseed/seed/devprod/ndscm/scm"
+	"github.com/ndscm/theseed/seed/devprod/ndscm/scm/git"
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
 )
 
@@ -37,7 +38,7 @@ func QuickVerifyGitMonorepo() error {
 		return seederr.WrapErrorf("scm is unsupported: %v", scmName)
 	}
 
-	monorepoGitDir, err := scm.MonorepoGitDir()
+	monorepoGitDir, err := git.MonorepoGitDir()
 	if err != nil {
 		return seederr.Wrap(err)
 	}
