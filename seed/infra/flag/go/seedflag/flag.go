@@ -23,8 +23,6 @@ func (f *FlagItem) Usage() string {
 	return f.usage
 }
 
-var globalFlags = map[string]FlagDefinition{}
-
 type BoolFlag struct {
 	FlagItem
 	value bool
@@ -51,17 +49,6 @@ func (f *BoolFlag) IsBoolFlag() bool {
 	return true
 }
 
-func DefineBool(name string, defaultValue bool, usage string) *BoolFlag {
-	item := &BoolFlag{
-		FlagItem: FlagItem{
-			usage: usage,
-		},
-		value: defaultValue,
-	}
-	globalFlags[name] = item
-	return item
-}
-
 type StringFlag struct {
 	FlagItem
 	value string
@@ -78,6 +65,19 @@ func (f *StringFlag) Get() string {
 
 func (f *StringFlag) String() string {
 	return f.value
+}
+
+var globalFlags = map[string]FlagDefinition{}
+
+func DefineBool(name string, defaultValue bool, usage string) *BoolFlag {
+	item := &BoolFlag{
+		FlagItem: FlagItem{
+			usage: usage,
+		},
+		value: defaultValue,
+	}
+	globalFlags[name] = item
+	return item
 }
 
 func DefineString(name string, defaultValue string, usage string) *StringFlag {
