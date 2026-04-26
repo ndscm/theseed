@@ -110,7 +110,7 @@ func WithFallbackEnvPrefix(prefix string) globalParseOption {
 	}
 }
 
-func Parse(opts ...globalParseOption) error {
+func Parse(opts ...globalParseOption) ([]string, error) {
 	o := &globalParseOptions{}
 	for _, opt := range opts {
 		opt(o)
@@ -134,7 +134,7 @@ func Parse(opts ...globalParseOption) error {
 			}
 			err := item.Set(value)
 			if err != nil {
-				return seederr.Wrap(err)
+				return nil, seederr.Wrap(err)
 			}
 		} else if o.fallbackEnvPrefix != "" && strings.HasPrefix(parts[0], o.fallbackEnvPrefix) {
 			pure := strings.TrimPrefix(parts[0], o.fallbackEnvPrefix)
@@ -147,7 +147,7 @@ func Parse(opts ...globalParseOption) error {
 			seedlog.Infof("Loaded fallback env flag: %s=%s", parts[0], value)
 			err := item.Set(value)
 			if err != nil {
-				return seederr.Wrap(err)
+				return nil, seederr.Wrap(err)
 			}
 		}
 	}
@@ -157,5 +157,5 @@ func Parse(opts ...globalParseOption) error {
 	}
 	flag.Parse()
 	seedlog.Infof("Global flags: %+v", globalFlags)
-	return nil
+	return flag.Args(), nil
 }
