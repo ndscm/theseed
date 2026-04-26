@@ -8,13 +8,13 @@ import (
 	"github.com/ndscm/theseed/seed/cloud/login/proto/loginpbconnect"
 	"github.com/ndscm/theseed/seed/devprod/golink/proto/golinkpbconnect"
 	golinkservice "github.com/ndscm/theseed/seed/devprod/golink/service"
-	"github.com/ndscm/theseed/seed/infra/http/go/cachecontrol"
-	"github.com/ndscm/theseed/seed/infra/spa/go/seedspa"
-	"github.com/ndscm/theseed/seed/infra/flag/go/seedflag"
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
+	"github.com/ndscm/theseed/seed/infra/flag/go/seedflag"
+	"github.com/ndscm/theseed/seed/infra/grpc/go/seedgrpc"
+	"github.com/ndscm/theseed/seed/infra/http/go/cachecontrol"
 	"github.com/ndscm/theseed/seed/infra/init/go/seedinit"
 	"github.com/ndscm/theseed/seed/infra/log/go/seedlog"
-	"github.com/ndscm/theseed/seed/infra/grpc/go/seedgrpc"
+	"github.com/ndscm/theseed/seed/infra/spa/go/seedspa"
 )
 
 var flagWebapp = seedflag.DefineString("webapp", "", "Path to webapp static files")
