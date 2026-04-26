@@ -11,12 +11,12 @@ import (
 
 	"entgo.io/ent/dialect"
 	entsql "entgo.io/ent/dialect/sql"
+	_ "github.com/jackc/pgx/v5/stdlib"
 	"github.com/ndscm/theseed/seed/devprod/golink/database/ent"
 	"github.com/ndscm/theseed/seed/devprod/golink/proto/golinkerrorpb"
-	"github.com/ndscm/theseed/seed/infra/flag/go/seedflag"
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
+	"github.com/ndscm/theseed/seed/infra/flag/go/seedflag"
 	"github.com/ndscm/theseed/seed/infra/log/go/seedlog"
-	_ "github.com/jackc/pgx/v5/stdlib"
 )
 
 var flagGolinkDatabase = seedflag.DefineString("golink_database", "postgres://127.0.0.1:5432/golink", "Database connection URL")
