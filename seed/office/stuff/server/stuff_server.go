@@ -6,13 +6,13 @@ import (
 
 	"github.com/ndscm/theseed/seed/cloud/login/go/loginservice"
 	"github.com/ndscm/theseed/seed/cloud/login/proto/loginpbconnect"
-	"github.com/ndscm/theseed/seed/infra/http/go/cachecontrol"
-	"github.com/ndscm/theseed/seed/infra/spa/go/seedspa"
-	"github.com/ndscm/theseed/seed/infra/flag/go/seedflag"
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
+	"github.com/ndscm/theseed/seed/infra/flag/go/seedflag"
+	"github.com/ndscm/theseed/seed/infra/grpc/go/seedgrpc"
+	"github.com/ndscm/theseed/seed/infra/http/go/cachecontrol"
 	"github.com/ndscm/theseed/seed/infra/init/go/seedinit"
 	"github.com/ndscm/theseed/seed/infra/log/go/seedlog"
-	"github.com/ndscm/theseed/seed/infra/grpc/go/seedgrpc"
+	"github.com/ndscm/theseed/seed/infra/spa/go/seedspa"
 	"github.com/ndscm/theseed/seed/office/stuff/proto/stuffpbconnect"
 	stuffservice "github.com/ndscm/theseed/seed/office/stuff/service"
 )
