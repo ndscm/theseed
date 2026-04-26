@@ -4,7 +4,7 @@ package(default_visibility = ["//visibility:public"])
 
 go_library(
     name = "seedflag",
-    srcs = ["parse.go"],
+    srcs = ["flag.go"],
     importpath = "github.com/ndscm/theseed/seed/infra/flag/go/seedflag",
     deps = [
         "//seed/infra/error/go/seederr",
