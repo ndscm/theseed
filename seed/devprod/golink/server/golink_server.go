@@ -20,7 +20,7 @@ import (
 var flagWebapp = seedflag.DefineString("webapp", "", "Path to webapp static files")
 
 func run() error {
-	err := seedinit.Initialize()
+	_, err := seedinit.Initialize()
 	if err != nil {
 		return seederr.Wrap(err)
 	}
