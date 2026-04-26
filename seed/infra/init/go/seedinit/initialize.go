@@ -59,7 +59,7 @@ func WithFallbackEnvPrefix(prefix string) initializeOption {
 	}
 }
 
-func Initialize(opts ...initializeOption) error {
+func Initialize(opts ...initializeOption) ([]string, error) {
 	o := &initializeOptions{}
 	for _, opt := range opts {
 		opt(o)
@@ -68,28 +68,28 @@ func Initialize(opts ...initializeOption) error {
 	if o.systemEnvPath != "" {
 		err := loadSystemEnv(o.systemEnvPath)
 		if err != nil {
-			return seederr.Wrap(err)
+			return nil, seederr.Wrap(err)
 		}
 	}
 	if o.userEnvPath != "" {
 		err := loadUserEnv(o.userEnvPath)
 		if err != nil {
-			return seederr.Wrap(err)
+			return nil, seederr.Wrap(err)
 		}
 	}
 	if o.ancestorEnvFileName != "" {
 		err := dotenv.LoadAncestor(".", o.ancestorEnvFileName)
 		if err != nil {
-			return seederr.Wrap(err)
+			return nil, seederr.Wrap(err)
 		}
 	}
 
-	err := seedflag.Parse(
+	args, err := seedflag.Parse(
 		seedflag.WithEnvPrefix(o.envPrefix),
 		seedflag.WithFallbackEnvPrefix(o.fallbackEnvPrefix),
 	)
 	if err != nil {
-		return err
+		return nil, seederr.Wrap(err)
 	}
 	if flagVerbose.Get() {
 		seedlog.SetLevel(slog.LevelDebug)
@@ -97,8 +97,8 @@ func Initialize(opts ...initializeOption) error {
 	for _, initializer := range packageInitializers {
 		err := initializer()
 		if err != nil {
-			return err
+			return nil, seederr.Wrap(err)
 		}
 	}
-	return nil
+	return args, nil
 }
