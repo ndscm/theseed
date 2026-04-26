@@ -56,7 +56,7 @@ func clientCommand(command string, args []string) error {
 }
 
 func run() error {
-	err := seedinit.Initialize(
+	args, err := seedinit.Initialize(
 		seedinit.WithEnvPrefix("ND_"),
 		seedinit.WithSystemEnv("ndscm/ndscm.env"),
 		seedinit.WithUserEnv("ndscm/ndscm.env"),
@@ -65,44 +65,45 @@ func run() error {
 	if err != nil {
 		return seederr.Wrap(err)
 	}
-	if len(flag.Args()) < 1 {
+	if len(args) < 1 {
 		fmt.Printf("ndscm is not-distributed source code manager\n")
 		return nil
 	}
-	switch flag.Arg(0) {
+	command := args[0]
+	switch command {
 	case "cut":
-		err := clientCommand("cut", flag.Args()[1:])
+		err := clientCommand("cut", args[1:])
 		if err != nil {
 			return seederr.Wrap(err)
 		}
 	case "dev":
-		err := clientCommand("dev", flag.Args()[1:])
+		err := clientCommand("dev", args[1:])
 		if err != nil {
 			return seederr.Wrap(err)
 		}
 	case "setup":
-		err := clientCommand("setup", flag.Args()[1:])
+		err := clientCommand("setup", args[1:])
 		if err != nil {
 			return seederr.Wrap(err)
 		}
 	case "shell":
-		err := clientCommand("shell", flag.Args()[1:])
+		err := clientCommand("shell", args[1:])
 		if err != nil {
 			return seederr.Wrap(err)
 		}
 	case "submit":
-		err := clientCommand("submit", flag.Args()[1:])
+		err := clientCommand("submit", args[1:])
 		if err != nil {
 			return seederr.Wrap(err)
 		}
 	case "sync":
-		err := clientCommand("sync", flag.Args()[1:])
+		err := clientCommand("sync", args[1:])
 		if err != nil {
 			return seederr.Wrap(err)
 		}
 	default:
 		flag.PrintDefaults()
-		return seederr.WrapErrorf("unknown command %v", flag.Arg(0))
+		return seederr.WrapErrorf("unknown command %v", command)
 	}
 	return nil
 }
