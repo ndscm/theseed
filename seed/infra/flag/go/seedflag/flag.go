@@ -10,108 +10,108 @@ import (
 	"github.com/ndscm/theseed/seed/infra/log/go/seedlog"
 )
 
-type ConfigDefinition interface {
+type FlagDefinition interface {
 	Usage() string
 	flag.Value
 }
 
-type ConfigItem struct {
+type FlagItem struct {
 	usage string
 }
 
-func (c *ConfigItem) Usage() string {
-	return c.usage
+func (f *FlagItem) Usage() string {
+	return f.usage
 }
 
-var configs = map[string]ConfigDefinition{}
+var globalFlags = map[string]FlagDefinition{}
 
-type BoolConfig struct {
-	ConfigItem
+type BoolFlag struct {
+	FlagItem
 	value bool
 }
 
-func (d *BoolConfig) Set(s string) error {
+func (f *BoolFlag) Set(s string) error {
 	v, err := strconv.ParseBool(s)
 	if err != nil {
 		return seederr.Wrap(err)
 	}
-	d.value = v
+	f.value = v
 	return nil
 }
 
-func (d *BoolConfig) Get() bool {
-	return d.value
+func (f *BoolFlag) Get() bool {
+	return f.value
 }
 
-func (d *BoolConfig) String() string {
-	return strconv.FormatBool(d.value)
+func (f *BoolFlag) String() string {
+	return strconv.FormatBool(f.value)
 }
 
-func (d *BoolConfig) IsBoolFlag() bool {
+func (f *BoolFlag) IsBoolFlag() bool {
 	return true
 }
 
-func DefineBool(name string, defaultValue bool, usage string) *BoolConfig {
-	item := &BoolConfig{
-		ConfigItem: ConfigItem{
+func DefineBool(name string, defaultValue bool, usage string) *BoolFlag {
+	item := &BoolFlag{
+		FlagItem: FlagItem{
 			usage: usage,
 		},
 		value: defaultValue,
 	}
-	configs[name] = item
+	globalFlags[name] = item
 	return item
 }
 
-type StringConfig struct {
-	ConfigItem
+type StringFlag struct {
+	FlagItem
 	value string
 }
 
-func (d *StringConfig) Set(s string) error {
-	d.value = s
+func (f *StringFlag) Set(s string) error {
+	f.value = s
 	return nil
 }
 
-func (d *StringConfig) Get() string {
-	return d.value
+func (f *StringFlag) Get() string {
+	return f.value
 }
 
-func (d *StringConfig) String() string {
-	return d.value
+func (f *StringFlag) String() string {
+	return f.value
 }
 
-func DefineString(name string, defaultValue string, usage string) *StringConfig {
-	item := &StringConfig{
-		ConfigItem: ConfigItem{
+func DefineString(name string, defaultValue string, usage string) *StringFlag {
+	item := &StringFlag{
+		FlagItem: FlagItem{
 			usage: usage,
 		},
 		value: defaultValue,
 	}
-	configs[name] = item
+	globalFlags[name] = item
 	return item
 }
 
-type parseOptions struct {
+type globalParseOptions struct {
 	envPrefix         string
 	fallbackEnvPrefix string
 }
 
-type parseOption func(*parseOptions)
+type globalParseOption func(*globalParseOptions)
 
-func WithEnvPrefix(prefix string) parseOption {
-	return func(o *parseOptions) {
+func WithEnvPrefix(prefix string) globalParseOption {
+	return func(o *globalParseOptions) {
 		o.envPrefix = prefix
 	}
 }
 
-func WithFallbackEnvPrefix(prefix string) parseOption {
-	return func(o *parseOptions) {
+func WithFallbackEnvPrefix(prefix string) globalParseOption {
+	return func(o *globalParseOptions) {
 		o.fallbackEnvPrefix = prefix
 	}
 }
 
-func Parse(opts ...parseOption) error {
-	o := &parseOptions{}
+func Parse(opts ...globalParseOption) error {
+	o := &globalParseOptions{}
 	for _, opt := range opts {
 		opt(o)
 	}
@@ -125,7 +125,7 @@ func Parse(opts ...parseOption) error {
 			pure := strings.TrimPrefix(parts[0], o.envPrefix)
 			name := strings.ToLower(strings.TrimSpace(pure))
 			value := strings.TrimSpace(parts[1])
-			item, ok := configs[name]
+			item, ok := globalFlags[name]
 			if !ok {
 				if o.envPrefix != "" {
 					seedlog.Warnf("Unknown env flag: %s=%s", parts[0], value)
@@ -140,7 +140,7 @@ func Parse(opts ...parseOption) error {
 			pure := strings.TrimPrefix(parts[0], o.fallbackEnvPrefix)
 			name := strings.ToLower(strings.TrimSpace(pure))
 			value := strings.TrimSpace(parts[1])
-			item, ok := configs[name]
+			item, ok := globalFlags[name]
 			if !ok {
 				continue
 			}
@@ -152,10 +152,10 @@ func Parse(opts ...parseOption) error {
 		}
 	}
 
-	for name, item := range configs {
+	for name, item := range globalFlags {
 		flag.Var(item, name, item.Usage())
 	}
 	flag.Parse()
-	seedlog.Infof("flags: %+v", configs)
+	seedlog.Infof("Global flags: %+v", globalFlags)
 	return nil
 }
