@@ -8,10 +8,12 @@ import (
 	"github.com/ndscm/theseed/seed/devprod/ndscm/scm"
 	"github.com/ndscm/theseed/seed/devprod/ndscm/user"
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
+	"github.com/ndscm/theseed/seed/infra/flag/go/seedflag"
 	"github.com/ndscm/theseed/seed/infra/shell/go/seedshell"
 )
 
 func NdSubmit(scmProvider scm.Provider, args []string) error {
+	seedflag.Finalize(args)
 	if seedshell.ShellEval() {
 		return seederr.WrapErrorf("nd-submit should not run with --shell-eval")
 	}

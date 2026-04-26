@@ -7,10 +7,12 @@ import (
 
 	"github.com/ndscm/theseed/seed/devprod/ndscm/scm"
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
+	"github.com/ndscm/theseed/seed/infra/flag/go/seedflag"
 	"github.com/ndscm/theseed/seed/infra/shell/go/seedshell"
 )
 
 func NdDev(scmProvider scm.Provider, args []string) error {
+	seedflag.Finalize(args)
 	if !seedshell.ShellEval() {
 		log.Printf("\x1b[33mWarning: It's recommended to run nd-dev with --shell-eval\x1b[0m")
 	}
