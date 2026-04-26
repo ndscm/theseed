@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 
 	"connectrpc.com/connect"
+	"github.com/google/uuid"
 	"github.com/ndscm/theseed/seed/cloud/login/go/login"
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
 	"github.com/ndscm/theseed/seed/infra/log/go/seedlog"
@@ -12,7 +13,6 @@ import (
 	"github.com/ndscm/theseed/seed/office/stuff/database/stuffdb"
 	"github.com/ndscm/theseed/seed/office/stuff/proto/stufferrorpb"
 	"github.com/ndscm/theseed/seed/office/stuff/proto/stuffpb"
-	"github.com/google/uuid"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/protobuf/types/known/emptypb"
 )
