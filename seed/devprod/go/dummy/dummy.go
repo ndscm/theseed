@@ -7,6 +7,8 @@
 
 package dummy
 
-import "connectrpc.com/connect"
+import (
+	"connectrpc.com/connect"
+)
 
 const _ = connect.IsAtLeastVersion1_13_0
