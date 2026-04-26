@@ -18,6 +18,10 @@ func RegisterPackageInit(initializer func() error) {
 }
 
 type initializeOptions struct {
+	// flag parser behavior options
+	anywhereFlag bool
+	unknownFlag  bool
+
 	// env file locators
 	systemEnvPath       string
 	userEnvPath         string
@@ -28,6 +32,18 @@ type initializeOptions struct {
 }
 
 type initializeOption func(*initializeOptions)
+
+func WithAnywhereFlag(value bool) initializeOption {
+	return func(o *initializeOptions) {
+		o.anywhereFlag = value
+	}
+}
+
+func WithUnknownFlag(value bool) initializeOption {
+	return func(o *initializeOptions) {
+		o.unknownFlag = value
+	}
+}
 
 func WithSystemEnv(pathInConfigHome string) initializeOption {
 	return func(o *initializeOptions) {
@@ -85,6 +101,8 @@ func Initialize(opts ...initializeOption) ([]string, error) {
 	}
 
 	args, err := seedflag.Parse(
+		seedflag.WithAnywhereFlag(o.anywhereFlag),
+		seedflag.WithUnknownFlag(o.unknownFlag),
 		seedflag.WithEnvPrefix(o.envPrefix),
 		seedflag.WithFallbackEnvPrefix(o.fallbackEnvPrefix),
 	)
