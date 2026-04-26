@@ -1,7 +1,6 @@
 package main
 
 import (
-	"flag"
 	"fmt"
 	"os"
 
@@ -57,6 +56,8 @@ func clientCommand(command string, args []string) error {
 
 func run() error {
 	args, err := seedinit.Initialize(
+		seedinit.WithAnywhereFlag(true),
+		seedinit.WithUnknownFlag(true),
 		seedinit.WithEnvPrefix("ND_"),
 		seedinit.WithSystemEnv("ndscm/ndscm.env"),
 		seedinit.WithUserEnv("ndscm/ndscm.env"),
@@ -102,7 +103,6 @@ func run() error {
 			return seederr.Wrap(err)
 		}
 	default:
-		flag.PrintDefaults()
 		return seederr.WrapErrorf("unknown command %v", command)
 	}
 	return nil

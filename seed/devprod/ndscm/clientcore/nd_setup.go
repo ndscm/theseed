@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
+	"github.com/ndscm/theseed/seed/infra/flag/go/seedflag"
 	"github.com/ndscm/theseed/seed/infra/shell/go/seedshell"
 )
 
@@ -49,6 +50,7 @@ func injectShrcLine(shrcPath string, line string) error {
 }
 
 func NdSetup(args []string) error {
+	seedflag.Finalize(args)
 	if seedshell.ShellEval() {
 		return seederr.WrapErrorf("nd-setup should not run with --shell-eval")
 	}
