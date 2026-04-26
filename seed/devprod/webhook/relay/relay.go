@@ -80,7 +80,7 @@ func relay(ctx context.Context, to string, data []byte) error {
 }
 
 func run() error {
-	err := seedinit.Initialize()
+	_, err := seedinit.Initialize()
 	if err != nil {
 		return seederr.Wrap(err)
 	}
