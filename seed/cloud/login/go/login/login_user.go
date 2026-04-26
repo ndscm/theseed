@@ -3,8 +3,8 @@ package login
 import (
 	"context"
 
-	"github.com/ndscm/theseed/seed/infra/http/go/seedjwt"
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
+	"github.com/ndscm/theseed/seed/infra/http/go/seedjwt"
 )
 
 func LoginUser(ctx context.Context) (*seedjwt.OpenidUserInfo, error) {
