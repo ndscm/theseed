@@ -8,11 +8,11 @@ import (
 	"strings"
 
 	"entgo.io/ent/dialect"
-	"github.com/ndscm/theseed/seed/infra/flag/go/seedflag"
+	_ "github.com/lib/pq"
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
+	"github.com/ndscm/theseed/seed/infra/flag/go/seedflag"
 	"github.com/ndscm/theseed/seed/infra/log/go/seedlog"
 	"github.com/ndscm/theseed/seed/office/stuff/database/ent"
-	_ "github.com/lib/pq"
 )
 
 var flagStuffDatabase = seedflag.DefineString("stuff_database", "postgres://127.0.0.1:5432/stuff", "Database connection URL")
