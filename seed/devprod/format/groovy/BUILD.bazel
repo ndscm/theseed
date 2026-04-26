@@ -1,0 +1,27 @@
+load("@rules_go//go:def.bzl", "go_binary", "go_library")
+
+alias(
+    name = "groovy",
+    actual = ":groovy-format",
+)
+
+go_binary(
+    name = "groovy-format",
+    embed = [":groovy_lib"],
+    visibility = ["//visibility:public"],
+)
+
+go_library(
+    name = "groovy_lib",
+    srcs = ["groovy_format.go"],
+    importpath = "github.com/ndscm/theseed/seed/devprod/format/groovy",
+    visibility = ["//visibility:private"],
+    deps = [
+        "//seed/infra/error/go/seederr",
+        "//seed/infra/flag/go/seedflag",
+        "//seed/infra/groovy",
+        "//seed/infra/groovy/generator/gengroovy",
+        "//seed/infra/init/go/seedinit",
+        "//seed/infra/log/go/seedlog",
+    ],
+)
