@@ -1,6 +1,8 @@
 package shelleval
 
-import _ "embed"
+import (
+	_ "embed"
+)
 
 //go:embed nd_snippet.sh
 var ndSnippet string

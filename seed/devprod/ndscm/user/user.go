@@ -1,6 +1,8 @@
 package user
 
-import "github.com/ndscm/theseed/seed/infra/flag/go/seedflag"
+import (
+	"github.com/ndscm/theseed/seed/infra/flag/go/seedflag"
+)
 
 var flagUserHandle = seedflag.DefineString("user_handle", "", "the user handle")
 var flagUserEmail = seedflag.DefineString("user_email", "", "the user email")
