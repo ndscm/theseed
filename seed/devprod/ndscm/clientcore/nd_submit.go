@@ -12,14 +12,36 @@ import (
 	"github.com/ndscm/theseed/seed/infra/shell/go/seedshell"
 )
 
+type ndSubmitFlags struct {
+	remote *seedflag.StringFlag
+}
+
+func parseNdSubmitFlags(args []string) (ndSubmitFlags, []string, error) {
+	cf := seedflag.NewCommandFlags("nd-submit")
+	cmdFlags := ndSubmitFlags{}
+	cmdFlags.remote = cf.DefineString("remote", "origin", "Remote identifier for submitting the branch")
+	cmdArgs, err := cf.Parse(args)
+	if err != nil {
+		return cmdFlags, nil, seederr.Wrap(err)
+	}
+	seedflag.Finalize(cmdArgs)
+	return cmdFlags, cmdArgs, nil
+}
+
 func NdSubmit(scmProvider scm.Provider, args []string) error {
-	seedflag.Finalize(args)
 	if seedshell.ShellEval() {
 		return seederr.WrapErrorf("nd-submit should not run with --shell-eval")
 	}
-	if len(args) != 1 {
-		return seederr.WrapErrorf("nd-submit usage: nd submit <feature-name>")
+	cmdFlags, cmdArgs, err := parseNdSubmitFlags(args)
+	if err != nil {
+		return seederr.Wrap(err)
 	}
+	seedflag.Finalize(cmdArgs)
+	if len(cmdArgs) != 1 {
+		return seederr.WrapErrorf("nd-submit usage: nd submit [...flags] <feature-name>")
+	}
+	featureName := strings.TrimSpace(cmdArgs[0])
+	remoteMain := cmdFlags.remote.Get() + "/main"
 	currentUserHandle := user.CurrentUserHandle()
 	if currentUserHandle == "" {
 		return seederr.WrapErrorf("user handle is not set")
@@ -32,7 +54,6 @@ func NdSubmit(scmProvider scm.Provider, args []string) error {
 	if err != nil {
 		return seederr.Wrap(err)
 	}
-	featureName := strings.TrimSpace(args[0])
 	submitBranch := "submit/" + featureName
 	changeBranch := "change/" + featureName
 	worktreePath := scmProvider.GetBranchWorktree(monorepoHome, submitBranch)
@@ -59,11 +80,11 @@ func NdSubmit(scmProvider scm.Provider, args []string) error {
 	if err != nil {
 		return seederr.WrapErrorf("tracking upstream is missing for %v", changeBranch)
 	}
-	mergeBaseCommitId, err := scmProvider.GetMergeBaseCommitId("origin/main", changeBranch)
+	mergeBaseCommitId, err := scmProvider.GetMergeBaseCommitId(remoteMain, changeBranch)
 	if err != nil {
 		return seederr.WrapErrorf("merge base is missing for %v", changeBranch)
 	}
-	err = scmProvider.CreateBranch(submitBranch, mergeBaseCommitId, "origin/main")
+	err = scmProvider.CreateBranch(submitBranch, mergeBaseCommitId, remoteMain)
 	if err != nil {
 		return seederr.Wrap(err)
 	}
@@ -75,7 +96,7 @@ func NdSubmit(scmProvider scm.Provider, args []string) error {
 	if err != nil {
 		return seederr.Wrap(err)
 	}
-	err = scmProvider.PushBranch(submitBranch, "origin", currentUserHandle+"/"+featureName)
+	err = scmProvider.PushBranch(submitBranch, cmdFlags.remote.Get(), currentUserHandle+"/"+featureName)
 	if err != nil {
 		return seederr.Wrap(err)
 	}
