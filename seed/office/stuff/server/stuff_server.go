@@ -21,7 +21,7 @@ var flagWebapp = seedflag.DefineString("webapp", "", "Path to webapp static file
 var flagPort = seedflag.DefineString("port", "7883", "Port to run the server on") // STUF
 
 func run() error {
-	err := seedinit.Initialize()
+	_, err := seedinit.Initialize()
 	if err != nil {
 		return seederr.Wrap(err)
 	}
