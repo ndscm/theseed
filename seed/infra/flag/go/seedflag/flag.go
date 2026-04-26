@@ -67,53 +67,114 @@ func (f *StringFlag) String() string {
 	return f.value
 }
 
-var globalFlags = map[string]FlagDefinition{}
+type parseOptions struct {
+}
 
-func DefineBool(name string, defaultValue bool, usage string) *BoolFlag {
+type parseOption interface {
+	applyParseOption(*parseOptions)
+}
+
+type globalParseOptions struct {
+	parseOptions []parseOption
+
+	envPrefix         string
+	fallbackEnvPrefix string
+}
+
+type globalParseOption interface {
+	applyGlobalParseOption(*globalParseOptions)
+}
+
+type CommandFlags struct {
+	command string
+	flags   map[string]FlagDefinition
+}
+
+func (cf *CommandFlags) DefineBool(name string, defaultValue bool, usage string) *BoolFlag {
 	item := &BoolFlag{
 		FlagItem: FlagItem{
 			usage: usage,
 		},
 		value: defaultValue,
 	}
-	globalFlags[name] = item
+	cf.flags[name] = item
 	return item
 }
 
-func DefineString(name string, defaultValue string, usage string) *StringFlag {
+func (cf *CommandFlags) DefineString(name string, defaultValue string, usage string) *StringFlag {
 	item := &StringFlag{
 		FlagItem: FlagItem{
 			usage: usage,
 		},
 		value: defaultValue,
 	}
-	globalFlags[name] = item
+	cf.flags[name] = item
 	return item
 }
 
-type globalParseOptions struct {
-	envPrefix         string
-	fallbackEnvPrefix string
+func (cf *CommandFlags) Parse(args []string, opts ...parseOption) ([]string, error) {
+	o := &parseOptions{}
+	for _, opt := range opts {
+		opt.applyParseOption(o)
+	}
+	s := flag.NewFlagSet(cf.command, flag.ContinueOnError)
+	for name, item := range cf.flags {
+		s.Var(item, name, item.Usage())
+	}
+	finalArgs := []string{}
+	err := s.Parse(args)
+	if err != nil {
+		return nil, seederr.Wrap(err)
+	}
+	finalArgs = s.Args()
+	return finalArgs, nil
 }
 
-type globalParseOption func(*globalParseOptions)
+func NewCommandFlags(command string) *CommandFlags {
+	return &CommandFlags{
+		command: command,
+		flags:   map[string]FlagDefinition{},
+	}
+}
+
+var globalFlags = NewCommandFlags(os.Args[0])
+
+func DefineBool(name string, defaultValue bool, usage string) *BoolFlag {
+	return globalFlags.DefineBool(name, defaultValue, usage)
+}
+
+func DefineString(name string, defaultValue string, usage string) *StringFlag {
+	return globalFlags.DefineString(name, defaultValue, usage)
+}
+
+type withEnvPrefix struct {
+	prefix string
+}
+
+func (w *withEnvPrefix) applyGlobalParseOption(o *globalParseOptions) {
+	o.envPrefix = w.prefix
+}
 
 func WithEnvPrefix(prefix string) globalParseOption {
-	return func(o *globalParseOptions) {
-		o.envPrefix = prefix
-	}
+	return &withEnvPrefix{prefix: prefix}
+}
+
+type withFallbackEnvPrefix struct {
+	prefix string
+}
+
+func (w *withFallbackEnvPrefix) applyGlobalParseOption(o *globalParseOptions) {
+	o.fallbackEnvPrefix = w.prefix
 }
 
 func WithFallbackEnvPrefix(prefix string) globalParseOption {
-	return func(o *globalParseOptions) {
-		o.fallbackEnvPrefix = prefix
-	}
+	return &withFallbackEnvPrefix{prefix: prefix}
 }
 
 func Parse(opts ...globalParseOption) ([]string, error) {
 	o := &globalParseOptions{}
 	for _, opt := range opts {
-		opt(o)
+		opt.applyGlobalParseOption(o)
 	}
 
 	for _, env := range os.Environ() {
@@ -125,11 +186,9 @@ func Parse(opts ...globalParseOption) ([]string, error) {
 			pure := strings.TrimPrefix(parts[0], o.envPrefix)
 			name := strings.ToLower(strings.TrimSpace(pure))
 			value := strings.TrimSpace(parts[1])
-			item, ok := globalFlags[name]
+			item, ok := globalFlags.flags[name]
 			if !ok {
-				if o.envPrefix != "" {
-					seedlog.Warnf("Unknown env flag: %s=%s", parts[0], value)
-				}
+				seedlog.Warnf("Unknown env flag: %s=%s", parts[0], value)
 				continue
 			}
 			err := item.Set(value)
@@ -140,7 +199,7 @@ func Parse(opts ...globalParseOption) ([]string, error) {
 			pure := strings.TrimPrefix(parts[0], o.fallbackEnvPrefix)
 			name := strings.ToLower(strings.TrimSpace(pure))
 			value := strings.TrimSpace(parts[1])
-			item, ok := globalFlags[name]
+			item, ok := globalFlags.flags[name]
 			if !ok {
 				continue
 			}
@@ -152,10 +211,10 @@ func Parse(opts ...globalParseOption) ([]string, error) {
 		}
 	}
 
-	for name, item := range globalFlags {
-		flag.Var(item, name, item.Usage())
+	args, err := globalFlags.Parse(os.Args[1:])
+	if err != nil {
+		return nil, seederr.Wrap(err)
 	}
-	flag.Parse()
-	seedlog.Infof("Global flags: %+v", globalFlags)
-	return flag.Args(), nil
+	seedlog.Infof("Global flags: %+v", globalFlags.flags)
+	return args, nil
 }
