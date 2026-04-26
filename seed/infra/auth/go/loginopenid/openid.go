@@ -8,8 +8,8 @@ import (
 	"time"
 
 	"github.com/ndscm/theseed/seed/infra/auth/go/clientopenid"
-	"github.com/ndscm/theseed/seed/infra/http/go/seedsession"
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
+	"github.com/ndscm/theseed/seed/infra/http/go/seedsession"
 	"golang.org/x/oauth2"
 )
 
