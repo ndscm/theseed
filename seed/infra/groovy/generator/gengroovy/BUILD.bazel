@@ -1,0 +1,13 @@
+load("@rules_go//go:def.bzl", "go_library")
+
+package(default_visibility = [
+    "//seed/devprod/format/groovy:__subpackages__",
+    "//seed/infra/groovy:__subpackages__",
+])
+
+go_library(
+    name = "gengroovy",
+    srcs = ["generate.go"],
+    importpath = "github.com/ndscm/theseed/seed/infra/groovy/generator/gengroovy",
+    deps = ["//seed/infra/groovy/ast"],
+)
