@@ -88,5 +88,10 @@
   },
   "[xml]": {
     "editor.defaultFormatter": "redhat.vscode-xml"
+  },
+  "chat.tools.terminal.autoApprove": {
+    "gofmt": true,
+    "bazel": true,
+    "bazel-bin/seed/devprod/format/groovy/groovy-format_/groovy-format": true
   }
 }
