@@ -12,12 +12,14 @@ import (
 )
 
 type ndDevFlags struct {
-	track *seedflag.StringFlag
+	remove *seedflag.BoolFlag
+	track  *seedflag.StringFlag
 }
 
 func parseNdDevFlags(args []string) (ndDevFlags, []string, error) {
 	cf := seedflag.NewCommandFlags("nd-dev")
 	cmdFlags := ndDevFlags{}
+	cmdFlags.remove = cf.DefineBool("remove", false, "Remove the dev worktree")
 	cmdFlags.track = cf.DefineString("track", "", "Remote branch to track (e.g. origin/main); only valid when creating a new dev worktree, must not be provided if the dev worktree already exists")
 	cmdArgs, err := cf.Parse(args,
 		seedflag.WithAnywhereFlag(true),
@@ -61,6 +63,30 @@ func NdDev(scmProvider scm.Provider, args []string) error {
 	}
 	if err == nil && !worktreeStat.IsDir() {
 		return seederr.WrapErrorf("worktree %v exists and is not a dir", worktreePath)
+	}
+	if cmdFlags.remove.Get() {
+		if track != "" {
+			return seederr.WrapErrorf("cannot specify --track with --remove")
+		}
+		if os.IsNotExist(err) {
+			return seederr.WrapErrorf("dev worktree %v does not exist", worktreePath)
+		}
+		newCwd, err := scmProvider.RemoveDevWorktree(monorepoHome, focus)
+		if err != nil {
+			return seederr.Wrap(err)
+		}
+		if newCwd != "" {
+			shellEval := fmt.Sprintf("\ncd \"%v\"\n", newCwd)
+			if seedshell.Dry() {
+				seedlog.Infof("Shell eval: %v", shellEval)
+			}
+			if seedshell.ShellEval() {
+				if !seedshell.Dry() {
+					fmt.Printf("%v", shellEval)
+				}
+			}
+		}
+		return nil
 	}
 	if os.IsNotExist(err) {
 		tracking := track
