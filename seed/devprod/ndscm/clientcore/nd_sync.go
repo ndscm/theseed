@@ -42,7 +42,7 @@ func NdSync(scmProvider scm.Provider, args []string) error {
 	if err != nil {
 		return seederr.Wrap(err)
 	}
-	if !strings.HasPrefix(devBranch, "dev") || strings.Contains(devBranch, "/") {
+	if !scmProvider.IsDevBranch(devBranch) {
 		return seederr.WrapErrorf("workspace is not a dev worktree: %v", devBranch)
 	}
 	// # Iterate changes tree

@@ -1,6 +1,8 @@
 package git
 
 import (
+	"strings"
+
 	"github.com/ndscm/theseed/seed/devprod/ndscm/scm"
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
 )
@@ -41,6 +43,16 @@ func (g *GitProvider) SetBranchTracking(branchName string, tracking string) erro
 
 func (g *GitProvider) GetMergeBaseCommitId(base string, target string) (string, error) {
 	return GetMergeBaseHash("", base, target)
+}
+
+func (g *GitProvider) IsDevBranch(branchName string) bool {
+	if branchName == "dev" {
+		return true
+	}
+	if strings.HasPrefix(branchName, "dev-") && !strings.Contains(branchName, "/") {
+		return true
+	}
+	return false
 }
 
 // # commit
@@ -140,22 +152,34 @@ func (g *GitProvider) RemoveWorktree(worktreePath string) error {
 	return RemoveWorktree(monorepoGitDir, worktreePath)
 }
 
-func (g *GitProvider) CreateDevWorktree(monorepoHome string, worktreeName string) (string, error) {
+func (g *GitProvider) CreateDevWorktree(monorepoHome string, focus string) (string, error) {
+	branchName := "dev"
+	if focus != "" {
+		branchName = "dev-" + focus
+	}
 	monorepoGitDir, err := MonorepoGitDir()
 	if err != nil {
 		return "", seederr.Wrap(err)
 	}
-	err = CreateBranch(monorepoGitDir, "base/"+worktreeName, "origin/main", "origin/main")
+	err = CreateBranch(monorepoGitDir, "base/"+branchName, "origin/main", "origin/main")
 	if err != nil {
-		return "", seederr.WrapErrorf("failed to create base branch %v: %v", "base/"+worktreeName, err)
+		return "", seederr.WrapErrorf("failed to create base branch %v: %v", "base/"+branchName, err)
 	}
-	err = CreateBranch(monorepoGitDir, worktreeName, "base/"+worktreeName, "base/"+worktreeName)
+	err = CreateBranch(monorepoGitDir, branchName, "base/"+branchName, "base/"+branchName)
 	if err != nil {
-		return "", seederr.WrapErrorf("failed to create worktree branch %v: %v", worktreeName, err)
+		return "", seederr.WrapErrorf("failed to create worktree branch %v: %v", branchName, err)
 	}
-	newWorktreePath, err := CreateBranchWorktree(monorepoGitDir, monorepoHome, worktreeName)
+	newWorktreePath, err := CreateBranchWorktree(monorepoGitDir, monorepoHome, branchName)
 	if err != nil {
-		return "", seederr.WrapErrorf("failed to create branch worktree %v: %v", worktreeName, err)
+		return "", seederr.WrapErrorf("failed to create branch worktree %v: %v", branchName, err)
 	}
 	return newWorktreePath, nil
+}
+
+func (g *GitProvider) GetDevWorktree(monorepoHome string, focus string) string {
+	branchName := "dev"
+	if focus != "" {
+		branchName = "dev-" + focus
+	}
+	return GetBranchWorktreePath(monorepoHome, branchName)
 }

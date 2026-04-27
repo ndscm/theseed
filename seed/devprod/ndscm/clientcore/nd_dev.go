@@ -24,15 +24,15 @@ func NdDev(scmProvider scm.Provider, args []string) error {
 	if err != nil {
 		return seederr.Wrap(err)
 	}
-	branchName := "dev"
+	focus := ""
 	if len(args) == 0 {
 		// pass
 	} else if len(args) == 1 {
-		branchName = "dev-" + args[0]
+		focus = args[0]
 	} else {
-		return seederr.WrapErrorf("nd-dev usage: nd dev [<feature-name>|<index>]")
+		return seederr.WrapErrorf("nd-dev usage: nd dev [<focus-area>]")
 	}
-	worktreePath := scmProvider.GetBranchWorktree(monorepoHome, branchName)
+	worktreePath := scmProvider.GetDevWorktree(monorepoHome, focus)
 	worktreeStat, err := os.Stat(worktreePath)
 	if err != nil && !os.IsNotExist(err) {
 		return seederr.WrapErrorf("failed to stat worktree %v: %v", worktreePath, err)
@@ -41,9 +41,9 @@ func NdDev(scmProvider scm.Provider, args []string) error {
 		return seederr.WrapErrorf("worktree %v exists and is not a dir", worktreePath)
 	}
 	if os.IsNotExist(err) {
-		newWorktreePath, err := scmProvider.CreateDevWorktree(monorepoHome, branchName)
+		newWorktreePath, err := scmProvider.CreateDevWorktree(monorepoHome, focus)
 		if err != nil {
-			return seederr.WrapErrorf("failed to add branch worktree %v: %v", branchName, err)
+			return seederr.Wrap(err)
 		}
 		if newWorktreePath != worktreePath {
 			return seederr.WrapErrorf("unexpected new worktree path: %v (expected: %v)", newWorktreePath, worktreePath)
