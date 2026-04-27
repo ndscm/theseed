@@ -122,10 +122,10 @@ type Provider interface {
 
 	// CreateDevWorktree creates a dev worktree under monorepoHome. It sets
 	// up a base tracking branch (base/dev or base/dev-<focus>) at
-	// origin/main, creates the working branch on top of it, and
+	// tracking, creates the working branch on top of it, and
 	// materializes the worktree. Pass "" for focus to get the plain "dev"
 	// branch.
-	CreateDevWorktree(monorepoHome string, focus string) (string, error)
+	CreateDevWorktree(monorepoHome string, focus string, tracking string) (string, error)
 
 	// GetDevWorktree returns the conventional worktree path for the dev
 	// branch (or dev-<focus>) under monorepoHome. It does not check

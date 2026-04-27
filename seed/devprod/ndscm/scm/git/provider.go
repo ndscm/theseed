@@ -152,7 +152,7 @@ func (g *GitProvider) RemoveWorktree(worktreePath string) error {
 	return RemoveWorktree(monorepoGitDir, worktreePath)
 }
 
-func (g *GitProvider) CreateDevWorktree(monorepoHome string, focus string) (string, error) {
+func (g *GitProvider) CreateDevWorktree(monorepoHome string, focus string, tracking string) (string, error) {
 	branchName := "dev"
 	if focus != "" {
 		branchName = "dev-" + focus
@@ -161,7 +161,7 @@ func (g *GitProvider) CreateDevWorktree(monorepoHome string, focus string) (stri
 	if err != nil {
 		return "", seederr.Wrap(err)
 	}
-	err = CreateBranch(monorepoGitDir, "base/"+branchName, "origin/main", "origin/main")
+	err = CreateBranch(monorepoGitDir, "base/"+branchName, tracking, tracking)
 	if err != nil {
 		return "", seederr.WrapErrorf("failed to create base branch %v: %v", "base/"+branchName, err)
 	}

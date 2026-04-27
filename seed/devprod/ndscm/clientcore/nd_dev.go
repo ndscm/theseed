@@ -11,10 +11,31 @@ import (
 	"github.com/ndscm/theseed/seed/infra/shell/go/seedshell"
 )
 
+type ndDevFlags struct {
+	track *seedflag.StringFlag
+}
+
+func parseNdDevFlags(args []string) (ndDevFlags, []string, error) {
+	cf := seedflag.NewCommandFlags("nd-dev")
+	cmdFlags := ndDevFlags{}
+	cmdFlags.track = cf.DefineString("track", "", "Remote branch to track (e.g. origin/main); only valid when creating a new dev worktree, must not be provided if the dev worktree already exists")
+	cmdArgs, err := cf.Parse(args,
+		seedflag.WithAnywhereFlag(true),
+	)
+	if err != nil {
+		return cmdFlags, nil, seederr.Wrap(err)
+	}
+	seedflag.Finalize(cmdArgs)
+	return cmdFlags, cmdArgs, nil
+}
+
 func NdDev(scmProvider scm.Provider, args []string) error {
-	seedflag.Finalize(args)
 	if !seedshell.ShellEval() {
 		seedlog.Warnf("It's recommended to run nd-dev with --shell-eval")
+	}
+	cmdFlags, cmdArgs, err := parseNdDevFlags(args)
+	if err != nil {
+		return seederr.Wrap(err)
 	}
 	monorepoHome, err := scm.MonorepoHome()
 	if err != nil {
@@ -24,11 +45,12 @@ func NdDev(scmProvider scm.Provider, args []string) error {
 	if err != nil {
 		return seederr.Wrap(err)
 	}
+	track := cmdFlags.track.Get()
 	focus := ""
-	if len(args) == 0 {
+	if len(cmdArgs) == 0 {
 		// pass
-	} else if len(args) == 1 {
-		focus = args[0]
+	} else if len(cmdArgs) == 1 {
+		focus = cmdArgs[0]
 	} else {
 		return seederr.WrapErrorf("nd-dev usage: nd dev [<focus-area>]")
 	}
@@ -41,12 +63,20 @@ func NdDev(scmProvider scm.Provider, args []string) error {
 		return seederr.WrapErrorf("worktree %v exists and is not a dir", worktreePath)
 	}
 	if os.IsNotExist(err) {
-		newWorktreePath, err := scmProvider.CreateDevWorktree(monorepoHome, focus)
+		tracking := track
+		if tracking == "" {
+			tracking = "origin/main"
+		}
+		newWorktreePath, err := scmProvider.CreateDevWorktree(monorepoHome, focus, tracking)
 		if err != nil {
 			return seederr.Wrap(err)
 		}
 		if newWorktreePath != worktreePath {
 			return seederr.WrapErrorf("unexpected new worktree path: %v (expected: %v)", newWorktreePath, worktreePath)
+		}
+	} else {
+		if track != "" {
+			return seederr.WrapErrorf("cannot specify --track when dev worktree already exists")
 		}
 	}
 	shellEval := fmt.Sprintf("\ncd \"%v\"\n", worktreePath)
