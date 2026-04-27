@@ -1,4 +1,4 @@
-load("@rules_go//go:def.bzl", "go_library")
+load("@rules_go//go:def.bzl", "go_library", "go_test")
 
 package(default_visibility = [
     "//seed/devprod/format/groovy:__subpackages__",
@@ -10,4 +10,17 @@ go_library(
     srcs = ["generate.go"],
     importpath = "github.com/ndscm/theseed/seed/infra/groovy/generator/gengroovy",
     deps = ["//seed/infra/groovy/ast"],
+)
+
+go_test(
+    name = "gengroovy_test",
+    srcs = [
+        "generate_groovy_test.go",
+        "generate_jenkins_declarative_test.go",
+        "generate_jenkins_scripted_test.go",
+    ],
+    deps = [
+        ":gengroovy",
+        "//seed/infra/groovy",
+    ],
 )
