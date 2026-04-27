@@ -39,6 +39,21 @@ else
   fi
 fi
 
+# Groovy
+if [[ "${SEED_FORMAT_FULL:-}" ]]; then
+  jenkins_files=$(find . \
+    -type d \( -name .git -o -name node_modules -o -name .venv -o -name dist \) -prune -o \
+    -type f \( -name "Jenkinsfile" \) -print)
+else
+  jenkins_files=$(grep_changes '(^|/)Jenkinsfile$')
+fi
+if [[ -n "$jenkins_files" ]]; then
+  printf '%s\n' "$jenkins_files" |
+    while IFS= read -r f; do realpath "$f"; done |
+    tr '\n' '\0' |
+    xargs -0 bazel run //seed/devprod/format/groovy -- --verbose --write
+fi
+
 # Java
 if [[ "${SEED_FORMAT_FULL:-}" ]]; then
   find . -name "*.java" -print0 | xargs -0 clang-format -i
@@ -53,19 +68,8 @@ fi
 if [[ "${SEED_FORMAT_FULL:-}" ]]; then
   bazel run //seed/devprod/format/prettier -- --write "$(pwd)"
 else
-  prettier_changes=$(grep_changes '\.(ts|tsx|js|jsx|mts|cts|mjs|cjs|css|scss|less|json|yaml|yml|md|mdx|html|vue|svelte|graphql|gql)$|(^|/)Jenkinsfile$')
+  prettier_changes=$(grep_changes '\.(ts|tsx|js|jsx|mts|cts|mjs|cjs|css|scss|less|json|yaml|yml|md|mdx|html|vue|svelte|graphql|gql)$')
   if [[ -n "$prettier_changes" ]]; then
     printf '%s\n' "$prettier_changes" | xargs -d '\n' realpath | tr '\n' '\0' | xargs -0 bazel run //seed/devprod/format/prettier -- --write
   fi
-fi
-
-# Fix Jenkinsfiles that don't end with a newline, which can cause problems with some tools.
-new_changed_files=$(get_changed_files)
-jenkins_changed_files=$(printf '%s\n' "$new_changed_files" | grep -E "(^|/)Jenkinsfile$" || true)
-if [[ -n "$jenkins_changed_files" ]]; then
-  while IFS= read -r file; do
-    if [[ -f "$file" && -n $(tail -c1 "$file") ]]; then
-      printf '\n' >>"$file"
-    fi
-  done <<<"$jenkins_changed_files"
 fi
