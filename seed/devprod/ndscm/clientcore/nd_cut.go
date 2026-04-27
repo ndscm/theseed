@@ -1,12 +1,12 @@
 package clientcore
 
 import (
-	"log"
 	"strings"
 
 	"github.com/ndscm/theseed/seed/devprod/ndscm/scm"
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
 	"github.com/ndscm/theseed/seed/infra/flag/go/seedflag"
+	"github.com/ndscm/theseed/seed/infra/log/go/seedlog"
 	"github.com/ndscm/theseed/seed/infra/shell/go/seedshell"
 )
 
@@ -67,7 +67,7 @@ func NdCut(scmProvider scm.Provider, args []string) error {
 			if err != nil {
 				return seederr.Wrap(err)
 			}
-			log.Printf("Created change request as %v", "change/"+featureName)
+			seedlog.Infof("Created change request as %v", "change/"+featureName)
 			return nil
 		}
 		currentBranch = trackingBranch

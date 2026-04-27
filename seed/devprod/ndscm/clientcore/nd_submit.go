@@ -1,7 +1,6 @@
 package clientcore
 
 import (
-	"log"
 	"os"
 	"strings"
 
@@ -9,6 +8,7 @@ import (
 	"github.com/ndscm/theseed/seed/devprod/ndscm/user"
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
 	"github.com/ndscm/theseed/seed/infra/flag/go/seedflag"
+	"github.com/ndscm/theseed/seed/infra/log/go/seedlog"
 	"github.com/ndscm/theseed/seed/infra/shell/go/seedshell"
 )
 
@@ -62,7 +62,7 @@ func NdSubmit(scmProvider scm.Provider, args []string) error {
 		return seederr.Wrap(err)
 	}
 	if err == nil {
-		log.Printf("Worktree %v already exists, removing...\n", worktreePath)
+		seedlog.Warnf("Worktree %v already exists, removing...", worktreePath)
 		err = scmProvider.RemoveWorktree(worktreePath)
 		if err != nil {
 			return seederr.Wrap(err)
@@ -70,7 +70,7 @@ func NdSubmit(scmProvider scm.Provider, args []string) error {
 	}
 	_, err = scmProvider.GetCommitId(submitBranch)
 	if err == nil {
-		log.Printf("Branch %v already exists, removing...\n", submitBranch)
+		seedlog.Warnf("Branch %v already exists, removing...", submitBranch)
 		err = scmProvider.DeleteBranch(submitBranch)
 		if err != nil {
 			return seederr.Wrap(err)
