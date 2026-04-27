@@ -1,12 +1,12 @@
 package clientcore
 
 import (
-	"log"
 	"strings"
 
 	"github.com/ndscm/theseed/seed/devprod/ndscm/scm"
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
 	"github.com/ndscm/theseed/seed/infra/flag/go/seedflag"
+	"github.com/ndscm/theseed/seed/infra/log/go/seedlog"
 	"github.com/ndscm/theseed/seed/infra/shell/go/seedshell"
 )
 
@@ -73,7 +73,7 @@ func NdSync(scmProvider scm.Provider, args []string) error {
 		return seederr.Wrap(err)
 	}
 	// # Rebase dev branch
-	log.Printf("\x1b[34mRebasing: %v\x1b[0m", chain)
+	seedlog.Infof("\x1b[34mRebasing: %v\x1b[0m", chain)
 	incomingCommits, err := scmProvider.ListCommitIds("base/"+devBranch, "origin/main")
 	if err != nil {
 		return seederr.Wrap(err)
@@ -86,7 +86,7 @@ func NdSync(scmProvider scm.Provider, args []string) error {
 	for i := len(incomingCommits) - 1; i >= 0; i-- {
 		// Reverse iteration
 		incomingCommitId := incomingCommits[i]
-		log.Printf("\x1b[34mRebasing to: %v\x1b[0m", incomingCommitId)
+		seedlog.Infof("\x1b[34mRebasing to: %v\x1b[0m", incomingCommitId)
 		err := scmProvider.Checkout("", "base/"+devBranch)
 		if err != nil {
 			return seederr.Wrap(err)
@@ -105,7 +105,7 @@ func NdSync(scmProvider scm.Provider, args []string) error {
 				return seederr.Wrap(err)
 			}
 		}
-		log.Printf("\x1b[32mRebased to: %v\x1b[0m", incomingCommitId)
+		seedlog.Infof("\x1b[32mRebased to: %v\x1b[0m", incomingCommitId)
 	}
 	// # Cleanup local change branches
 	for iter := devBranch; iter != ("base/" + devBranch); {
