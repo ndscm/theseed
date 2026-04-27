@@ -19,6 +19,7 @@ go_library(
         "//seed/devprod/ndscm/user",
         "//seed/infra/error/go/seederr",
         "//seed/infra/flag/go/seedflag",
+        "//seed/infra/log/go/seedlog",
         "//seed/infra/shell/go/seedshell",
     ],
 )

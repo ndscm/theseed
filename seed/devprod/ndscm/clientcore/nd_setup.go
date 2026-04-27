@@ -1,13 +1,13 @@
 package clientcore
 
 import (
-	"log"
 	"os"
 	"path/filepath"
 	"strings"
 
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
 	"github.com/ndscm/theseed/seed/infra/flag/go/seedflag"
+	"github.com/ndscm/theseed/seed/infra/log/go/seedlog"
 	"github.com/ndscm/theseed/seed/infra/shell/go/seedshell"
 )
 
@@ -18,7 +18,7 @@ func injectShrcLine(shrcPath string, line string) error {
 	}
 	if os.IsNotExist(err) {
 		if seedshell.Dry() {
-			log.Printf("Dry mode skip: create shrc file at %v", shrcPath)
+			seedlog.Infof("Dry mode skip: create shrc file at %v", shrcPath)
 			return nil
 		}
 		err := os.WriteFile(shrcPath, []byte(line+"\n"), 0666)
@@ -30,12 +30,12 @@ func injectShrcLine(shrcPath string, line string) error {
 	shrcLines := strings.Split(string(shrcBytes), "\n")
 	for _, shrcLine := range shrcLines {
 		if shrcLine == line {
-			log.Printf("Already injected to %v", shrcPath)
+			seedlog.Infof("Already injected to %v", shrcPath)
 			return nil
 		}
 	}
 	if seedshell.Dry() {
-		log.Printf("Dry mode skip: update shrc file at %v", shrcPath)
+		seedlog.Infof("Dry mode skip: update shrc file at %v", shrcPath)
 		return nil
 	}
 	shrcFile, err := os.OpenFile(shrcPath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)

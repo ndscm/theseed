@@ -2,19 +2,19 @@ package clientcore
 
 import (
 	"fmt"
-	"log"
 	"os"
 
 	"github.com/ndscm/theseed/seed/devprod/ndscm/scm"
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
 	"github.com/ndscm/theseed/seed/infra/flag/go/seedflag"
+	"github.com/ndscm/theseed/seed/infra/log/go/seedlog"
 	"github.com/ndscm/theseed/seed/infra/shell/go/seedshell"
 )
 
 func NdDev(scmProvider scm.Provider, args []string) error {
 	seedflag.Finalize(args)
 	if !seedshell.ShellEval() {
-		log.Printf("\x1b[33mWarning: It's recommended to run nd-dev with --shell-eval\x1b[0m")
+		seedlog.Warnf("It's recommended to run nd-dev with --shell-eval")
 	}
 	monorepoHome, err := scm.MonorepoHome()
 	if err != nil {
@@ -51,7 +51,7 @@ func NdDev(scmProvider scm.Provider, args []string) error {
 	}
 	shellEval := fmt.Sprintf("\ncd \"%v\"\n", worktreePath)
 	if seedshell.Dry() {
-		log.Printf("Shell eval: %v", shellEval)
+		seedlog.Infof("Shell eval: %v", shellEval)
 	}
 	if seedshell.ShellEval() {
 		if !seedshell.Dry() {
