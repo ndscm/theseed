@@ -47,6 +47,10 @@ type Provider interface {
 	// ancestor of base and target.
 	GetMergeBaseCommitId(base string, target string) (string, error)
 
+	// IsDevBranch reports whether branchName is a dev branch — either "dev"
+	// itself or a focused variant "dev-<focus>" (no slashes allowed).
+	IsDevBranch(branchName string) bool
+
 	// # commit
 
 	// GetCommitId resolves commit (a ref, partial id, or full id) to a full
@@ -116,8 +120,15 @@ type Provider interface {
 	// RemoveWorktree deletes the worktree at worktreePath.
 	RemoveWorktree(worktreePath string) error
 
-	// CreateDevWorktree creates the worktree pair for a dev branch under
-	// monorepoHome: a base/<branchName> branch tracking origin/main, and the
-	// dev branchName tracking that base. Returns the new worktree path.
-	CreateDevWorktree(monorepoHome string, branchName string) (string, error)
+	// CreateDevWorktree creates a dev worktree under monorepoHome. It sets
+	// up a base tracking branch (base/dev or base/dev-<focus>) at
+	// origin/main, creates the working branch on top of it, and
+	// materializes the worktree. Pass "" for focus to get the plain "dev"
+	// branch.
+	CreateDevWorktree(monorepoHome string, focus string) (string, error)
+
+	// GetDevWorktree returns the conventional worktree path for the dev
+	// branch (or dev-<focus>) under monorepoHome. It does not check
+	// whether the worktree exists.
+	GetDevWorktree(monorepoHome string, focus string) string
 }
