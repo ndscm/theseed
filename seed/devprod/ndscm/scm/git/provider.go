@@ -1,10 +1,12 @@
 package git
 
 import (
+	"os"
 	"strings"
 
 	"github.com/ndscm/theseed/seed/devprod/ndscm/scm"
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
+	"github.com/ndscm/theseed/seed/infra/log/go/seedlog"
 )
 
 type GitProvider struct{}
@@ -182,4 +184,77 @@ func (g *GitProvider) GetDevWorktree(monorepoHome string, focus string) string {
 		branchName = "dev-" + focus
 	}
 	return GetBranchWorktreePath(monorepoHome, branchName)
+}
+
+func (g *GitProvider) RemoveDevWorktree(monorepoHome string, focus string) (string, error) {
+	monorepoGitDir, err := MonorepoGitDir()
+	if err != nil {
+		return "", seederr.Wrap(err)
+	}
+	branchName := "dev"
+	if focus != "" {
+		branchName = "dev-" + focus
+	}
+	worktreePath := GetBranchWorktreePath(monorepoHome, branchName)
+	currentWorktreePath, err := GetCurrentWorktreePath()
+	if err != nil {
+		return "", seederr.Wrap(err)
+	}
+	needChdir := currentWorktreePath == worktreePath
+	dirtyFiles, err := GetStatus(worktreePath)
+	if err != nil {
+		return "", seederr.Wrap(err)
+	}
+	if len(dirtyFiles) > 0 {
+		return "", seederr.WrapErrorf("workspace is dirty:\n%v", dirtyFiles)
+	}
+	devTracking, err := GetBranchTracking(monorepoGitDir, branchName)
+	if err != nil {
+		return "", seederr.Wrap(err)
+	}
+	if devTracking != "base/"+branchName {
+		seedlog.Warnf("Dev branch %v is tracking %v instead of its base branch, please cleanup dev worktree (with nd sync) before removing", branchName, devTracking)
+		return "", seederr.WrapErrorf("dev branch %v is not tracking its base branch", branchName)
+	}
+	baseTracking, err := GetBranchTracking(monorepoGitDir, "base/"+branchName)
+	if err != nil {
+		return "", seederr.Wrap(err)
+	}
+	baseCommits, err := ListCommitHash(monorepoGitDir, baseTracking, "base/"+branchName)
+	if err != nil {
+		return "", seederr.Wrap(err)
+	}
+	if len(baseCommits) > 0 {
+		seedlog.Warnf("Base branch %v is not fully merged to its tracking upstream %v, please drop the commits: %v", "base/"+branchName, baseTracking, baseCommits)
+		return "", seederr.WrapErrorf("base branch %v contains changes", "base/"+branchName)
+	}
+	devCommits, err := ListCommitHash(monorepoGitDir, "base/"+branchName, branchName)
+	if err != nil {
+		return "", seederr.Wrap(err)
+	}
+	if len(devCommits) > 0 {
+		seedlog.Warnf("Dev branch %v is not fully merged to its base branch %v, please drop the commits: %v", branchName, "base/"+branchName, devCommits)
+		return "", seederr.WrapErrorf("dev branch %v contains changes", branchName)
+	}
+	newCwd := ""
+	if needChdir {
+		err = os.Chdir(monorepoHome)
+		if err != nil {
+			return "", seederr.Wrap(err)
+		}
+		newCwd = monorepoHome
+	}
+	err = RemoveWorktree(monorepoGitDir, worktreePath)
+	if err != nil {
+		return "", seederr.Wrap(err)
+	}
+	err = DeleteBranch(monorepoGitDir, branchName)
+	if err != nil {
+		return "", seederr.Wrap(err)
+	}
+	err = DeleteBranch(monorepoGitDir, "base/"+branchName)
+	if err != nil {
+		return "", seederr.Wrap(err)
+	}
+	return newCwd, nil
 }

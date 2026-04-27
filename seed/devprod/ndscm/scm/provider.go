@@ -131,4 +131,9 @@ type Provider interface {
 	// branch (or dev-<focus>) under monorepoHome. It does not check
 	// whether the worktree exists.
 	GetDevWorktree(monorepoHome string, focus string) string
+
+	// RemoveDevWorktree removes the dev worktree, its dev branch, and
+	// its base branch under monorepoHome. It returns the new working
+	// directory if it changed, or "" if it did not.
+	RemoveDevWorktree(monorepoHome string, focus string) (string, error)
 }
