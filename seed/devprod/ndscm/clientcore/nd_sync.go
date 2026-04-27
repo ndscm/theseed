@@ -73,8 +73,12 @@ func NdSync(scmProvider scm.Provider, args []string) error {
 		return seederr.Wrap(err)
 	}
 	// # Rebase dev branch
-	seedlog.Infof("\x1b[34mRebasing: %v\x1b[0m", chain)
-	incomingCommits, err := scmProvider.ListCommitIds("base/"+devBranch, "origin/main")
+	baseTracking, err := scmProvider.GetBranchTracking("base/" + devBranch)
+	if err != nil {
+		return seederr.Wrap(err)
+	}
+	seedlog.Infof("\x1b[34mRebasing onto %v: %v\x1b[0m", baseTracking, chain)
+	incomingCommits, err := scmProvider.ListCommitIds("base/"+devBranch, baseTracking)
 	if err != nil {
 		return seederr.Wrap(err)
 	}
