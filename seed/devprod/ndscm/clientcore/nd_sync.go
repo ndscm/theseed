@@ -1,6 +1,7 @@
 package clientcore
 
 import (
+	"slices"
 	"strings"
 
 	"github.com/ndscm/theseed/seed/devprod/ndscm/scm"
@@ -33,23 +34,16 @@ func NdSync(scmProvider scm.Provider, args []string) error {
 	if len(dirtyFiles) > 0 {
 		return seederr.WrapErrorf("workspace is dirty:\n%v", dirtyFiles)
 	}
-	devBranch, err := scmProvider.GetWorktreeBranch("")
-	if err != nil {
-		return seederr.Wrap(err)
-	}
-	if !strings.HasPrefix(devBranch, "dev") {
-		return seederr.WrapErrorf("workspace branch is not a dev branch: %v", devBranch)
-	}
 	worktreePath, err := scmProvider.GetCurrentWorktree()
 	if err != nil {
 		return seederr.Wrap(err)
 	}
-	worktree, err := scmProvider.GetBranchWorktreeBranch(monorepoHome, worktreePath)
+	devBranch, err := scmProvider.GetBranchWorktreeBranch(monorepoHome, worktreePath)
 	if err != nil {
 		return seederr.Wrap(err)
 	}
-	if devBranch != worktree {
-		return seederr.WrapErrorf("worktree (%v) and dev branch (%v) mismatch", worktree, devBranch)
+	if !strings.HasPrefix(devBranch, "dev") || strings.Contains(devBranch, "/") {
+		return seederr.WrapErrorf("workspace is not a dev worktree: %v", devBranch)
 	}
 	// # Iterate changes tree
 	chain := []string{devBranch}
@@ -66,6 +60,13 @@ func NdSync(scmProvider scm.Provider, args []string) error {
 		}
 		chain = append([]string{inspectBranch}, chain...)
 		iter = inspectBranch
+	}
+	activeBranch, err := scmProvider.GetWorktreeBranch("")
+	if err != nil {
+		return seederr.Wrap(err)
+	}
+	if !slices.Contains(chain, activeBranch) {
+		return seederr.WrapErrorf("active branch %v is not in the changes chain: %v", activeBranch, chain)
 	}
 	// # Fetch upstream changes
 	err = scmProvider.FetchAll()
