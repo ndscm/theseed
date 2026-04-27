@@ -32,7 +32,7 @@ gh api --method POST /repos/ndscm/theseed/statuses/"$commit_hash" \
           branches: [[name: "${env.commit_hash}"]],
           extensions: [
             cleanBeforeCheckout(),
-            cleanAfterCheckout()
+            cleanAfterCheckout(),
           ],
           userRemoteConfigs: [[url: "${env.repository_url}.git", credentialsId: 'ndscm']],
         )
