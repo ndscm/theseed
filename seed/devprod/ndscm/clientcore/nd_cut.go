@@ -57,38 +57,41 @@ func NdCut(scmProvider scm.Provider, options NdCutOptions) error {
 		return seederr.Wrap(err)
 	}
 	currentBranch := devBranch
+	trackingBranch := ""
 	for !strings.HasPrefix(currentBranch, "base/") {
-		trackingBranch, err := scmProvider.GetBranchTracking(currentBranch)
+		currentTrackingBranch, err := scmProvider.GetBranchTracking(currentBranch)
 		if err != nil {
 			return seederr.Wrap(err)
 		}
-		if !strings.HasPrefix(trackingBranch, "change/") && !strings.HasPrefix(trackingBranch, "base/") {
-			return seederr.WrapErrorf("tracking chain is broken for %v (point to %v)", currentBranch, trackingBranch)
+		if !strings.HasPrefix(currentTrackingBranch, "change/") && !strings.HasPrefix(currentTrackingBranch, "base/") {
+			return seederr.WrapErrorf("tracking chain is broken for %v (point to %v)", currentBranch, currentTrackingBranch)
 		}
-		branchCommits, err := scmProvider.ListCommitIds(trackingBranch, currentBranch)
+		branchCommits, err := scmProvider.ListCommitIds(currentTrackingBranch, currentBranch)
 		if err != nil {
 			return seederr.Wrap(err)
 		}
-		found := false
 		for _, commitId := range branchCommits {
 			if targetCommitId == commitId {
-				found = true
+				trackingBranch = currentTrackingBranch
 				break
 			}
 		}
-		if found {
-			err := scmProvider.CreateBranch(changeBranch, targetCommitId, trackingBranch)
-			if err != nil {
-				return seederr.Wrap(err)
-			}
-			err = scmProvider.SetBranchTracking(currentBranch, changeBranch)
-			if err != nil {
-				return seederr.Wrap(err)
-			}
-			seedlog.Infof("Created change request as %v", changeBranch)
-			return nil
+		if trackingBranch != "" {
+			break
 		}
-		currentBranch = trackingBranch
+		currentBranch = currentTrackingBranch
 	}
-	return seederr.WrapErrorf("target %v (%v) does not exist on %v branch", options.CutPoint, targetCommitId, devBranch)
+	if trackingBranch == "" {
+		return seederr.WrapErrorf("target %v (%v) does not exist on %v branch", options.CutPoint, targetCommitId, devBranch)
+	}
+	err = scmProvider.CreateBranch(changeBranch, targetCommitId, trackingBranch)
+	if err != nil {
+		return seederr.Wrap(err)
+	}
+	err = scmProvider.SetBranchTracking(currentBranch, changeBranch)
+	if err != nil {
+		return seederr.Wrap(err)
+	}
+	seedlog.Infof("Created change request as %v", changeBranch)
+	return nil
 }
