@@ -16,6 +16,7 @@ go_library(
     srcs = [
         "nd_cut.go",
         "nd_submit.go",
+        "nd_sync.go",
         "ndscm.go",
     ],
     importpath = "github.com/ndscm/theseed/seed/devprod/ndscm/cli",
