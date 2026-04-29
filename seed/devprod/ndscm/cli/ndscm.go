@@ -20,11 +20,6 @@ func clientCommand(command string, args []string) error {
 		return seederr.Wrap(err)
 	}
 	switch command {
-	case "dev":
-		err := cc.NdDev(args)
-		if err != nil {
-			return seederr.Wrap(err)
-		}
 	case "setup":
 		err := cc.NdSetup(args)
 		if err != nil {
@@ -63,7 +58,7 @@ func run() error {
 			return seederr.Wrap(err)
 		}
 	case "dev":
-		err := clientCommand("dev", args[1:])
+		err := ndDev(args[1:])
 		if err != nil {
 			return seederr.Wrap(err)
 		}

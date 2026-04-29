@@ -6,38 +6,20 @@ import (
 
 	"github.com/ndscm/theseed/seed/devprod/ndscm/scm"
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
-	"github.com/ndscm/theseed/seed/infra/flag/go/seedflag"
 	"github.com/ndscm/theseed/seed/infra/log/go/seedlog"
 	"github.com/ndscm/theseed/seed/infra/shell/go/seedshell"
 )
 
-type ndDevFlags struct {
-	remove *seedflag.BoolFlag
-	track  *seedflag.StringFlag
+type NdDevOptions struct {
+	Remove bool
+
+	Track string
+	Focus string
 }
 
-func parseNdDevFlags(args []string) (ndDevFlags, []string, error) {
-	cf := seedflag.NewCommandFlags("nd-dev")
-	cmdFlags := ndDevFlags{}
-	cmdFlags.remove = cf.DefineBool("remove", false, "Remove the dev worktree")
-	cmdFlags.track = cf.DefineString("track", "", "Remote branch to track (e.g. origin/main); only valid when creating a new dev worktree, must not be provided if the dev worktree already exists")
-	cmdArgs, err := cf.Parse(args,
-		seedflag.WithAnywhereFlag(true),
-	)
-	if err != nil {
-		return cmdFlags, nil, seederr.Wrap(err)
-	}
-	seedflag.Finalize(cmdArgs)
-	return cmdFlags, cmdArgs, nil
-}
-
-func NdDev(scmProvider scm.Provider, args []string) error {
+func NdDev(scmProvider scm.Provider, options NdDevOptions) error {
 	if !seedshell.ShellEval() {
 		seedlog.Warnf("It's recommended to run nd-dev with --shell-eval")
-	}
-	cmdFlags, cmdArgs, err := parseNdDevFlags(args)
-	if err != nil {
-		return seederr.Wrap(err)
 	}
 	monorepoHome, err := scm.MonorepoHome()
 	if err != nil {
@@ -47,15 +29,8 @@ func NdDev(scmProvider scm.Provider, args []string) error {
 	if err != nil {
 		return seederr.Wrap(err)
 	}
-	track := cmdFlags.track.Get()
-	focus := ""
-	if len(cmdArgs) == 0 {
-		// pass
-	} else if len(cmdArgs) == 1 {
-		focus = cmdArgs[0]
-	} else {
-		return seederr.WrapErrorf("nd-dev usage: nd dev [<focus-area>]")
-	}
+	track := options.Track
+	focus := options.Focus
 	worktreePath := scmProvider.GetDevWorktree(monorepoHome, focus)
 	worktreeStat, err := os.Stat(worktreePath)
 	if err != nil && !os.IsNotExist(err) {
@@ -64,7 +39,7 @@ func NdDev(scmProvider scm.Provider, args []string) error {
 	if err == nil && !worktreeStat.IsDir() {
 		return seederr.WrapErrorf("worktree %v exists and is not a dir", worktreePath)
 	}
-	if cmdFlags.remove.Get() {
+	if options.Remove {
 		if track != "" {
 			return seederr.WrapErrorf("cannot specify --track with --remove")
 		}

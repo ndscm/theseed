@@ -15,6 +15,7 @@ go_library(
     name = "cli_lib",
     srcs = [
         "nd_cut.go",
+        "nd_dev.go",
         "nd_submit.go",
         "nd_sync.go",
         "ndscm.go",

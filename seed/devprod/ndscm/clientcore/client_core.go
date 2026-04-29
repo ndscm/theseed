@@ -22,8 +22,8 @@ func (cc *ClientCore) NdCut(options NdCutOptions) error {
 	return NdCut(cc.scmProvider, options)
 }
 
-func (cc *ClientCore) NdDev(args []string) error {
-	return NdDev(cc.scmProvider, args)
+func (cc *ClientCore) NdDev(options NdDevOptions) error {
+	return NdDev(cc.scmProvider, options)
 }
 
 func (cc *ClientCore) NdSetup(args []string) error {
