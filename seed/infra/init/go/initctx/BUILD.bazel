@@ -1,0 +1,14 @@
+load("@rules_go//go:def.bzl", "go_library")
+
+package(default_visibility = ["//visibility:public"])
+
+go_library(
+    name = "initctx",
+    srcs = ["background.go"],
+    importpath = "github.com/ndscm/theseed/seed/infra/init/go/initctx",
+    deps = [
+        "//seed/infra/context/go/seedctx",
+        "//seed/infra/error/go/seederr",
+        "//seed/infra/flag/go/seedflag",
+    ],
+)

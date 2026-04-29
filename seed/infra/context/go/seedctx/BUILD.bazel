@@ -4,13 +4,6 @@ package(default_visibility = ["//visibility:public"])
 
 go_library(
     name = "seedctx",
-    srcs = [
-        "key.go",
-        "performer.go",
-    ],
+    srcs = ["key.go"],
     importpath = "github.com/ndscm/theseed/seed/infra/context/go/seedctx",
-    deps = [
-        "//seed/infra/error/go/seederr",
-        "//seed/infra/flag/go/seedflag",
-    ],
 )
