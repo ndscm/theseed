@@ -40,11 +40,6 @@ func clientCommand(command string, args []string) error {
 		if err != nil {
 			return seederr.Wrap(err)
 		}
-	case "submit":
-		err := cc.NdSubmit(args)
-		if err != nil {
-			return seederr.Wrap(err)
-		}
 	case "sync":
 		err := cc.NdSync(args)
 		if err != nil {
@@ -93,7 +88,7 @@ func run() error {
 			return seederr.Wrap(err)
 		}
 	case "submit":
-		err := clientCommand("submit", args[1:])
+		err := ndSubmit(args[1:])
 		if err != nil {
 			return seederr.Wrap(err)
 		}

@@ -13,13 +13,17 @@ go_binary(
 
 go_library(
     name = "cli_lib",
-    srcs = ["ndscm.go"],
+    srcs = [
+        "nd_submit.go",
+        "ndscm.go",
+    ],
     importpath = "github.com/ndscm/theseed/seed/devprod/ndscm/cli",
     visibility = ["//visibility:private"],
     deps = [
         "//seed/devprod/ndscm/clientcore",
         "//seed/devprod/ndscm/scm/git",
         "//seed/infra/error/go/seederr",
+        "//seed/infra/flag/go/seedflag",
         "//seed/infra/init/go/seedinit",
         "//seed/infra/log/go/seedlog",
     ],
