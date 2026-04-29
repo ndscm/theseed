@@ -33,31 +33,36 @@ func NdUncut(scmProvider scm.Provider, options NdUncutOptions) error {
 	}
 	changeBranch := "change/" + options.FeatureName
 	currentBranch := devBranch
+	childBranch := ""
 	for !strings.HasPrefix(currentBranch, "base/") {
-		trackingBranch, err := scmProvider.GetBranchTracking(currentBranch)
+		currentTrackingBranch, err := scmProvider.GetBranchTracking(currentBranch)
 		if err != nil {
 			return seederr.Wrap(err)
 		}
-		if trackingBranch == changeBranch {
-			changeTracking, err := scmProvider.GetBranchTracking(changeBranch)
-			if err != nil {
-				return seederr.Wrap(err)
-			}
-			err = scmProvider.SetBranchTracking(currentBranch, changeTracking)
-			if err != nil {
-				return seederr.Wrap(err)
-			}
-			err = scmProvider.DeleteBranch(changeBranch)
-			if err != nil {
-				return seederr.Wrap(err)
-			}
-			seedlog.Infof("Removed change request %v", changeBranch)
-			return nil
+		if currentTrackingBranch == changeBranch {
+			childBranch = currentBranch
+			break
 		}
-		if !strings.HasPrefix(trackingBranch, "change/") && !strings.HasPrefix(trackingBranch, "base/") {
-			return seederr.WrapErrorf("tracking chain is broken for %v (points to %v)", currentBranch, trackingBranch)
+		if !strings.HasPrefix(currentTrackingBranch, "change/") && !strings.HasPrefix(currentTrackingBranch, "base/") {
+			return seederr.WrapErrorf("tracking chain is broken for %v (points to %v)", currentBranch, currentTrackingBranch)
 		}
-		currentBranch = trackingBranch
+		currentBranch = currentTrackingBranch
 	}
-	return seederr.WrapErrorf("change branch %v not found in tracking chain of %v", changeBranch, devBranch)
+	if childBranch == "" {
+		return seederr.WrapErrorf("change branch %v not found in tracking chain of %v", changeBranch, devBranch)
+	}
+	changeTracking, err := scmProvider.GetBranchTracking(changeBranch)
+	if err != nil {
+		return seederr.Wrap(err)
+	}
+	err = scmProvider.SetBranchTracking(childBranch, changeTracking)
+	if err != nil {
+		return seederr.Wrap(err)
+	}
+	err = scmProvider.DeleteBranch(changeBranch)
+	if err != nil {
+		return seederr.Wrap(err)
+	}
+	seedlog.Infof("Removed change request %v", changeBranch)
+	return nil
 }
