@@ -29,7 +29,7 @@ func NdCut(scmProvider scm.Provider, options NdCutOptions) error {
 	if err != nil {
 		return seederr.Wrap(err)
 	}
-	if !strings.HasPrefix(devBranch, "dev") {
+	if !scmProvider.IsDevBranch(devBranch) {
 		return seederr.WrapErrorf("workspace branch is not a dev branch: %v", devBranch)
 	}
 	targetCommitId, err := scmProvider.GetCommitId(options.CutPoint)
