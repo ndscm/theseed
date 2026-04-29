@@ -6,10 +6,12 @@ import (
 	"strings"
 
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
-	"github.com/ndscm/theseed/seed/infra/flag/go/seedflag"
 	"github.com/ndscm/theseed/seed/infra/log/go/seedlog"
 	"github.com/ndscm/theseed/seed/infra/shell/go/seedshell"
 )
+
+type NdSetupOptions struct {
+}
 
 func injectShrcLine(shrcPath string, line string) error {
 	shrcBytes, err := os.ReadFile(shrcPath)
@@ -49,13 +51,9 @@ func injectShrcLine(shrcPath string, line string) error {
 	return nil
 }
 
-func NdSetup(args []string) error {
-	seedflag.Finalize(args)
+func NdSetup(_ NdSetupOptions) error {
 	if seedshell.ShellEval() {
 		return seederr.WrapErrorf("nd-setup should not run with --shell-eval")
-	}
-	if len(args) != 0 {
-		return seederr.WrapErrorf("nd-setup usage: ndscm setup")
 	}
 	injectionCommand := "eval \"$(ndscm --shell-eval shell)\""
 	userHome, err := os.UserHomeDir()
