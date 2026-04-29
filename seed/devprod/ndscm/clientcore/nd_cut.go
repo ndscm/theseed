@@ -1,6 +1,7 @@
 package clientcore
 
 import (
+	"errors"
 	"strings"
 
 	"github.com/ndscm/theseed/seed/devprod/ndscm/scm"
@@ -10,6 +11,8 @@ import (
 )
 
 type NdCutOptions struct {
+	Force bool
+
 	FeatureName string
 	CutPoint    string
 }
@@ -32,6 +35,23 @@ func NdCut(scmProvider scm.Provider, options NdCutOptions) error {
 	if !scmProvider.IsDevBranch(devBranch) {
 		return seederr.WrapErrorf("workspace branch is not a dev branch: %v", devBranch)
 	}
+
+	changeBranch := "change/" + options.FeatureName
+	_, err = scmProvider.GetBranch(changeBranch)
+	if err != nil && !errors.Is(err, scm.ErrBranchNotFound) {
+		return seederr.Wrap(err)
+	}
+	if err == nil {
+		if !options.Force {
+			return seederr.WrapErrorf("change branch %v already exists, use --force to replace", changeBranch)
+		}
+		seedlog.Warnf("Branch %v already exists, removing...", changeBranch)
+		err = NdUncut(scmProvider, NdUncutOptions{FeatureName: options.FeatureName})
+		if err != nil {
+			return seederr.Wrap(err)
+		}
+	}
+
 	targetCommitId, err := scmProvider.GetCommitId(options.CutPoint)
 	if err != nil {
 		return seederr.Wrap(err)
@@ -57,15 +77,15 @@ func NdCut(scmProvider scm.Provider, options NdCutOptions) error {
 			}
 		}
 		if found {
-			err := scmProvider.CreateBranch("change/"+options.FeatureName, targetCommitId, trackingBranch)
+			err := scmProvider.CreateBranch(changeBranch, targetCommitId, trackingBranch)
 			if err != nil {
 				return seederr.Wrap(err)
 			}
-			err = scmProvider.SetBranchTracking(currentBranch, "change/"+options.FeatureName)
+			err = scmProvider.SetBranchTracking(currentBranch, changeBranch)
 			if err != nil {
 				return seederr.Wrap(err)
 			}
-			seedlog.Infof("Created change request as %v", "change/"+options.FeatureName)
+			seedlog.Infof("Created change request as %v", changeBranch)
 			return nil
 		}
 		currentBranch = trackingBranch
