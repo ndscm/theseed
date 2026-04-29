@@ -25,11 +25,6 @@ func clientCommand(command string, args []string) error {
 		if err != nil {
 			return seederr.Wrap(err)
 		}
-	case "shell":
-		err := cc.NdShell(args)
-		if err != nil {
-			return seederr.Wrap(err)
-		}
 	}
 	return nil
 }
@@ -68,7 +63,7 @@ func run() error {
 			return seederr.Wrap(err)
 		}
 	case "shell":
-		err := clientCommand("shell", args[1:])
+		err := ndShell(args[1:])
 		if err != nil {
 			return seederr.Wrap(err)
 		}

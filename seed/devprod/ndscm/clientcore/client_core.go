@@ -30,8 +30,8 @@ func (cc *ClientCore) NdSetup(args []string) error {
 	return NdSetup(args)
 }
 
-func (cc *ClientCore) NdShell(args []string) error {
-	return NdShell(args)
+func (cc *ClientCore) NdShell(options NdShellOptions) error {
+	return NdShell(options)
 }
 
 func (cc *ClientCore) NdSubmit(options NdSubmitOptions) error {
