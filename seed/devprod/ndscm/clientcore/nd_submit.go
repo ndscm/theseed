@@ -11,9 +11,11 @@ import (
 )
 
 type NdSubmitOptions struct {
+	Force  bool
 	Remote string
 
 	FeatureName string
+	CutPoint    string
 }
 
 func NdSubmit(scmProvider scm.Provider, options NdSubmitOptions) error {
@@ -32,6 +34,16 @@ func NdSubmit(scmProvider scm.Provider, options NdSubmitOptions) error {
 	err = scmProvider.QuickVerifyMonorepo()
 	if err != nil {
 		return seederr.Wrap(err)
+	}
+	if options.CutPoint != "" {
+		err = NdCut(scmProvider, NdCutOptions{
+			Force:       options.Force,
+			FeatureName: options.FeatureName,
+			CutPoint:    options.CutPoint,
+		})
+		if err != nil {
+			return seederr.Wrap(err)
+		}
 	}
 	submitBranch := "submit/" + options.FeatureName
 	changeBranch := "change/" + options.FeatureName
