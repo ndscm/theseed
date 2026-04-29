@@ -97,6 +97,11 @@ type Provider interface {
 	// worktreePath.
 	GetWorktreeBranch(worktreePath string) (string, error)
 
+	// GetWorktreeOperation returns the name of any in-progress operation
+	// (e.g. "rebase", "merge", "cherry-pick") in worktreePath, or "" if
+	// idle.
+	GetWorktreeOperation(worktreePath string) (string, error)
+
 	// # worktree
 
 	// GetCurrentWorktree returns the path of the worktree containing the
