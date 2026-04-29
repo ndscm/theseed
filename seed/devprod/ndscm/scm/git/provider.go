@@ -124,6 +124,10 @@ func (g *GitProvider) GetWorktreeBranch(worktreePath string) (string, error) {
 	return GetCurrentBranch(worktreePath)
 }
 
+func (g *GitProvider) GetWorktreeOperation(worktreePath string) (string, error) {
+	return GetCurrentOperation(worktreePath)
+}
+
 // # worktree
 
 func (g *GitProvider) GetCurrentWorktree() (string, error) {
