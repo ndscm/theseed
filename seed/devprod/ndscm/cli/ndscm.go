@@ -28,6 +28,11 @@ func run() error {
 	}
 	command := args[0]
 	switch command {
+	case "change":
+		err := ndChange(args[1:])
+		if err != nil {
+			return seederr.Wrap(err)
+		}
 	case "cut":
 		err := ndCut(args[1:])
 		if err != nil {
