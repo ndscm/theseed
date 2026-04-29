@@ -17,8 +17,6 @@ WARNING: the value is executed via "sh -c"; only set this from a trusted source.
 Binaries that opt into seedflag.WithFallbackEnvPrefix make this flag environment-controllable, which would let any writer of that env run arbitrary shell.`,
 )
 
-type SeedContextKey string
-
 func Performer(ctx context.Context) (string, error) {
 	if ctx == nil {
 		return "", seederr.WrapErrorf("nil context provided")
