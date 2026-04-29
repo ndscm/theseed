@@ -35,11 +35,6 @@ func clientCommand(command string, args []string) error {
 		if err != nil {
 			return seederr.Wrap(err)
 		}
-	case "sync":
-		err := cc.NdSync(args)
-		if err != nil {
-			return seederr.Wrap(err)
-		}
 	}
 	return nil
 }
@@ -88,7 +83,7 @@ func run() error {
 			return seederr.Wrap(err)
 		}
 	case "sync":
-		err := clientCommand("sync", args[1:])
+		err := ndSync(args[1:])
 		if err != nil {
 			return seederr.Wrap(err)
 		}

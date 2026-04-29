@@ -38,6 +38,6 @@ func (cc *ClientCore) NdSubmit(options NdSubmitOptions) error {
 	return NdSubmit(cc.scmProvider, options)
 }
 
-func (cc *ClientCore) NdSync(args []string) error {
-	return NdSync(cc.scmProvider, args)
+func (cc *ClientCore) NdSync(options NdSyncOptions) error {
+	return NdSync(cc.scmProvider, options)
 }
