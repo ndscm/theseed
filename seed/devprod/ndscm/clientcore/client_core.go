@@ -41,3 +41,7 @@ func (cc *ClientCore) NdSubmit(options NdSubmitOptions) error {
 func (cc *ClientCore) NdSync(options NdSyncOptions) error {
 	return NdSync(cc.scmProvider, options)
 }
+
+func (cc *ClientCore) NdUncut(options NdUncutOptions) error {
+	return NdUncut(cc.scmProvider, options)
+}
