@@ -4,30 +4,11 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/ndscm/theseed/seed/devprod/ndscm/clientcore"
 	_ "github.com/ndscm/theseed/seed/devprod/ndscm/scm/git"
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
 	"github.com/ndscm/theseed/seed/infra/init/go/seedinit"
 	"github.com/ndscm/theseed/seed/infra/log/go/seedlog"
 )
-
-// TODO(nagi): support subcommand flags, e.g. nd dev --foo, nd submit --bar, etc.
-
-func clientCommand(command string, args []string) error {
-	cc := &clientcore.ClientCore{}
-	err := cc.Initialize()
-	if err != nil {
-		return seederr.Wrap(err)
-	}
-	switch command {
-	case "setup":
-		err := cc.NdSetup(args)
-		if err != nil {
-			return seederr.Wrap(err)
-		}
-	}
-	return nil
-}
 
 func run() error {
 	args, err := seedinit.Initialize(
@@ -58,7 +39,7 @@ func run() error {
 			return seederr.Wrap(err)
 		}
 	case "setup":
-		err := clientCommand("setup", args[1:])
+		err := ndSetup(args[1:])
 		if err != nil {
 			return seederr.Wrap(err)
 		}

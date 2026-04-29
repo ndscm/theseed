@@ -26,8 +26,8 @@ func (cc *ClientCore) NdDev(options NdDevOptions) error {
 	return NdDev(cc.scmProvider, options)
 }
 
-func (cc *ClientCore) NdSetup(args []string) error {
-	return NdSetup(args)
+func (cc *ClientCore) NdSetup(options NdSetupOptions) error {
+	return NdSetup(options)
 }
 
 func (cc *ClientCore) NdShell(options NdShellOptions) error {
