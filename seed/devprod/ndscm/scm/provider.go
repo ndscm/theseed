@@ -30,6 +30,8 @@ type Provider interface {
 	// the new branch is configured to track it.
 	CreateBranch(branchName string, startPoint string, tracking string) error
 
+	GetBranch(branchName string) (string, error)
+
 	// DeleteBranch removes branchName even if it has unmerged commits.
 	DeleteBranch(branchName string) error
 

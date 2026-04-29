@@ -27,6 +27,10 @@ func (g *GitProvider) CreateBranch(branchName string, startPoint string, trackin
 	return CreateBranch("", branchName, startPoint, tracking)
 }
 
+func (g *GitProvider) GetBranch(branchName string) (string, error) {
+	return GetBranch("", branchName)
+}
+
 func (g *GitProvider) DeleteBranch(branchName string) error {
 	return DeleteBranch("", branchName)
 }

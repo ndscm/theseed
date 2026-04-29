@@ -3,6 +3,7 @@ package git
 import (
 	"strings"
 
+	"github.com/ndscm/theseed/seed/devprod/ndscm/scm"
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
 	"github.com/ndscm/theseed/seed/infra/shell/go/seedshell"
 )
@@ -23,6 +24,19 @@ func CreateBranch(gitDir string, branchName string, startPoint string, tracking 
 		}
 	}
 	return nil
+}
+
+func GetBranch(gitDir string, branchName string) (string, error) {
+	gitArgs := []string{}
+	if gitDir != "" {
+		gitArgs = append(gitArgs, "--git-dir", gitDir)
+	}
+	branchOutput, err := seedshell.PureOutput("git", append(gitArgs, "rev-parse", "refs/heads/"+branchName)...)
+	if err != nil {
+		return "", seederr.Wrap(scm.ErrBranchNotFound)
+	}
+	branch := strings.TrimSpace(string(branchOutput))
+	return branch, nil
 }
 
 func DeleteBranch(gitDir string, branchName string) error {
