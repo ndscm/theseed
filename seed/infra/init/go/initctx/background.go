@@ -9,7 +9,10 @@ import (
 	"github.com/ndscm/theseed/seed/infra/context/go/seedctx"
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
 	"github.com/ndscm/theseed/seed/infra/flag/go/seedflag"
+	"github.com/ndscm/theseed/seed/infra/http/go/seedbearer"
 )
+
+var flagBearer = seedflag.DefineString("bearer", "", "Bearer token for client context.")
 
 var flagPerformer = seedflag.DefineString("performer", "", "Performer identity for client context. If set, --performer_command is ignored.")
 var flagPerformerCommand = seedflag.DefineString("performer_command", "",
@@ -34,6 +37,7 @@ func WithPerformer(parent context.Context, performer string) context.Context {
 }
 
 func Background() context.Context {
+	bearer := flagBearer.Get()
 	performer := flagPerformer.Get()
 	performerCommand := flagPerformerCommand.Get()
 	if performer == "" && performerCommand != "" {
@@ -46,6 +50,9 @@ func Background() context.Context {
 		performer = strings.TrimSpace(string(output))
 	}
 	ctx := context.Background()
+	if bearer != "" {
+		ctx = seedbearer.WithBearer(ctx, bearer)
+	}
 	if performer == "" {
 		panic(seederr.WrapErrorf("no performer configured: set --performer or --performer_command"))
 	}
