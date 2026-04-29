@@ -58,6 +58,11 @@ func run() error {
 		if err != nil {
 			return seederr.Wrap(err)
 		}
+	case "uncut":
+		err := ndUncut(args[1:])
+		if err != nil {
+			return seederr.Wrap(err)
+		}
 	default:
 		return seederr.WrapErrorf("unknown command %v", command)
 	}
