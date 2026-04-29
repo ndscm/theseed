@@ -2,6 +2,8 @@ package git
 
 import (
 	"bytes"
+	"os"
+	"path/filepath"
 	"strings"
 
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
@@ -70,4 +72,29 @@ func GetCurrentBranch(worktreePath string) (string, error) {
 	}
 	currentBranch := strings.TrimSpace(string(currentBranchOutput))
 	return currentBranch, nil
+}
+
+func GetCurrentOperation(worktreePath string) (string, error) {
+	gitArgs := []string{}
+	if worktreePath != "" {
+		gitArgs = append(gitArgs, "-C", worktreePath)
+	}
+	gitDirOutput, err := seedshell.PureOutput("git", append(gitArgs, "rev-parse", "--git-dir")...)
+	if err != nil {
+		return "", seederr.Wrap(err)
+	}
+	gitDir := strings.TrimSpace(string(gitDirOutput))
+	if _, err := os.Stat(filepath.Join(gitDir, "rebase-merge")); err == nil {
+		return "rebase", nil
+	}
+	if _, err := os.Stat(filepath.Join(gitDir, "rebase-apply")); err == nil {
+		return "rebase", nil
+	}
+	if _, err := os.Stat(filepath.Join(gitDir, "MERGE_HEAD")); err == nil {
+		return "merge", nil
+	}
+	if _, err := os.Stat(filepath.Join(gitDir, "CHERRY_PICK_HEAD")); err == nil {
+		return "cherry-pick", nil
+	}
+	return "", nil
 }
