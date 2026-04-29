@@ -18,8 +18,8 @@ func (cc *ClientCore) Initialize() error {
 	return nil
 }
 
-func (cc *ClientCore) NdCut(args []string) error {
-	return NdCut(cc.scmProvider, args)
+func (cc *ClientCore) NdCut(options NdCutOptions) error {
+	return NdCut(cc.scmProvider, options)
 }
 
 func (cc *ClientCore) NdDev(args []string) error {
