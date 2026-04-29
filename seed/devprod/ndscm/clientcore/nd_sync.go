@@ -6,18 +6,16 @@ import (
 
 	"github.com/ndscm/theseed/seed/devprod/ndscm/scm"
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
-	"github.com/ndscm/theseed/seed/infra/flag/go/seedflag"
 	"github.com/ndscm/theseed/seed/infra/log/go/seedlog"
 	"github.com/ndscm/theseed/seed/infra/shell/go/seedshell"
 )
 
-func NdSync(scmProvider scm.Provider, args []string) error {
-	seedflag.Finalize(args)
+type NdSyncOptions struct {
+}
+
+func NdSync(scmProvider scm.Provider, _ NdSyncOptions) error {
 	if seedshell.ShellEval() {
 		return seederr.WrapErrorf("nd-sync should not run with --shell-eval")
-	}
-	if len(args) != 0 {
-		return seederr.WrapErrorf("nd-sync usage: (on dev branch) nd sync")
 	}
 	monorepoHome, err := scm.MonorepoHome()
 	if err != nil {
