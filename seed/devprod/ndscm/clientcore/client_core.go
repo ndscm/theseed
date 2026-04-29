@@ -34,8 +34,8 @@ func (cc *ClientCore) NdShell(args []string) error {
 	return NdShell(args)
 }
 
-func (cc *ClientCore) NdSubmit(args []string) error {
-	return NdSubmit(cc.scmProvider, args)
+func (cc *ClientCore) NdSubmit(options NdSubmitOptions) error {
+	return NdSubmit(cc.scmProvider, options)
 }
 
 func (cc *ClientCore) NdSync(args []string) error {
