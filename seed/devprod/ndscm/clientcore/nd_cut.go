@@ -5,21 +5,19 @@ import (
 
 	"github.com/ndscm/theseed/seed/devprod/ndscm/scm"
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
-	"github.com/ndscm/theseed/seed/infra/flag/go/seedflag"
 	"github.com/ndscm/theseed/seed/infra/log/go/seedlog"
 	"github.com/ndscm/theseed/seed/infra/shell/go/seedshell"
 )
 
-func NdCut(scmProvider scm.Provider, args []string) error {
-	seedflag.Finalize(args)
+type NdCutOptions struct {
+	FeatureName string
+	CutPoint    string
+}
+
+func NdCut(scmProvider scm.Provider, options NdCutOptions) error {
 	if seedshell.ShellEval() {
 		return seederr.WrapErrorf("nd-cut should not run with --shell-eval")
 	}
-	if len(args) != 2 {
-		return seederr.WrapErrorf("nd-cut usage: nd cut <feature-name> <ref>|<hash>")
-	}
-	featureName := strings.TrimSpace(args[0])
-	target := strings.TrimSpace(args[1])
 	dirtyFiles, err := scmProvider.GetWorktreeDirtyFiles("")
 	if err != nil {
 		return seederr.Wrap(err)
@@ -34,7 +32,7 @@ func NdCut(scmProvider scm.Provider, args []string) error {
 	if !strings.HasPrefix(devBranch, "dev") {
 		return seederr.WrapErrorf("workspace branch is not a dev branch: %v", devBranch)
 	}
-	targetCommitId, err := scmProvider.GetCommitId(target)
+	targetCommitId, err := scmProvider.GetCommitId(options.CutPoint)
 	if err != nil {
 		return seederr.Wrap(err)
 	}
@@ -59,18 +57,18 @@ func NdCut(scmProvider scm.Provider, args []string) error {
 			}
 		}
 		if found {
-			err := scmProvider.CreateBranch("change/"+featureName, targetCommitId, trackingBranch)
+			err := scmProvider.CreateBranch("change/"+options.FeatureName, targetCommitId, trackingBranch)
 			if err != nil {
 				return seederr.Wrap(err)
 			}
-			err = scmProvider.SetBranchTracking(currentBranch, "change/"+featureName)
+			err = scmProvider.SetBranchTracking(currentBranch, "change/"+options.FeatureName)
 			if err != nil {
 				return seederr.Wrap(err)
 			}
-			seedlog.Infof("Created change request as %v", "change/"+featureName)
+			seedlog.Infof("Created change request as %v", "change/"+options.FeatureName)
 			return nil
 		}
 		currentBranch = trackingBranch
 	}
-	return seederr.WrapErrorf("target %v (%v) does not exist on %v branch", target, targetCommitId, devBranch)
+	return seederr.WrapErrorf("target %v (%v) does not exist on %v branch", options.CutPoint, targetCommitId, devBranch)
 }
