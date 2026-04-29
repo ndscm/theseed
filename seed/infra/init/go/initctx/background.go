@@ -1,4 +1,4 @@
-package seedctx
+package initctx
 
 import (
 	"context"
@@ -6,6 +6,7 @@ import (
 	"os/exec"
 	"strings"
 
+	"github.com/ndscm/theseed/seed/infra/context/go/seedctx"
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
 	"github.com/ndscm/theseed/seed/infra/flag/go/seedflag"
 )
@@ -21,7 +22,7 @@ func Performer(ctx context.Context) (string, error) {
 	if ctx == nil {
 		return "", seederr.WrapErrorf("nil context provided")
 	}
-	performer, ok := ctx.Value(SeedContextKey("performer")).(string)
+	performer, ok := ctx.Value(seedctx.SeedContextKey("performer")).(string)
 	if !ok {
 		return "", seederr.WrapErrorf("performer not found in context")
 	}
@@ -29,7 +30,7 @@ func Performer(ctx context.Context) (string, error) {
 }
 
 func WithPerformer(parent context.Context, performer string) context.Context {
-	return context.WithValue(parent, SeedContextKey("performer"), performer)
+	return context.WithValue(parent, seedctx.SeedContextKey("performer"), performer)
 }
 
 func Background() context.Context {
