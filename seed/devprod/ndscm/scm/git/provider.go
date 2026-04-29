@@ -102,6 +102,10 @@ func (g *GitProvider) PushBranch(branchName string, remote string, remoteBranchN
 	return PushBranch("", branchName, remote, remoteBranchName)
 }
 
+func (g *GitProvider) ListRemoteBranches(remote string) ([]string, error) {
+	return ListRemoteBranches("", remote)
+}
+
 // # status
 
 func (g *GitProvider) GetWorktreeDirtyFiles(worktreePath string) ([]scm.DirtyFile, error) {

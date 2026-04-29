@@ -87,6 +87,10 @@ type Provider interface {
 	// remoteBranchName.
 	PushBranch(branchName string, remote string, remoteBranchName string) error
 
+	// ListRemoteBranches returns the short names of remote-tracking branches
+	// under remote.
+	ListRemoteBranches(remote string) ([]string, error)
+
 	// # status
 
 	// GetWorktreeDirtyFiles lists every modified or untracked file in
