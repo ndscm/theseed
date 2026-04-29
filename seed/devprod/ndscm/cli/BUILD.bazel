@@ -16,6 +16,7 @@ go_library(
     srcs = [
         "nd_cut.go",
         "nd_dev.go",
+        "nd_shell.go",
         "nd_submit.go",
         "nd_sync.go",
         "ndscm.go",
