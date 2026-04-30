@@ -3,6 +3,9 @@ function nd {
     ndscm
   elif [[ "$#" -ge 1 ]]; then
     case "${1}" in
+    "connect")
+      eval "$(ndscm --shell-eval ${1} ${@:2})"
+      ;;
     "dev")
       eval "$(ndscm --shell-eval ${1} ${@:2})"
       ;;
