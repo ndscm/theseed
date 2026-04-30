@@ -9,6 +9,7 @@ go_library(
     srcs = [
         "branch.go",
         "commit.go",
+        "config.go",
         "monorepo.go",
         "provider.go",
         "rebase.go",
