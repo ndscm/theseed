@@ -1,10 +1,13 @@
 package git
 
 import (
+	"errors"
 	"os"
+	"path/filepath"
 	"strings"
 
 	"github.com/ndscm/theseed/seed/devprod/ndscm/scm"
+	"github.com/ndscm/theseed/seed/devprod/ndscm/user"
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
 	"github.com/ndscm/theseed/seed/infra/log/go/seedlog"
 )
@@ -13,6 +16,71 @@ type GitProvider struct{}
 
 func (g *GitProvider) Initialize() error {
 	return nil
+}
+
+// # connect
+
+func (g *GitProvider) Connect(repoIdentifier string, monorepoHome string, repoEndpoint string) (string, string, error) {
+	repoEnvLines := []string{}
+	repoEnvLines = append(repoEnvLines, `ND_MONOREPO_HOME="`+monorepoHome+`"`)
+
+	userHandle, err := user.CurrentUserHandle()
+	if err != nil {
+		return "", "", seederr.Wrap(err)
+	}
+	repoEnvLines = append(repoEnvLines, `ND_USER_HANDLE="`+userHandle+`"`)
+	userEmail, err := user.CurrentUserEmail()
+	if err != nil {
+		return "", "", seederr.Wrap(err)
+	}
+	repoEnvLines = append(repoEnvLines, `ND_USER_EMAIL="`+userEmail+`"`)
+	userDisplayName, err := user.CurrentUserDisplayName()
+	if err != nil {
+		return "", "", seederr.Wrap(err)
+	}
+	repoEnvLines = append(repoEnvLines, `ND_USER_DISPLAY_NAME="`+userDisplayName+`"`)
+
+	repoEnvLines = append(repoEnvLines, `ND_SCM="git"`)
+
+	gitDir := filepath.Join(monorepoHome, repoIdentifier+".git")
+	repoEnvLines = append(repoEnvLines, `ND_MONOREPO_GIT_DIR="`+gitDir+`"`)
+
+	mainBranch, err := BareClone(repoEndpoint, gitDir)
+	if err != nil {
+		return "", "", seederr.Wrap(err)
+	}
+	remoteMainBranch := "origin/" + mainBranch
+	// Sometimes git automatically creates the local main branch
+	_, err = GetBranch(gitDir, mainBranch)
+	if err != nil {
+		if errors.Is(err, scm.ErrBranchNotFound) {
+			err = CreateBranch(gitDir, mainBranch, remoteMainBranch, remoteMainBranch)
+			if err != nil {
+				return "", "", seederr.Wrap(err)
+			}
+		} else {
+			return "", "", seederr.Wrap(err)
+		}
+	}
+	worktreePath, err := CreateBranchWorktree(gitDir, monorepoHome, mainBranch)
+	if err != nil {
+		return "", "", seederr.Wrap(err)
+	}
+
+	err = os.WriteFile(filepath.Join(monorepoHome, "ndscm.env"), []byte(strings.Join(repoEnvLines, "\n")+"\n"), 0644)
+	if err != nil {
+		return "", "", seederr.WrapErrorf("failed to create ndscm.env file: %w", err)
+	}
+	err = SetConfig(gitDir, "user.name", userDisplayName)
+	if err != nil {
+		return "", "", seederr.WrapErrorf("failed to set git user.name: %w", err)
+	}
+	err = SetConfig(gitDir, "user.email", userEmail)
+	if err != nil {
+		return "", "", seederr.WrapErrorf("failed to set git user.email: %w", err)
+	}
+	SetMonorepoGitDir(gitDir)
+	return remoteMainBranch, worktreePath, nil
 }
 
 // # verify

@@ -11,7 +11,12 @@ import (
 
 var flagMonorepoGitDir = seedflag.DefineString("monorepo_git_dir", "", "the monorepo git directory")
 
+var activeMonorepoGitDir string
+
 func MonorepoGitDir() (string, error) {
+	if activeMonorepoGitDir != "" {
+		return activeMonorepoGitDir, nil
+	}
 	monorepoGitDir := flagMonorepoGitDir.Get()
 	if strings.HasPrefix(monorepoGitDir, "~/") {
 		homeDir, err := os.UserHomeDir()
@@ -23,5 +28,10 @@ func MonorepoGitDir() (string, error) {
 	if monorepoGitDir == "" {
 		return "", seederr.WrapErrorf("monorepo git dir is not set")
 	}
+	activeMonorepoGitDir = monorepoGitDir
 	return monorepoGitDir, nil
+}
+
+func SetMonorepoGitDir(gitDir string) {
+	activeMonorepoGitDir = gitDir
 }

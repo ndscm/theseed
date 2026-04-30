@@ -18,6 +18,13 @@ type Provider interface {
 	// before any other method.
 	Initialize() error
 
+	// # connect
+
+	// Connect clones repoEndpoint into monorepoHome, sets up the default
+	// branch, and creates a worktree for it. It returns the remote default
+	// branch (e.g. "origin/main") and the worktree path.
+	Connect(repoIdentifier string, monorepoHome string, repoEndpoint string) (remoteDefaultBranch string, worktreePath string, err error)
+
 	// # verify
 
 	// QuickVerifyMonorepo performs a fast sanity check that the current
