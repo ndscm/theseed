@@ -23,9 +23,9 @@ func NdSubmit(scmProvider scm.Provider, options NdSubmitOptions) error {
 		return seederr.WrapErrorf("nd-submit should not run with --shell-eval")
 	}
 	remoteMain := options.Remote + "/main"
-	currentUserHandle := user.CurrentUserHandle()
-	if currentUserHandle == "" {
-		return seederr.WrapErrorf("user handle is not set")
+	currentUserHandle, err := user.CurrentUserHandle()
+	if err != nil {
+		return seederr.Wrap(err)
 	}
 	monorepoHome, err := scm.MonorepoHome()
 	if err != nil {
