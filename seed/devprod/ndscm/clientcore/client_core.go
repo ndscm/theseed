@@ -26,6 +26,10 @@ func (cc *ClientCore) NdChange(options NdChangeOptions) error {
 	return NdChange(cc.scmProvider, options)
 }
 
+func (cc *ClientCore) NdConnect(options NdConnectOptions) error {
+	return NdConnect(cc.scmProvider, options)
+}
+
 func (cc *ClientCore) NdCut(options NdCutOptions) error {
 	return NdCut(cc.scmProvider, options)
 }

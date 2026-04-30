@@ -6,6 +6,7 @@ go_library(
         "client_core.go",
         "nd_apply.go",
         "nd_change.go",
+        "nd_connect.go",
         "nd_cut.go",
         "nd_dev.go",
         "nd_setup.go",
