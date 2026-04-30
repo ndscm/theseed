@@ -1,6 +1,5 @@
 load("@rules_go//go:def.bzl", "go_binary", "go_library")
 load("//seed/devprod/starlark/archive:defs.bzl", "create_zip", "extract_tar")
-load("//seed/devprod/starlark/secret:defs.bzl", "local_secret")
 
 package(default_visibility = ["//visibility:private"])
 
@@ -40,22 +39,11 @@ extract_tar(
     subdir = "webapp",
 )
 
-local_secret(
-    name = "golink_database_secret",
-    local_path = "${ND_MONOREPO_SECRET_HOME}/golink/golink/GOLINK_DATABASE_SECRET",
-)
-
 create_zip(
-    name = "golink-server-zip",
+    name = "golink-server_zip",
     srcs = [
         ":golink-server",
-        ":golink_database_secret",
         ":webapp",
     ],
     out = "golink-server.zip",
-    tags = [
-        "local",
-        "manual",
-        "no-remote-cache",
-    ],
 )
