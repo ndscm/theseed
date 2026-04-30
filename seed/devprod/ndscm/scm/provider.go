@@ -8,7 +8,7 @@ type DirtyFile struct {
 	From   string
 }
 
-// scm.Provider is the abstraction over a Source Code Management backend (e.g.
+// Provider is the abstraction over a Source Code Management backend (e.g.
 // git). Each backend registers a provider via Register, and the active one is
 // selected at runtime through the --scm flag.
 //
@@ -30,6 +30,7 @@ type Provider interface {
 	// the new branch is configured to track it.
 	CreateBranch(branchName string, startPoint string, tracking string) error
 
+	// GetBranch resolves branchName to its commit id.
 	GetBranch(branchName string) (string, error)
 
 	// DeleteBranch removes branchName even if it has unmerged commits.
@@ -42,7 +43,7 @@ type Provider interface {
 	// GetBranchTracking returns the upstream branch that branchName tracks.
 	GetBranchTracking(branchName string) (string, error)
 
-	// SetBranchTracking configures branchName to track tracking.
+	// SetBranchTracking configures branchName to track the given upstream.
 	SetBranchTracking(branchName string, tracking string) error
 
 	// GetMergeBaseCommitId returns the commit id of the most recent common
