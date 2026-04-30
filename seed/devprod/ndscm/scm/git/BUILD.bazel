@@ -8,6 +8,7 @@ go_library(
     name = "git",
     srcs = [
         "branch.go",
+        "clone.go",
         "commit.go",
         "config.go",
         "monorepo.go",
