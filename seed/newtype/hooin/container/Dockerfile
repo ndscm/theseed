@@ -20,4 +20,7 @@ USER hooin
 WORKDIR /home/hooin
 
 ENTRYPOINT [ "/opt/hooin/entrypoint.sh" ]
-CMD ["--static_team_file", "/etc/hooin/team.json", "--verbose"]
+CMD [ \
+  "--static_team_file", "/etc/hooin/team.json", \
+  "--static_jwks", "/etc/hooin/jwks.json", \
+  "--verbose"]
