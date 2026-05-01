@@ -14,7 +14,7 @@ function _nd_completions {
   fi
 
   if [[ $cword -eq 1 ]]; then
-    COMPREPLY=($(compgen -W "cut dev setup shell submit sync" -- "$cur"))
+    COMPREPLY=($(compgen -W "apply change connect cut dev setup shell submit sync uncut" -- "$cur"))
     return
   fi
 
