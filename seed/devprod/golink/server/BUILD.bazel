@@ -17,6 +17,7 @@ go_library(
         "//seed/cloud/login/proto:login_go_connect",
         "//seed/devprod/golink/proto:golink_go_connect",
         "//seed/devprod/golink/service",
+        "//seed/infra/auth/go/openidjwt",
         "//seed/infra/error/go/seederr",
         "//seed/infra/flag/go/seedflag",
         "//seed/infra/grpc/go/seedgrpc",
