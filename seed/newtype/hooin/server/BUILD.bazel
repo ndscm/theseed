@@ -12,6 +12,7 @@ go_library(
     srcs = ["hooin_server.go"],
     importpath = "github.com/ndscm/theseed/seed/newtype/hooin/server",
     deps = [
+        "//seed/infra/auth/go/openidjwt",
         "//seed/infra/error/go/seederr",
         "//seed/infra/flag/go/seedflag",
         "//seed/infra/grpc/go/seedgrpc",
