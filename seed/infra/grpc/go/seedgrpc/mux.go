@@ -5,18 +5,28 @@ import (
 	"strings"
 
 	"connectrpc.com/grpchealth"
-	"github.com/ndscm/theseed/seed/infra/http/go/seedjwt"
 	"github.com/ndscm/theseed/seed/infra/log/go/seedlog"
 )
 
 type GrpcMux struct {
 	http.ServeMux
+
+	interceptors []func(http.Handler) http.Handler
+
 	serviceNames  []string
 	healthChecker *grpchealth.StaticChecker
 }
 
+func CreateGrpcMux(interceptors ...func(http.Handler) http.Handler) (*GrpcMux, error) {
+	m := &GrpcMux{}
+	m.interceptors = interceptors
+	return m, nil
+}
+
 func (cls *GrpcMux) Register(path string, handler http.Handler) error {
-	handler = seedjwt.InterceptJwtMiddleware(handler)
+	for _, interceptor := range cls.interceptors {
+		handler = interceptor(handler)
+	}
 	cls.Handle(path, handler)
 	seedlog.Infof("Service registered: %v", path)
 	cls.serviceNames = append(cls.serviceNames, strings.Trim(path, "/"))
