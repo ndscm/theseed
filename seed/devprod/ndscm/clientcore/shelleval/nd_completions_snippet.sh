@@ -18,8 +18,13 @@ function _nd_completions {
     return
   fi
 
+  # We keep each command separate to allow for more specific completions in the future
   case "${words[1]}" in
-  submit)
+  "change")
+    local branches=$(git branch --list 'change/*' 2>/dev/null | sed 's/^[* ]*//' | sed 's|^change/||')
+    COMPREPLY=($(compgen -W "$branches" -- "$cur"))
+    ;;
+  "submit")
     local branches=$(git branch --list 'change/*' 2>/dev/null | sed 's/^[* ]*//' | sed 's|^change/||')
     COMPREPLY=($(compgen -W "$branches" -- "$cur"))
     ;;
