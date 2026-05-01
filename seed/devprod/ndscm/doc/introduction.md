@@ -1,13 +1,12 @@
 # ndscm: Introduction
 
-Git has been the most popular and powerful SCM for years, but it supports so
-many scenarios that it becomes difficult to learn. While experienced engineers
-can master git, most users treat it as little more than a manual
-save-and-snapshot tool. Based on the concept of SCM we introduced in SCM Concept
-(scm.md), we propose an opinionated workflow for contributing to a team
-repository. This workflow strips away the difficult parts of managing countless
-commands and flags. We expose only the opinionated usage through our ndscm-cli
-tool, hiding the underlying SCM system behind the CLI.
+Git has been the dominant SCM for years, but it supports so many workflows that
+it's hard to learn. While experienced engineers can master git, most users treat
+it as little more than a manual save-and-snapshot tool. Building on the concepts
+introduced in SCM Concept (scm.md), we propose an opinionated workflow for
+contributing to a team repository. This workflow cuts through the complexity of
+managing countless commands and flags. We surface only the opinionated workflow
+through the ndscm CLI, hiding the underlying SCM system behind it.
 
 ## Core Concept
 
@@ -22,8 +21,8 @@ need to control behavior around each patch. The patch metadata is stored in git
 commit message trailers. The standard metadata fields are:
 
 - **Change-uuid**: A UUID that identifies the patch. Generated when a patch is
-  first crafted. It does not change when the patch is reapplied to another
-  snapshot.
+  first crafted. It stays the same even when the patch is reapplied to a
+  different snapshot.
 - **Break**: A message indicating that this patch breaks existing behavior. Must
   appear together with "Migrate".
 - **Migrate**: A message describing how to resolve the breaking change. Must
@@ -36,10 +35,12 @@ commit message trailers. The standard metadata fields are:
 - **Test-for-change-uuid**: Indicates that this patch is a unit, integration, or
   e2e test for the core behavior change. Note that existing tests broken by the
   change should use "Side-effect-of-change-uuid", not this field.
-- **Review-link**: The URL of the code review request; may appear multiple
-  times.
-- **Apply-to**: The repository URL and branch name. Written by the merge queue;
-  may appear multiple times.
+- **Change-branch**: The repository URL and branch that this change targets. The
+  merge queue verifies this field before advancing the branch pointer.
+- **Change-review**: The URL of the code review request. Written by the merge
+  queue; may appear multiple times.
+- **Change-list**: The URL of the applied code after review. Written by the
+  merge queue; may appear multiple times.
 - **Upstream-change**: The upstream repository URL and change identifier (e.g.
   commit hash for an upstream git repo). Present when this change is a
   minimally-edited reapplication of an upstream change. Reviewers should focus
@@ -47,19 +48,19 @@ commit message trailers. The standard metadata fields are:
 - **Skip-test**: The reason this patch should not trigger tests. Omit this field
   when the reason is already conveyed by "Side-effect-of-change-uuid".
 
-With this metadata, we avoid the traditional pattern of grouping patches (e.g.
-bundling tests or side effects into the same commit as the core change).
-Breaking a large commit into much smaller, metadata-annotated patches makes each
-patch small enough for a reviewer to understand on its own, without burying the
-core logic under a pile of side effects. It also gives better control over
-reviewer assignment across a large monorepo: each reviewer can focus exclusively
-on changes within their owned module.
+With this metadata, we move away from the traditional pattern of grouping
+patches (e.g. bundling tests or side effects into the same commit as the core
+change). Breaking a large commit into much smaller, metadata-annotated patches
+makes each one small enough for a reviewer to understand on its own, without
+burying the core logic under a pile of side effects. It also gives finer control
+over reviewer assignment across a large monorepo: each reviewer can focus
+exclusively on changes within their owned module.
 
-Each code change request typically contains a chain of small patches. The commit
-queue applies the patches one by one and advances the head pointer at once,
-without squashing the submitted patches. It is the contributor's responsibility
-to split a large, hard-to-review patch into small patches where each patch does
-exactly one thing. Do not mix side effects and tests into the core change. The
+Each code change request typically contains a chain of small patches. The merge
+queue applies the patches one by one and advances the branch pointer at once,
+without squashing the submitted patches. It's the contributor's responsibility
+to split a large, hard-to-review patch into small patches where each one does
+exactly one thing. Don't mix side effects and tests into the core change. The
 contributor is also responsible for writing the metadata of each patch.
 
 Within the ndscm ecosystem, all patches must keep a linear history. No patch may
@@ -69,13 +70,14 @@ When two change chains need to converge, there are two directions. Both produce
 a linear history — no traditional merge commits are created in either case.
 
 - **Rebase mode**: rebase our patches onto the head of their chain. Our patches
-  are regenerated; their chain is unchanged. This is the normal way a
+  are regenerated; their chain stays unchanged. This is the normal way a
   contributor updates a feature branch against the latest shared branch.
 - **Merge mode**: rebase their patches onto the head of our chain. Their patches
-  are regenerated; our chain is unchanged. This is how a shared branch absorbs
-  upstream changes without rewriting its own history. The incoming changes go
-  through the same test and code review process as normal contributions, with
-  only minimal edits to satisfy vendor compliance requirements.
+  are regenerated; our chain stays unchanged. This is how a shared branch
+  absorbs upstream changes without rewriting its own history. The incoming
+  changes go through the same test and code review process as normal
+  contributions, with only minimal edits to satisfy vendor compliance
+  requirements.
 
 ## Terms
 
@@ -112,8 +114,9 @@ A change is a patch with metadata. The standard metadata fields are:
 - Migrate
 - Side-effect-of-change-uuid
 - Test-for-change-uuid
-- Review-link
-- Apply-to
+- Change-branch
+- Change-review
+- Change-list
 - Upstream-change
 - Skip-test
 
@@ -206,7 +209,7 @@ ready:
 nd submit "<change-request-name>"
 ```
 
-Note that `nd submit` does not push the branch to the review server directly. It
+Note that `nd submit` doesn't push the branch to the review server directly. It
 picks the changes in the change list, reapplies them against the latest main
 branch, and pushes the resulting change list to the review server to create the
 change request.
@@ -260,24 +263,24 @@ Each change should cover only one project, so that the project reviewer only
 needs to examine the changes within their scope, using the rest of the changes
 as reference context.
 
-## The Initiative of ndscm
+## The Motivation behind ndscm
 
-Many developers face a difficult situation when working on a large project with
-a large team. The traditional workflow is to create a change branch from the
-main branch, make changes, push for review, wait for review — anywhere from
-seconds to weeks — and then create another change branch on top of the updated
-main branch. This workflow introduces several problems:
+Many developers hit a wall when working on a large project with a large team.
+The traditional workflow is to create a change branch from the main branch, make
+changes, push for review, wait for review — anywhere from seconds to weeks — and
+then create another change branch on top of the updated main branch. This
+workflow has several pain points:
 
 - The review process becomes a blocking step in feature development.
-- Developing one change on top of another pending change is not feasible.
-- Contributors frequently encounter conflicts between their own branches when a
-  pending review updates the implementation before it is merged.
-- These self-conflicts are hard to resolve when pending changes are merged into
-  the main branch in unexpected orders.
+- Developing one change on top of another pending change isn't feasible.
+- Contributors frequently run into conflicts between their own branches when a
+  pending review updates the implementation before it's merged.
+- These self-conflicts are hard to resolve when pending changes land on the main
+  branch in unexpected orders.
 - Throwing a large code change at reviewers drastically slows down the review
   process.
-- Developers cannot see the full picture of a feature until the dependent code
-  lands, so they are unable to refine their code before submitting for review,
+- Developers can't see the full picture of a feature until the dependent code
+  lands, so they're unable to refine their code before submitting for review,
   leaving the pending code less mature than it could be.
 
 Given these problems, and since code review is a hard requirement for many
@@ -285,24 +288,24 @@ teams, the solution we propose is:
 
 - Decouple the development process from the review process.
 - Develop whenever you have time; submit whichever part you want for review
-  whenever you are ready.
+  whenever you're ready.
 
-To achieve this goal, we arrived at the core design principles:
+To achieve this, we arrived at a few core design principles:
 
-- The patch must be as small as possible.
+- Patches must be as small as possible.
 - Reapplying a patch should be painless (avoid conflicts as much as possible).
-- The software should be able to recognize the same change and not bother the
+- The tooling should be able to recognize the same change and not bother the
   developer with that kind of conflict, surfacing only real conflicts.
-- When a conflict does reach the developer, the way to resolve it should be as
-  obvious as possible.
+- When a conflict does reach the developer, the resolution should be as obvious
+  as possible.
 
 With these ideas in mind, the ndscm tool was born.
 
 The initial version of ndscm was a hobby project built with a bunch of bash
 scripts. The author presented a short slide as a SETI at the "Google Internal
 Devops Summit 2018". The idea was iced and not advertised after the author
-became an exGoogler and a CTO of small start-ups, where code review was a rubber
-stamp that took only seconds. The idea resurfaced when we started the "LLM team
-coding" project (known as "Harness" today) in 2024, as we wanted multiple LLM
-models to review each other's code. ndscm became the core tool for regulating
-how both human and agent contributors make contributions on the team.
+became an exGoogler and the CTO of small start-ups, where code review was a
+rubber stamp that took only seconds. The idea resurfaced when we started the
+"LLM team coding" project (known as "Harness" today) in 2024, as we wanted
+multiple LLM models to review each other's code. ndscm became the core tool for
+regulating how both human and agent contributors make contributions on the team.
