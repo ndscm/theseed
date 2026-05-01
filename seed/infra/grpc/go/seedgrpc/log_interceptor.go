@@ -7,8 +7,11 @@ import (
 
 	"connectrpc.com/connect"
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
+	"github.com/ndscm/theseed/seed/infra/flag/go/seedflag"
 	"github.com/ndscm/theseed/seed/infra/log/go/seedlog"
 )
+
+var flagKeepAuthorizationLog = seedflag.DefineBool("keep_authorization_log", false, "Keep the Authorization header in the debug logs.")
 
 type logInterceptor struct {
 }
@@ -16,7 +19,12 @@ type logInterceptor struct {
 func (i *logInterceptor) WrapUnary(next connect.UnaryFunc) connect.UnaryFunc {
 	return func(ctx context.Context, request connect.AnyRequest) (connect.AnyResponse, error) {
 		seedlog.Infof("Grpc unary: %s", request.Spec().Procedure)
-		seedlog.Debugf("Grpc headers: %+v", request.Header())
+		logHeaders := request.Header()
+		if !flagKeepAuthorizationLog.Get() && logHeaders.Get("Authorization") != "" {
+			logHeaders = logHeaders.Clone()
+			logHeaders.Set("Authorization", "**REDACTED**")
+		}
+		seedlog.Debugf("Grpc headers: %+v", logHeaders)
 		seedlog.Debugf("Grpc request: (%T) %+v", request.Any(), request.Any())
 		seedErrorCode := uint32(0)
 		response, err := next(ctx, request)
