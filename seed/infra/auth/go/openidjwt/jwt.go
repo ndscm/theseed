@@ -2,13 +2,16 @@ package openidjwt
 
 import (
 	"context"
-	"encoding/base64"
 	"encoding/json"
 	"net/http"
 	"strings"
 
+	_ "crypto/sha256"
+	_ "crypto/sha512"
+
 	"github.com/ndscm/theseed/seed/infra/context/go/seedctx"
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
+	"github.com/ndscm/theseed/seed/infra/jwt/go/seedjwt"
 	"github.com/ndscm/theseed/seed/infra/log/go/seedlog"
 )
 
@@ -33,16 +36,11 @@ type OpenidUserInfo struct {
 	Raw map[string]interface{} `json:"-"`
 }
 
-func decodeJwt(accessToken string) (*OpenidUserInfo, error) {
-	parts := strings.Split(accessToken, ".")
-	if len(parts) != 3 {
-		return nil, seederr.WrapErrorf("invalid JWT: expected 3 parts, got %d", len(parts))
-	}
-	payload, err := base64.RawURLEncoding.DecodeString(parts[1])
+func decodeJwt(jwtDecoder *seedjwt.JwtDecoder, accessToken string) (*OpenidUserInfo, error) {
+	payload, err := jwtDecoder.Decode(accessToken)
 	if err != nil {
-		return nil, seederr.WrapErrorf("failed to decode JWT payload: %v", err)
+		return nil, err
 	}
-	// TODO(nagi): Add signature verification if needed.
 	userInfo := &OpenidUserInfo{}
 	err = json.Unmarshal(payload, userInfo)
 	if err != nil {
@@ -76,13 +74,15 @@ func withOpenidJwtUser(parent context.Context, userInfo *OpenidUserInfo) context
 
 type openidJwtMiddleware struct {
 	next http.Handler
+
+	jwtDecoder *seedjwt.JwtDecoder
 }
 
 func (m *openidJwtMiddleware) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	authorization := r.Header.Get("Authorization")
 	if strings.HasPrefix(authorization, "Bearer ") {
 		accessToken := strings.TrimPrefix(authorization, "Bearer ")
-		userInfo, err := decodeJwt(accessToken)
+		userInfo, err := decodeJwt(m.jwtDecoder, accessToken)
 		if err != nil {
 			seedlog.Errorf("Failed to decode JWT: %v", err)
 		}
@@ -94,13 +94,19 @@ func (m *openidJwtMiddleware) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 }
 
 type OpenidJwtInterceptor struct {
+	jwtDecoder *seedjwt.JwtDecoder
 }
 
 func CreateOpenidJwtInterceptor() (*OpenidJwtInterceptor, error) {
 	i := &OpenidJwtInterceptor{}
+	jwtDecoder, err := seedjwt.CreateJwtDecoder()
+	if err != nil {
+		return nil, seederr.Wrap(err)
+	}
+	i.jwtDecoder = jwtDecoder
 	return i, nil
 }
 
 func (i *OpenidJwtInterceptor) Intercept(next http.Handler) http.Handler {
-	return &openidJwtMiddleware{next: next}
+	return &openidJwtMiddleware{next: next, jwtDecoder: i.jwtDecoder}
 }
