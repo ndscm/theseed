@@ -8,5 +8,8 @@ go_library(
     name = "user",
     srcs = ["user.go"],
     importpath = "github.com/ndscm/theseed/seed/devprod/ndscm/user",
-    deps = ["//seed/infra/flag/go/seedflag"],
+    deps = [
+        "//seed/infra/error/go/seederr",
+        "//seed/infra/flag/go/seedflag",
+    ],
 )
