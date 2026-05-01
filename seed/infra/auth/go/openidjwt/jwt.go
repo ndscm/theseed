@@ -1,4 +1,4 @@
-package seedjwt
+package openidjwt
 
 import (
 	"context"
@@ -55,26 +55,30 @@ func decodeJwt(accessToken string) (*OpenidUserInfo, error) {
 	return userInfo, nil
 }
 
-func JwtUser(ctx context.Context) (*OpenidUserInfo, error) {
+func OpenidJwtUser(ctx context.Context) (*OpenidUserInfo, error) {
 	if ctx == nil {
 		return nil, seederr.WrapErrorf("nil context provided")
 	}
-	userInfo, ok := ctx.Value(seedctx.SeedContextKey("jwtuser")).(*OpenidUserInfo)
-	if !ok {
+	ctxValue := ctx.Value(seedctx.SeedContextKey("openiduser"))
+	if ctxValue == nil {
 		return nil, nil
+	}
+	userInfo, ok := ctxValue.(*OpenidUserInfo)
+	if !ok {
+		return nil, seederr.WrapErrorf("failed to assert user info")
 	}
 	return userInfo, nil
 }
 
-func withJwtUser(parent context.Context, userInfo *OpenidUserInfo) context.Context {
-	return context.WithValue(parent, seedctx.SeedContextKey("jwtuser"), userInfo)
+func withOpenidJwtUser(parent context.Context, userInfo *OpenidUserInfo) context.Context {
+	return context.WithValue(parent, seedctx.SeedContextKey("openiduser"), userInfo)
 }
 
-type jwtMiddleware struct {
+type openidJwtMiddleware struct {
 	next http.Handler
 }
 
-func (g *jwtMiddleware) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (m *openidJwtMiddleware) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	authorization := r.Header.Get("Authorization")
 	if strings.HasPrefix(authorization, "Bearer ") {
 		accessToken := strings.TrimPrefix(authorization, "Bearer ")
@@ -83,12 +87,20 @@ func (g *jwtMiddleware) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			seedlog.Errorf("Failed to decode JWT: %v", err)
 		}
 		if userInfo != nil {
-			r = r.WithContext(withJwtUser(r.Context(), userInfo))
+			r = r.WithContext(withOpenidJwtUser(r.Context(), userInfo))
 		}
 	}
-	g.next.ServeHTTP(w, r)
+	m.next.ServeHTTP(w, r)
 }
 
-func InterceptJwtMiddleware(next http.Handler) http.Handler {
-	return &jwtMiddleware{next: next}
+type OpenidJwtInterceptor struct {
+}
+
+func CreateOpenidJwtInterceptor() (*OpenidJwtInterceptor, error) {
+	i := &OpenidJwtInterceptor{}
+	return i, nil
+}
+
+func (i *OpenidJwtInterceptor) Intercept(next http.Handler) http.Handler {
+	return &openidJwtMiddleware{next: next}
 }
