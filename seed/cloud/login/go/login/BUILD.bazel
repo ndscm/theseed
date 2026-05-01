@@ -8,7 +8,7 @@ go_library(
         "//visibility:public",
     ],
     deps = [
+        "//seed/infra/auth/go/openidjwt",
         "//seed/infra/error/go/seederr",
-        "//seed/infra/http/go/seedjwt",
     ],
 )
