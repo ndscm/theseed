@@ -1,9 +1,9 @@
 package user
 
 import (
-	"fmt"
 	"regexp"
 
+	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
 	"github.com/ndscm/theseed/seed/infra/flag/go/seedflag"
 )
 
@@ -21,10 +21,10 @@ var invalidDisplayName = regexp.MustCompile("[\"\\\\\\n\\r\\t]")
 func CurrentUserHandle() (string, error) {
 	handle := flagUserHandle.Get()
 	if handle == "" {
-		return "", fmt.Errorf("user_handle is required")
+		return "", seederr.WrapErrorf("user_handle is required")
 	}
 	if !validHandle.MatchString(handle) {
-		return "", fmt.Errorf("user_handle %q is invalid: only lowercase letters, digits, dash, underscore, and dot are allowed", handle)
+		return "", seederr.WrapErrorf("user_handle %q is invalid: only lowercase letters, digits, dash, underscore, and dot are allowed", handle)
 	}
 	return handle, nil
 }
@@ -35,10 +35,10 @@ func CurrentUserHandle() (string, error) {
 func CurrentUserEmail() (string, error) {
 	email := flagUserEmail.Get()
 	if email == "" {
-		return "", fmt.Errorf("user_email is required")
+		return "", seederr.WrapErrorf("user_email is required")
 	}
 	if !validEmail.MatchString(email) {
-		return "", fmt.Errorf("user_email %q is invalid", email)
+		return "", seederr.WrapErrorf("user_email %q is invalid", email)
 	}
 	return email, nil
 }
@@ -49,10 +49,10 @@ func CurrentUserEmail() (string, error) {
 func CurrentUserDisplayName() (string, error) {
 	name := flagUserDisplayName.Get()
 	if name == "" {
-		return "", fmt.Errorf("user_display_name is required")
+		return "", seederr.WrapErrorf("user_display_name is required")
 	}
 	if invalidDisplayName.MatchString(name) {
-		return "", fmt.Errorf("user_display_name %q is invalid: quotes, backslashes, and control characters are not allowed", name)
+		return "", seederr.WrapErrorf("user_display_name %q is invalid: quotes, backslashes, and control characters are not allowed", name)
 	}
 	return name, nil
 }
