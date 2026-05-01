@@ -8,6 +8,7 @@ import (
 	"github.com/ndscm/theseed/seed/cloud/login/proto/loginpbconnect"
 	"github.com/ndscm/theseed/seed/devprod/golink/proto/golinkpbconnect"
 	golinkservice "github.com/ndscm/theseed/seed/devprod/golink/service"
+	"github.com/ndscm/theseed/seed/infra/auth/go/openidjwt"
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
 	"github.com/ndscm/theseed/seed/infra/flag/go/seedflag"
 	"github.com/ndscm/theseed/seed/infra/grpc/go/seedgrpc"
@@ -25,7 +26,16 @@ func run() error {
 		return seederr.Wrap(err)
 	}
 
-	mux := &seedgrpc.GrpcMux{}
+	openidInterceptor, err := openidjwt.CreateOpenidJwtInterceptor()
+	if err != nil {
+		return seederr.Wrap(err)
+	}
+
+	mux, err := seedgrpc.CreateGrpcMux(openidInterceptor.Intercept)
+	if err != nil {
+		return seederr.Wrap(err)
+	}
+
 	err = mux.Register(loginpbconnect.NewLoginServiceHandler(
 		&loginservice.LoginService{},
 		seedgrpc.WithCommonInterceptors(),
