@@ -1,5 +1,5 @@
 load("@rules_go//go:def.bzl", "go_binary", "go_library")
-load("//seed/devprod/starlark/archive:defs.bzl", "create_zip", "extract_tar")
+load("//seed/devprod/starlark/archive:defs.bzl", "create_tar_gz", "create_zip", "extract_tar")
 load("//seed/devprod/starlark/secret:defs.bzl", "local_secret")
 
 package(default_visibility = ["//visibility:private"])
@@ -39,6 +39,15 @@ extract_tar(
     name = "webapp",
     srcs = ["//seed/office/stuff/webapp:webapp-tar-gz"],
     subdir = "webapp",
+)
+
+create_tar_gz(
+    name = "stuff-server_tar_gz",
+    srcs = [
+        ":stuff-server",
+        ":webapp",
+    ],
+    out = "stuff-server.tar.gz",
 )
 
 create_zip(
