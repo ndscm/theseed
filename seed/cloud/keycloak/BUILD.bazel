@@ -1,0 +1,15 @@
+load("//seed/devprod/starlark/archive:defs.bzl", "create_tar_gz")
+
+package(default_visibility = ["//seed/cloud/keycloak:__subpackages__"])
+
+alias(
+    name = "keycloak",
+    actual = ":keycloak_tar_gz",
+)
+
+create_tar_gz(
+    name = "keycloak_tar_gz",
+    srcs = ["@keycloak//:files"],
+    out = "keycloak.tar.gz",
+    strip_components = 2,
+)
