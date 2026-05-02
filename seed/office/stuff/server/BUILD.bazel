@@ -41,23 +41,11 @@ extract_tar(
     subdir = "webapp",
 )
 
-local_secret(
-    name = "stuff_database_secret",
-    local_path = "${ND_MONOREPO_SECRET_HOME}/stuff/stuff/STUFF_DATABASE_SECRET",
-)
-
 create_zip(
-    name = "stuff-server-prod_zip",
+    name = "stuff-server_zip",
     srcs = [
-        ":bootstrap",
         ":stuff-server",
-        ":stuff_database_secret",
         ":webapp",
     ],
-    out = "stuff-server-prod.zip",
-    tags = [
-        "local",
-        "manual",
-        "no-remote-cache",
-    ],
+    out = "stuff-server.zip",
 )
