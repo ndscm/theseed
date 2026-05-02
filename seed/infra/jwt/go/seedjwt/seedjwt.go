@@ -27,6 +27,33 @@ var flagJwtAudience = seedflag.DefineString("jwt_audience", "", "expected JWT au
 // staticJwksConfig maps each JWT kid to its certificate file path.
 type staticJwksConfig map[string]string
 
+type JwksStore interface {
+	GetByKid(issuer string, kid string) (crypto.PublicKey, error)
+}
+
+type staticJwksStore struct {
+	certificates map[string]*x509.Certificate
+}
+
+func (s *staticJwksStore) GetByKid(issuer string, kid string) (crypto.PublicKey, error) {
+	whitelistIssuer := flagJwtIssuer.Get()
+	if whitelistIssuer != "" && issuer != whitelistIssuer {
+		return nil, seederr.WrapErrorf("JWT issuer %q does not match expected %q", issuer, whitelistIssuer)
+	}
+	cert, ok := s.certificates[kid]
+	if !ok {
+		return nil, seederr.WrapErrorf("certificate not found for kid %v", kid)
+	}
+	now := time.Now()
+	if now.Before(cert.NotBefore) {
+		return nil, seederr.WrapErrorf("certificate %v is not yet valid (NotBefore: %v)", kid, cert.NotBefore)
+	}
+	if now.After(cert.NotAfter) {
+		return nil, seederr.WrapErrorf("certificate %v has expired (NotAfter: %v)", kid, cert.NotAfter)
+	}
+	return cert.PublicKey, nil
+}
+
 // See RFC 7515 for JWS structure
 // https://datatracker.ietf.org/doc/html/rfc7515
 type jwtHeader struct {
@@ -103,16 +130,13 @@ func loadCertFile(certPath string) (*x509.Certificate, error) {
 type JwtDecoder struct {
 	dangerousTrustAllKid bool
 
-	issuer string
-
 	audience string
 
-	certificates map[string]*x509.Certificate
+	jwksStore JwksStore
 }
 
 func CreateJwtDecoder() (*JwtDecoder, error) {
 	v := &JwtDecoder{
-		issuer:   flagJwtIssuer.Get(),
 		audience: flagJwtAudience.Get(),
 	}
 	// TODO(nagi): Add support for dynamic JWKS fetching and caching.
@@ -130,7 +154,7 @@ func CreateJwtDecoder() (*JwtDecoder, error) {
 	if err != nil {
 		return nil, seederr.WrapErrorf("failed to parse jwks config %v: %v", configPath, err)
 	}
-	v.certificates = map[string]*x509.Certificate{}
+	staticStore := &staticJwksStore{certificates: map[string]*x509.Certificate{}}
 	for kid, certPath := range jwksConfig {
 		if !strings.HasPrefix(certPath, "/") {
 			configAbsPath, err := filepath.Abs(configPath)
@@ -144,33 +168,27 @@ func CreateJwtDecoder() (*JwtDecoder, error) {
 		if err != nil {
 			return nil, seederr.WrapErrorf("failed to load certificate for kid %q: %v", kid, err)
 		}
-		v.certificates[kid] = cert
+		staticStore.certificates[kid] = cert
 	}
+	v.jwksStore = staticStore
 	return v, nil
 }
 
 // resolveSigningKey returns the public key for JWT verification by looking up
 // the kid from the pre-loaded trust map.
-func (v *JwtDecoder) resolveSigningKey(header jwtHeader) (crypto.PublicKey, error) {
+func (v *JwtDecoder) resolveSigningKey(issuer string, header jwtHeader) (crypto.PublicKey, error) {
 	if header.Kid == "" {
 		return nil, seederr.WrapErrorf("JWT header has no kid")
 	}
-	cert, ok := v.certificates[header.Kid]
-	if !ok {
-		return nil, seederr.WrapErrorf("no trust certificate found for kid %q", header.Kid)
-	}
-	now := time.Now()
-	if now.Before(cert.NotBefore) {
-		return nil, seederr.WrapErrorf("certificate %v is not yet valid (NotBefore: %v)", header.Kid, cert.NotBefore)
-	}
-	if now.After(cert.NotAfter) {
-		return nil, seederr.WrapErrorf("certificate %v has expired (NotAfter: %v)", header.Kid, cert.NotAfter)
+	pubKey, err := v.jwksStore.GetByKid(issuer, header.Kid)
+	if err != nil {
+		return nil, seederr.Wrap(err)
 	}
 	seedlog.Debugf("Jwks resolved kid: %v", header.Kid)
-	return cert.PublicKey, nil
+	return pubKey, nil
 }
 
-func (v *JwtDecoder) verifyJwtSignature(headerB64, payloadB64, signatureB64 string) error {
+func (v *JwtDecoder) verifyJwtSignature(issuer string, headerB64 string, payloadB64 string, signatureB64 string) error {
 	headerBytes, err := base64.RawURLEncoding.DecodeString(headerB64)
 	if err != nil {
 		return seederr.WrapErrorf("failed to decode JWT header: %v", err)
@@ -185,7 +203,7 @@ func (v *JwtDecoder) verifyJwtSignature(headerB64, payloadB64, signatureB64 stri
 		seedlog.Warnf("Skipping JWT verification as it is disabled. Received kid: %v", header.Kid)
 		return nil
 	}
-	pubKey, err := v.resolveSigningKey(header)
+	pubKey, err := v.resolveSigningKey(issuer, header)
 	if err != nil {
 		return err
 	}
@@ -229,10 +247,6 @@ func (v *JwtDecoder) Decode(accessToken string) ([]byte, error) {
 	if len(parts) != 3 {
 		return nil, seederr.WrapErrorf("invalid JWT: expected 3 parts, got %d", len(parts))
 	}
-	err := v.verifyJwtSignature(parts[0], parts[1], parts[2])
-	if err != nil {
-		return nil, seederr.Wrap(err)
-	}
 	payloadBytes, err := base64.RawURLEncoding.DecodeString(parts[1])
 	if err != nil {
 		return nil, seederr.WrapErrorf("failed to decode JWT payload: %v", err)
@@ -241,6 +255,10 @@ func (v *JwtDecoder) Decode(accessToken string) ([]byte, error) {
 	err = json.Unmarshal(payloadBytes, &payload)
 	if err != nil {
 		return nil, seederr.WrapErrorf("failed to unmarshal JWT claims: %v", err)
+	}
+	err = v.verifyJwtSignature(payload.Iss, parts[0], parts[1], parts[2])
+	if err != nil {
+		return nil, seederr.Wrap(err)
 	}
 	now := time.Now().Unix()
 	if payload.Exp == nil {
@@ -251,9 +269,6 @@ func (v *JwtDecoder) Decode(accessToken string) ([]byte, error) {
 	}
 	if payload.Nbf != nil && now < *payload.Nbf {
 		return nil, seederr.WrapErrorf("JWT is not yet valid (nbf)")
-	}
-	if v.issuer != "" && payload.Iss != v.issuer {
-		return nil, seederr.WrapErrorf("JWT issuer %q does not match expected %q", payload.Iss, v.issuer)
 	}
 	if v.audience != "" && !payload.audienceContains(v.audience) {
 		return nil, seederr.WrapErrorf("JWT audience does not contain expected %q", v.audience)
