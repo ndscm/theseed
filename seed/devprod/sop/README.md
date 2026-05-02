@@ -80,3 +80,15 @@ Each SOP file follows the same shape, mirroring the existing documents:
   `Foo` and `Bar` — concrete examples are easier to internalize.
 - Wrap prose at roughly 80 columns to match the rest of the repository's
   Markdown.
+
+### Writing Quality Standards
+
+- **Technical clarity.** Use precise terminology. Name the exact function, type,
+  flag, or protocol involved. Avoid vague language like "handle the error
+  properly" when you can say "wrap with `seederr.Wrap`." A reader should never
+  have to guess what a sentence means in practice.
+- **Native US English tone.** Write the way a senior American engineer talks to
+  peers: direct, confident, no filler. Avoid stiff or overly formal phrasing
+  ("one should ensure that..."). Avoid ESL patterns like dropped articles or
+  awkward pluralization. Read sentences aloud — if they sound unnatural to a
+  native speaker, rewrite them.
