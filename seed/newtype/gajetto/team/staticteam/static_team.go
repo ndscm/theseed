@@ -14,7 +14,7 @@ import (
 	"google.golang.org/grpc/codes"
 )
 
-var flagStaticTeamFile = seedflag.DefineString("static_team_file", "/etc/gajetto/team.json", "Static team file path")
+var flagStaticTeamFile = seedflag.DefineString("static_team_file", "/etc/steins/team.json", "Static team file path")
 
 type StaticPerson struct {
 	Handle string `json:"handle"`
