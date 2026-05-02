@@ -10,6 +10,7 @@ go_library(
     srcs = ["dictate_client.go"],
     importpath = "github.com/ndscm/theseed/seed/newtype/hooin/dictate/client/go/dictateclient",
     deps = [
+        "//seed/infra/error/go/seederr",
         "//seed/infra/flag/go/seedflag",
         "//seed/infra/grpc/go/seedgrpc",
         "//seed/infra/http/go/seedbearer",

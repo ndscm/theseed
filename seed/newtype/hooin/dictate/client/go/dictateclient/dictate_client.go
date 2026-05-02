@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"connectrpc.com/connect"
+	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
 	"github.com/ndscm/theseed/seed/infra/flag/go/seedflag"
 	"github.com/ndscm/theseed/seed/infra/grpc/go/seedgrpc"
 	"github.com/ndscm/theseed/seed/infra/http/go/seedbearer"
@@ -44,7 +45,7 @@ func (c *HooinDictateClient) SendBrainInput(
 		BrainInput: input,
 	}))
 	if err != nil {
-		return nil, err
+		return nil, seederr.Wrap(err)
 	}
 	return resp.Msg, nil
 }
