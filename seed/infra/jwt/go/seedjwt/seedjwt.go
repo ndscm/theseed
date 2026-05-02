@@ -4,13 +4,9 @@ import (
 	"crypto"
 	"crypto/ecdsa"
 	"crypto/rsa"
-	"crypto/x509"
 	"encoding/base64"
 	"encoding/json"
-	"encoding/pem"
 	"math/big"
-	"os"
-	"path/filepath"
 	"strings"
 	"time"
 
@@ -19,39 +15,10 @@ import (
 	"github.com/ndscm/theseed/seed/infra/log/go/seedlog"
 )
 
-var flagStaticJwks = seedflag.DefineString("static_jwks", "/etc/seed/jwks.json", `JWT trust config file.
-Set to empty string to dangerously trust all kid-bearing JWTs without verification (not recommended).`)
-var flagJwtIssuer = seedflag.DefineString("jwt_issuer", "", "expected JWT issuer (iss claim)")
 var flagJwtAudience = seedflag.DefineString("jwt_audience", "", "expected JWT audience (aud claim)")
-
-// staticJwksConfig maps each JWT kid to its certificate file path.
-type staticJwksConfig map[string]string
 
 type JwksStore interface {
 	GetByKid(issuer string, kid string) (crypto.PublicKey, error)
-}
-
-type staticJwksStore struct {
-	certificates map[string]*x509.Certificate
-}
-
-func (s *staticJwksStore) GetByKid(issuer string, kid string) (crypto.PublicKey, error) {
-	whitelistIssuer := flagJwtIssuer.Get()
-	if whitelistIssuer != "" && issuer != whitelistIssuer {
-		return nil, seederr.WrapErrorf("JWT issuer %q does not match expected %q", issuer, whitelistIssuer)
-	}
-	cert, ok := s.certificates[kid]
-	if !ok {
-		return nil, seederr.WrapErrorf("certificate not found for kid %v", kid)
-	}
-	now := time.Now()
-	if now.Before(cert.NotBefore) {
-		return nil, seederr.WrapErrorf("certificate %v is not yet valid (NotBefore: %v)", kid, cert.NotBefore)
-	}
-	if now.After(cert.NotAfter) {
-		return nil, seederr.WrapErrorf("certificate %v has expired (NotAfter: %v)", kid, cert.NotAfter)
-	}
-	return cert.PublicKey, nil
 }
 
 // See RFC 7515 for JWS structure
@@ -103,29 +70,6 @@ func lookupHashFunction(alg string) (crypto.Hash, error) {
 	}
 }
 
-func loadCertFile(certPath string) (*x509.Certificate, error) {
-	certPEM, err := os.ReadFile(certPath)
-	if err != nil {
-		return nil, seederr.WrapErrorf("failed to read trust certificate %v: %v", certPath, err)
-	}
-	block, _ := pem.Decode(certPEM)
-	if block == nil {
-		return nil, seederr.WrapErrorf("failed to decode PEM block from %v", certPath)
-	}
-	cert, err := x509.ParseCertificate(block.Bytes)
-	if err != nil {
-		return nil, seederr.WrapErrorf("failed to parse certificate from %v: %v", certPath, err)
-	}
-	now := time.Now()
-	if now.Before(cert.NotBefore) {
-		seedlog.Warnf("Certificate %v is not yet valid (NotBefore: %v)", certPath, cert.NotBefore)
-	}
-	if now.After(cert.NotAfter) {
-		seedlog.Warnf("Certificate %v has expired (NotAfter: %v)", certPath, cert.NotAfter)
-	}
-	return cert, nil
-}
-
 // JwtDecoder verifies OpenID Connect JWTs using statically configured kid-to-certificate mappings.
 type JwtDecoder struct {
 	dangerousTrustAllKid bool
@@ -135,42 +79,11 @@ type JwtDecoder struct {
 	jwksStore JwksStore
 }
 
-func CreateJwtDecoder() (*JwtDecoder, error) {
+func CreateJwtDecoder(jwksStore JwksStore) (*JwtDecoder, error) {
 	v := &JwtDecoder{
-		audience: flagJwtAudience.Get(),
+		audience:  flagJwtAudience.Get(),
+		jwksStore: jwksStore,
 	}
-	// TODO(nagi): Add support for dynamic JWKS fetching and caching.
-	configPath := flagStaticJwks.Get()
-	if configPath == "" {
-		v.dangerousTrustAllKid = true
-		return v, nil
-	}
-	configBytes, err := os.ReadFile(configPath)
-	if err != nil {
-		return nil, seederr.WrapErrorf("failed to read jwks config %v: %v", configPath, err)
-	}
-	jwksConfig := staticJwksConfig{}
-	err = json.Unmarshal(configBytes, &jwksConfig)
-	if err != nil {
-		return nil, seederr.WrapErrorf("failed to parse jwks config %v: %v", configPath, err)
-	}
-	staticStore := &staticJwksStore{certificates: map[string]*x509.Certificate{}}
-	for kid, certPath := range jwksConfig {
-		if !strings.HasPrefix(certPath, "/") {
-			configAbsPath, err := filepath.Abs(configPath)
-			if err != nil {
-				return nil, seederr.Wrap(err)
-			}
-			configDir := filepath.Dir(configAbsPath)
-			certPath = filepath.Join(configDir, certPath)
-		}
-		cert, err := loadCertFile(certPath)
-		if err != nil {
-			return nil, seederr.WrapErrorf("failed to load certificate for kid %q: %v", kid, err)
-		}
-		staticStore.certificates[kid] = cert
-	}
-	v.jwksStore = staticStore
 	return v, nil
 }
 
