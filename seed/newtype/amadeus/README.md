@@ -92,6 +92,9 @@ Runs the `claude` CLI in `stream-json` mode per topic. State:
 - The subprocess's stdout is parsed per line into `BrainStep`s and reported back
   to Hooin via `ReportBrainStep`.
 
+The subprocess is started with `--permission-mode=bypassPermissions`. See
+[Security boundary](#security-boundary) below for what that implies.
+
 ## Clients and tooling
 
 The Go client lives under
@@ -118,3 +121,30 @@ Two command-line utilities live under [`cmd/`](cmd):
 - **Wake is exclusive; Hibernate is idempotent.** There is never more than one
   live commute session per Amadeus instance, so the control surface is simple
   and race-free at the fleet level.
+
+## Security boundary
+
+The `claudecli` brain runs each `claude` subprocess with
+`--permission-mode=bypassPermissions`. Every interactive permission prompt the
+CLI would normally raise — file edits, shell commands, network calls — is
+suppressed and auto-approved.
+
+This is intentional, and it is the only practical mode for an unattended agent:
+there is no human at the keyboard to answer "allow this `rm -rf`?" prompts. The
+trade-off is explicit: while the brain is awake, the model has the **full
+file-system and shell access of the user the `claude` process runs as**, scoped
+to whatever that user can reach inside the container.
+
+The containment story therefore lives one level out, not at the CLI prompt:
+
+- The agent container is the security boundary. It is treated as a hostile
+  environment from the host's perspective and runs as a non-root user with no
+  privileged capabilities beyond what its tooling explicitly needs.
+- Secrets must not be mounted into the container unless the brain is expected to
+  use them. Anything readable by the brain user is readable by the model.
+- Outbound network reachability from the container is the model's outbound
+  network reachability. Restrict it at the network layer, not at the CLI.
+
+Operators wiring up new agent containers are responsible for that outer
+boundary. Amadeus and `claudecli` deliberately do not try to re-implement
+permission prompting on top of `bypassPermissions`.
