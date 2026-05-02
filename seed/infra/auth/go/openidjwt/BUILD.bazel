@@ -2,7 +2,10 @@ load("@rules_go//go:def.bzl", "go_library")
 
 go_library(
     name = "openidjwt",
-    srcs = ["jwt.go"],
+    srcs = [
+        "discovery.go",
+        "jwt.go",
+    ],
     importpath = "github.com/ndscm/theseed/seed/infra/auth/go/openidjwt",
     visibility = [
         "//seed/cloud/login:__subpackages__",
@@ -16,6 +19,7 @@ go_library(
         "//seed/infra/auth/go/openid",
         "//seed/infra/context/go/seedctx",
         "//seed/infra/error/go/seederr",
+        "//seed/infra/flag/go/seedflag",
         "//seed/infra/jwt/go/seedjwt",
         "//seed/infra/log/go/seedlog",
     ],
