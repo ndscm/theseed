@@ -15,6 +15,7 @@ import (
 	"github.com/ndscm/theseed/seed/infra/log/go/seedlog"
 )
 
+var flagSkipJwtVerification = seedflag.DefineBool("skip_jwt_verification", false, "Skip JWT verification and trust all JWT (for testing only)")
 var flagJwtAudience = seedflag.DefineString("jwt_audience", "", "expected JWT audience (aud claim)")
 
 type JwksStore interface {
@@ -72,8 +73,6 @@ func lookupHashFunction(alg string) (crypto.Hash, error) {
 
 // JwtDecoder verifies OpenID Connect JWTs using statically configured kid-to-certificate mappings.
 type JwtDecoder struct {
-	dangerousTrustAllKid bool
-
 	audience string
 
 	jwksStore JwksStore
@@ -112,8 +111,8 @@ func (v *JwtDecoder) verifyJwtSignature(issuer string, headerB64 string, payload
 		return seederr.WrapErrorf("failed to unmarshal JWT header: %v", err)
 	}
 	seedlog.Debugf("Jwt header: %+v", header)
-	if v.dangerousTrustAllKid && header.Kid != "" {
-		seedlog.Warnf("Skipping JWT verification as it is disabled. Received kid: %v", header.Kid)
+	if flagSkipJwtVerification.Get() {
+		seedlog.Warnf("Skipping JWT verification as it is disabled.")
 		return nil
 	}
 	pubKey, err := v.resolveSigningKey(issuer, header)
