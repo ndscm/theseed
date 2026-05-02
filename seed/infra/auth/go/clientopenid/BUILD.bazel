@@ -8,6 +8,7 @@ go_library(
         "//seed/infra/auth:__subpackages__",
     ],
     deps = [
+        "//seed/infra/auth/go/openid",
         "//seed/infra/error/go/seederr",
         "//seed/infra/log/go/seedlog",
         "@org_golang_x_oauth2//:oauth2",

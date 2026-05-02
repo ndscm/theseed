@@ -2,58 +2,32 @@ package openidjwt
 
 import (
 	"context"
-	"encoding/json"
 	"net/http"
 	"strings"
 
 	_ "crypto/sha256"
 	_ "crypto/sha512"
 
+	"github.com/ndscm/theseed/seed/infra/auth/go/openid"
 	"github.com/ndscm/theseed/seed/infra/context/go/seedctx"
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
 	"github.com/ndscm/theseed/seed/infra/jwt/go/seedjwt"
 	"github.com/ndscm/theseed/seed/infra/log/go/seedlog"
 )
 
-type OpenidUserInfo struct {
-	// See: https://openid.net/specs/openid-connect-core-1_0.html#StandardClaims
-	Sub                 string   `json:"sub"`
-	Name                string   `json:"name"`
-	GivenName           string   `json:"given_name"`
-	FamilyName          string   `json:"family_name"`
-	Nickname            string   `json:"nickname"`
-	PreferredUsername   string   `json:"preferred_username"`
-	Profile             string   `json:"profile"`
-	Picture             string   `json:"picture"`
-	Website             string   `json:"website"`
-	Email               string   `json:"email"`
-	EmailVerified       bool     `json:"email_verified"`
-	Gender              string   `json:"gender"`
-	PhoneNumber         string   `json:"phone_number"`
-	PhoneNumberVerified bool     `json:"phone_number_verified"`
-	Groups              []string `json:"groups"`
-
-	Raw map[string]interface{} `json:"-"`
-}
-
-func decodeJwt(jwtDecoder *seedjwt.JwtDecoder, accessToken string) (*OpenidUserInfo, error) {
+func decodeJwt(jwtDecoder *seedjwt.JwtDecoder, accessToken string) (*openid.OpenidUserInfo, error) {
 	payload, err := jwtDecoder.Decode(accessToken)
 	if err != nil {
 		return nil, err
 	}
-	userInfo := &OpenidUserInfo{}
-	err = json.Unmarshal(payload, userInfo)
+	userInfo, err := openid.DecodeOpenidUserInfo(payload)
 	if err != nil {
-		return nil, seederr.WrapErrorf("failed to unmarshal JWT claims: %v", err)
-	}
-	err = json.Unmarshal(payload, &userInfo.Raw)
-	if err != nil {
-		return nil, seederr.WrapErrorf("failed to unmarshal JWT claims: %v", err)
+		return nil, seederr.Wrap(err)
 	}
 	return userInfo, nil
 }
 
-func OpenidJwtUser(ctx context.Context) (*OpenidUserInfo, error) {
+func OpenidJwtUser(ctx context.Context) (*openid.OpenidUserInfo, error) {
 	if ctx == nil {
 		return nil, seederr.WrapErrorf("nil context provided")
 	}
@@ -61,14 +35,14 @@ func OpenidJwtUser(ctx context.Context) (*OpenidUserInfo, error) {
 	if ctxValue == nil {
 		return nil, nil
 	}
-	userInfo, ok := ctxValue.(*OpenidUserInfo)
+	userInfo, ok := ctxValue.(*openid.OpenidUserInfo)
 	if !ok {
 		return nil, seederr.WrapErrorf("failed to assert user info")
 	}
 	return userInfo, nil
 }
 
-func withOpenidJwtUser(parent context.Context, userInfo *OpenidUserInfo) context.Context {
+func withOpenidJwtUser(parent context.Context, userInfo *openid.OpenidUserInfo) context.Context {
 	return context.WithValue(parent, seedctx.SeedContextKey("openiduser"), userInfo)
 }
 
