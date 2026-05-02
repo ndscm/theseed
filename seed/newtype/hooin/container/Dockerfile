@@ -10,10 +10,10 @@ COPY ./hooin-server /opt/hooin/hooin-server
 
 COPY --chmod=0755 ./entrypoint.sh /opt/hooin/entrypoint.sh
 
-RUN mkdir -p /etc/hooin
+RUN mkdir -p /etc/steins
 # The default team file is only used for demo purposes.
 # In production, you should mount your own team file with proper random tokens.
-COPY ./team.json /etc/hooin/team.json
+COPY ./team.json /etc/steins/team.json
 
 RUN useradd --shell /bin/bash --create-home hooin
 USER hooin
@@ -21,6 +21,6 @@ WORKDIR /home/hooin
 
 ENTRYPOINT [ "/opt/hooin/entrypoint.sh" ]
 CMD [ \
-  "--static_team_file", "/etc/hooin/team.json", \
-  "--static_jwks", "/etc/hooin/jwks.json", \
+  "--static_team_file", "/etc/steins/team.json", \
+  "--static_jwks", "/etc/steins/jwks.json", \
   "--verbose"]
