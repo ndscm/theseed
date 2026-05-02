@@ -3,11 +3,12 @@ package login
 import (
 	"context"
 
+	"github.com/ndscm/theseed/seed/infra/auth/go/openid"
 	"github.com/ndscm/theseed/seed/infra/auth/go/openidjwt"
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
 )
 
-func LoginUser(ctx context.Context) (*openidjwt.OpenidUserInfo, error) {
+func LoginUser(ctx context.Context) (*openid.OpenidUserInfo, error) {
 	openidUser, err := openidjwt.OpenidJwtUser(ctx)
 	if err != nil {
 		return nil, seederr.Wrap(err)
@@ -15,7 +16,7 @@ func LoginUser(ctx context.Context) (*openidjwt.OpenidUserInfo, error) {
 	return openidUser, nil
 }
 
-func EnsureLoginUser(ctx context.Context) (*openidjwt.OpenidUserInfo, error) {
+func EnsureLoginUser(ctx context.Context) (*openid.OpenidUserInfo, error) {
 	loginUser, err := LoginUser(ctx)
 	if err != nil {
 		return nil, seederr.Wrap(err)
