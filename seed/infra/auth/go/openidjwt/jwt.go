@@ -73,7 +73,11 @@ type OpenidJwtInterceptor struct {
 
 func CreateOpenidJwtInterceptor() (*OpenidJwtInterceptor, error) {
 	i := &OpenidJwtInterceptor{}
-	jwtDecoder, err := seedjwt.CreateJwtDecoder()
+	jwksStore, err := CreateOpenidJwksStore()
+	if err != nil {
+		return nil, seederr.Wrap(err)
+	}
+	jwtDecoder, err := seedjwt.CreateJwtDecoder(jwksStore)
 	if err != nil {
 		return nil, seederr.Wrap(err)
 	}
