@@ -2,12 +2,12 @@ package loginopenid
 
 import (
 	"context"
-	"encoding/json"
 	"io"
 	"net/http"
 	"time"
 
 	"github.com/ndscm/theseed/seed/infra/auth/go/clientopenid"
+	"github.com/ndscm/theseed/seed/infra/auth/go/openid"
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
 	"github.com/ndscm/theseed/seed/infra/http/go/seedsession"
 	"golang.org/x/oauth2"
@@ -143,7 +143,7 @@ func (provider *UserOpenidProvider) FetchUserInfo(
 	ctx context.Context,
 	session seedsession.SessionAdapter,
 	origin string,
-) (*clientopenid.OpenidUserInfo, error) {
+) (*openid.OpenidUserInfo, error) {
 	configuration, err := provider.GetOpenidConfiguration(ctx)
 	if err != nil {
 		return nil, seederr.Wrap(err)
@@ -165,16 +165,11 @@ func (provider *UserOpenidProvider) FetchUserInfo(
 		return nil, seederr.WrapErrorf("failed to fetch user info: status %d, body: %s",
 			response.StatusCode, string(responseBodyBytes))
 	}
-	openidUserInfo := clientopenid.OpenidUserInfo{}
-	err = json.Unmarshal(responseBodyBytes, &openidUserInfo)
+	openidUserInfo, err := openid.DecodeOpenidUserInfo(responseBodyBytes)
 	if err != nil {
 		return nil, seederr.Wrap(err)
 	}
-	err = json.Unmarshal(responseBodyBytes, &openidUserInfo.Raw)
-	if err != nil {
-		return nil, seederr.Wrap(err)
-	}
-	return &openidUserInfo, nil
+	return openidUserInfo, nil
 }
 
 func NewUserOpenidProvider(base *clientopenid.OpenidProvider, prefix string) *UserOpenidProvider {

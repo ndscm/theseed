@@ -1,0 +1,12 @@
+load("@rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "openid",
+    srcs = [
+        "configuration.go",
+        "user.go",
+    ],
+    importpath = "github.com/ndscm/theseed/seed/infra/auth/go/openid",
+    visibility = ["//visibility:public"],
+    deps = ["//seed/infra/error/go/seederr"],
+)

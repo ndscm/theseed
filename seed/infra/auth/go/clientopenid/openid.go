@@ -2,57 +2,23 @@ package clientopenid
 
 import (
 	"context"
-	"encoding/json"
 	"io"
 	"net/http"
 	"net/url"
 
+	"github.com/ndscm/theseed/seed/infra/auth/go/openid"
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
 	"github.com/ndscm/theseed/seed/infra/log/go/seedlog"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/clientcredentials"
 )
 
-type OpenidConfiguration struct {
-	// See: https://openid.net/specs/openid-connect-discovery-1_0.html#ProviderMetadata
-	Issuer                  string      `json:"issuer"`
-	AuthorizationEndpoint   string      `json:"authorization_endpoint"`
-	TokenEndpoint           string      `json:"token_endpoint"`
-	UserinfoEndpoint        string      `json:"userinfo_endpoint"`
-	ScopesSupported         []string    `json:"scopes_supported"`
-	ResponsesTypesSupported []string    `json:"responses_types_supported"`
-	GrantTypesSupported     []string    `json:"grant_types_supported"`
-	SubjectTypesSupported   []string    `json:"subject_types_supported"`
-	ClaimsSupported         []string    `json:"claims_supported"`
-	Raw                     interface{} `json:"-"`
-}
-
-type OpenidUserInfo struct {
-	// See: https://openid.net/specs/openid-connect-core-1_0.html#StandardClaims
-	Sub                 string      `json:"sub"`
-	Name                string      `json:"name"`
-	GivenName           string      `json:"given_name"`
-	FamilyName          string      `json:"family_name"`
-	Nickname            string      `json:"nickname"`
-	PreferredUsername   string      `json:"preferred_username"`
-	Profile             string      `json:"profile"`
-	Picture             string      `json:"picture"`
-	Website             string      `json:"website"`
-	Email               string      `json:"email"`
-	EmailVerified       bool        `json:"email_verified"`
-	Gender              string      `json:"gender"`
-	PhoneNumber         string      `json:"phone_number"`
-	PhoneNumberVerified bool        `json:"phone_number_verified"`
-	Groups              []string    `json:"groups"`
-	Raw                 interface{} `json:"-"`
-}
-
 type OpenidProvider struct {
 	configurationUrl string
 	clientId         string
 	clientSecret     string
 
-	cachedConfiguration *OpenidConfiguration
+	cachedConfiguration *openid.OpenidConfiguration
 	cachedOrigin        string
 
 	tokenSource oauth2.TokenSource
@@ -74,7 +40,7 @@ func (provider *OpenidProvider) Origin() (string, error) {
 	return provider.cachedOrigin, nil
 }
 
-func (provider *OpenidProvider) GetOpenidConfiguration(ctx context.Context) (*OpenidConfiguration, error) {
+func (provider *OpenidProvider) GetOpenidConfiguration(ctx context.Context) (*openid.OpenidConfiguration, error) {
 	if provider.cachedConfiguration != nil {
 		return provider.cachedConfiguration, nil
 	}
@@ -96,12 +62,7 @@ func (provider *OpenidProvider) GetOpenidConfiguration(ctx context.Context) (*Op
 		return nil, seederr.WrapErrorf("failed to fetch openid configuration: status %d, body: %s",
 			response.StatusCode, string(responseBodyBytes))
 	}
-	provider.cachedConfiguration = &OpenidConfiguration{}
-	err = json.Unmarshal(responseBodyBytes, provider.cachedConfiguration)
-	if err != nil {
-		return nil, seederr.Wrap(err)
-	}
-	err = json.Unmarshal(responseBodyBytes, &provider.cachedConfiguration.Raw)
+	provider.cachedConfiguration, err = openid.DecodeOpenidConfiguration(responseBodyBytes)
 	if err != nil {
 		return nil, seederr.Wrap(err)
 	}

@@ -13,6 +13,7 @@ go_library(
         "//seed/office/stuff:__subpackages__",
     ],
     deps = [
+        "//seed/infra/auth/go/openid",
         "//seed/infra/context/go/seedctx",
         "//seed/infra/error/go/seederr",
         "//seed/infra/jwt/go/seedjwt",
