@@ -4,6 +4,7 @@ go_library(
     name = "openid",
     srcs = [
         "configuration.go",
+        "jwks.go",
         "user.go",
     ],
     importpath = "github.com/ndscm/theseed/seed/infra/auth/go/openid",
