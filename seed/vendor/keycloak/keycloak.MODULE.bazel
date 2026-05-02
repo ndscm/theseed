@@ -1,0 +1,17 @@
+http_archive = use_repo_rule("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
+
+http_archive(
+    name = "keycloak",
+    build_file = "//seed/devprod/bazel/external:files.BUILD.bazel",
+    integrity = "sha256-MCJNKzoPE1YssB+SIHM4r7W62dbxSV7BwYL4ty2CNC4=",
+    strip_prefix = "keycloak-26.6.1",
+    url = "https://github.com/keycloak/keycloak/releases/download/26.6.1/keycloak-26.6.1.zip",
+)
+
+keycloak_maven = use_extension("@rules_jvm_external//:extensions.bzl", "maven", isolate = True)
+keycloak_maven.install(
+    artifacts = [
+        "com.kohlschutter.junixsocket:junixsocket-core:2.10.1",
+    ],
+)
+use_repo(keycloak_maven, keycloak_maven = "maven")
