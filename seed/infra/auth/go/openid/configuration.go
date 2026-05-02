@@ -12,6 +12,7 @@ type OpenidConfiguration struct {
 	AuthorizationEndpoint   string   `json:"authorization_endpoint"`
 	TokenEndpoint           string   `json:"token_endpoint"`
 	UserinfoEndpoint        string   `json:"userinfo_endpoint"`
+	JwksUri                 string   `json:"jwks_uri"`
 	ScopesSupported         []string `json:"scopes_supported"`
 	ResponsesTypesSupported []string `json:"responses_types_supported"`
 	GrantTypesSupported     []string `json:"grant_types_supported"`
