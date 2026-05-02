@@ -22,7 +22,7 @@ import (
 	"github.com/ndscm/theseed/seed/infra/log/go/seedlog"
 )
 
-var flagOpenidDiscovery = seedflag.DefineString("openid_discovery", "/etc/seed/openid_discovery.json", `OpenID provider configurations file.`)
+var flagOpenidDiscovery = seedflag.DefineString("openid_discovery", "", `OpenID provider configurations file (in JSON format).`)
 
 const refreshCooldown = 10 * time.Minute
 
@@ -224,20 +224,22 @@ func (s *OpenidJwksStore) refreshIssuers() error {
 
 func CreateOpenidJwksStore() (*OpenidJwksStore, error) {
 	discoveryConfigPath := flagOpenidDiscovery.Get()
-	discoveryConfigBytes, err := os.ReadFile(discoveryConfigPath)
-	if err != nil {
-		return nil, seederr.Wrap(err)
-	}
 	discovery := OpenidDiscovery{}
-	err = json.Unmarshal(discoveryConfigBytes, &discovery)
-	if err != nil {
-		return nil, seederr.Wrap(err)
+	if discoveryConfigPath != "" {
+		discoveryConfigBytes, err := os.ReadFile(discoveryConfigPath)
+		if err != nil {
+			return nil, seederr.Wrap(err)
+		}
+		err = json.Unmarshal(discoveryConfigBytes, &discovery)
+		if err != nil {
+			return nil, seederr.Wrap(err)
+		}
 	}
 	store := &OpenidJwksStore{
 		discovery: discovery,
 		issuers:   map[string]*OpenidIssuerJwks{},
 	}
-	err = store.refreshIssuers()
+	err := store.refreshIssuers()
 	if err != nil {
 		return nil, seederr.Wrap(err)
 	}
