@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/ndscm/theseed/seed/cloud/sfe/route/golinkroute"
+	"github.com/ndscm/theseed/seed/cloud/sfe/route/stuffroute"
 	"github.com/ndscm/theseed/seed/cloud/sqlsession"
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
 	"github.com/ndscm/theseed/seed/infra/flag/go/seedflag"
@@ -24,6 +25,8 @@ var flagSessionProvider = seedflag.DefineString("session_provider", "", "Specify
 
 type SfeHandler struct {
 	golinkRoute http.Handler
+
+	stuffRoute http.Handler
 }
 
 var optimizedTransport = &http.Transport{
@@ -45,6 +48,9 @@ func (h *SfeHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	case "go.ndscm.com":
 		h.golinkRoute.ServeHTTP(w, r)
 		return
+	case "stuff.ndscm.com":
+		h.stuffRoute.ServeHTTP(w, r)
+		return
 	}
 	http.Redirect(w, r, "https://www.ndscm.com", http.StatusTemporaryRedirect)
 }
@@ -65,9 +71,14 @@ func CreateSfeHandler() (*SfeHandler, error) {
 	if err != nil {
 		return nil, seederr.Wrap(err)
 	}
+	stuffRoute, err := stuffroute.CreateStuffRoute(optimizedTransport)
+	if err != nil {
+		return nil, seederr.Wrap(err)
+	}
 
 	h := &SfeHandler{
 		golinkRoute: seedsession.InterceptSessionMiddleware(golinkRoute, sessionInitializer),
+		stuffRoute:  seedsession.InterceptSessionMiddleware(stuffRoute, sessionInitializer),
 	}
 
 	return h, nil
