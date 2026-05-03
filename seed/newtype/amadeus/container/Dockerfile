@@ -31,6 +31,7 @@ RUN apt install -y nodejs
 RUN corepack enable
 RUN npm install --global @bazel/bazelisk
 
+COPY ./ndscm /usr/bin/ndscm
 COPY ./amadeus-server /opt/amadeus/amadeus-server
 
 COPY ./gain-home.c /opt/amadeus/gain-home.c
