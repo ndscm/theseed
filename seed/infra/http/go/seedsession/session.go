@@ -53,9 +53,12 @@ func withSession(parent context.Context, session SessionAdapter) context.Context
 	return context.WithValue(parent, seedctx.SeedContextKey("session"), session)
 }
 
+type SessionInitializer func() SessionAdapter
+
 type sessionMiddleware struct {
-	next               http.Handler
-	sessionInitializer func() SessionAdapter
+	next http.Handler
+
+	sessionInitializer SessionInitializer
 }
 
 // ServeHTTP implements the http.Handler interface.
@@ -84,6 +87,6 @@ func (m sessionMiddleware) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	m.next.ServeHTTP(w, r.WithContext(ctx))
 }
 
-func InterceptSessionMiddleware(next http.Handler, sessionInitializer func() SessionAdapter) http.Handler {
+func InterceptSessionMiddleware(next http.Handler, sessionInitializer SessionInitializer) http.Handler {
 	return &sessionMiddleware{next: next, sessionInitializer: sessionInitializer}
 }
