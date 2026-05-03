@@ -1,0 +1,15 @@
+load("@rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "golinkroute",
+    srcs = ["golink_route.go"],
+    importpath = "github.com/ndscm/theseed/seed/cloud/sfe/route/golinkroute",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//seed/infra/auth/go/authfe",
+        "//seed/infra/auth/go/clientopenid",
+        "//seed/infra/auth/go/loginopenid",
+        "//seed/infra/error/go/seederr",
+        "//seed/infra/flag/go/seedflag",
+    ],
+)
