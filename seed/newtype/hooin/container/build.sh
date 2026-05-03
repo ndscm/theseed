@@ -7,4 +7,4 @@ bazel build //seed/newtype/hooin/server
 cp -f ./bazel-bin/seed/newtype/hooin/server/hooin-server_/hooin-server ./seed/newtype/hooin/container/hooin-server
 
 cd ./seed/newtype/hooin/container/
-"${CONTAINER_CLI}" build -t ghcr.io/ndscm/hooin:latest .
+"${CONTAINER_CLI}" build -t ghcr.io/ndscm/seed-newtype-hooin-container:latest .
