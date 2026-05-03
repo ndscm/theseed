@@ -7,14 +7,7 @@ go_library(
         "jwt.go",
     ],
     importpath = "github.com/ndscm/theseed/seed/infra/auth/go/openidjwt",
-    visibility = [
-        "//seed/cloud/login:__subpackages__",
-        "//seed/devprod/golink:__subpackages__",
-        "//seed/infra/grpc/go/seedgrpc:__subpackages__",
-        "//seed/newtype/amadeus:__subpackages__",
-        "//seed/newtype/hooin:__subpackages__",
-        "//seed/office/stuff:__subpackages__",
-    ],
+    visibility = ["//visibility:public"],
     deps = [
         "//seed/infra/auth/go/openid",
         "//seed/infra/context/go/seedctx",
