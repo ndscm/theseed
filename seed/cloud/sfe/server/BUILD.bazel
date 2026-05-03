@@ -12,6 +12,7 @@ go_library(
     visibility = ["//visibility:private"],
     deps = [
         "//seed/cloud/sfe/route/golinkroute",
+        "//seed/cloud/sfe/route/stuffroute",
         "//seed/cloud/sqlsession",
         "//seed/infra/error/go/seederr",
         "//seed/infra/flag/go/seedflag",
