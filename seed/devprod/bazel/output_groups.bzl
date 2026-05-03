@@ -2,7 +2,7 @@
 Print output groups of a target.
 
 Usage:
-    bazel build --nobuild //some:target --aspects //:devprod/bazel/output_groups.bzl%print_output_groups
+    bazel build --nobuild --aspects //seed/devprod/bazel:output_groups.bzl%print_output_groups //some:target
 
 See: https://stackoverflow.com/questions/61252620/how-to-list-the-output-groups-of-a-bazel-rule
 """
