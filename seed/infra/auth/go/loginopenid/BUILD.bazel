@@ -5,6 +5,7 @@ go_library(
     srcs = ["openid.go"],
     importpath = "github.com/ndscm/theseed/seed/infra/auth/go/loginopenid",
     visibility = [
+        "//seed/cloud/sfe:__subpackages__",
         "//seed/infra/auth:__subpackages__",
     ],
     deps = [
