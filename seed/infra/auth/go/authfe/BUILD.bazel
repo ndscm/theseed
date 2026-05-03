@@ -1,0 +1,17 @@
+load("@rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "authfe",
+    srcs = [
+        "auth_handler.go",
+        "session_authorization_middleware.go",
+    ],
+    importpath = "github.com/ndscm/theseed/seed/infra/auth/go/authfe",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//seed/infra/auth/go/loginopenid",
+        "//seed/infra/error/go/seederr",
+        "//seed/infra/http/go/seedsession",
+        "//seed/infra/log/go/seedlog",
+    ],
+)
