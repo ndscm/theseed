@@ -1,8 +1,10 @@
 package main
 
 import (
+	"context"
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/ndscm/theseed/seed/cloud/login/go/loginservice"
 	"github.com/ndscm/theseed/seed/cloud/login/proto/loginpbconnect"
@@ -14,6 +16,7 @@ import (
 	"github.com/ndscm/theseed/seed/infra/init/go/seedinit"
 	"github.com/ndscm/theseed/seed/infra/log/go/seedlog"
 	"github.com/ndscm/theseed/seed/infra/spa/go/seedspa"
+	"github.com/ndscm/theseed/seed/office/stuff/database/stuffdb"
 	"github.com/ndscm/theseed/seed/office/stuff/proto/stuffpbconnect"
 	stuffservice "github.com/ndscm/theseed/seed/office/stuff/service"
 )
@@ -23,6 +26,17 @@ var flagPort = seedflag.DefineString("port", "7883", "Port to run the server on"
 
 func run() error {
 	_, err := seedinit.Initialize()
+	if err != nil {
+		return seederr.Wrap(err)
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	db, err := stuffdb.Open(ctx)
+	if err != nil {
+		return seederr.Wrap(err)
+	}
+	err = db.Schema.Create(ctx)
 	if err != nil {
 		return seederr.Wrap(err)
 	}
