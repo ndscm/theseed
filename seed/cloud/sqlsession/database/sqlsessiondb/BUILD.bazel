@@ -1,0 +1,17 @@
+load("@rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "sqlsessiondb",
+    srcs = ["sqlsession_database_client.go"],
+    importpath = "github.com/ndscm/theseed/seed/cloud/sqlsession/database/sqlsessiondb",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//seed/cloud/sqlsession/database:ent",
+        "//seed/infra/error/go/seederr",
+        "//seed/infra/flag/go/seedflag",
+        "//seed/infra/log/go/seedlog",
+        "@com_github_jackc_pgx_v5//stdlib",
+        "@io_entgo_ent//dialect",
+        "@io_entgo_ent//dialect/sql",
+    ],
+)
