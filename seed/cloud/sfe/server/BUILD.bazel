@@ -1,0 +1,29 @@
+load("@rules_go//go:def.bzl", "go_binary", "go_library")
+
+alias(
+    name = "server",
+    actual = ":sfe-server",
+)
+
+go_library(
+    name = "server_lib",
+    srcs = ["server.go"],
+    importpath = "github.com/ndscm/theseed/seed/cloud/sfe/server",
+    visibility = ["//visibility:private"],
+    deps = [
+        "//seed/cloud/sfe/route/golinkroute",
+        "//seed/cloud/sqlsession",
+        "//seed/infra/error/go/seederr",
+        "//seed/infra/flag/go/seedflag",
+        "//seed/infra/http/go/seedsession",
+        "//seed/infra/init/go/seedinit",
+        "//seed/infra/log/go/seedlog",
+        "@org_golang_x_sync//errgroup",
+    ],
+)
+
+go_binary(
+    name = "sfe-server",
+    embed = [":server_lib"],
+    visibility = ["//visibility:public"],
+)
