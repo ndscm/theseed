@@ -8,7 +8,9 @@ go_library(
     ],
     importpath = "github.com/ndscm/theseed/seed/infra/http/go/seedsession",
     visibility = [
-        "//seed/infra/auth/go/loginopenid:__subpackages__",
+        "//seed/cloud/sfe:__subpackages__",
+        "//seed/cloud/sqlsession:__subpackages__",
+        "//seed/infra/auth:__subpackages__",
     ],
     deps = [
         "//seed/infra/context/go/seedctx",
