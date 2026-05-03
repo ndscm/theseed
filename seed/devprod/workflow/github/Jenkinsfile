@@ -1,5 +1,8 @@
 pipeline {
   agent any
+  parameters {
+    string(name: 'jenkins-generic-webhook-trigger-plugin_uuid', defaultValue: '')
+  }
   triggers {
     GenericTrigger(
       causeString: 'Pull Request',
@@ -44,6 +47,7 @@ pipeline {
   stages {
     stage('Validate') {
       steps {
+        echo "Webhook trigger UUID: ${env.'jenkins-generic-webhook-trigger-plugin_uuid'}"
         echo "Event: ${env.x_github_event}"
         echo "Action: ${env.action}"
         echo "Pull request ID: ${env.pull_request_id}"
