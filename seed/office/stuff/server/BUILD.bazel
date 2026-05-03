@@ -24,6 +24,7 @@ go_library(
         "//seed/infra/init/go/seedinit",
         "//seed/infra/log/go/seedlog",
         "//seed/infra/spa/go/seedspa",
+        "//seed/office/stuff/database/stuffdb",
         "//seed/office/stuff/proto:stuff_go_connect",
         "//seed/office/stuff/service",
     ],
