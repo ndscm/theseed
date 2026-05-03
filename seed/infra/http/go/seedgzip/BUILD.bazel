@@ -4,6 +4,5 @@ go_library(
     name = "seedgzip",
     srcs = ["gzip.go"],
     importpath = "github.com/ndscm/theseed/seed/infra/http/go/seedgzip",
-    visibility = [
-    ],
+    visibility = ["//visibility:public"],
 )

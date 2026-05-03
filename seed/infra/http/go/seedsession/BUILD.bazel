@@ -7,11 +7,7 @@ go_library(
         "session.go",
     ],
     importpath = "github.com/ndscm/theseed/seed/infra/http/go/seedsession",
-    visibility = [
-        "//seed/cloud/sfe:__subpackages__",
-        "//seed/cloud/sqlsession:__subpackages__",
-        "//seed/infra/auth:__subpackages__",
-    ],
+    visibility = ["//visibility:public"],
     deps = [
         "//seed/infra/context/go/seedctx",
         "//seed/infra/error/go/seederr",
