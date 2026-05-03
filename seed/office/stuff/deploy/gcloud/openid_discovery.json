@@ -1,0 +1,7 @@
+{
+  "issuers": [
+    {
+      "discovery": "https://account.ndscm.com/realms/ndscm/.well-known/openid-configuration"
+    }
+  ]
+}
