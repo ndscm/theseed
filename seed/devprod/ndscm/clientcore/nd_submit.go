@@ -87,6 +87,10 @@ func NdSubmit(scmProvider scm.Provider, options NdSubmitOptions) error {
 	if err != nil {
 		return seederr.Wrap(err)
 	}
+	err = scmProvider.SignOff(worktreePath)
+	if err != nil {
+		return seederr.Wrap(err)
+	}
 	err = scmProvider.PushBranch(submitBranch, options.Remote, currentUserHandle+"/"+options.FeatureName)
 	if err != nil {
 		return seederr.Wrap(err)
