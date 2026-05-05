@@ -4,6 +4,8 @@ load("@protobuf//bazel:proto_library.bzl", "proto_library")
 load("@rules_go//proto:def.bzl", "go_proto_library")
 load("//seed/devprod/go:proto.bzl", "go_connect_library")
 
+# gazelle:proto file
+
 package(default_visibility = [
     "//seed/devprod/golink:__subpackages__",
 ])
@@ -75,17 +77,4 @@ alias(
     name = "pkg",  # Required by aspect_rules_js
     actual = ":golink_ts_proto_pkg",
     visibility = ["//visibility:public"],
-)
-
-proto_library(
-    name = "golinkerrorpb_proto",
-    srcs = [
-        "golink.proto",
-        "golink_error.proto",
-    ],
-    deps = [
-        "@protobuf//:empty_proto",
-        "@protobuf//:field_mask_proto",
-        "@protobuf//:timestamp_proto",
-    ],
 )
