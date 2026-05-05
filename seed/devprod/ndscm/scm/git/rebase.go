@@ -40,3 +40,16 @@ func CherryPickRange(worktreePath string, from string, to string) error {
 	}
 	return nil
 }
+
+// SignOff rebases onto the configured tracking upstream, like PullRebase.
+func SignOff(worktreePath string) error {
+	gitArgs := []string{}
+	if worktreePath != "" {
+		gitArgs = append(gitArgs, "-C", worktreePath)
+	}
+	err := seedshell.ImpureRun("git", append(gitArgs, "rebase", "--signoff")...)
+	if err != nil {
+		return seederr.WrapErrorf("failed to sign off branch: %w", err)
+	}
+	return nil
+}
