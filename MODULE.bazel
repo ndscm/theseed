@@ -102,11 +102,11 @@ use_repo(maven, "maven")
 
 # JavaScript and TypeScript
 
-bazel_dep(name = "rules_nodejs", version = "6.6.0")
+bazel_dep(name = "rules_nodejs", version = "6.7.4")
 
 node = use_extension("@rules_nodejs//nodejs:extensions.bzl", "node")
 node.toolchain(
-    node_version = "22.20.0",
+    node_version = "24.14.1",
 )
 
 bazel_dep(name = "aspect_bazel_lib", version = "2.21.2")
