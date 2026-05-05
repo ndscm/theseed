@@ -8,6 +8,8 @@
 
 # gazelle:prefix github.com/ndscm/theseed/seed/
 
+# gazelle:proto file
+
 # gazelle:python_default_visibility NONE
 
 # gazelle:python_generation_mode file
