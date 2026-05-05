@@ -22,5 +22,4 @@ gcloud run services update "${service}" \
   --project="${project}" \
   --region="${region}" \
   --image="${image_digest}" \
-  --no-cpu-throttling \
-  --execution-environment gen2
+  --startup-probe="httpGet.port=9000,httpGet.path=/health/ready,initialDelaySeconds=1,periodSeconds=1,timeoutSeconds=1,failureThreshold=120"
