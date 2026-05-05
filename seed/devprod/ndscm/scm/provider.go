@@ -85,6 +85,9 @@ type Provider interface {
 	// current branch.
 	ApplyCommitRange(worktreePath string, from string, to string) error
 
+	// SignOff rebases the worktree's current branch with a sign-off.
+	SignOff(worktreePath string) error
+
 	// # remote
 
 	// FetchAll fetches updates from every configured remote and prunes

@@ -160,6 +160,10 @@ func (g *GitProvider) ApplyCommitRange(worktreePath string, from string, to stri
 	return CherryPickRange(worktreePath, from, to)
 }
 
+func (g *GitProvider) SignOff(worktreePath string) error {
+	return SignOff(worktreePath)
+}
+
 // # remote
 
 func (g *GitProvider) FetchAll() error {
