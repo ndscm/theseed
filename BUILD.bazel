@@ -64,6 +64,7 @@ gazelle_binary(
 # gazelle:exclude **/*pbconnect
 # gazelle:exclude **/node_modules
 # gazelle:exclude **/ent
+# gazelle:proto file
 # gazelle:python_default_visibility NONE
 # gazelle:python_generation_mode file
 
