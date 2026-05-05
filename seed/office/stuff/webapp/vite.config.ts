@@ -4,6 +4,12 @@ import tsconfigPaths from "vite-tsconfig-paths"
 
 export default defineConfig({
   plugins: [reactRouter(), tsconfigPaths()],
+  resolve: {
+    alias: {
+      "opentype.js/dist/opentype.module.js": "opentype.js/dist/opentype.mjs",
+      "opentype.js/dist/opentype.module": "opentype.js/dist/opentype.mjs",
+    },
+  },
   build: {
     assetsDir: ".assets",
   },
