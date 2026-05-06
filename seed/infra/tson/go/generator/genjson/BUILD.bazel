@@ -1,0 +1,12 @@
+load("@rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "genjson",
+    srcs = ["generator.go"],
+    importpath = "github.com/ndscm/theseed/seed/infra/tson/go/generator/genjson",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//seed/infra/error/go/seederr",
+        "//seed/infra/tson/go/tsonast",
+    ],
+)
