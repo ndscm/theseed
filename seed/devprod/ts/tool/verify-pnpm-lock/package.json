@@ -6,7 +6,8 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "verify-pnpm-lock": "node --use-openssl-ca --import tsx verify-pnpm-lock.ts"
+    "verify-pnpm-lock": "node --use-openssl-ca --import tsx verify-pnpm-lock.ts",
+    "test": "tsc --noEmit"
   },
   "author": "ndscm",
   "license": "UNLICENSED",
