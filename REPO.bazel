@@ -1,0 +1,10 @@
+"""
+Theseed
+
+The monorepo of Theseed
+"""
+
+ignore_directories([
+    "**/.venv",
+    "**/node_modules",
+])
