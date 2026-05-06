@@ -1,4 +1,4 @@
-load("@rules_go//go:def.bzl", "go_library")
+load("@rules_go//go:def.bzl", "go_library", "go_test")
 
 go_library(
     name = "tsonparser",
@@ -13,4 +13,11 @@ go_library(
         "//seed/infra/error/go/seederr",
         "//seed/infra/tson/go/tsonast",
     ],
+)
+
+go_test(
+    name = "tsonparser_test",
+    srcs = ["parser_test.go"],
+    embed = [":tsonparser"],
+    deps = ["//seed/infra/tson/go/tsonast"],
 )
