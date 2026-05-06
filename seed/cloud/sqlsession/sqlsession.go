@@ -2,16 +2,14 @@ package sqlsession
 
 import (
 	"context"
-	"database/sql"
 	"encoding/json"
-	"errors"
 	"maps"
 	"net/http"
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/ndscm/theseed/seed/cloud/sqlsession/database/ent"
+	"github.com/ndscm/theseed/seed/cloud/sqlsession/database/ent/session"
 	"github.com/ndscm/theseed/seed/cloud/sqlsession/database/sqlsessiondb"
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
 	"github.com/ndscm/theseed/seed/infra/http/go/seedsession"
@@ -121,63 +119,38 @@ func (s *sqlSessionAdapter) Get(ctx context.Context, key string) (string, error)
 	return "", nil
 }
 
-func (s *sqlSessionAdapter) updateTx(ctx context.Context, sessionUuid uuid.UUID, change map[string]string) error {
-	tx, err := s.client.BeginTx(ctx, &sql.TxOptions{Isolation: sql.LevelRepeatableRead})
-	if err != nil {
-		return err
-	}
-	row, err := tx.Session.Get(ctx, sessionUuid)
-	if err != nil {
-		tx.Rollback()
-		return err
-	}
-	data := map[string]string{}
-	if row.Data != nil {
-		err = json.Unmarshal(*row.Data, &data)
-		if err != nil {
-			tx.Rollback()
-			return err
-		}
-	}
-	maps.Copy(data, change)
-	dataBytes, err := json.Marshal(data)
-	if err != nil {
-		tx.Rollback()
-		return err
-	}
-	raw := json.RawMessage(dataBytes)
-	err = tx.Session.UpdateOneID(sessionUuid).SetData(&raw).Exec(ctx)
-	if err != nil {
-		tx.Rollback()
-		return err
-	}
-	return tx.Commit()
-}
-
 func (s *sqlSessionAdapter) Update(ctx context.Context, change map[string]string) error {
 	sessionUuid, err := uuid.Parse(s.sessionId)
 	if err != nil {
 		return seederr.Wrap(err)
 	}
-	const maxRetries = 3
-	ok := false
-	for range maxRetries {
-		err = s.updateTx(ctx, sessionUuid, change)
+	tx, err := s.client.BeginTx(ctx, nil)
+	if err != nil {
+		return seederr.Wrap(err)
+	}
+	defer tx.Rollback()
+	row, err := tx.Session.Query().Where(session.ID(sessionUuid)).ForUpdate().Only(ctx)
+	if err != nil {
+		return seederr.Wrap(err)
+	}
+	data := map[string]string{}
+	if row.Data != nil {
+		err = json.Unmarshal(*row.Data, &data)
 		if err != nil {
-			pgErr := (*pgconn.PgError)(nil)
-			// 40001: serialization_failure from concurrent update
-			if errors.As(err, &pgErr) && pgErr.Code == "40001" {
-				continue
-			}
 			return seederr.Wrap(err)
 		}
-		ok = true
-		break
 	}
-	if !ok {
-		return seederr.WrapErrorf("session update failed after %d retries: %w", maxRetries, err)
+	maps.Copy(data, change)
+	dataBytes, err := json.Marshal(data)
+	if err != nil {
+		return seederr.Wrap(err)
 	}
-	return nil
+	raw := json.RawMessage(dataBytes)
+	err = tx.Session.UpdateOneID(sessionUuid).SetData(&raw).Exec(ctx)
+	if err != nil {
+		return seederr.Wrap(err)
+	}
+	return tx.Commit()
 }
 
 func CreateSqlSessionInitializer() (seedsession.SessionInitializer, error) {

@@ -15,10 +15,10 @@ go_library(
     visibility = ["//visibility:public"],
     deps = [
         "//seed/cloud/sqlsession/database:ent",
+        "//seed/cloud/sqlsession/database:ent/session",
         "//seed/cloud/sqlsession/database/sqlsessiondb",
         "//seed/infra/error/go/seederr",
         "//seed/infra/http/go/seedsession",
         "@com_github_google_uuid//:uuid",
-        "@com_github_jackc_pgx_v5//pgconn",
     ],
 )
