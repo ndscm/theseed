@@ -72,7 +72,7 @@ a linear history — no traditional merge commits are created in either case.
 - **Rebase mode**: rebase our patches onto the head of their chain. Our patches
   are regenerated; their chain stays unchanged. This is the normal way a
   contributor updates a feature branch against the latest shared branch.
-- **Merge mode**: rebase their patches onto the head of our chain. Their patches
+- **Melt mode**: rebase their patches onto the head of our chain. Their patches
   are regenerated; our chain stays unchanged. This is how a shared branch
   absorbs upstream changes without rewriting its own history. The incoming
   changes go through the same test and code review process as normal
