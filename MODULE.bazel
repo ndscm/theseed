@@ -27,9 +27,11 @@ include("//seed/vendor/android/sdk:sdk.MODULE.bazel")
 
 include("//seed/vendor/cc:cc.MODULE.bazel")
 
+## Abseil
+include("//seed/vendor/abseil:abseil.MODULE.bazel")
+
 ## CC Libraries
 
-bazel_dep(name = "abseil-cpp", version = "20250814.1")
 bazel_dep(name = "boost.asio", version = "1.87.0.bcr.1")
 bazel_dep(name = "boost.beast", version = "1.87.0.bcr.1")
 bazel_dep(name = "boost.coroutine", version = "1.87.0")
