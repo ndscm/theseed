@@ -11,8 +11,8 @@
     "typecheck": "react-router typegen && tsc"
   },
   "dependencies": {
-    "@react-router/node": "^7.9.6",
-    "isbot": "^5.1.32"
+    "@react-router/node": "^7.15.0",
+    "isbot": "^5.1.40"
   },
   "devDependencies": {
     "@bufbuild/protobuf": "^2.10.1",
@@ -24,8 +24,8 @@
     "@fontsource/roboto": "^5.2.9",
     "@mui/icons-material": "^7.3.5",
     "@mui/material": "^7.3.5",
-    "@react-router/dev": "^7.9.6",
-    "@react-router/serve": "^7.9.6",
+    "@react-router/dev": "^7.15.0",
+    "@react-router/serve": "^7.15.0",
     "@theseed/seed-cloud-login-client-tsx-login-service-context": "workspace:^",
     "@theseed/seed-devprod-gotcha-tsx": "workspace:^",
     "@theseed/seed-office-stuff-client-tsx-stuff-service-context": "workspace:^",
@@ -50,10 +50,10 @@
     "i18next": "^25.7.4",
     "i18next-cli": "^1.36.1",
     "notistack": "^3.0.2",
-    "react": "^19.2.4",
-    "react-dom": "^19.2.4",
+    "react": "^19.2.5",
+    "react-dom": "^19.2.5",
     "react-i18next": "^16.5.3",
-    "react-router": "^7.9.6",
+    "react-router": "^7.15.0",
     "typescript": "^5.9.3",
     "vite": "^7.2.4",
     "vite-tsconfig-paths": "^5.1.4"
