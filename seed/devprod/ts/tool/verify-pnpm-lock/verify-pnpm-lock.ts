@@ -6,12 +6,7 @@ import JsYaml from "js-yaml"
 
 const debug = DebugModule("verify-pnpm-lock")
 
-const APPROVED_LEGACY_SPECIFIERS: { [dependency: string]: string[] } = {
-  "@types/react": ["^18.3.27"], // For taro miniapp
-  "react-dom": ["^18.3.1"], // For taro miniapp
-  react: ["^18.3.1"], // For taro miniapp
-  vite: ["^5.4.21"], // For taro miniapp
-}
+const APPROVED_LEGACY_SPECIFIERS: { [dependency: string]: string[] } = {}
 
 type PnpmLock = {
   importers: {
