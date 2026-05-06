@@ -12,17 +12,17 @@ importers:
         specifier: ^1.1.6
         version: 1.1.6
       '@bufbuild/protobuf':
-        specifier: ^2.10.1
-        version: 2.10.1
+        specifier: ^2.12.0
+        version: 2.12.0
       '@bufbuild/protoc-gen-es':
-        specifier: ^2.10.1
-        version: 2.10.1(@bufbuild/protobuf@2.10.1)
+        specifier: ^2.12.0
+        version: 2.12.0(@bufbuild/protobuf@2.12.0)
       '@connectrpc/connect':
         specifier: ^2.1.1
-        version: 2.1.1(@bufbuild/protobuf@2.10.1)
+        version: 2.1.1(@bufbuild/protobuf@2.12.0)
       '@connectrpc/connect-node':
         specifier: ^2.1.1
-        version: 2.1.1(@bufbuild/protobuf@2.10.1)(@connectrpc/connect@2.1.1)
+        version: 2.1.1(@bufbuild/protobuf@2.12.0)(@connectrpc/connect@2.1.1)
       '@trivago/prettier-plugin-sort-imports':
         specifier: ^6.0.0
         version: 6.0.0(prettier@3.6.2)
@@ -45,14 +45,14 @@ importers:
   seed/cloud/login/client/tsx/login-service-context:
     dependencies:
       '@bufbuild/protobuf':
-        specifier: ^2.10.1
-        version: 2.10.1
+        specifier: ^2.12.0
+        version: 2.12.0
       '@connectrpc/connect':
         specifier: ^2.1.1
-        version: 2.1.1(@bufbuild/protobuf@2.10.1)
+        version: 2.1.1(@bufbuild/protobuf@2.12.0)
       '@connectrpc/connect-web':
         specifier: ^2.1.1
-        version: 2.1.1(@bufbuild/protobuf@2.10.1)(@connectrpc/connect@2.1.1)
+        version: 2.1.1(@bufbuild/protobuf@2.12.0)(@connectrpc/connect@2.1.1)
       '@theseed/seed-cloud-login-proto':
         specifier: workspace:^
         version: link:../../../proto
@@ -99,14 +99,14 @@ importers:
   seed/devprod/golink/client/tsx/golink-service-context:
     dependencies:
       '@bufbuild/protobuf':
-        specifier: ^2.10.1
-        version: 2.10.1
+        specifier: ^2.12.0
+        version: 2.12.0
       '@connectrpc/connect':
         specifier: ^2.1.1
-        version: 2.1.1(@bufbuild/protobuf@2.10.1)
+        version: 2.1.1(@bufbuild/protobuf@2.12.0)
       '@connectrpc/connect-web':
         specifier: ^2.1.1
-        version: 2.1.1(@bufbuild/protobuf@2.10.1)(@connectrpc/connect@2.1.1)
+        version: 2.1.1(@bufbuild/protobuf@2.12.0)(@connectrpc/connect@2.1.1)
       '@theseed/seed-devprod-golink-proto':
         specifier: workspace:^
         version: link:../../../proto
@@ -139,14 +139,14 @@ importers:
         version: 5.1.40
     devDependencies:
       '@bufbuild/protobuf':
-        specifier: ^2.10.1
-        version: 2.10.1
+        specifier: ^2.12.0
+        version: 2.12.0
       '@connectrpc/connect':
         specifier: ^2.1.1
-        version: 2.1.1(@bufbuild/protobuf@2.10.1)
+        version: 2.1.1(@bufbuild/protobuf@2.12.0)
       '@connectrpc/connect-web':
         specifier: ^2.1.1
-        version: 2.1.1(@bufbuild/protobuf@2.10.1)(@connectrpc/connect@2.1.1)
+        version: 2.1.1(@bufbuild/protobuf@2.12.0)(@connectrpc/connect@2.1.1)
       '@emotion/cache':
         specifier: ^11.14.0
         version: 11.14.0
@@ -282,14 +282,14 @@ importers:
   seed/office/stuff/client/tsx/stuff-service-context:
     dependencies:
       '@bufbuild/protobuf':
-        specifier: ^2.10.1
-        version: 2.10.1
+        specifier: ^2.12.0
+        version: 2.12.0
       '@connectrpc/connect':
         specifier: ^2.1.1
-        version: 2.1.1(@bufbuild/protobuf@2.10.1)
+        version: 2.1.1(@bufbuild/protobuf@2.12.0)
       '@connectrpc/connect-web':
         specifier: ^2.1.1
-        version: 2.1.1(@bufbuild/protobuf@2.10.1)(@connectrpc/connect@2.1.1)
+        version: 2.1.1(@bufbuild/protobuf@2.12.0)(@connectrpc/connect@2.1.1)
       '@theseed/seed-office-stuff-proto':
         specifier: workspace:^
         version: link:../../../proto
@@ -322,14 +322,14 @@ importers:
         version: 5.1.40
     devDependencies:
       '@bufbuild/protobuf':
-        specifier: ^2.10.1
-        version: 2.10.1
+        specifier: ^2.12.0
+        version: 2.12.0
       '@connectrpc/connect':
         specifier: ^2.1.1
-        version: 2.1.1(@bufbuild/protobuf@2.10.1)
+        version: 2.1.1(@bufbuild/protobuf@2.12.0)
       '@connectrpc/connect-web':
         specifier: ^2.1.1
-        version: 2.1.1(@bufbuild/protobuf@2.10.1)(@connectrpc/connect@2.1.1)
+        version: 2.1.1(@bufbuild/protobuf@2.12.0)(@connectrpc/connect@2.1.1)
       '@emotion/cache':
         specifier: ^11.14.0
         version: 11.14.0
@@ -740,61 +740,61 @@ packages:
       '@babel/helper-string-parser': 7.27.1
       '@babel/helper-validator-identifier': 7.28.5
 
-  /@bufbuild/protobuf@2.10.1:
-    resolution: {integrity: sha512-ckS3+vyJb5qGpEYv/s1OebUHDi/xSNtfgw1wqKZo7MR9F2z+qXr0q5XagafAG/9O0QPVIUfST0smluYSTpYFkg==}
+  /@bufbuild/protobuf@2.12.0:
+    resolution: {integrity: sha512-B/XlCaFIP8LOwzo+bz5uFzATYokcwCKQcghqnlfwSmM5eX/qTkvDBnDPs+gXtX/RyjxJ4DRikECcPJbyALA8FA==}
 
-  /@bufbuild/protoc-gen-es@2.10.1(@bufbuild/protobuf@2.10.1):
-    resolution: {integrity: sha512-vsfbWs1X93oX+sMMJ7910/OwIizAYH5IOAArsxnSTifiop1fVgLFPAvJBLiHZoNMI8B/lbqji2SFwvjK0AWO1Q==}
+  /@bufbuild/protoc-gen-es@2.12.0(@bufbuild/protobuf@2.12.0):
+    resolution: {integrity: sha512-d9htF6jEkSwPbp9d/vSmZOBF7eeG18AvTMKmVg4I23afnrQOxL2w3WOXa9TaufMCyu24QakEUb4vux8apI5e7A==}
     engines: {node: '>=20'}
     hasBin: true
     peerDependencies:
-      '@bufbuild/protobuf': 2.10.1
+      '@bufbuild/protobuf': 2.12.0
     peerDependenciesMeta:
       '@bufbuild/protobuf':
         optional: true
     dependencies:
-      '@bufbuild/protobuf': 2.10.1
-      '@bufbuild/protoplugin': 2.10.1
+      '@bufbuild/protobuf': 2.12.0
+      '@bufbuild/protoplugin': 2.12.0
     transitivePeerDependencies:
       - supports-color
     dev: false
 
-  /@bufbuild/protoplugin@2.10.1:
-    resolution: {integrity: sha512-imB8dKEjrOnG5+XqVS+CeYn924WGLU/g3wogKhk11XtX9y9NJ7432OS6h24asuBbLrQcPdEZ6QkfM7KeOCeeyQ==}
+  /@bufbuild/protoplugin@2.12.0:
+    resolution: {integrity: sha512-ORlDITp8AFUXzIhLRoMCG+ud+D3MPKWb5HQXBoskMMnjeyEjE1H1qLonVNPyOr8lkx3xSfYUo8a0dvOZJVAzow==}
     dependencies:
-      '@bufbuild/protobuf': 2.10.1
+      '@bufbuild/protobuf': 2.12.0
       '@typescript/vfs': 1.6.4(typescript@5.4.5)
       typescript: 5.4.5
     transitivePeerDependencies:
       - supports-color
     dev: false
 
-  /@connectrpc/connect-node@2.1.1(@bufbuild/protobuf@2.10.1)(@connectrpc/connect@2.1.1):
+  /@connectrpc/connect-node@2.1.1(@bufbuild/protobuf@2.12.0)(@connectrpc/connect@2.1.1):
     resolution: {integrity: sha512-s3TfsI1XF+n+1z6MBS9rTnFsxxR4Rw5wmdEnkQINli81ESGxcsfaEet8duzq8LVuuCupmhUsgpRo0Nv9pZkufg==}
     engines: {node: '>=20'}
     peerDependencies:
       '@bufbuild/protobuf': ^2.7.0
       '@connectrpc/connect': 2.1.1
     dependencies:
-      '@bufbuild/protobuf': 2.10.1
-      '@connectrpc/connect': 2.1.1(@bufbuild/protobuf@2.10.1)
+      '@bufbuild/protobuf': 2.12.0
+      '@connectrpc/connect': 2.1.1(@bufbuild/protobuf@2.12.0)
     dev: false
 
-  /@connectrpc/connect-web@2.1.1(@bufbuild/protobuf@2.10.1)(@connectrpc/connect@2.1.1):
+  /@connectrpc/connect-web@2.1.1(@bufbuild/protobuf@2.12.0)(@connectrpc/connect@2.1.1):
     resolution: {integrity: sha512-J8317Q2MaFRCT1jzVR1o06bZhDIBmU0UAzWx6xOIXzOq8+k71/+k7MUF7AwcBUX+34WIvbm5syRgC5HXQA8fOg==}
     peerDependencies:
       '@bufbuild/protobuf': ^2.7.0
       '@connectrpc/connect': 2.1.1
     dependencies:
-      '@bufbuild/protobuf': 2.10.1
-      '@connectrpc/connect': 2.1.1(@bufbuild/protobuf@2.10.1)
+      '@bufbuild/protobuf': 2.12.0
+      '@connectrpc/connect': 2.1.1(@bufbuild/protobuf@2.12.0)
 
-  /@connectrpc/connect@2.1.1(@bufbuild/protobuf@2.10.1):
+  /@connectrpc/connect@2.1.1(@bufbuild/protobuf@2.12.0):
     resolution: {integrity: sha512-JzhkaTvM73m2K1URT6tv53k2RwngSmCXLZJgK580qNQOXRzZRR/BCMfZw3h+90JpnG6XksP5bYT+cz0rpUzUWQ==}
     peerDependencies:
       '@bufbuild/protobuf': ^2.7.0
     dependencies:
-      '@bufbuild/protobuf': 2.10.1
+      '@bufbuild/protobuf': 2.12.0
 
   /@croct/json5-parser@0.2.2:
     resolution: {integrity: sha512-0NJMLrbeLbQ0eCVj3UoH/kG2QckUgOASfwmfDTjyW1xAYPyTNJXcWVT/dssJdTJd0pRchW+qF0VFWQHcxs1OVw==}
