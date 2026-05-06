@@ -1,0 +1,1 @@
+bazel_dep(name = "abseil-cpp", version = "20250814.1")
