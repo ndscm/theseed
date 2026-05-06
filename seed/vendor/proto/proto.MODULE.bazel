@@ -1,0 +1,2 @@
+bazel_dep(name = "protobuf", version = "33.4")
+bazel_dep(name = "rules_buf", version = "0.5.2")
