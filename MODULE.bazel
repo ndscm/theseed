@@ -91,16 +91,9 @@ use_repo(
 bazel_dep(name = "grpc", version = "1.74.1")
 bazel_dep(name = "grpc-java", version = "1.75.0")
 
-# Java (required by grpc-java)
-bazel_dep(name = "rules_jvm_external", version = "6.7")
+# Java
 
-maven = use_extension("@rules_jvm_external//:extensions.bzl", "maven")
-maven.install(
-    artifacts = [
-        "com.google.protobuf:protobuf-java-util:4.33.4",
-    ],
-)
-use_repo(maven, "maven")
+include("//seed/vendor/java:java.MODULE.bazel")
 
 # JavaScript and TypeScript
 
