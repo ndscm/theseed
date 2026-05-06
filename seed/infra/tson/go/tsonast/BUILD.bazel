@@ -1,0 +1,8 @@
+load("@rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "tsonast",
+    srcs = ["ast.go"],
+    importpath = "github.com/ndscm/theseed/seed/infra/tson/go/tsonast",
+    visibility = ["//visibility:public"],
+)
