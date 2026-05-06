@@ -168,4 +168,5 @@ git_override(
     remote = "https://github.com/hedronvision/bazel-compile-commands-extractor.git",
 )
 
+## Keycloak
 include("//seed/vendor/keycloak:keycloak.MODULE.bazel")
