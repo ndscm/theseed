@@ -17,8 +17,10 @@ bazel_dep(name = "platforms", version = "1.0.0")
 
 # Android
 
+## Android Command Line Tools
 include("//seed/vendor/android/cmdline-tools:cmdline-tools.MODULE.bazel")
 
+## Android SDK
 include("//seed/vendor/android/sdk:sdk.MODULE.bazel")
 
 # CC
