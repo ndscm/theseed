@@ -77,7 +77,10 @@ export GO111MODULE=off
 mkdir -p "$GOPATH/src/{target_importpath}"
 printf "package ent\\n" > "$GOPATH/src/{target_importpath}/generate.go"
 
-"{ent_bin}" generate --target "$GOPATH/src/{target_importpath}" "$GOPATH/src/{schema_importpath}"
+"{ent_bin}" generate \
+  {feature_flag} \
+  --target "$GOPATH/src/{target_importpath}" \
+  "$GOPATH/src/{schema_importpath}"
 
 mkdir -p "{target_dir}"
 cp -r "$GOPATH/src/{target_importpath}/"* "{target_dir}"
@@ -88,6 +91,7 @@ cp -r "$GOPATH/src/{target_importpath}/"* "{target_dir}"
             target_dir = outputs[0].dirname,
             schema_importpath = schema_importpath,
             target_importpath = target_importpath,
+            feature_flag = "--feature " + ",".join(ctx.attr.feature_list) if ctx.attr.feature_list else "",
         ),
         tools = [ctx.executable._ent_bin, go.sdk.go],
         inputs = [ctx.attr.gopath[GoPath].gopath_file],
@@ -110,6 +114,7 @@ _ent_full_srcs = rule(
         ),
         "entities": attr.string_list(mandatory = True),
         "importpath": attr.string(mandatory = True),
+        "feature_list": attr.string_list(),
         "gopath": attr.label(
             mandatory = True,
             providers = [GoPath],
@@ -126,7 +131,7 @@ _ent_full_srcs = rule(
     toolchains = ["@rules_go//go:toolchain"],
 )
 
-def ent_full_srcs(name, schema, entities, importpath, **kwargs):
+def ent_full_srcs(name, schema, entities, importpath, features = [], **kwargs):
     """Generate Ent sources with grouped outputs.
 
     Creates a go_path dependency and an _ent_full_srcs target that provides
@@ -137,6 +142,7 @@ def ent_full_srcs(name, schema, entities, importpath, **kwargs):
         schema: Label of the Ent schema go_library.
         entities: Entity names matching schema .go filenames (without extension).
         importpath: Go import path for the generated ent package.
+        features: List of Ent features to enable.
         **kwargs: Forwarded to _ent_full_srcs.
     """
     go_path(
@@ -154,6 +160,7 @@ def ent_full_srcs(name, schema, entities, importpath, **kwargs):
         entities = entities,
         gopath = ":" + name + "_gopath",
         importpath = importpath,
+        feature_list = features,
         **kwargs
     )
 
@@ -186,7 +193,7 @@ _ent_gazelle = rule(
     },
 )
 
-def go_ent_library(name, schema, entities, importpath, deps = [], **kwargs):
+def go_ent_library(name, schema, entities, importpath, features = [], deps = [], **kwargs):
     """Generate go_library targets for all Ent output groups.
 
     Creates one go_library per output group from ent_full_srcs: the main ent
@@ -197,6 +204,7 @@ def go_ent_library(name, schema, entities, importpath, deps = [], **kwargs):
         schema: Label of the Ent schema go_library.
         entities: Entity names matching schema .go filenames (without extension).
         importpath: Go import path for the generated ent package.
+        features: List of Ent features to enable.
         deps: Additional dependencies for the generated entity go_library.
         **kwargs: Forwarded to ent_full_srcs.
     """
@@ -205,6 +213,7 @@ def go_ent_library(name, schema, entities, importpath, deps = [], **kwargs):
         schema = schema,
         entities = entities,
         importpath = importpath,
+        features = features,
         **kwargs
     )
 
