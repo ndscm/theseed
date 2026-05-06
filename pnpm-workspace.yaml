@@ -12,3 +12,8 @@ packages:
   - "seed/office/stuff/client/tsx/stuff-service-context"
   - "seed/office/stuff/proto"
   - "seed/office/stuff/webapp"
+allowBuilds:
+  "@ariga/atlas": true
+  "@swc/core": true
+  esbuild: true
+  protobufjs: true
