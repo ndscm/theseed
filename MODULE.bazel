@@ -104,32 +104,7 @@ use_repo(maven, "maven")
 
 # JavaScript and TypeScript
 
-bazel_dep(name = "rules_nodejs", version = "6.7.4")
-
-node = use_extension("@rules_nodejs//nodejs:extensions.bzl", "node")
-node.toolchain(
-    node_version = "24.14.1",
-)
-
-bazel_dep(name = "aspect_bazel_lib", version = "2.22.5")
-bazel_dep(name = "aspect_rules_js", version = "3.1.0")
-
-npm = use_extension("@aspect_rules_js//npm:extensions.bzl", "npm", dev_dependency = True)
-npm.npm_translate_lock(
-    name = "npm",
-    pnpm_lock = "//:pnpm-lock.yaml",
-    verify_node_modules_ignored = "//:.bazelignore",
-)
-use_repo(npm, "npm")
-
-pnpm = use_extension("@aspect_rules_js//npm:extensions.bzl", "pnpm")
-use_repo(pnpm, "pnpm")
-
-bazel_dep(name = "aspect_rules_ts", version = "3.8.9")
-
-rules_ts_ext = use_extension("@aspect_rules_ts//ts:extensions.bzl", "ext", dev_dependency = True)
-rules_ts_ext.deps()
-use_repo(rules_ts_ext, "npm_typescript")
+include("//seed/vendor/ts:ts.MODULE.bazel")
 
 # Pkg
 
