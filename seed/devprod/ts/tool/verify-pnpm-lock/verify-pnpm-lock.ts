@@ -41,29 +41,43 @@ export const VerifyPnpmLock = async (args: { lockPath: string }) => {
   } = {}
   const lock = JsYaml.load(lockYaml) as PnpmLock
   Object.keys(lock.importers).forEach((packagePath) => {
+    const importer = lock.importers[packagePath]
+    if (!importer) {
+      return
+    }
     const dependencies = {
-      ...lock.importers[packagePath].dependencies,
-      ...lock.importers[packagePath].devDependencies,
+      ...importer.dependencies,
+      ...importer.devDependencies,
     }
     debug(`PackagePath: ${packagePath}`)
     Object.keys(dependencies).forEach((dependency) => {
-      const specifier = dependencies[dependency].specifier
-      versions[dependency] = versions[dependency] || {}
-      versions[dependency][specifier] = versions[dependency][specifier] || []
-      versions[dependency][specifier].push(packagePath)
+      const dep = dependencies[dependency]
+      if (!dep) {
+        return
+      }
+      const specifier = dep.specifier
+      const versionMap = versions[dependency] ?? {}
+      versions[dependency] = versionMap
+      const packages = versionMap[specifier] ?? []
+      versionMap[specifier] = packages
+      packages.push(packagePath)
       debug(`  ${dependency}: ${specifier}`)
     })
   })
   let ok = true
   Object.keys(versions).forEach((dependency) => {
-    const specifiers = Object.keys(versions[dependency]).filter(
+    const versionEntry = versions[dependency]
+    if (!versionEntry) {
+      return
+    }
+    const specifiers = Object.keys(versionEntry).filter(
       (specifier) =>
         !APPROVED_LEGACY_SPECIFIERS[dependency]?.includes(specifier),
     )
     if (specifiers.length > 1) {
       console.error(
         `Dependency ${dependency} has multiple specifiers:`,
-        versions[dependency],
+        versionEntry,
       )
       ok = false
     }
