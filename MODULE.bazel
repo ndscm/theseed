@@ -25,8 +25,7 @@ include("//seed/vendor/android/sdk:sdk.MODULE.bazel")
 
 # CC
 
-bazel_dep(name = "rules_foreign_cc", version = "0.15.1")
-bazel_dep(name = "rules_cc", version = "0.2.16")
+include("//seed/vendor/cc:cc.MODULE.bazel")
 
 ## CC Libraries
 
