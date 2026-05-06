@@ -30,7 +30,7 @@
     "@theseed/seed-devprod-gotcha-tsx": "workspace:^",
     "@theseed/seed-office-stuff-client-tsx-stuff-service-context": "workspace:^",
     "@theseed/seed-office-stuff-proto": "workspace:^",
-    "@types/node": "^24.10.1",
+    "@types/node": "^25.6.0",
     "@types/react": "^19.2.7",
     "@types/react-dom": "^19.2.3",
     "@univerjs/core": "^0.21.1",
