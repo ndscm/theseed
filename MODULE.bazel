@@ -114,12 +114,8 @@ include("//seed/vendor/python:python.MODULE.bazel")
 
 # Apps
 
-bazel_dep(name = "hedron_compile_commands", dev_dependency = True)
-git_override(
-    module_name = "hedron_compile_commands",
-    commit = "abb61a688167623088f8768cc9264798df6a9d10",
-    remote = "https://github.com/hedronvision/bazel-compile-commands-extractor.git",
-)
+## Hedronvision Bazel Compile Commands Extractor
+include("//contrib/vendor/hedronvision/bazel-compile-commands-extractor:bazel-compile-commands-extractor.MODULE.bazel")
 
 ## Keycloak
 include("//seed/vendor/keycloak:keycloak.MODULE.bazel")
