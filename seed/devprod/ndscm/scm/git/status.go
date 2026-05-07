@@ -61,6 +61,30 @@ func GetStatus(worktreePath string) ([]GitFileStatus, error) {
 	return result, nil
 }
 
+func ListFiles(worktreePath string, untracked bool) ([]string, error) {
+	gitArgs := []string{}
+	if worktreePath != "" {
+		gitArgs = append(gitArgs, "-C", worktreePath)
+	}
+	gitArgs = append(gitArgs, "ls-files", "--cached", "--exclude-standard")
+	if untracked {
+		gitArgs = append(gitArgs, "--others")
+	}
+	lsOutput, err := seedshell.PureOutput("git", append(gitArgs, "-z")...)
+	if err != nil {
+		return nil, seederr.Wrap(err)
+	}
+	lines := bytes.Split(lsOutput, []byte("\000"))
+	result := []string{}
+	for _, line := range lines {
+		if len(line) == 0 {
+			continue
+		}
+		result = append(result, string(line))
+	}
+	return result, nil
+}
+
 func GetCurrentBranch(worktreePath string) (string, error) {
 	gitArgs := []string{}
 	if worktreePath != "" {
