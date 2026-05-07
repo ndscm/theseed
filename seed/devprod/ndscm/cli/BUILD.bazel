@@ -20,6 +20,7 @@ go_library(
         "nd_cut.go",
         "nd_dev.go",
         "nd_format.go",
+        "nd_makefile.go",
         "nd_setup.go",
         "nd_shell.go",
         "nd_submit.go",
