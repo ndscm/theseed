@@ -113,6 +113,9 @@ type Provider interface {
 	// worktreePath.
 	GetWorktreeDirtyFiles(worktreePath string) ([]DirtyFile, error)
 
+	// ListFiles lists every tracked and untracked files in worktreePath.
+	ListFiles(worktreePath string) ([]string, error)
+
 	// GetWorktreeBranch returns the branch currently checked out in
 	// worktreePath.
 	GetWorktreeBranch(worktreePath string) (string, error)
