@@ -202,6 +202,10 @@ func (g *GitProvider) GetWorktreeDirtyFiles(worktreePath string) ([]scm.DirtyFil
 	return result, nil
 }
 
+func (g *GitProvider) ListFiles(worktreePath string) ([]string, error) {
+	return ListFiles(worktreePath, true)
+}
+
 func (g *GitProvider) GetWorktreeBranch(worktreePath string) (string, error) {
 	return GetCurrentBranch(worktreePath)
 }
