@@ -31,6 +31,10 @@ func (r *Runner) Format(all bool) error {
 	return nil
 }
 
+func (r *Runner) GenerateMakefile() (string, error) {
+	return GenerateMakefile(r.worktree, r.scmFilePaths)
+}
+
 func CreateRunner(worktree string, scmFilePaths []string, scmChangePaths []string, scmDirtyPaths []string) (*Runner, error) {
 	r := &Runner{
 		worktree:       worktree,
