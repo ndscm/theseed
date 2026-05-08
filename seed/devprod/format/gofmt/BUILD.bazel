@@ -1,0 +1,6 @@
+load("//seed/devprod/format/gofmt:def.bzl", "gofmt_bin")
+
+gofmt_bin(
+    name = "gofmt",
+    visibility = ["//visibility:public"],
+)
