@@ -53,6 +53,11 @@ func run() error {
 		if err != nil {
 			return seederr.Wrap(err)
 		}
+	case "format":
+		err := ndFormat(args[1:])
+		if err != nil {
+			return seederr.Wrap(err)
+		}
 	case "setup":
 		err := ndSetup(args[1:])
 		if err != nil {
