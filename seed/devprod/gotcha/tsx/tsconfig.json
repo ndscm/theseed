@@ -13,5 +13,9 @@
     "rootDir": "src",
     "outDir": "dist",
     "verbatimModuleSyntax": true
-  }
+  },
+  "exclude": [
+    "*.ndscm.ts", // exclude ndscm tson configs
+    "dist"
+  ]
 }
