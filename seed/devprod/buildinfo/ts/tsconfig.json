@@ -10,5 +10,9 @@
     "declaration": true,
     "rootDir": "src",
     "outDir": "dist"
-  }
+  },
+  "exclude": [
+    "*.ndscm.ts", // exclude ndscm tson configs
+    "dist"
+  ]
 }
