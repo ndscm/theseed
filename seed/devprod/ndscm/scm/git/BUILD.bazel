@@ -11,6 +11,7 @@ go_library(
         "clone.go",
         "commit.go",
         "config.go",
+        "filetree.go",
         "monorepo.go",
         "provider.go",
         "rebase.go",

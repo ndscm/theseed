@@ -146,6 +146,12 @@ func (g *GitProvider) ListCommitIds(from string, to string) ([]string, error) {
 	return ListCommitHash("", from, to)
 }
 
+// # filetree
+
+func (g *GitProvider) ListCommitFiles(commit string) ([]string, error) {
+	return ListCommitFiles("", commit)
+}
+
 // # rebase
 
 func (g *GitProvider) Rebase(worktreePath string, upstream string) error {
