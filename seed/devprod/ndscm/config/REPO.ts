@@ -1,7 +1,7 @@
 /**
- * Repository-wide ndscm configuration, defined in `repo.ndscm.ts` at the
+ * Repository-wide ndscm configuration, defined in `REPO.ndscm.ts` at the
  * repository root. Each feature or development branch can override this
- * config with its own `repo.ndscm.ts`, allowing branches to carry
+ * config with its own `REPO.ndscm.ts`, allowing branches to carry
  * branch-specific upstream definitions or tooling versions.
  */
 export type RepoConfig = {
