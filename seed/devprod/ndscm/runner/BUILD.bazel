@@ -6,6 +6,13 @@ package(default_visibility = [
 
 go_library(
     name = "runner",
-    srcs = ["runner.go"],
+    srcs = [
+        "analysis.go",
+        "runner.go",
+    ],
     importpath = "github.com/ndscm/theseed/seed/devprod/ndscm/runner",
+    deps = [
+        "//seed/devprod/ndscm/configloader",
+        "//seed/infra/error/go/seederr",
+    ],
 )
