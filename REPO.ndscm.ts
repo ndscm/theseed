@@ -1,4 +1,4 @@
-import { type RepoConfig } from "./seed/devprod/ndscm/config/repo"
+import { type RepoConfig } from "./seed/devprod/ndscm/config/REPO"
 
 export default {
   ndscm: {
