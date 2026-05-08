@@ -7,6 +7,9 @@
 //
 // When shell-eval mode is enabled, command output is captured and logged at
 // debug level instead of being printed to stdout.
+//
+// This package manages cmd.Stdout and cmd.Stderr internally. If you need to
+// redirect either, use os/exec directly.
 package seedshell
 
 import (
@@ -31,13 +34,19 @@ func ShellEval() bool {
 	return flagShellEval.Get()
 }
 
-// PureRun executes a command that has no external side effects.
+type RunOption func(*exec.Cmd)
+
+// PureOptionsRun executes a command that has no external side effects,
+// applying the given options to the exec.Cmd before execution.
 // It always runs regardless of dry mode. Stderr is forwarded to os.Stderr.
 // In shell-eval mode, stdout is captured and logged; otherwise it is forwarded
 // to os.Stdout.
-func PureRun(name string, arg ...string) error {
+func PureOptionsRun(options []RunOption, name string, arg ...string) error {
 	cmd := exec.Command(name, arg...)
 	cmd.Stderr = os.Stderr
+	for _, option := range options {
+		option(cmd)
+	}
 	if flagShellEval.Get() {
 		outputBytes, err := cmd.Output()
 		if err != nil {
@@ -54,17 +63,26 @@ func PureRun(name string, arg ...string) error {
 	return nil
 }
 
-// ImpureRun executes a command that may have external side effects.
+// PureRun is a shorthand for PureOptionsRun with no options.
+func PureRun(name string, arg ...string) error {
+	return PureOptionsRun(nil, name, arg...)
+}
+
+// ImpureOptionsRun executes a command that may have external side effects,
+// applying the given options to the exec.Cmd before execution.
 // In dry mode the command is skipped and a log message is emitted instead.
 // Stderr is forwarded to os.Stderr. In shell-eval mode, stdout is captured
 // and logged; otherwise it is forwarded to os.Stdout.
-func ImpureRun(name string, arg ...string) error {
+func ImpureOptionsRun(options []RunOption, name string, arg ...string) error {
 	if flagDry.Get() {
 		seedlog.Infof("Dry mode skip: %v %v", name, arg)
 		return nil
 	}
 	cmd := exec.Command(name, arg...)
 	cmd.Stderr = os.Stderr
+	for _, option := range options {
+		option(cmd)
+	}
 	if flagShellEval.Get() {
 		outputBytes, err := cmd.Output()
 		if err != nil {
@@ -81,12 +99,21 @@ func ImpureRun(name string, arg ...string) error {
 	return nil
 }
 
-// PureOutput executes a command that has no external side effects and returns
+// ImpureRun is a shorthand for ImpureOptionsRun with no options.
+func ImpureRun(name string, arg ...string) error {
+	return ImpureOptionsRun(nil, name, arg...)
+}
+
+// PureOptionsOutput executes a command that has no external side effects,
+// applying the given options to the exec.Cmd before execution, and returns
 // its stdout as a byte slice. It always runs regardless of dry mode. Stderr is
 // forwarded to os.Stderr.
-func PureOutput(name string, arg ...string) ([]byte, error) {
+func PureOptionsOutput(options []RunOption, name string, arg ...string) ([]byte, error) {
 	cmd := exec.Command(name, arg...)
 	cmd.Stderr = os.Stderr
+	for _, option := range options {
+		option(cmd)
+	}
 	outputBytes, err := cmd.Output()
 	if err != nil {
 		return outputBytes, seederr.Wrap(err)
@@ -94,19 +121,33 @@ func PureOutput(name string, arg ...string) ([]byte, error) {
 	return outputBytes, nil
 }
 
-// ImpureOutput executes a command that may have external side effects and
-// returns its stdout as a byte slice. In dry mode the command is skipped and
-// an empty byte slice is returned. Stderr is forwarded to os.Stderr.
-func ImpureOutput(name string, arg ...string) ([]byte, error) {
+// PureOutput is a shorthand for PureOptionsOutput with no options.
+func PureOutput(name string, arg ...string) ([]byte, error) {
+	return PureOptionsOutput(nil, name, arg...)
+}
+
+// ImpureOptionsOutput executes a command that may have external side effects,
+// applying the given options to the exec.Cmd before execution, and returns
+// its stdout as a byte slice. In dry mode the command is skipped and an empty
+// byte slice is returned. Stderr is forwarded to os.Stderr.
+func ImpureOptionsOutput(options []RunOption, name string, arg ...string) ([]byte, error) {
 	if flagDry.Get() {
 		seedlog.Infof("Dry mode skip: %v %v", name, arg)
 		return []byte{}, nil
 	}
 	cmd := exec.Command(name, arg...)
 	cmd.Stderr = os.Stderr
+	for _, option := range options {
+		option(cmd)
+	}
 	outputBytes, err := cmd.Output()
 	if err != nil {
 		return outputBytes, seederr.Wrap(err)
 	}
 	return outputBytes, nil
+}
+
+// ImpureOutput is a shorthand for ImpureOptionsOutput with no options.
+func ImpureOutput(name string, arg ...string) ([]byte, error) {
+	return ImpureOptionsOutput(nil, name, arg...)
 }
