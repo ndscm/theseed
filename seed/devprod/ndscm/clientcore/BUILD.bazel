@@ -9,6 +9,7 @@ go_library(
         "nd_connect.go",
         "nd_cut.go",
         "nd_dev.go",
+        "nd_format.go",
         "nd_setup.go",
         "nd_shell.go",
         "nd_submit.go",
@@ -19,6 +20,7 @@ go_library(
     visibility = ["//visibility:public"],
     deps = [
         "//seed/devprod/ndscm/clientcore/shelleval",
+        "//seed/devprod/ndscm/runner",
         "//seed/devprod/ndscm/scm",
         "//seed/devprod/ndscm/user",
         "//seed/infra/error/go/seederr",

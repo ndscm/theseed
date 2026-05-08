@@ -38,6 +38,10 @@ func (cc *ClientCore) NdDev(options NdDevOptions) error {
 	return NdDev(cc.scmProvider, options)
 }
 
+func (cc *ClientCore) NdFormat(options NdFormatOptions) error {
+	return NdFormat(cc.scmProvider, options)
+}
+
 func (cc *ClientCore) NdSetup(options NdSetupOptions) error {
 	return NdSetup(options)
 }
