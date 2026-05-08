@@ -8,11 +8,14 @@ go_library(
     name = "runner",
     srcs = [
         "analysis.go",
+        "format.go",
         "runner.go",
     ],
     importpath = "github.com/ndscm/theseed/seed/devprod/ndscm/runner",
     deps = [
         "//seed/devprod/ndscm/configloader",
         "//seed/infra/error/go/seederr",
+        "//seed/infra/log/go/seedlog",
+        "//seed/infra/shell/go/seedshell",
     ],
 )
