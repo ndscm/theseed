@@ -108,17 +108,22 @@ func analyseDir(
 	result := map[string]RepoPhase{}
 	for _, phase := range phases {
 		prerequisites := []string{}
+		// The phases are forced to run sequentially for now to avoid breaking the bazel managed tools for each phase.
 		switch phase {
+		case "format":
+			prerequisites = []string{}
+		case "vendor":
+			prerequisites = []string{"format"}
 		case "bootstrap":
-			prerequisites = []string{"vendor"}
+			prerequisites = []string{"format", "vendor"}
 		case "tidy":
-			prerequisites = []string{"bootstrap"}
+			prerequisites = []string{"format", "vendor", "bootstrap"}
 		case "lock":
-			prerequisites = []string{"tidy"}
+			prerequisites = []string{"format", "vendor", "bootstrap", "tidy"}
 		case "build":
-			prerequisites = []string{"lock"}
+			prerequisites = []string{"format", "vendor", "bootstrap", "tidy", "lock"}
 		case "test":
-			prerequisites = []string{"build"}
+			prerequisites = []string{"format", "vendor", "bootstrap", "tidy", "lock", "build"}
 		}
 
 		rules := map[string]configloader.WatchGenerateRule{}
