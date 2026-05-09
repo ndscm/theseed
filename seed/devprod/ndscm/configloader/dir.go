@@ -2,8 +2,12 @@ package configloader
 
 type WatchGenerateRule struct {
 	Target StringOrStrings `json:"target,omitempty"`
-	Watch  StringOrStrings `json:"watch"`
-	Run    StringOrStrings `json:"run"`
+
+	Watch StringOrStrings `json:"watch"`
+
+	NeedBazelBuild StringOrStrings `json:"needBazelBuild,omitempty"`
+
+	Run StringOrStrings `json:"run"`
 }
 
 type DirConfig struct {
