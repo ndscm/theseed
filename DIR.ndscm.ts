@@ -17,7 +17,8 @@ export default {
       watch: [
         "\\.(ts|tsx|js|jsx|mts|cts|mjs|cjs|css|scss|less|json|yaml|yml|md|mdx|html|vue)$",
       ],
-      run: 'bazel run //seed/devprod/format/prettier -- --write "{{TARGET}}"',
+      needBazelBuild: "//seed/devprod/format/prettier",
+      run: '{{BAZEL_RUN}} --write "{{TARGET}}"',
     },
     cc: {
       watch: "\\.(c|cc|cpp|h|hh|hpp)$",
@@ -25,11 +26,13 @@ export default {
     },
     go: {
       watch: "\\.(go)$",
-      run: 'bazel run //seed/devprod/format/gofmt -- -w "{{TARGET}}"',
+      needBazelBuild: "//seed/devprod/format/gofmt",
+      run: '{{BAZEL_RUN}} -w "{{TARGET}}"',
     },
     groovy: {
       watch: "(^|/)Jenkinsfile$",
-      run: 'bazel run //seed/devprod/format/groovy -- --write "{{TARGET}}"',
+      needBazelBuild: "//seed/devprod/format/groovy",
+      run: '{{BAZEL_RUN}} --write "{{TARGET}}"',
     },
     java: {
       watch: "\\.(java)$",
