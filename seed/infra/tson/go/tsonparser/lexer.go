@@ -106,6 +106,8 @@ func (l *lexer) scanString(quote rune, line, col int) (token, error) {
 				b.WriteByte('\b')
 			case 'f':
 				b.WriteByte('\f')
+			case 'v':
+				b.WriteByte('\v')
 			case '0':
 				b.WriteByte(0)
 			case '\'':
@@ -136,7 +138,6 @@ func (l *lexer) scanString(quote rune, line, col int) (token, error) {
 					l.advance()
 				}
 			default:
-				b.WriteByte('\\')
 				b.WriteRune(esc)
 			}
 		} else {
