@@ -12,8 +12,12 @@ import (
 )
 
 type RunTask struct {
-	// Dir is the directory to run the command in.
+	// DirPath is the directory to run the command in.
 	DirPath string
+
+	// BazelTargets lists bazel targets whose outputs this command needs.
+	BazelTargets []string
+
 	// Cmd is the command to run.
 	Cmd string
 }
@@ -162,7 +166,11 @@ func analyseDir(
 			}
 			runTasks := make([]RunTask, len(rule.Run))
 			for i, cmd := range rule.Run {
-				runTasks[i] = RunTask{DirPath: scmDirPath, Cmd: cmd}
+				runTasks[i] = RunTask{
+					DirPath:      scmDirPath,
+					BazelTargets: []string(rule.NeedBazelBuild),
+					Cmd:          cmd,
+				}
 			}
 			if phase == "format" {
 				for _, relPath := range matches {
