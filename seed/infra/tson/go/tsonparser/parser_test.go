@@ -161,6 +161,21 @@ func TestParseStringEscapes(t *testing.T) {
 	}
 }
 
+func TestParseStringEscapesNonEscape(t *testing.T) {
+	src := `export default { re: "\.(ts|tsx)$" }`
+
+	node, err := Parse([]byte(src))
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	obj := node.(*tsonast.AstObject)
+	s := obj.Fields[0].Value.(*tsonast.AstString)
+	if s.Value != ".(ts|tsx)$" {
+		t.Errorf("re = %q, want %q", s.Value, ".(ts|tsx)$")
+	}
+}
+
 func TestParseSingleQuotedStrings(t *testing.T) {
 	src := `export default { name: 'Nagi' }`
 
