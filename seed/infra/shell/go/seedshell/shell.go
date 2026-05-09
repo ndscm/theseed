@@ -42,6 +42,7 @@ type RunOption func(*exec.Cmd)
 // In shell-eval mode, stdout is captured and logged; otherwise it is forwarded
 // to os.Stdout.
 func PureOptionsRun(options []RunOption, name string, arg ...string) error {
+	seedlog.Debugf("Shell (pure): %v %v", name, arg)
 	cmd := exec.Command(name, arg...)
 	cmd.Stderr = os.Stderr
 	for _, option := range options {
@@ -52,7 +53,7 @@ func PureOptionsRun(options []RunOption, name string, arg ...string) error {
 		if err != nil {
 			return seederr.Wrap(err)
 		}
-		seedlog.Debugf("Command: %v %v\n  output: %v", name, arg, string(outputBytes))
+		seedlog.Debugf("Shell output: %v", string(outputBytes))
 	} else {
 		cmd.Stdout = os.Stdout
 		err := cmd.Run()
@@ -74,6 +75,7 @@ func PureRun(name string, arg ...string) error {
 // Stderr is forwarded to os.Stderr. In shell-eval mode, stdout is captured
 // and logged; otherwise it is forwarded to os.Stdout.
 func ImpureOptionsRun(options []RunOption, name string, arg ...string) error {
+	seedlog.Debugf("Shell (impure): %v %v", name, arg)
 	if flagDry.Get() {
 		seedlog.Infof("Dry mode skip: %v %v", name, arg)
 		return nil
@@ -88,7 +90,7 @@ func ImpureOptionsRun(options []RunOption, name string, arg ...string) error {
 		if err != nil {
 			return seederr.Wrap(err)
 		}
-		seedlog.Debugf("Command: %v %v\n  output: %v", name, arg, string(outputBytes))
+		seedlog.Debugf("Shell output: %v", string(outputBytes))
 	} else {
 		cmd.Stdout = os.Stdout
 		err := cmd.Run()
@@ -109,6 +111,7 @@ func ImpureRun(name string, arg ...string) error {
 // its stdout as a byte slice. It always runs regardless of dry mode. Stderr is
 // forwarded to os.Stderr.
 func PureOptionsOutput(options []RunOption, name string, arg ...string) ([]byte, error) {
+	seedlog.Debugf("Shell (pure): %v %v", name, arg)
 	cmd := exec.Command(name, arg...)
 	cmd.Stderr = os.Stderr
 	for _, option := range options {
@@ -131,6 +134,7 @@ func PureOutput(name string, arg ...string) ([]byte, error) {
 // its stdout as a byte slice. In dry mode the command is skipped and an empty
 // byte slice is returned. Stderr is forwarded to os.Stderr.
 func ImpureOptionsOutput(options []RunOption, name string, arg ...string) ([]byte, error) {
+	seedlog.Debugf("Shell (impure): %v %v", name, arg)
 	if flagDry.Get() {
 		seedlog.Infof("Dry mode skip: %v %v", name, arg)
 		return []byte{}, nil
