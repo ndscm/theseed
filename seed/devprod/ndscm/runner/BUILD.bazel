@@ -8,6 +8,7 @@ go_library(
     name = "runner",
     srcs = [
         "analysis.go",
+        "bazel.go",
         "format.go",
         "makefile.go",
         "runner.go",
