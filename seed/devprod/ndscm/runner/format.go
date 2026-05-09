@@ -42,9 +42,6 @@ func formatFile(
 			err = seedshell.ImpureOptionsRun(
 				[]seedshell.RunOption{func(cmd *exec.Cmd) {
 					cmd.Dir = dirAbsPath
-
-					// Comfort the aspect js_binary rule
-					cmd.Env = append(cmd.Env, "BAZEL_BINDIR=.")
 				}},
 				"bash", "-c", bashCmd)
 			if err != nil {
