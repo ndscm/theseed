@@ -1,3 +1,14 @@
+/**
+ * Root-level ndscm directory config for the theseed/dev repo.
+ *
+ * Defines formatters, bootstrap steps, tidy/lock regeneration, and tests
+ * that `nd` orchestrates into a Makefile. See {@link DirConfig} for the
+ * schema and lifecycle documentation.
+ *
+ * Patterns that match a full filename (e.g. `"^package.json$"`) leave the
+ * dot unescaped for readability — the risk of over-matching is negligible
+ * when the pattern is already anchored to a specific name.
+ */
 import { type DirConfig } from "./seed/devprod/ndscm/config/DIR"
 
 export default {
