@@ -93,8 +93,29 @@ export type DirConfig = {
       watch: string | string[]
 
       /**
-       * Shell command to run. `{{TARGET}}` is replaced with the changed
-       * file path.
+       * Bazel target(s) that will be built before the formatter runs.
+       *
+       * All targets across the phase are batched into a single
+       * `bazel build` invocation. After the build, each target's
+       * output paths are resolved and exposed as template variables
+       * in `run`:
+       *
+       * - `{{BAZEL_RUN}}` / `{{BAZEL_RUN[i]}}` — the default
+       *   executable output of the first / i-th target.
+       * - `{{BAZEL_BUILD}}` / `{{BAZEL_BUILD[i]}}` — the default
+       *   artifact (file) output of the first / i-th target.
+       */
+      needBazelBuild?: string | string[]
+
+      /**
+       * Shell command executed via `bash -c`.
+       *
+       * Template variables:
+       * - `{{TARGET}}` — absolute path of the file being formatted.
+       * - `{{BAZEL_RUN}}` / `{{BAZEL_RUN[i]}}` — executable from
+       *   `needBazelBuild` (see above).
+       * - `{{BAZEL_BUILD}}` / `{{BAZEL_BUILD[i]}}` — artifact from
+       *   `needBazelBuild` (see above).
        */
       run: string | string[]
     }
