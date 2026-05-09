@@ -16,6 +16,9 @@ func escapeMakeTarget(s string) (string, error) {
 }
 
 func generatePhaseBlock(repoAnalysis *RepoAnalysis, phase string) (string, error) {
+	if phase == "format" {
+		return "format:\n\tndscm format\n\n", nil
+	}
 	dirPhase, ok := repoAnalysis.Phases[phase]
 	if !ok {
 		return "", nil
@@ -157,6 +160,7 @@ func generateMakefile(repoAnalysis *RepoAnalysis, phases []string) (string, erro
 
 func GenerateMakefile(worktree string, scmFilePaths []string) (string, error) {
 	phases := []string{
+		"format",
 		"vendor",
 		"bootstrap",
 		"tidy",
