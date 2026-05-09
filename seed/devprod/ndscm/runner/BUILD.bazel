@@ -19,5 +19,6 @@ go_library(
         "//seed/infra/error/go/seederr",
         "//seed/infra/log/go/seedlog",
         "//seed/infra/shell/go/seedshell",
+        "@org_golang_x_sync//errgroup",
     ],
 )
