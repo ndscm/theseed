@@ -18,7 +18,11 @@ export default {
         "\\.(ts|tsx|js|jsx|mts|cts|mjs|cjs|css|scss|less|json|yaml|yml|md|mdx|html|vue)$",
       ],
       needBazelBuild: "//seed/devprod/format/prettier",
-      run: '{{BAZEL_RUN}} --write "{{TARGET}}"',
+      // The prettier must load plugins from the physical node_modules during
+      // runtime, so we follow the aspect_rules_js approach to set BAZEL_BINDIR
+      // to the directory of the built prettier binary, which contains the
+      // node_modules as sibling.
+      run: 'BAZEL_BINDIR="$(dirname "{{BAZEL_RUN}}")" BUILD_WORKING_DIRECTORY="$(pwd)" "{{BAZEL_RUN}}" --write "{{TARGET}}"',
     },
     cc: {
       watch: "\\.(c|cc|cpp|h|hh|hpp)$",
