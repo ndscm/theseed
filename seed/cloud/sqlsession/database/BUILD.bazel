@@ -1,4 +1,5 @@
 load("//seed/devprod/go:ent.bzl", "go_ent_library")
+load("//seed/devprod/ndscm/starlark:defs.bzl", "nd_bootstrap")
 
 package(default_visibility = [
     "//seed/cloud/sqlsession:__subpackages__",
@@ -12,5 +13,18 @@ go_ent_library(
     schema = "//seed/cloud/sqlsession/database/schema",
     deps = [
         "@com_github_google_uuid//:uuid",
+    ],
+)
+
+nd_bootstrap(
+    dsts = [
+        {
+            "dst": "ent",
+            "dir": True,
+            "srcs": [{
+                "src": ":ent_full_srcs",
+                "strip_common_prefix": True,
+            }],
+        },
     ],
 )
