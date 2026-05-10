@@ -9,7 +9,7 @@ export default {
         "wakepbconnect",
       ],
       watch: "\\.proto$",
-      run: "./build.sh",
+      run: "bazel run :bootstrap",
     },
   },
 } satisfies DirConfig
