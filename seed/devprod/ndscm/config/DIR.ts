@@ -131,6 +131,14 @@ export type DirConfig = {
       /** Gitignored output file(s) or directory. Skipped when up-to-date. */
       target: string | string[]
 
+      /**
+       * Literal file paths (relative to repo root) added as extra Make
+       * prerequisites. Use this to express cross-project dependencies —
+       * e.g., this task must re-run when another project's build output
+       * changes.
+       */
+      watchRepo?: string | string[]
+
       /** Regex matched against changed file paths. */
       watch: string | string[]
 
@@ -166,6 +174,15 @@ export type DirConfig = {
     [task: string]: {
       /** Gitignored output file(s) or directory. Skipped when up-to-date. */
       target: string | string[]
+
+      /**
+       * Literal file paths (relative to repo root) added as extra Make
+       * prerequisites. Use this to express cross-project dependencies —
+       * e.g., this task must re-run when another project's build output
+       * changes. Make checks file mtime, so point at concrete files, not
+       * directories.
+       */
+      watchRepo?: string | string[]
 
       /** Regex matched against changed file paths. */
       watch: string | string[]
@@ -206,6 +223,15 @@ export type DirConfig = {
        */
       target: string | string[]
 
+      /**
+       * Literal file paths (relative to repo root) added as extra Make
+       * prerequisites. Use this to express cross-project dependencies —
+       * e.g., this task must re-run when another project's build output
+       * changes. Make checks file mtime, so point at concrete files, not
+       * directories.
+       */
+      watchRepo?: string | string[]
+
       /** Regex matched against changed file paths. */
       watch: string | string[]
 
@@ -245,6 +271,15 @@ export type DirConfig = {
        */
       target: string | string[]
 
+      /**
+       * Literal file paths (relative to repo root) added as extra Make
+       * prerequisites. Use this to express cross-project dependencies —
+       * e.g., this task must re-run when another project's build output
+       * changes. Make checks file mtime, so point at concrete files, not
+       * directories.
+       */
+      watchRepo?: string | string[]
+
       /** Regex matched against changed file paths. */
       watch: string | string[]
 
@@ -263,6 +298,15 @@ export type DirConfig = {
     [task: string]: {
       /** Output file(s) or directory produced by the build. */
       target: string | string[]
+
+      /**
+       * Literal file paths (relative to repo root) added as extra Make
+       * prerequisites. Use this to express cross-project dependencies —
+       * e.g., this task must re-run when another project's build output
+       * changes. Make checks file mtime, so point at concrete files, not
+       * directories.
+       */
+      watchRepo?: string | string[]
 
       /** Regex matched against changed file paths. */
       watch: string | string[]

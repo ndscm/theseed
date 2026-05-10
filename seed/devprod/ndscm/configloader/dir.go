@@ -3,6 +3,8 @@ package configloader
 type WatchGenerateRule struct {
 	Target StringOrStrings `json:"target,omitempty"`
 
+	WatchRepo StringOrStrings `json:"watchRepo,omitempty"`
+
 	Watch StringOrStrings `json:"watch"`
 
 	NeedBazelBuild StringOrStrings `json:"needBazelBuild,omitempty"`
