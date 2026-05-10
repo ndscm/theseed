@@ -11,7 +11,7 @@ export default {
         "loginpbconnect",
       ],
       watch: "\\.proto$",
-      run: "./build.sh",
+      run: "bazel run :bootstrap",
     },
   },
 } satisfies DirConfig

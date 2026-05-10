@@ -3,6 +3,7 @@ load("@aspect_rules_ts//ts:proto.bzl", "ts_proto_library")
 load("@protobuf//bazel:proto_library.bzl", "proto_library")
 load("@rules_go//proto:def.bzl", "go_proto_library")
 load("//seed/devprod/go:proto.bzl", "go_connect_library")
+load("//seed/devprod/ndscm/starlark:defs.bzl", "nd_bootstrap")
 
 package(default_visibility = [
     "//seed/cloud/login:__subpackages__",
@@ -51,4 +52,37 @@ alias(
     name = "pkg",  # Required by aspect_rules_js
     actual = ":login_ts_proto_pkg",
     visibility = ["//visibility:public"],
+)
+
+nd_bootstrap(
+    dsts = [
+        {
+            "dst": "loginpb",
+            "dir": True,
+            "srcs": [{
+                "src": ":login_go_proto",
+                "output_group": "go_generated_srcs",
+            }],
+        },
+        {
+            "dst": "loginpbconnect",
+            "dir": True,
+            "srcs": [{
+                "src": ":login_go_connect_go",
+            }],
+        },
+        {
+            "dst": "login_pb.js",
+            "srcs": [{
+                "src": ":login_ts_proto",
+            }],
+        },
+        {
+            "dst": "login_pb.d.ts",
+            "srcs": [{
+                "src": ":login_ts_proto",
+                "output_group": "types",
+            }],
+        },
+    ],
 )
