@@ -3,6 +3,7 @@ load("@aspect_rules_ts//ts:proto.bzl", "ts_proto_library")
 load("@protobuf//bazel:proto_library.bzl", "proto_library")
 load("@rules_go//proto:def.bzl", "go_proto_library")
 load("//seed/devprod/go:proto.bzl", "go_connect_library")
+load("//seed/devprod/ndscm/starlark:defs.bzl", "nd_bootstrap")
 
 # gazelle:proto file
 
@@ -77,4 +78,58 @@ alias(
     name = "pkg",  # Required by aspect_rules_js
     actual = ":stuff_ts_proto_pkg",
     visibility = ["//visibility:public"],
+)
+
+nd_bootstrap(
+    dsts = [
+        {
+            "dst": "stuffpb",
+            "dir": True,
+            "srcs": [{
+                "src": ":stuff_go_proto",
+                "output_group": "go_generated_srcs",
+            }],
+        },
+        {
+            "dst": "stuffpbconnect",
+            "dir": True,
+            "srcs": [{
+                "src": ":stuff_go_connect_go",
+            }],
+        },
+        {
+            "dst": "stufferrorpb",
+            "dir": True,
+            "srcs": [{
+                "src": ":stuff_error_go_proto",
+                "output_group": "go_generated_srcs",
+            }],
+        },
+        {
+            "dst": "stuff_pb.js",
+            "srcs": [{
+                "src": ":stuff_ts_proto",
+            }],
+        },
+        {
+            "dst": "stuff_pb.d.ts",
+            "srcs": [{
+                "src": ":stuff_ts_proto",
+                "output_group": "types",
+            }],
+        },
+        {
+            "dst": "stuff_error_pb.js",
+            "srcs": [{
+                "src": ":stuff_error_ts_proto",
+            }],
+        },
+        {
+            "dst": "stuff_error_pb.d.ts",
+            "srcs": [{
+                "src": ":stuff_error_ts_proto",
+                "output_group": "types",
+            }],
+        },
+    ],
 )
