@@ -7,8 +7,6 @@ export default {
       watch: "^package.json$",
       run: 'bazel run @pnpm//:pnpm -- --dir "$(pwd)" install',
     },
-  },
-  build: {
     dist: {
       target: "dist",
       watch: "^src/",
