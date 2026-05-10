@@ -14,7 +14,7 @@ export default {
         "golinkpbconnect",
       ],
       watch: "\\.proto$",
-      run: "./build.sh",
+      run: "bazel run :bootstrap",
     },
   },
 } satisfies DirConfig
