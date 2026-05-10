@@ -13,7 +13,7 @@ export default {
         "stuff_error_pb.d.ts",
       ],
       watch: "\\.proto$",
-      run: "./build.sh",
+      run: "bazel run :bootstrap",
     },
   },
 } satisfies DirConfig
