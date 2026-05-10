@@ -1,0 +1,13 @@
+load("@rules_go//go:def.bzl", "go_library")
+
+package(default_visibility = [
+    "//seed/devprod/ndscm/starlark:__subpackages__",
+    "//seed/devprod/starlark:__subpackages__",
+])
+
+go_library(
+    name = "inbazel",
+    srcs = ["inbazel.go"],
+    importpath = "github.com/ndscm/theseed/seed/devprod/starlark/inbazel/go/inbazel",
+    deps = ["//seed/infra/error/go/seederr"],
+)
