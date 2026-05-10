@@ -196,7 +196,7 @@ func analyseDir(
 				continue
 			}
 			phaseTargets[ruleTargets[0]] = append(phaseTargets[ruleTargets[0]], Watcher{
-				Watch: prefixPaths(scmDirPath, matches),
+				Watch: append([]string(rule.WatchRepo), prefixPaths(scmDirPath, matches)...),
 				Run:   runTasks,
 			})
 			for _, t := range ruleTargets[1:] {
