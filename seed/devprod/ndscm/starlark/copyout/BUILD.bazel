@@ -1,0 +1,23 @@
+load("@rules_go//go:def.bzl", "go_binary", "go_library")
+
+package(default_visibility = [
+    "//seed/devprod/ndscm/starlark:__subpackages__",
+])
+
+go_library(
+    name = "copyout_lib",
+    srcs = ["copyout.go"],
+    importpath = "github.com/ndscm/theseed/seed/devprod/ndscm/starlark/copyout",
+    visibility = ["//visibility:private"],
+    deps = [
+        "//seed/devprod/starlark/inbazel/go/inbazel",
+        "//seed/infra/error/go/seederr",
+        "//seed/infra/init/go/seedinit",
+        "//seed/infra/log/go/seedlog",
+    ],
+)
+
+go_binary(
+    name = "copyout",
+    embed = [":copyout_lib"],
+)
