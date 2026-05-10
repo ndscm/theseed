@@ -7,10 +7,9 @@ export default {
       watch: "^package.json$",
       run: 'bazel run @pnpm//:pnpm -- --dir "$(pwd)" install',
     },
-  },
-  build: {
     dist: {
       target: "dist",
+      watchRepo: "seed/cloud/login/proto/login_pb.js",
       watch: "^src/",
       run: 'bazel run @pnpm//:pnpm -- --dir "$(pwd)" build',
     },
