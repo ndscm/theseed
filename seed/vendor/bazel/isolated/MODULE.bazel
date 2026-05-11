@@ -1,0 +1,31 @@
+"""
+Isolated namespace for apparent repo names used by the bazel source repo.
+
+The bazel source repo expects deps under specific repo names (e.g.
+@com_google_protobuf) that conflict with the root module's naming. This
+module provides an isolated scope so those repo_name mappings don't leak
+into the root module's dependency graph.
+
+Currently only the build_event_stream_proto target and its transitive deps
+are wired up. If more @bazel targets are needed, add the corresponding
+bazel_dep entries here to satisfy their repo name requirements.
+"""
+
+module(
+    name = "bazel_isolated",
+    version = "1.0",
+)
+
+# See https://github.com/bazelbuild/bazel/blob/8.6.0/MODULE.bazel
+
+bazel_dep(name = "bazel_skylib", version = "1.7.1")
+bazel_dep(name = "protobuf", version = "33.4", repo_name = "com_google_protobuf")
+bazel_dep(name = "rules_cc", version = "0.1.1")
+bazel_dep(name = "rules_java", version = "8.14.0")
+bazel_dep(name = "rules_jvm_external", version = "6.0")
+bazel_dep(name = "rules_license", version = "1.0.0")
+bazel_dep(name = "rules_pkg", version = "1.0.1")
+bazel_dep(name = "rules_python", version = "0.40.0")
+
+maven = use_extension("@rules_jvm_external//:extensions.bzl", "maven")
+use_repo(maven, "maven")
