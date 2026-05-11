@@ -1,6 +1,8 @@
 package runner
 
 import (
+	_ "embed"
+	"os"
 	"os/exec"
 	"path/filepath"
 	"sort"
@@ -8,10 +10,32 @@ import (
 	"strings"
 	"sync"
 
+	"github.com/ndscm/theseed/seed/devprod/rbe/bes/go/bep"
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
 	"github.com/ndscm/theseed/seed/infra/log/go/seedlog"
 	"github.com/ndscm/theseed/seed/infra/shell/go/seedshell"
 )
+
+//go:embed default_executable_aspect.bzl
+var defaultExecutableAspect string
+
+func prepareDefaultExecutableAspect(worktreeAbsPath string) error {
+	err := os.MkdirAll(filepath.Join(worktreeAbsPath, ".cache/ndscm"), 0755)
+	if err != nil {
+		return seederr.Wrap(err)
+	}
+	err = os.WriteFile(filepath.Join(worktreeAbsPath, ".cache/ndscm/BUILD.bazel"), []byte{}, 0644)
+	if err != nil {
+		return seederr.Wrap(err)
+	}
+	err = os.WriteFile(
+		filepath.Join(worktreeAbsPath, ".cache/ndscm/default_executable_aspect.bzl"),
+		[]byte(defaultExecutableAspect), 0644)
+	if err != nil {
+		return seederr.Wrap(err)
+	}
+	return nil
+}
 
 type BazelTargetInfo struct {
 	ArtifactPaths   []string
@@ -71,41 +95,6 @@ func (gnd *BazelGround) collect(phase RepoPhase) error {
 	return nil
 }
 
-var bazelCqueryStarlarkExpr = strings.Join([]string{
-	`"ARTIFACTS"`,
-	`+ "\n"`,
-	`+ "\n".join([f.path for f in target.files.to_list()])`,
-	`+ "\n"`,
-	`+ "EXECUTABLES"`,
-	`+ "\n"`,
-	`+ (target.files_to_run.executable.path if target.files_to_run.executable else "")`,
-}, " ")
-
-func parseBazelCqueryOutput(worktreeAbsPath string, output string) BazelTargetInfo {
-	info := BazelTargetInfo{}
-	sections := strings.SplitN(output, "EXECUTABLES\n", 2)
-
-	artifactSection := ""
-	executableSection := ""
-	if len(sections) == 2 {
-		artifactSection = sections[0]
-		executableSection = sections[1]
-	}
-
-	artifactSection = strings.TrimPrefix(artifactSection, "ARTIFACTS\n")
-	for _, line := range strings.Split(strings.TrimSpace(artifactSection), "\n") {
-		if line != "" {
-			info.ArtifactPaths = append(info.ArtifactPaths, filepath.Join(worktreeAbsPath, line))
-		}
-	}
-	for _, line := range strings.Split(strings.TrimSpace(executableSection), "\n") {
-		if line != "" {
-			info.ExecutablePaths = append(info.ExecutablePaths, filepath.Join(worktreeAbsPath, line))
-		}
-	}
-	return info
-}
-
 func (gnd *BazelGround) build(worktree string) error {
 	gnd.builtMutex.Lock()
 	defer gnd.builtMutex.Unlock()
@@ -133,29 +122,52 @@ func (gnd *BazelGround) build(worktree string) error {
 		return nil
 	}
 
+	err = prepareDefaultExecutableAspect(worktreeAbsPath)
+	if err != nil {
+		return seederr.Wrap(err)
+	}
+	bazelArgs := []string{
+		"build",
+		"--aspects=.cache/ndscm/default_executable_aspect.bzl%default_executable_aspect",
+		"--output_groups=+default_executable",
+	}
 	err = seedshell.ImpureOptionsRun(
 		[]seedshell.RunOption{func(cmd *exec.Cmd) {
 			cmd.Dir = worktreeAbsPath
 		}},
-		"bazel", append([]string{"build"}, bazelTargets...)...)
+		"bazel", append(bazelArgs, bazelTargets...)...)
 	if err != nil {
 		return seederr.Wrap(err)
 	}
 
-	// TODO(nagi): Parse BEP output to get artifact and executable paths.
+	bepPath := filepath.Join(worktreeAbsPath, ".bep")
+	data, err := os.ReadFile(bepPath)
+	if err != nil {
+		return seederr.Wrap(err)
+	}
+	bepEvents, err := bep.ParseBuildEventProtos(data)
+	if err != nil {
+		return seederr.Wrap(err)
+	}
 
 	for _, bazelTarget := range bazelTargets {
-		output, err := seedshell.PureOptionsOutput(
-			[]seedshell.RunOption{func(cmd *exec.Cmd) {
-				cmd.Dir = worktreeAbsPath
-			}},
-			"bazel", "cquery", "--output=starlark",
-			"--starlark:expr="+bazelCqueryStarlarkExpr,
-			bazelTarget)
+		info := BazelTargetInfo{}
+		artifacts, err := bep.QueryOutput(bepEvents, bazelTarget, "default")
 		if err != nil {
 			return seederr.Wrap(err)
 		}
-		info := parseBazelCqueryOutput(worktreeAbsPath, string(output))
+		for _, f := range artifacts {
+			pathParts := append(f.GetPathPrefix(), f.GetName())
+			info.ArtifactPaths = append(info.ArtifactPaths, filepath.Join(worktreeAbsPath, filepath.Join(pathParts...)))
+		}
+		executables, err := bep.QueryOutput(bepEvents, bazelTarget, "default_executable")
+		if err != nil {
+			return seederr.Wrap(err)
+		}
+		for _, f := range executables {
+			pathParts := append(f.GetPathPrefix(), f.GetName())
+			info.ExecutablePaths = append(info.ExecutablePaths, filepath.Join(worktreeAbsPath, filepath.Join(pathParts...)))
+		}
 		seedlog.Debugf("Built bazel target: target=%s artifacts=%v executables=%v",
 			bazelTarget, info.ArtifactPaths, info.ExecutablePaths)
 		gnd.targetMap[bazelTarget] = info
