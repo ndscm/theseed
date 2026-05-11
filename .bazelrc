@@ -1,4 +1,5 @@
 common --@aspect_rules_ts//ts:skipLibCheck=honor_tsconfig
+common --build_event_binary_file=.bep
 common --experimental_isolated_extension_usages
 common --incompatible_strict_action_env
 common --remote_cache=http://cache.rbe.ndscm.com:22243 --remote_timeout=60
