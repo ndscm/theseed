@@ -114,6 +114,9 @@ include("//seed/vendor/python:python.MODULE.bazel")
 
 # Apps
 
+## Bazel
+include("//seed/vendor/bazel:bazel.MODULE.bazel")
+
 ## Hedronvision Bazel Compile Commands Extractor
 include("//contrib/vendor/hedronvision/bazel-compile-commands-extractor:bazel-compile-commands-extractor.MODULE.bazel")
 
