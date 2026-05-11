@@ -1,4 +1,4 @@
-load("@rules_python//python:defs.bzl", "py_binary", "py_library")
+load("@rules_python//python:defs.bzl", "py_binary")
 
 package(default_visibility = ["//seed/devprod/starlark/archive:__subpackages__"])
 
@@ -6,17 +6,12 @@ exports_files(
     glob(["*.bzl"]),
 )
 
-py_library(
-    name = "inbazel",
-    srcs = ["inbazel.py"],
-)
-
 py_binary(
     name = "create_tar_gz",
     srcs = ["create_tar_gz.py"],
     visibility = ["//visibility:public"],
     deps = [
-        ":inbazel",
+        "//seed/devprod/starlark/inbazel/python:inbazel",
         "//seed/infra/python:seed_flag",
         "//seed/infra/python:seed_init",
     ],
@@ -27,7 +22,7 @@ py_binary(
     srcs = ["create_zip.py"],
     visibility = ["//visibility:public"],
     deps = [
-        ":inbazel",
+        "//seed/devprod/starlark/inbazel/python:inbazel",
         "//seed/infra/python:seed_flag",
         "//seed/infra/python:seed_init",
     ],
