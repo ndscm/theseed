@@ -41,7 +41,11 @@ func NdMakefile(scmProvider scm.Provider, _ NdMakefileOptions) error {
 	if err != nil {
 		return seederr.Wrap(err)
 	}
-	err = os.WriteFile(filepath.Join(worktreePath, "ndscm.Makefile"), []byte(makefile), 0644)
+	err = os.MkdirAll(filepath.Join(worktreePath, ".cache/ndscm"), 0755)
+	if err != nil {
+		return seederr.Wrap(err)
+	}
+	err = os.WriteFile(filepath.Join(worktreePath, ".cache/ndscm/Makefile"), []byte(makefile), 0644)
 	if err != nil {
 		return seederr.Wrap(err)
 	}
