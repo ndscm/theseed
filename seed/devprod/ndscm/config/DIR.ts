@@ -192,6 +192,14 @@ export type DirConfig = {
       /** Regex matched against changed file paths. */
       watch: string | string[]
 
+      /**
+       * Bazel target(s) to build before the task runs.
+       *
+       * All targets within the phase are batched into a single
+       * `bazel build` invocation.
+       */
+      needBazelBuild?: string | string[]
+
       /** Shell command to run. */
       run: string | string[]
     }
