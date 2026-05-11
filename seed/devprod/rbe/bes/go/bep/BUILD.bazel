@@ -1,0 +1,17 @@
+load("@rules_go//go:def.bzl", "go_library")
+
+package(default_visibility = [
+    "//seed/devprod/rbe:__subpackages__",
+])
+
+go_library(
+    name = "bep",
+    srcs = ["sequence.go"],
+    importpath = "github.com/ndscm/theseed/seed/devprod/rbe/bes/go/bep",
+    deps = [
+        "//seed/devprod/rbe/bes/proto:build_event_stream_go_proto",
+        "//seed/infra/error/go/seederr",
+        "@org_golang_google_protobuf//encoding/protojson",
+        "@org_golang_google_protobuf//proto",
+    ],
+)
