@@ -13,9 +13,13 @@ go_library(
         "makefile.go",
         "runner.go",
     ],
+    embedsrcs = [
+        "default_executable_aspect.bzl",
+    ],
     importpath = "github.com/ndscm/theseed/seed/devprod/ndscm/runner",
     deps = [
         "//seed/devprod/ndscm/configloader",
+        "//seed/devprod/rbe/bes/go/bep",
         "//seed/infra/error/go/seederr",
         "//seed/infra/log/go/seedlog",
         "//seed/infra/shell/go/seedshell",
