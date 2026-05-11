@@ -1,0 +1,18 @@
+"""
+Vendor the bazel source repo as @bazel via an isolated module.
+
+The bazel source repo can't be used directly as a bazel_dep because its
+MODULE.bazel assumes it is the root module (e.g. it uses root-only
+rules_graalvm tags). Instead, we route through bazel_isolated which
+provides an isolated namespace for the repo name mappings the bazel source
+expects, then re-export @bazel via a module extension.
+"""
+
+bazel_dep(name = "bazel_isolated", version = "1.0")
+local_path_override(
+    module_name = "bazel_isolated",
+    path = "seed/vendor/bazel/isolated",
+)
+
+bazel = use_extension("@bazel_isolated//:extensions.bzl", "bazel")
+use_repo(bazel, "bazel")
