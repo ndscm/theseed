@@ -1,0 +1,147 @@
+"""
+Go proto libraries for @bazel's build_event_stream.proto and its transitive
+dependencies.
+
+The bazel source repo doesn't ship go_proto_library targets, so we define
+them here. Keeping them in this module also lets gopls resolve the generated
+packages without needing upstream Go modules.
+"""
+
+load("@rules_go//proto:def.bzl", "go_proto_library")
+load("//seed/devprod/ndscm/starlark:defs.bzl", "nd_bootstrap")
+
+package(default_visibility = [
+    "//seed/devprod/rbe:__subpackages__",
+])
+
+# gazelle:ignore
+
+go_proto_library(
+    name = "package_load_metrics_go_proto",
+    importpath = "github.com/ndscm/theseed/seed/devprod/rbe/bes/proto/packageloadmetricspb",
+    proto = "@bazel//src/main/java/com/google/devtools/build/lib/packages/metrics:package_load_metrics_proto",
+)
+
+go_proto_library(
+    name = "action_cache_go_proto",
+    importpath = "github.com/ndscm/theseed/seed/devprod/rbe/bes/proto/actioncachepb",
+    proto = "@bazel//src/main/protobuf:action_cache_proto",
+)
+
+go_proto_library(
+    name = "option_filters_go_proto",
+    importpath = "github.com/ndscm/theseed/seed/devprod/rbe/bes/proto/optionfilterspb",
+    proto = "@bazel//src/main/protobuf:option_filters_proto",
+)
+
+go_proto_library(
+    name = "command_line_go_proto",
+    importpath = "github.com/ndscm/theseed/seed/devprod/rbe/bes/proto/commandlinepb",
+    proto = "@bazel//src/main/protobuf:command_line_proto",
+    deps = [
+        ":option_filters_go_proto",
+    ],
+)
+
+go_proto_library(
+    name = "failure_details_go_proto",
+    importpath = "github.com/ndscm/theseed/seed/devprod/rbe/bes/proto/failuredetailspb",
+    proto = "@bazel//src/main/protobuf:failure_details_proto",
+)
+
+go_proto_library(
+    name = "strategy_policy_go_proto",
+    importpath = "github.com/ndscm/theseed/seed/devprod/rbe/bes/proto/strategypolicypb",
+    proto = "@bazel//src/main/protobuf:strategy_policy_proto",
+)
+
+go_proto_library(
+    name = "invocation_policy_go_proto",
+    importpath = "github.com/ndscm/theseed/seed/devprod/rbe/bes/proto/invocationpolicypb",
+    proto = "@bazel//src/main/protobuf:invocation_policy_proto",
+    deps = [
+        ":strategy_policy_go_proto",
+    ],
+)
+
+go_proto_library(
+    name = "build_event_stream_go_proto",
+    importpath = "github.com/ndscm/theseed/seed/devprod/rbe/bes/proto/buildeventstreampb",
+    proto = "@bazel//src/main/java/com/google/devtools/build/lib/buildeventstream/proto:build_event_stream_proto",
+    deps = [
+        ":action_cache_go_proto",
+        ":command_line_go_proto",
+        ":failure_details_go_proto",
+        ":invocation_policy_go_proto",
+        ":package_load_metrics_go_proto",
+    ],
+)
+
+nd_bootstrap(
+    dsts = [
+        {
+            "dst": "packageloadmetricspb",
+            "dir": True,
+            "srcs": [{
+                "src": ":package_load_metrics_go_proto",
+                "output_group": "go_generated_srcs",
+            }],
+        },
+        {
+            "dst": "actioncachepb",
+            "dir": True,
+            "srcs": [{
+                "src": ":action_cache_go_proto",
+                "output_group": "go_generated_srcs",
+            }],
+        },
+        {
+            "dst": "optionfilterspb",
+            "dir": True,
+            "srcs": [{
+                "src": ":option_filters_go_proto",
+                "output_group": "go_generated_srcs",
+            }],
+        },
+        {
+            "dst": "commandlinepb",
+            "dir": True,
+            "srcs": [{
+                "src": ":command_line_go_proto",
+                "output_group": "go_generated_srcs",
+            }],
+        },
+        {
+            "dst": "failuredetailspb",
+            "dir": True,
+            "srcs": [{
+                "src": ":failure_details_go_proto",
+                "output_group": "go_generated_srcs",
+            }],
+        },
+        {
+            "dst": "strategypolicypb",
+            "dir": True,
+            "srcs": [{
+                "src": ":strategy_policy_go_proto",
+                "output_group": "go_generated_srcs",
+            }],
+        },
+        {
+            "dst": "invocationpolicypb",
+            "dir": True,
+            "srcs": [{
+                "src": ":invocation_policy_go_proto",
+                "output_group": "go_generated_srcs",
+            }],
+        },
+        {
+            "dst": "buildeventstreampb",
+            "dir": True,
+            "srcs": [{
+                "src": ":build_event_stream_go_proto",
+                "output_group": "go_generated_srcs",
+            }],
+        },
+    ],
+)
