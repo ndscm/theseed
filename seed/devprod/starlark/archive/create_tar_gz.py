@@ -7,7 +7,7 @@ import tempfile
 
 import seed.infra.python.seed_flag as seed_flag
 import seed.infra.python.seed_init as seed_init
-import seed.devprod.starlark.archive.inbazel as inbazel
+import seed.devprod.starlark.inbazel.python.inbazel as inbazel
 
 logger = logging.getLogger(__name__)
 
