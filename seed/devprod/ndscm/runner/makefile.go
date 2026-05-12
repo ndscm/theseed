@@ -1,6 +1,9 @@
 package runner
 
 import (
+	"encoding/json"
+	"os"
+	"path/filepath"
 	"sort"
 	"strings"
 
@@ -169,6 +172,18 @@ func GenerateMakefile(worktreePath string, scmFilePaths []string) (string, error
 		"test",
 	}
 	repoAnalysis, err := AnalyseRepo(worktreePath, phases, scmFilePaths)
+	if err != nil {
+		return "", seederr.Wrap(err)
+	}
+	analysisJson, err := json.MarshalIndent(repoAnalysis, "", "  ")
+	if err != nil {
+		return "", seederr.Wrap(err)
+	}
+	err = os.MkdirAll(filepath.Join(worktreePath, ".cache/ndscm"), 0755)
+	if err != nil {
+		return "", seederr.Wrap(err)
+	}
+	err = os.WriteFile(filepath.Join(worktreePath, ".cache/ndscm/analysis.json"), analysisJson, 0644)
 	if err != nil {
 		return "", seederr.Wrap(err)
 	}
