@@ -158,7 +158,7 @@ func generateMakefile(repoAnalysis *RepoAnalysis, phases []string) (string, erro
 	return final.String(), nil
 }
 
-func GenerateMakefile(worktree string, scmFilePaths []string) (string, error) {
+func GenerateMakefile(worktreePath string, scmFilePaths []string) (string, error) {
 	phases := []string{
 		"format",
 		"vendor",
@@ -168,7 +168,7 @@ func GenerateMakefile(worktree string, scmFilePaths []string) (string, error) {
 		"build",
 		"test",
 	}
-	repoAnalysis, err := AnalyseRepo(worktree, phases, scmFilePaths)
+	repoAnalysis, err := AnalyseRepo(worktreePath, phases, scmFilePaths)
 	if err != nil {
 		return "", seederr.Wrap(err)
 	}

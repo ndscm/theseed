@@ -246,8 +246,8 @@ func mergeRepoPhase(basePhase RepoPhase, newPhase RepoPhase) RepoPhase {
 	return merged
 }
 
-func AnalyseRepo(worktree string, phases []string, scmFilePaths []string) (*RepoAnalysis, error) {
-	dirConfigs, err := configloader.LoadDirConfigs(worktree, scmFilePaths)
+func AnalyseRepo(worktreePath string, phases []string, scmFilePaths []string) (*RepoAnalysis, error) {
+	dirConfigs, err := configloader.LoadDirConfigs(worktreePath, scmFilePaths)
 	if err != nil {
 		return nil, seederr.Wrap(err)
 	}
