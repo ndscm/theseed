@@ -4,7 +4,6 @@ import (
 	"errors"
 	"os/exec"
 	"path/filepath"
-	"sort"
 	"strings"
 	"sync"
 
@@ -25,29 +24,43 @@ func escapeFilePathForBash(filePath string) string {
 	return bashEscapeReplacer.Replace(filePath)
 }
 
-// formatFile runs all watcher commands against a single target file.
+// formatFile runs a watcher's commands
 func formatFile(
-	worktreePath string, targetRepoPath string, watchers []Watcher, bazelGround *BazelGround,
+	worktreePath string, watcher Watcher, bazelGround *BazelGround, targetLocks *sync.Map,
 ) error {
-	targetAbsPath := filepath.Join(worktreePath, targetRepoPath)
+	if len(watcher.Targets) == 0 {
+		return nil
+	}
+
+	for _, targetRepoPath := range watcher.Targets {
+		// Defensive retrive all locks before length check.
+		targetLock, _ := targetLocks.LoadOrStore(targetRepoPath, &sync.Mutex{})
+		mu := targetLock.(*sync.Mutex)
+		mu.Lock()
+		defer mu.Unlock()
+	}
+
+	if len(watcher.Targets) > 1 {
+		return seederr.WrapErrorf("format task should not contain multiple targets")
+	}
+
+	targetAbsPath := filepath.Join(worktreePath, watcher.Targets[0])
 	escapedTarget := escapeFilePathForBash(targetAbsPath)
-	for _, watcher := range watchers {
-		for _, runTask := range watcher.Run {
-			dirAbsPath := filepath.Join(worktreePath, runTask.DirPath)
-			bashCmd := runTask.Cmd
-			bashCmd = strings.ReplaceAll(bashCmd, "{{TARGET}}", escapedTarget)
-			bashCmd, err := bazelGround.fulfill(bashCmd, runTask.BazelTargets)
-			if err != nil {
-				return seederr.Wrap(err)
-			}
-			err = seedshell.ImpureOptionsRun(
-				[]seedshell.RunOption{func(cmd *exec.Cmd) {
-					cmd.Dir = dirAbsPath
-				}},
-				"bash", "-c", bashCmd)
-			if err != nil {
-				return seederr.Wrap(err)
-			}
+	for _, runTask := range watcher.Run {
+		dirAbsPath := filepath.Join(worktreePath, runTask.DirPath)
+		bashCmd := runTask.Cmd
+		bashCmd = strings.ReplaceAll(bashCmd, "{{TARGET}}", escapedTarget)
+		bashCmd, err := bazelGround.fulfill(bashCmd, runTask.BazelTargets)
+		if err != nil {
+			return seederr.Wrap(err)
+		}
+		err = seedshell.ImpureOptionsRun(
+			[]seedshell.RunOption{func(cmd *exec.Cmd) {
+				cmd.Dir = dirAbsPath
+			}},
+			"bash", "-c", bashCmd)
+		if err != nil {
+			return seederr.Wrap(err)
 		}
 	}
 	return nil
@@ -72,29 +85,18 @@ func formatFiles(worktreePath string, formatPhase RepoPhase, dirtyRepoPaths []st
 		dirtySet[p] = true
 	}
 
-	targetRepoPaths := []string{}
-	for k := range formatPhase.Targets {
-		targetRepoPaths = append(targetRepoPaths, k)
-	}
-	sort.Strings(targetRepoPaths)
-
+	targetLocks := sync.Map{}
 	errGroup := errgroup.Group{}
 	errGroup.SetLimit(100)
 	errsMutex := sync.Mutex{}
 	errs := []error{}
 
 	finalCount := 0
-	for _, targetRepoPath := range targetRepoPaths {
-		watchers := formatPhase.Targets[targetRepoPath]
+	for _, watcher := range formatPhase.Watchers {
 		hasDirty := false
-		for _, watcher := range watchers {
-			for _, watching := range watcher.Watch {
-				if dirtySet[watching] {
-					hasDirty = true
-					break
-				}
-			}
-			if hasDirty {
+		for _, watching := range watcher.Watch {
+			if dirtySet[watching] {
+				hasDirty = true
 				break
 			}
 		}
@@ -103,7 +105,7 @@ func formatFiles(worktreePath string, formatPhase RepoPhase, dirtyRepoPaths []st
 		}
 		finalCount++
 		errGroup.Go(func() error {
-			err := formatFile(worktreePath, targetRepoPath, watchers, bazelGround)
+			err := formatFile(worktreePath, watcher, bazelGround, &targetLocks)
 			if err != nil {
 				errsMutex.Lock()
 				defer errsMutex.Unlock()
