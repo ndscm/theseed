@@ -19,17 +19,17 @@ import (
 //go:embed default_executable_aspect.bzl
 var defaultExecutableAspect string
 
-func prepareDefaultExecutableAspect(worktreeAbsPath string) error {
-	err := os.MkdirAll(filepath.Join(worktreeAbsPath, ".cache/ndscm"), 0755)
+func prepareDefaultExecutableAspect(worktreePath string) error {
+	err := os.MkdirAll(filepath.Join(worktreePath, ".cache/ndscm"), 0755)
 	if err != nil {
 		return seederr.Wrap(err)
 	}
-	err = os.WriteFile(filepath.Join(worktreeAbsPath, ".cache/ndscm/BUILD.bazel"), []byte{}, 0644)
+	err = os.WriteFile(filepath.Join(worktreePath, ".cache/ndscm/BUILD.bazel"), []byte{}, 0644)
 	if err != nil {
 		return seederr.Wrap(err)
 	}
 	err = os.WriteFile(
-		filepath.Join(worktreeAbsPath, ".cache/ndscm/default_executable_aspect.bzl"),
+		filepath.Join(worktreePath, ".cache/ndscm/default_executable_aspect.bzl"),
 		[]byte(defaultExecutableAspect), 0644)
 	if err != nil {
 		return seederr.Wrap(err)
@@ -95,17 +95,12 @@ func (gnd *BazelGround) collect(phase RepoPhase) error {
 	return nil
 }
 
-func (gnd *BazelGround) build(worktree string) error {
+func (gnd *BazelGround) build(worktreePath string) error {
 	gnd.builtMutex.Lock()
 	defer gnd.builtMutex.Unlock()
 
 	if gnd.built {
 		return seederr.WrapErrorf("build bazel tools twice is not allowed")
-	}
-
-	worktreeAbsPath, err := filepath.Abs(worktree)
-	if err != nil {
-		return seederr.Wrap(err)
 	}
 
 	gnd.targetMapMutex.Lock()
@@ -122,7 +117,7 @@ func (gnd *BazelGround) build(worktree string) error {
 		return nil
 	}
 
-	err = prepareDefaultExecutableAspect(worktreeAbsPath)
+	err := prepareDefaultExecutableAspect(worktreePath)
 	if err != nil {
 		return seederr.Wrap(err)
 	}
@@ -133,14 +128,14 @@ func (gnd *BazelGround) build(worktree string) error {
 	}
 	err = seedshell.ImpureOptionsRun(
 		[]seedshell.RunOption{func(cmd *exec.Cmd) {
-			cmd.Dir = worktreeAbsPath
+			cmd.Dir = worktreePath
 		}},
 		"bazel", append(bazelArgs, bazelTargets...)...)
 	if err != nil {
 		return seederr.Wrap(err)
 	}
 
-	bepPath := filepath.Join(worktreeAbsPath, ".bep")
+	bepPath := filepath.Join(worktreePath, ".bep")
 	data, err := os.ReadFile(bepPath)
 	if err != nil {
 		return seederr.Wrap(err)
@@ -158,7 +153,7 @@ func (gnd *BazelGround) build(worktree string) error {
 		}
 		for _, f := range artifacts {
 			pathParts := append(f.GetPathPrefix(), f.GetName())
-			info.ArtifactPaths = append(info.ArtifactPaths, filepath.Join(worktreeAbsPath, filepath.Join(pathParts...)))
+			info.ArtifactPaths = append(info.ArtifactPaths, filepath.Join(worktreePath, filepath.Join(pathParts...)))
 		}
 		executables, err := bep.QueryOutput(bepEvents, bazelTarget, "default_executable")
 		if err != nil {
@@ -166,7 +161,7 @@ func (gnd *BazelGround) build(worktree string) error {
 		}
 		for _, f := range executables {
 			pathParts := append(f.GetPathPrefix(), f.GetName())
-			info.ExecutablePaths = append(info.ExecutablePaths, filepath.Join(worktreeAbsPath, filepath.Join(pathParts...)))
+			info.ExecutablePaths = append(info.ExecutablePaths, filepath.Join(worktreePath, filepath.Join(pathParts...)))
 		}
 		seedlog.Debugf("Built bazel target: target=%s artifacts=%v executables=%v",
 			bazelTarget, info.ArtifactPaths, info.ExecutablePaths)

@@ -13,11 +13,11 @@ type NdMakefileOptions struct {
 }
 
 func NdMakefile(scmProvider scm.Provider, _ NdMakefileOptions) error {
-	worktree, err := scmProvider.GetCurrentWorktree()
+	worktreePath, err := scmProvider.GetCurrentWorktree()
 	if err != nil {
 		return seederr.Wrap(err)
 	}
-	filePaths, err := scmProvider.ListFiles(worktree)
+	filePaths, err := scmProvider.ListFiles(worktreePath)
 	if err != nil {
 		return seederr.Wrap(err)
 	}
@@ -25,7 +25,7 @@ func NdMakefile(scmProvider scm.Provider, _ NdMakefileOptions) error {
 	if err != nil {
 		return seederr.Wrap(err)
 	}
-	dirtyFiles, err := scmProvider.GetWorktreeDirtyFiles(worktree)
+	dirtyFiles, err := scmProvider.GetWorktreeDirtyFiles(worktreePath)
 	if err != nil {
 		return seederr.Wrap(err)
 	}
@@ -33,7 +33,7 @@ func NdMakefile(scmProvider scm.Provider, _ NdMakefileOptions) error {
 	for _, dirtyFile := range dirtyFiles {
 		dirtyPaths = append(dirtyPaths, dirtyFile.To)
 	}
-	r, err := runner.CreateRunner(worktree, filePaths, changePaths, dirtyPaths)
+	r, err := runner.CreateRunner(worktreePath, filePaths, changePaths, dirtyPaths)
 	if err != nil {
 		return seederr.Wrap(err)
 	}
@@ -41,7 +41,7 @@ func NdMakefile(scmProvider scm.Provider, _ NdMakefileOptions) error {
 	if err != nil {
 		return seederr.Wrap(err)
 	}
-	err = os.WriteFile(filepath.Join(worktree, "ndscm.Makefile"), []byte(makefile), 0644)
+	err = os.WriteFile(filepath.Join(worktreePath, "ndscm.Makefile"), []byte(makefile), 0644)
 	if err != nil {
 		return seederr.Wrap(err)
 	}

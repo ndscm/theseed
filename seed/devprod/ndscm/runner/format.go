@@ -26,13 +26,13 @@ func escapeFilePathForBash(filePath string) string {
 }
 
 func formatFile(
-	worktreeAbsPath string, scmTargetPath string, watchers []Watcher, bazelGround *BazelGround,
+	worktreePath string, scmTargetPath string, watchers []Watcher, bazelGround *BazelGround,
 ) error {
-	targetAbsPath := filepath.Join(worktreeAbsPath, scmTargetPath)
+	targetAbsPath := filepath.Join(worktreePath, scmTargetPath)
 	escapedTarget := escapeFilePathForBash(targetAbsPath)
 	for _, watcher := range watchers {
 		for _, runTask := range watcher.Run {
-			dirAbsPath := filepath.Join(worktreeAbsPath, runTask.DirPath)
+			dirAbsPath := filepath.Join(worktreePath, runTask.DirPath)
 			bashCmd := runTask.Cmd
 			bashCmd = strings.ReplaceAll(bashCmd, "{{TARGET}}", escapedTarget)
 			bashCmd, err := bazelGround.fulfill(bashCmd, runTask.BazelTargets)
@@ -52,19 +52,15 @@ func formatFile(
 	return nil
 }
 
-func formatFiles(worktree string, formatPhase RepoPhase, filePaths []string) error {
+func formatFiles(worktreePath string, formatPhase RepoPhase, filePaths []string) error {
 	seedlog.Debugf("Formatting files:\n%v", strings.Join(filePaths, "\n"))
-	worktreeAbsPath, err := filepath.Abs(worktree)
-	if err != nil {
-		return seederr.Wrap(err)
-	}
 
 	bazelGround := NewBazelGround()
-	err = bazelGround.collect(formatPhase)
+	err := bazelGround.collect(formatPhase)
 	if err != nil {
 		return seederr.Wrap(err)
 	}
-	err = bazelGround.build(worktree)
+	err = bazelGround.build(worktreePath)
 	if err != nil {
 		return seederr.Wrap(err)
 	}
@@ -103,7 +99,7 @@ func formatFiles(worktree string, formatPhase RepoPhase, filePaths []string) err
 			continue
 		}
 		errGroup.Go(func() error {
-			err := formatFile(worktreeAbsPath, scmTargetPath, watchers, bazelGround)
+			err := formatFile(worktreePath, scmTargetPath, watchers, bazelGround)
 			if err != nil {
 				errsMutex.Lock()
 				defer errsMutex.Unlock()
@@ -118,8 +114,8 @@ func formatFiles(worktree string, formatPhase RepoPhase, filePaths []string) err
 	return errors.Join(errs...)
 }
 
-func FormatDirtyFiles(worktree string, scmFilePaths []string, scmDirtyPaths []string) error {
-	repoAnalysis, err := AnalyseRepo(worktree, []string{"format"}, scmFilePaths)
+func FormatDirtyFiles(worktreePath string, scmFilePaths []string, scmDirtyPaths []string) error {
+	repoAnalysis, err := AnalyseRepo(worktreePath, []string{"format"}, scmFilePaths)
 	if err != nil {
 		return seederr.Wrap(err)
 	}
@@ -129,15 +125,15 @@ func FormatDirtyFiles(worktree string, scmFilePaths []string, scmDirtyPaths []st
 	if !ok {
 		return nil
 	}
-	err = formatFiles(worktree, formatPhase, scmDirtyPaths)
+	err = formatFiles(worktreePath, formatPhase, scmDirtyPaths)
 	if err != nil {
 		return seederr.Wrap(err)
 	}
 	return nil
 }
 
-func FormatAllFiles(worktree string, scmFilePaths []string) error {
-	repoAnalysis, err := AnalyseRepo(worktree, []string{"format"}, scmFilePaths)
+func FormatAllFiles(worktreePath string, scmFilePaths []string) error {
+	repoAnalysis, err := AnalyseRepo(worktreePath, []string{"format"}, scmFilePaths)
 	if err != nil {
 		return seederr.Wrap(err)
 	}
@@ -147,7 +143,7 @@ func FormatAllFiles(worktree string, scmFilePaths []string) error {
 	if !ok {
 		return nil
 	}
-	err = formatFiles(worktree, formatPhase, scmFilePaths)
+	err = formatFiles(worktreePath, formatPhase, scmFilePaths)
 	if err != nil {
 		return seederr.Wrap(err)
 	}
