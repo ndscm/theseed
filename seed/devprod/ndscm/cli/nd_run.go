@@ -8,16 +8,16 @@ import (
 	"github.com/ndscm/theseed/seed/infra/flag/go/seedflag"
 )
 
-type ndFormatFlags struct {
+type ndRunFlags struct {
 	all     *seedflag.BoolFlag
 	changed *seedflag.BoolFlag
 }
 
-func parseNdFormatFlags(args []string) (ndFormatFlags, []string, error) {
-	cf := seedflag.NewCommandFlags("nd-format")
-	cmdFlags := ndFormatFlags{}
-	cmdFlags.all = cf.DefineBool("all", false, "Format all files in the repository")
-	cmdFlags.changed = cf.DefineBool("changed", true, "Also format files changed in the last commit")
+func parseNdRunFlags(args []string) (ndRunFlags, []string, error) {
+	cf := seedflag.NewCommandFlags("nd-run")
+	cmdFlags := ndRunFlags{}
+	cmdFlags.all = cf.DefineBool("all", false, "Run against all files instead of only dirty files")
+	cmdFlags.changed = cf.DefineBool("changed", false, "Run against changed files instead of only dirty files")
 	cmdArgs, err := cf.Parse(args,
 		seedflag.WithAnywhereFlag(true),
 	)
@@ -28,13 +28,13 @@ func parseNdFormatFlags(args []string) (ndFormatFlags, []string, error) {
 	return cmdFlags, cmdArgs, nil
 }
 
-func ndFormat(args []string) error {
-	cmdFlags, cmdArgs, err := parseNdFormatFlags(args)
+func ndRun(args []string) error {
+	cmdFlags, cmdArgs, err := parseNdRunFlags(args)
 	if err != nil {
 		return seederr.Wrap(err)
 	}
-	if len(cmdArgs) != 0 {
-		return seederr.WrapErrorf("nd-format usage: ndscm format")
+	if len(cmdArgs) == 0 {
+		return seederr.WrapErrorf("nd-run usage: ndscm run <phase> [<phase>...]")
 	}
 	cc := &clientcore.ClientCore{}
 	err = cc.Initialize()
@@ -46,7 +46,7 @@ func ndFormat(args []string) error {
 		All:     cmdFlags.all.Get(),
 		Changed: cmdFlags.changed.Get(),
 
-		Phases: []string{"format"},
+		Phases: cmdArgs,
 	})
 	if err != nil {
 		return seederr.Wrap(err)
