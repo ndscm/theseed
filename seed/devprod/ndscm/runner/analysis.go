@@ -25,6 +25,8 @@ type RunTask struct {
 // Watcher represents a single build rule's matched result.
 // Targets lists all output paths produced by the rule invocation.
 type Watcher struct {
+	Phase string
+
 	// Targets lists the output file paths produced by this rule.
 	Targets []string
 
@@ -172,6 +174,7 @@ func analyseDir(
 				for _, relPath := range matches {
 					scmTargetFilePath := filepath.Join(scmDirPath, relPath)
 					watchers = append(watchers, Watcher{
+						Phase:   phase,
 						Targets: []string{scmTargetFilePath},
 						Watch:   []string{scmTargetFilePath},
 						Run:     runTasks,
@@ -182,6 +185,7 @@ func analyseDir(
 			if phase == "test" {
 				target := "test_" + ruleKey
 				watchers = append(watchers, Watcher{
+					Phase:   phase,
 					Targets: []string{target},
 					Watch:   prefixPaths(scmDirPath, matches),
 					Run:     runTasks,
@@ -193,6 +197,7 @@ func analyseDir(
 				continue
 			}
 			watchers = append(watchers, Watcher{
+				Phase:   phase,
 				Targets: ruleTargets,
 				Watch:   append([]string(rule.WatchRepo), prefixPaths(scmDirPath, matches)...),
 				Run:     runTasks,
