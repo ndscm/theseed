@@ -25,10 +25,11 @@ func escapeFilePathForBash(filePath string) string {
 	return bashEscapeReplacer.Replace(filePath)
 }
 
+// formatFile runs all watcher commands against a single target file.
 func formatFile(
-	worktreePath string, scmTargetPath string, watchers []Watcher, bazelGround *BazelGround,
+	worktreePath string, targetRepoPath string, watchers []Watcher, bazelGround *BazelGround,
 ) error {
-	targetAbsPath := filepath.Join(worktreePath, scmTargetPath)
+	targetAbsPath := filepath.Join(worktreePath, targetRepoPath)
 	escapedTarget := escapeFilePathForBash(targetAbsPath)
 	for _, watcher := range watchers {
 		for _, runTask := range watcher.Run {
@@ -52,8 +53,9 @@ func formatFile(
 	return nil
 }
 
-func formatFiles(worktreePath string, formatPhase RepoPhase, filePaths []string) error {
-	seedlog.Debugf("Formatting files:\n%v", strings.Join(filePaths, "\n"))
+// formatFiles runs formatters on all targets that have at least one dirty watched file.
+func formatFiles(worktreePath string, formatPhase RepoPhase, dirtyRepoPaths []string) error {
+	seedlog.Debugf("Formatting files:\n%v", strings.Join(dirtyRepoPaths, "\n"))
 
 	bazelGround := NewBazelGround()
 	err := bazelGround.collect(formatPhase)
@@ -65,28 +67,29 @@ func formatFiles(worktreePath string, formatPhase RepoPhase, filePaths []string)
 		return seederr.Wrap(err)
 	}
 
-	fileSet := map[string]bool{}
-	for _, p := range filePaths {
-		fileSet[p] = true
+	dirtySet := map[string]bool{}
+	for _, p := range dirtyRepoPaths {
+		dirtySet[p] = true
 	}
 
-	scmTargetPaths := []string{}
+	targetRepoPaths := []string{}
 	for k := range formatPhase.Targets {
-		scmTargetPaths = append(scmTargetPaths, k)
+		targetRepoPaths = append(targetRepoPaths, k)
 	}
-	sort.Strings(scmTargetPaths)
+	sort.Strings(targetRepoPaths)
 
 	errGroup := errgroup.Group{}
 	errGroup.SetLimit(100)
 	errsMutex := sync.Mutex{}
 	errs := []error{}
 
-	for _, scmTargetPath := range scmTargetPaths {
-		watchers := formatPhase.Targets[scmTargetPath]
+	finalCount := 0
+	for _, targetRepoPath := range targetRepoPaths {
+		watchers := formatPhase.Targets[targetRepoPath]
 		hasDirty := false
 		for _, watcher := range watchers {
 			for _, watching := range watcher.Watch {
-				if fileSet[watching] {
+				if dirtySet[watching] {
 					hasDirty = true
 					break
 				}
@@ -98,8 +101,9 @@ func formatFiles(worktreePath string, formatPhase RepoPhase, filePaths []string)
 		if !hasDirty {
 			continue
 		}
+		finalCount++
 		errGroup.Go(func() error {
-			err := formatFile(worktreePath, scmTargetPath, watchers, bazelGround)
+			err := formatFile(worktreePath, targetRepoPath, watchers, bazelGround)
 			if err != nil {
 				errsMutex.Lock()
 				defer errsMutex.Unlock()
@@ -110,10 +114,12 @@ func formatFiles(worktreePath string, formatPhase RepoPhase, filePaths []string)
 	}
 	errGroup.Wait()
 
-	seedlog.Infof("Finished formatting files: count=%d", len(scmTargetPaths))
+	seedlog.Infof("Finished formatting files: count=%d", finalCount)
 	return errors.Join(errs...)
 }
 
+// FormatDirtyFiles formats only the targets whose watched files appear in
+// scmDirtyPaths.
 func FormatDirtyFiles(worktreePath string, scmFilePaths []string, scmDirtyPaths []string) error {
 	repoAnalysis, err := AnalyseRepo(worktreePath, []string{"format"}, scmFilePaths)
 	if err != nil {
@@ -132,6 +138,7 @@ func FormatDirtyFiles(worktreePath string, scmFilePaths []string, scmDirtyPaths 
 	return nil
 }
 
+// FormatAllFiles formats all targets in the repository, treating every file as dirty.
 func FormatAllFiles(worktreePath string, scmFilePaths []string) error {
 	repoAnalysis, err := AnalyseRepo(worktreePath, []string{"format"}, scmFilePaths)
 	if err != nil {
