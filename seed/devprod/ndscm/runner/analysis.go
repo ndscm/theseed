@@ -22,21 +22,17 @@ type RunTask struct {
 	Cmd string
 }
 
-// Watcher represents a single target produced by a build rule.
-// When a rule produces multiple targets, the first target carries Watch
-// and Run; the remaining targets set Together to the first target's name,
-// indicating they are produced by the same invocation.
+// Watcher represents a single build rule's matched result.
+// Targets lists all output paths produced by the rule invocation.
 type Watcher struct {
+	// Targets lists the output file paths produced by this rule.
+	Targets []string
+
 	// Watch lists the source files that matched the rule's watch patterns.
 	Watch []string
 
 	// Run lists the commands to execute.
 	Run []RunTask
-
-	// Together references the primary target name when this target is a
-	// secondary output of the same rule. Watch and Run are empty when
-	// Together is set.
-	Together string
 }
 
 // RepoPhase holds the matched targets for a single build phase within a
@@ -45,8 +41,8 @@ type RepoPhase struct {
 	// Prerequisites lists the phases that must be up-to-date before this phase can run.
 	Prerequisites []string
 
-	// Targets maps target file paths to their build tasks.
-	Targets map[string][]Watcher
+	// Watchers lists the matched build rules for this phase.
+	Watchers []Watcher
 }
 
 func (rp RepoPhase) String() string {
@@ -148,7 +144,7 @@ func analyseDir(
 			rules = dirConfig.Test
 		}
 
-		phaseTargets := map[string][]Watcher{}
+		watchers := []Watcher{}
 		ruleKeys := []string{}
 		for ruleKey := range rules {
 			ruleKeys = append(ruleKeys, ruleKey)
@@ -175,19 +171,20 @@ func analyseDir(
 			if phase == "format" {
 				for _, relPath := range matches {
 					scmTargetFilePath := filepath.Join(scmDirPath, relPath)
-					phaseTargets[scmTargetFilePath] = append(phaseTargets[scmTargetFilePath],
-						Watcher{
-							Watch: []string{scmTargetFilePath},
-							Run:   runTasks,
-						})
+					watchers = append(watchers, Watcher{
+						Targets: []string{scmTargetFilePath},
+						Watch:   []string{scmTargetFilePath},
+						Run:     runTasks,
+					})
 				}
 				continue
 			}
 			if phase == "test" {
 				target := "test_" + ruleKey
-				phaseTargets[target] = append(phaseTargets[target], Watcher{
-					Watch: prefixPaths(scmDirPath, matches),
-					Run:   runTasks,
+				watchers = append(watchers, Watcher{
+					Targets: []string{target},
+					Watch:   prefixPaths(scmDirPath, matches),
+					Run:     runTasks,
 				})
 				continue
 			}
@@ -195,29 +192,25 @@ func analyseDir(
 			if len(ruleTargets) == 0 {
 				continue
 			}
-			phaseTargets[ruleTargets[0]] = append(phaseTargets[ruleTargets[0]], Watcher{
-				Watch: append([]string(rule.WatchRepo), prefixPaths(scmDirPath, matches)...),
-				Run:   runTasks,
+			watchers = append(watchers, Watcher{
+				Targets: ruleTargets,
+				Watch:   append([]string(rule.WatchRepo), prefixPaths(scmDirPath, matches)...),
+				Run:     runTasks,
 			})
-			for _, t := range ruleTargets[1:] {
-				phaseTargets[t] = append(phaseTargets[t], Watcher{
-					Together: ruleTargets[0],
-				})
-			}
 		}
-		if len(phaseTargets) == 0 {
+		if len(watchers) == 0 {
 			continue
 		}
 		result[phase] = RepoPhase{
 			Prerequisites: prerequisites,
-			Targets:       phaseTargets,
+			Watchers:      watchers,
 		}
 	}
 	return result, nil
 }
 
 func mergeRepoPhase(basePhase RepoPhase, newPhase RepoPhase) RepoPhase {
-	if len(basePhase.Targets) == 0 {
+	if len(basePhase.Watchers) == 0 {
 		return newPhase
 	}
 	prereqSet := map[string]bool{}
@@ -233,17 +226,10 @@ func mergeRepoPhase(basePhase RepoPhase, newPhase RepoPhase) RepoPhase {
 	}
 	sort.Strings(prerequisites)
 
-	merged := RepoPhase{
+	return RepoPhase{
 		Prerequisites: prerequisites,
-		Targets:       map[string][]Watcher{},
+		Watchers:      append(basePhase.Watchers, newPhase.Watchers...),
 	}
-	for k, v := range basePhase.Targets {
-		merged.Targets[k] = v
-	}
-	for k, v := range newPhase.Targets {
-		merged.Targets[k] = append(merged.Targets[k], v...)
-	}
-	return merged
 }
 
 func AnalyseRepo(worktreePath string, phases []string, scmFilePaths []string) (*RepoAnalysis, error) {

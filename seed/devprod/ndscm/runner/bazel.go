@@ -81,13 +81,11 @@ func (gnd *BazelGround) collect(phase RepoPhase) error {
 	gnd.targetMapMutex.Lock()
 	defer gnd.targetMapMutex.Unlock()
 
-	for _, watchers := range phase.Targets {
-		for _, watcher := range watchers {
-			for _, runTask := range watcher.Run {
-				for _, bazelTarget := range runTask.BazelTargets {
-					if _, ok := gnd.targetMap[bazelTarget]; !ok {
-						gnd.targetMap[bazelTarget] = BazelTargetInfo{}
-					}
+	for _, watcher := range phase.Watchers {
+		for _, runTask := range watcher.Run {
+			for _, bazelTarget := range runTask.BazelTargets {
+				if _, ok := gnd.targetMap[bazelTarget]; !ok {
+					gnd.targetMap[bazelTarget] = BazelTargetInfo{}
 				}
 			}
 		}
