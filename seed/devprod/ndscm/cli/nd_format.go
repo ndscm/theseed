@@ -7,14 +7,18 @@ import (
 )
 
 type ndFormatFlags struct {
-	all *seedflag.BoolFlag
+	all     *seedflag.BoolFlag
+	changed *seedflag.BoolFlag
 }
 
 func parseNdFormatFlags(args []string) (ndFormatFlags, []string, error) {
 	cf := seedflag.NewCommandFlags("nd-format")
 	cmdFlags := ndFormatFlags{}
-	cmdFlags.all = cf.DefineBool("all", false, "Format all files instead of only dirty files")
-	cmdArgs, err := cf.Parse(args)
+	cmdFlags.all = cf.DefineBool("all", false, "Format all files in the repository")
+	cmdFlags.changed = cf.DefineBool("changed", true, "Also format files changed in the last commit")
+	cmdArgs, err := cf.Parse(args,
+		seedflag.WithAnywhereFlag(true),
+	)
 	if err != nil {
 		return cmdFlags, nil, seederr.Wrap(err)
 	}
@@ -36,7 +40,8 @@ func ndFormat(args []string) error {
 		return seederr.Wrap(err)
 	}
 	err = cc.NdFormat(clientcore.NdFormatOptions{
-		All: cmdFlags.all.Get(),
+		All:     cmdFlags.all.Get(),
+		Changed: cmdFlags.changed.Get(),
 	})
 	if err != nil {
 		return seederr.Wrap(err)
