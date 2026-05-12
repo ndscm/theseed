@@ -6,12 +6,15 @@ import (
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
 )
 
-type NdFormatOptions struct {
+type NdRunOptions struct {
+	Workers int
 	All     bool
 	Changed bool
+
+	Phases []string
 }
 
-func NdFormat(scmProvider scm.Provider, options NdFormatOptions) error {
+func NdRun(scmProvider scm.Provider, options NdRunOptions) error {
 	worktreePath, err := scmProvider.GetCurrentWorktree()
 	if err != nil {
 		return seederr.Wrap(err)
@@ -48,11 +51,11 @@ func NdFormat(scmProvider scm.Provider, options NdFormatOptions) error {
 	} else {
 		// Allow runner to determine dirty paths from stamps
 	}
-	r, err := runner.CreateRunner(worktreePath, filePaths)
+	r, err := runner.CreateRunner(options.Workers, worktreePath, filePaths)
 	if err != nil {
 		return seederr.Wrap(err)
 	}
-	err = r.Format(dirtyPaths)
+	err = r.Run(options.Phases, dirtyPaths)
 	if err != nil {
 		return seederr.Wrap(err)
 	}
