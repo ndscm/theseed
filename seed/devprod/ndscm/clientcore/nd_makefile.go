@@ -21,23 +21,7 @@ func NdMakefile(scmProvider scm.Provider, _ NdMakefileOptions) error {
 	if err != nil {
 		return seederr.Wrap(err)
 	}
-	changePaths, err := scmProvider.ListCommitFiles("HEAD")
-	if err != nil {
-		return seederr.Wrap(err)
-	}
-	dirtyFiles, err := scmProvider.GetWorktreeDirtyFiles(worktreePath)
-	if err != nil {
-		return seederr.Wrap(err)
-	}
-	dirtyPaths := []string{}
-	for _, dirtyFile := range dirtyFiles {
-		dirtyPaths = append(dirtyPaths, dirtyFile.To)
-	}
-	r, err := runner.CreateRunner(worktreePath, filePaths, changePaths, dirtyPaths)
-	if err != nil {
-		return seederr.Wrap(err)
-	}
-	makefile, err := r.GenerateMakefile()
+	makefile, err := runner.GenerateMakefile(worktreePath, filePaths)
 	if err != nil {
 		return seederr.Wrap(err)
 	}
