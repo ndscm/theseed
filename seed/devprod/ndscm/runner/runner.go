@@ -39,6 +39,8 @@ func generateWatchingMap(repoPhase *RepoPhase) map[string][]*Watcher {
 }
 
 type Runner struct {
+	workerCount int
+
 	worktreePath string
 
 	scmFilePaths []string
@@ -116,7 +118,7 @@ func (r *Runner) runPhase(repoPhase *RepoPhase, dirtySet map[string]bool) (map[s
 	watching := generateWatchingMap(repoPhase)
 
 	errGroup := errgroup.Group{}
-	errGroup.SetLimit(100)
+	errGroup.SetLimit(r.workerCount)
 	errsMutex := sync.Mutex{}
 	errs := []error{}
 
@@ -257,18 +259,11 @@ func (r *Runner) Run(phases []string, dirtyRepoPaths []string) error {
 	return nil
 }
 
-func (r *Runner) Format(dirtyRepoPaths []string) error {
-	err := r.Run([]string{"format"}, dirtyRepoPaths)
-	if err != nil {
-		return seederr.Wrap(err)
-	}
-	return nil
-}
-
 func CreateRunner(
-	worktreePath string, scmFilePaths []string,
+	workerCount int, worktreePath string, scmFilePaths []string,
 ) (*Runner, error) {
 	r := &Runner{
+		workerCount:  workerCount,
 		worktreePath: worktreePath,
 		scmFilePaths: scmFilePaths,
 	}

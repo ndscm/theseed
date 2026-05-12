@@ -58,6 +58,11 @@ func run() error {
 		if err != nil {
 			return seederr.Wrap(err)
 		}
+	case "run":
+		err := ndRun(args[1:])
+		if err != nil {
+			return seederr.Wrap(err)
+		}
 	case "makefile":
 		err := ndMakefile(args[1:])
 		if err != nil {

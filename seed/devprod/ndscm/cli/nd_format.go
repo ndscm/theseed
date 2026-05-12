@@ -1,6 +1,8 @@
 package main
 
 import (
+	"runtime"
+
 	"github.com/ndscm/theseed/seed/devprod/ndscm/clientcore"
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
 	"github.com/ndscm/theseed/seed/infra/flag/go/seedflag"
@@ -39,9 +41,12 @@ func ndFormat(args []string) error {
 	if err != nil {
 		return seederr.Wrap(err)
 	}
-	err = cc.NdFormat(clientcore.NdFormatOptions{
+	err = cc.NdRun(clientcore.NdRunOptions{
+		Workers: runtime.NumCPU(),
 		All:     cmdFlags.all.Get(),
 		Changed: cmdFlags.changed.Get(),
+
+		Phases: []string{"format"},
 	})
 	if err != nil {
 		return seederr.Wrap(err)
