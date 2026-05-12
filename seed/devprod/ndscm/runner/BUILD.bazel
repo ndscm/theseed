@@ -12,6 +12,7 @@ go_library(
         "format.go",
         "makefile.go",
         "runner.go",
+        "stamp.go",
     ],
     embedsrcs = [
         "default_executable_aspect.bzl",
