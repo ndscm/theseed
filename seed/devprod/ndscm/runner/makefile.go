@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"os"
 	"path/filepath"
-	"sort"
 	"strings"
 
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
@@ -26,37 +25,20 @@ func generatePhaseBlock(repoAnalysis *RepoAnalysis, phase string) (string, error
 	if !ok {
 		return "", nil
 	}
-	if len(dirPhase.Targets) == 0 {
+	if len(dirPhase.Watchers) == 0 {
 		return "", nil
 	}
 
-	targetKeys := make([]string, 0, len(dirPhase.Targets))
-	for k := range dirPhase.Targets {
-		targetKeys = append(targetKeys, k)
-	}
-	sort.Strings(targetKeys)
-
 	allTargets := []string{}
 	rules := strings.Builder{}
-	for _, target := range targetKeys {
-		tasks := dirPhase.Targets[target]
-		if len(tasks) == 0 {
+	for _, watcher := range dirPhase.Watchers {
+		if len(watcher.Targets) == 0 {
 			continue
 		}
-		if tasks[0].Together != "" {
-			continue
-		}
-		ruleTargets := []string{target}
-		for _, other := range targetKeys {
-			otherTasks := dirPhase.Targets[other]
-			if len(otherTasks) > 0 && otherTasks[0].Together == target {
-				ruleTargets = append(ruleTargets, other)
-			}
-		}
-		allTargets = append(allTargets, ruleTargets...)
+		allTargets = append(allTargets, watcher.Targets...)
 
 		escapedTargets := []string{}
-		for _, t := range ruleTargets {
+		for _, t := range watcher.Targets {
 			escapedTarget, err := escapeMakeTarget(t)
 			if err != nil {
 				return "", seederr.Wrap(err)
@@ -65,32 +47,28 @@ func generatePhaseBlock(repoAnalysis *RepoAnalysis, phase string) (string, error
 		}
 		rules.WriteString(strings.Join(escapedTargets, " "))
 		rules.WriteString(":")
-		for _, task := range tasks {
-			for _, w := range task.Watch {
-				rules.WriteString(" ")
-				escapedWatch, err := escapeMakeTarget(w)
-				if err != nil {
-					return "", seederr.Wrap(err)
-				}
-				rules.WriteString(escapedWatch)
+		for _, w := range watcher.Watch {
+			rules.WriteString(" ")
+			escapedWatch, err := escapeMakeTarget(w)
+			if err != nil {
+				return "", seederr.Wrap(err)
 			}
+			rules.WriteString(escapedWatch)
 		}
 		rules.WriteString("\n")
-		for _, task := range tasks {
-			for _, runTask := range task.Run {
-				bashCmd := runTask.Cmd
-				bashCmd = strings.ReplaceAll(bashCmd, "$", "$$")
-				bashCmd = strings.ReplaceAll(bashCmd, "'", `'\''`)
-				rules.WriteString("\tcd ")
-				escapedDirPath, err := escapeMakeTarget(runTask.DirPath)
-				if err != nil {
-					return "", seederr.Wrap(err)
-				}
-				rules.WriteString(escapedDirPath)
-				rules.WriteString(" && bash -c '")
-				rules.WriteString(bashCmd)
-				rules.WriteString("'\n")
+		for _, runTask := range watcher.Run {
+			bashCmd := runTask.Cmd
+			bashCmd = strings.ReplaceAll(bashCmd, "$", "$$")
+			bashCmd = strings.ReplaceAll(bashCmd, "'", `'\''`)
+			rules.WriteString("\tcd ")
+			escapedDirPath, err := escapeMakeTarget(runTask.DirPath)
+			if err != nil {
+				return "", seederr.Wrap(err)
 			}
+			rules.WriteString(escapedDirPath)
+			rules.WriteString(" && bash -c '")
+			rules.WriteString(bashCmd)
+			rules.WriteString("'\n")
 		}
 		rules.WriteString("\n")
 	}
