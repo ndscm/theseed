@@ -9,7 +9,6 @@ go_library(
     srcs = [
         "analysis.go",
         "bazel.go",
-        "format.go",
         "makefile.go",
         "runner.go",
         "stamp.go",

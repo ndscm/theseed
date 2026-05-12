@@ -7,7 +7,8 @@ import (
 )
 
 type NdFormatOptions struct {
-	All bool
+	All     bool
+	Changed bool
 }
 
 func NdFormat(scmProvider scm.Provider, options NdFormatOptions) error {
@@ -19,23 +20,30 @@ func NdFormat(scmProvider scm.Provider, options NdFormatOptions) error {
 	if err != nil {
 		return seederr.Wrap(err)
 	}
-	changePaths, err := scmProvider.ListCommitFiles("HEAD")
-	if err != nil {
-		return seederr.Wrap(err)
-	}
-	dirtyFiles, err := scmProvider.GetWorktreeDirtyFiles(worktreePath)
-	if err != nil {
-		return seederr.Wrap(err)
-	}
 	dirtyPaths := []string{}
-	for _, dirtyFile := range dirtyFiles {
-		dirtyPaths = append(dirtyPaths, dirtyFile.To)
+	if options.All {
+		dirtyPaths = filePaths
+	} else if options.Changed {
+		changePaths, err := scmProvider.ListCommitFiles("HEAD")
+		if err != nil {
+			return seederr.Wrap(err)
+		}
+		dirtyPaths = append(dirtyPaths, changePaths...)
+		dirtyFiles, err := scmProvider.GetWorktreeDirtyFiles(worktreePath)
+		if err != nil {
+			return seederr.Wrap(err)
+		}
+		for _, dirtyFile := range dirtyFiles {
+			dirtyPaths = append(dirtyPaths, dirtyFile.To)
+		}
+	} else {
+		// Allow runner to determine dirty paths from stamps
 	}
-	r, err := runner.CreateRunner(worktreePath, filePaths, changePaths, dirtyPaths)
+	r, err := runner.CreateRunner(worktreePath, filePaths)
 	if err != nil {
 		return seederr.Wrap(err)
 	}
-	err = r.Format(options.All)
+	err = r.Format(dirtyPaths)
 	if err != nil {
 		return seederr.Wrap(err)
 	}
