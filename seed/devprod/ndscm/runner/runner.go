@@ -7,7 +7,7 @@ import (
 )
 
 type Runner struct {
-	worktree string
+	worktreePath string
 
 	scmFilePaths []string
 
@@ -18,12 +18,12 @@ type Runner struct {
 
 func (r *Runner) Format(all bool) error {
 	if !all {
-		err := FormatDirtyFiles(r.worktree, r.scmFilePaths, slices.Concat(r.scmChangePaths, r.scmDirtyPaths))
+		err := FormatDirtyFiles(r.worktreePath, r.scmFilePaths, slices.Concat(r.scmChangePaths, r.scmDirtyPaths))
 		if err != nil {
 			return seederr.Wrap(err)
 		}
 	} else {
-		err := FormatAllFiles(r.worktree, r.scmFilePaths)
+		err := FormatAllFiles(r.worktreePath, r.scmFilePaths)
 		if err != nil {
 			return seederr.Wrap(err)
 		}
@@ -32,12 +32,14 @@ func (r *Runner) Format(all bool) error {
 }
 
 func (r *Runner) GenerateMakefile() (string, error) {
-	return GenerateMakefile(r.worktree, r.scmFilePaths)
+	return GenerateMakefile(r.worktreePath, r.scmFilePaths)
 }
 
-func CreateRunner(worktree string, scmFilePaths []string, scmChangePaths []string, scmDirtyPaths []string) (*Runner, error) {
+func CreateRunner(
+	worktreePath string, scmFilePaths []string, scmChangePaths []string, scmDirtyPaths []string,
+) (*Runner, error) {
 	r := &Runner{
-		worktree:       worktree,
+		worktreePath:   worktreePath,
 		scmFilePaths:   scmFilePaths,
 		scmChangePaths: scmChangePaths,
 		scmDirtyPaths:  scmDirtyPaths,
