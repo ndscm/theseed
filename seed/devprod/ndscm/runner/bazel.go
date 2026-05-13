@@ -37,6 +37,23 @@ func prepareDefaultExecutableAspect(worktreePath string) error {
 	return nil
 }
 
+// See: https://github.com/bazelbuild/bazel/blob/8.6.0/src/main/java/com/google/devtools/build/lib/cmdline/TargetPattern.java#L911
+func absolutizeBazelTarget(dirRepoPath string, target string) string {
+	if strings.HasPrefix(target, "//") {
+		return target
+	}
+	if strings.HasPrefix(target, "@") {
+		return target
+	}
+	if strings.HasPrefix(target, ":") {
+		return "//" + dirRepoPath + target
+	}
+	if dirRepoPath == "" {
+		return "//" + target
+	}
+	return "//" + dirRepoPath + "/" + target
+}
+
 type BazelTargetInfo struct {
 	ArtifactPaths   []string
 	ExecutablePaths []string
@@ -60,6 +77,8 @@ func (info BazelTargetInfo) executable() (string, error) {
 }
 
 type BazelGround struct {
+	worktreePath string
+
 	targetMapMutex sync.RWMutex
 	targetMap      map[string]BazelTargetInfo
 
@@ -84,8 +103,10 @@ func (gnd *BazelGround) collect(phase RepoPhase) error {
 	for _, watcher := range phase.Watchers {
 		for _, runTask := range watcher.Run {
 			for _, bazelTarget := range runTask.BazelTargets {
-				if _, ok := gnd.targetMap[bazelTarget]; !ok {
-					gnd.targetMap[bazelTarget] = BazelTargetInfo{}
+				absoluteBazelTarget := absolutizeBazelTarget(runTask.DirPath, bazelTarget)
+				_, ok := gnd.targetMap[absoluteBazelTarget]
+				if !ok {
+					gnd.targetMap[absoluteBazelTarget] = BazelTargetInfo{}
 				}
 			}
 		}
@@ -181,9 +202,10 @@ func (gnd *BazelGround) get(bazelTarget string) (BazelTargetInfo, error) {
 	return info, nil
 }
 
-func (gnd *BazelGround) fulfill(bashCmd string, bazelTargets []string) (string, error) {
+func (gnd *BazelGround) fulfill(bashCmd string, dirRepoPath string, bazelTargets []string) (string, error) {
 	for i, bazelTarget := range bazelTargets {
-		targetInfo, err := gnd.get(bazelTarget)
+		absoluteBazelTarget := absolutizeBazelTarget(dirRepoPath, bazelTarget)
+		targetInfo, err := gnd.get(absoluteBazelTarget)
 		if err != nil {
 			return "", seederr.Wrap(err)
 		}
@@ -221,8 +243,9 @@ func (gnd *BazelGround) fulfill(bashCmd string, bazelTargets []string) (string, 
 	return bashCmd, nil
 }
 
-func NewBazelGround() *BazelGround {
+func NewBazelGround(worktreePath string) *BazelGround {
 	return &BazelGround{
-		targetMap: map[string]BazelTargetInfo{},
+		worktreePath: worktreePath,
+		targetMap:    map[string]BazelTargetInfo{},
 	}
 }
