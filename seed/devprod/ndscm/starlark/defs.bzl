@@ -1,4 +1,11 @@
-def _nd_bootstrap_impl(ctx):
+"""Bazel rules for copying build outputs into the source tree.
+
+Provides nd_copyout (general-purpose) and nd_bootstrap (tagged for the
+bootstrap phase) so that ndscm can materialise generated files before
+downstream phases run.
+"""
+
+def _nd_copyout_impl(ctx):
     flat_dsts = json.decode(ctx.attr.flat_dsts)
 
     src_map = {
@@ -73,8 +80,8 @@ exec "./{copyout}" "${{BUILD_WORKSPACE_DIRECTORY}}/{package}" "./{dst_map}"
         ),
     ]
 
-_nd_bootstrap = rule(
-    implementation = _nd_bootstrap_impl,
+_nd_copyout = rule(
+    implementation = _nd_copyout_impl,
     executable = True,
     attrs = {
         "flat_srcs": attr.label_list(allow_files = True),
@@ -87,7 +94,7 @@ _nd_bootstrap = rule(
     },
 )
 
-def nd_bootstrap(name = "bootstrap", dsts = None, **kwargs):
+def nd_copyout(name, dsts, **kwargs):
     """Copies bazel-built outputs into the source tree.
 
     Args:
@@ -120,10 +127,16 @@ def nd_bootstrap(name = "bootstrap", dsts = None, **kwargs):
             "srcs": srcs,
         })
 
-    _nd_bootstrap(
+    _nd_copyout(
         name = name,
         flat_srcs = flat_srcs,
         flat_dsts = json.encode(flat_dsts),
-        tags = ["nd_bootstrap"],
         **kwargs
+    )
+
+def nd_bootstrap(name = "bootstrap", dsts = None):
+    nd_copyout(
+        name = name,
+        dsts = dsts,
+        tags = ["nd-bootstrap"],
     )
