@@ -179,8 +179,7 @@ export type DirConfig = {
        * Literal file paths (relative to repo root) added as extra Make
        * prerequisites. Use this to express cross-project dependencies —
        * e.g., this task must re-run when another project's build output
-       * changes. Make checks file mtime, so point at concrete files, not
-       * directories.
+       * changes.
        */
       watchRepo?: string | string[]
 
@@ -227,8 +226,7 @@ export type DirConfig = {
        * Literal file paths (relative to repo root) added as extra Make
        * prerequisites. Use this to express cross-project dependencies —
        * e.g., this task must re-run when another project's build output
-       * changes. Make checks file mtime, so point at concrete files, not
-       * directories.
+       * changes.
        */
       watchRepo?: string | string[]
 
@@ -275,8 +273,7 @@ export type DirConfig = {
        * Literal file paths (relative to repo root) added as extra Make
        * prerequisites. Use this to express cross-project dependencies —
        * e.g., this task must re-run when another project's build output
-       * changes. Make checks file mtime, so point at concrete files, not
-       * directories.
+       * changes.
        */
       watchRepo?: string | string[]
 
@@ -303,8 +300,7 @@ export type DirConfig = {
        * Literal file paths (relative to repo root) added as extra Make
        * prerequisites. Use this to express cross-project dependencies —
        * e.g., this task must re-run when another project's build output
-       * changes. Make checks file mtime, so point at concrete files, not
-       * directories.
+       * changes.
        */
       watchRepo?: string | string[]
 
