@@ -78,6 +78,7 @@ func (info BazelTargetInfo) executable() (string, error) {
 
 type BazelGround struct {
 	worktreePath string
+	use          bool
 
 	targetMapMutex sync.RWMutex
 	targetMap      map[string]BazelTargetInfo
@@ -115,6 +116,10 @@ func (gnd *BazelGround) collect(phase RepoPhase) error {
 }
 
 func (gnd *BazelGround) build(worktreePath string) error {
+	if !gnd.use {
+		return nil
+	}
+
 	gnd.builtMutex.Lock()
 	defer gnd.builtMutex.Unlock()
 
@@ -202,7 +207,43 @@ func (gnd *BazelGround) get(bazelTarget string) (BazelTargetInfo, error) {
 	return info, nil
 }
 
-func (gnd *BazelGround) fulfill(bashCmd string, dirRepoPath string, bazelTargets []string) (string, error) {
+func (gnd *BazelGround) fulfillRawBazel(bashCmd string, dirRepoPath string, bazelTargets []string) (string, error) {
+	for i, bazelTarget := range bazelTargets {
+		absoluteBazelTarget := absolutizeBazelTarget(dirRepoPath, bazelTarget)
+		if i == 0 {
+			if strings.Contains(bashCmd, "{{BAZEL_RUN}}") {
+				bashCmd = strings.ReplaceAll(bashCmd, "{{BAZEL_RUN}}", "bazel run "+absoluteBazelTarget+" -- ")
+			}
+			if strings.Contains(bashCmd, "{{BAZEL_EXECUTABLE}}") {
+				bashCmd = strings.ReplaceAll(bashCmd, "{{BAZEL_EXECUTABLE}}", "")
+			}
+			if strings.Contains(bashCmd, "{{BAZEL_BUILD}}") {
+				return "", seederr.WrapErrorf("{{BAZEL_BUILD}} is not supported when bazel ground is disabled")
+			}
+		}
+		if strings.Contains(bashCmd, "{{BAZEL_RUN["+strconv.Itoa(i)+"]}}") {
+			bashCmd = strings.ReplaceAll(bashCmd, "{{BAZEL_RUN["+strconv.Itoa(i)+"]}}", "bazel run "+absoluteBazelTarget+" -- ")
+		}
+		if strings.Contains(bashCmd, "{{BAZEL_EXECUTABLE["+strconv.Itoa(i)+"]}}") {
+			bashCmd = strings.ReplaceAll(bashCmd, "{{BAZEL_EXECUTABLE["+strconv.Itoa(i)+"]}}", "")
+		}
+		if strings.Contains(bashCmd, "{{BAZEL_BUILD["+strconv.Itoa(i)+"]}}") {
+			return "", seederr.WrapErrorf("{{BAZEL_BUILD}} is not supported when bazel ground is disabled")
+		}
+	}
+	return bashCmd, nil
+}
+
+func (gnd *BazelGround) fulfill(
+	bashCmd string, dirRepoPath string, bazelTargets []string,
+) (string, error) {
+	if !gnd.use {
+		bashCmd, err := gnd.fulfillRawBazel(bashCmd, dirRepoPath, bazelTargets)
+		if err != nil {
+			return "", seederr.Wrap(err)
+		}
+		return bashCmd, nil
+	}
 	for i, bazelTarget := range bazelTargets {
 		absoluteBazelTarget := absolutizeBazelTarget(dirRepoPath, bazelTarget)
 		targetInfo, err := gnd.get(absoluteBazelTarget)
@@ -216,6 +257,13 @@ func (gnd *BazelGround) fulfill(bashCmd string, dirRepoPath string, bazelTargets
 					return "", seederr.Wrap(err)
 				}
 				bashCmd = strings.ReplaceAll(bashCmd, "{{BAZEL_RUN}}", executablePath)
+			}
+			if strings.Contains(bashCmd, "{{BAZEL_EXECUTABLE}}") {
+				executablePath, err := targetInfo.executable()
+				if err != nil {
+					return "", seederr.Wrap(err)
+				}
+				bashCmd = strings.ReplaceAll(bashCmd, "{{BAZEL_EXECUTABLE}}", executablePath)
 			}
 			if strings.Contains(bashCmd, "{{BAZEL_BUILD}}") {
 				artifacts, err := targetInfo.artifacts()
@@ -232,6 +280,13 @@ func (gnd *BazelGround) fulfill(bashCmd string, dirRepoPath string, bazelTargets
 			}
 			bashCmd = strings.ReplaceAll(bashCmd, "{{BAZEL_RUN["+strconv.Itoa(i)+"]}}", executablePath)
 		}
+		if strings.Contains(bashCmd, "{{BAZEL_EXECUTABLE["+strconv.Itoa(i)+"]}}") {
+			executablePath, err := targetInfo.executable()
+			if err != nil {
+				return "", seederr.Wrap(err)
+			}
+			bashCmd = strings.ReplaceAll(bashCmd, "{{BAZEL_EXECUTABLE["+strconv.Itoa(i)+"]}}", executablePath)
+		}
 		if strings.Contains(bashCmd, "{{BAZEL_BUILD["+strconv.Itoa(i)+"]}}") {
 			artifacts, err := targetInfo.artifacts()
 			if err != nil {
@@ -243,9 +298,10 @@ func (gnd *BazelGround) fulfill(bashCmd string, dirRepoPath string, bazelTargets
 	return bashCmd, nil
 }
 
-func NewBazelGround(worktreePath string) *BazelGround {
+func NewBazelGround(worktreePath string, use bool) *BazelGround {
 	return &BazelGround{
 		worktreePath: worktreePath,
+		use:          use,
 		targetMap:    map[string]BazelTargetInfo{},
 	}
 }
