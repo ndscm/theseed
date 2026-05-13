@@ -24,17 +24,26 @@ func NdFormat(scmProvider scm.Provider, options NdFormatOptions) error {
 	if options.All {
 		dirtyPaths = filePaths
 	} else if options.Changed {
-		changePaths, err := scmProvider.ListCommitFiles("HEAD")
+		dirtySet := map[string]bool{}
+		headChanges, err := scmProvider.ListCommitFiles("HEAD")
 		if err != nil {
 			return seederr.Wrap(err)
 		}
-		dirtyPaths = append(dirtyPaths, changePaths...)
+		for _, headFileStatus := range headChanges {
+			dirtySet[headFileStatus.To] = true
+		}
 		dirtyFiles, err := scmProvider.GetWorktreeDirtyFiles(worktreePath)
 		if err != nil {
 			return seederr.Wrap(err)
 		}
-		for _, dirtyFile := range dirtyFiles {
-			dirtyPaths = append(dirtyPaths, dirtyFile.To)
+		for _, dirtyFileStatus := range dirtyFiles {
+			dirtySet[dirtyFileStatus.From] = false
+			dirtySet[dirtyFileStatus.To] = true
+		}
+		for repoPath, dirty := range dirtySet {
+			if dirty {
+				dirtyPaths = append(dirtyPaths, repoPath)
+			}
 		}
 	} else {
 		// Allow runner to determine dirty paths from stamps
