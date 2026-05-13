@@ -22,8 +22,9 @@ Well-known projects get their own directory under their well-known name.
 
 ### Languages
 
-Languages get their own directory, typically named after the file extension
-(preferred) or the full language name (e.g. `python`).
+Languages get their own directory. If the language name is a single word, use
+the full name (e.g. `python`, `java`, `shell`). If the language name is multiple
+words, use the file extension (e.g. `ts`, `cc`).
 
 ### GitHub-hosted Projects
 
