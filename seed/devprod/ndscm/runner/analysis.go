@@ -10,7 +10,10 @@ import (
 
 	"github.com/ndscm/theseed/seed/devprod/ndscm/configloader"
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
+	"github.com/ndscm/theseed/seed/infra/flag/go/seedflag"
 )
+
+var flagUseBazelGround = seedflag.DefineString("use_bazel_ground", "", "Use bazel ground to optimize bazel command execution.")
 
 type RunTask struct {
 	// DirPath is the directory to run the command in.
@@ -52,6 +55,8 @@ func (w Watcher) Sha256() ([32]byte, []byte, error) {
 type RepoPhase struct {
 	// Prerequisites lists the phases that must be up-to-date before this phase can run.
 	Prerequisites []string
+
+	UseBazelGround bool
 
 	// Watchers lists the matched build rules for this phase.
 	Watchers []Watcher
@@ -298,6 +303,7 @@ func AnalyseRepo(worktreePath string, phases []string, scmFilePaths []string) (*
 		}
 	}
 
+	bazelGroundPhases := strings.Split(flagUseBazelGround.Get(), ",")
 	for _, phase := range phases {
 		// The phases are forced to run sequentially for now to avoid breaking the bazel managed tools for each phase.
 		candidates := []string{}
@@ -323,9 +329,19 @@ func AnalyseRepo(worktreePath string, phases []string, scmFilePaths []string) (*
 				prerequisites = append(prerequisites, c)
 			}
 		}
+
+		useBazelGround := false
+		for _, p := range bazelGroundPhases {
+			if p == phase {
+				useBazelGround = true
+				break
+			}
+		}
+
 		result.Phases[phase] = RepoPhase{
-			Prerequisites: prerequisites,
-			Watchers:      result.Phases[phase].Watchers,
+			Prerequisites:  prerequisites,
+			UseBazelGround: useBazelGround,
+			Watchers:       result.Phases[phase].Watchers,
 		}
 	}
 
