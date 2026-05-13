@@ -76,7 +76,7 @@ func (r *Runner) runWatcher(watcher *Watcher) (map[string]bool, error) {
 			escapedTarget := escapeFilePathForBash(targetAbsPath)
 			bashCmd = strings.ReplaceAll(bashCmd, "{{TARGET}}", escapedTarget)
 		}
-		bashCmd, err := r.bazelGround.fulfill(bashCmd, runTask.BazelTargets)
+		bashCmd, err := r.bazelGround.fulfill(bashCmd, runTask.DirPath, runTask.BazelTargets)
 		if err != nil {
 			return nil, seederr.Wrap(err)
 		}
@@ -104,7 +104,7 @@ func (r *Runner) runWatcher(watcher *Watcher) (map[string]bool, error) {
 }
 
 func (r *Runner) runPhase(repoPhase *RepoPhase, dirtySet map[string]bool) (map[string]bool, error) {
-	r.bazelGround = NewBazelGround()
+	r.bazelGround = NewBazelGround(r.worktreePath)
 	err := r.bazelGround.collect(*repoPhase)
 	if err != nil {
 		return nil, seederr.Wrap(err)
