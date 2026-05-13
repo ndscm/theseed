@@ -148,8 +148,20 @@ func (g *GitProvider) ListCommitIds(from string, to string) ([]string, error) {
 
 // # filetree
 
-func (g *GitProvider) ListCommitFiles(commit string) ([]string, error) {
-	return ListCommitFiles("", commit)
+func (g *GitProvider) ListCommitFiles(commit string) ([]scm.FileStatus, error) {
+	result := []scm.FileStatus{}
+	files, err := ListCommitFiles("", commit)
+	if err != nil {
+		return nil, seederr.Wrap(err)
+	}
+	for _, f := range files {
+		result = append(result, scm.FileStatus{
+			Status: f.Status,
+			To:     f.To,
+			From:   f.From,
+		})
+	}
+	return result, nil
 }
 
 // # rebase
@@ -186,14 +198,14 @@ func (g *GitProvider) ListRemoteBranches(remote string) ([]string, error) {
 
 // # status
 
-func (g *GitProvider) GetWorktreeDirtyFiles(worktreePath string) ([]scm.DirtyFile, error) {
+func (g *GitProvider) GetWorktreeDirtyFiles(worktreePath string) ([]scm.FileStatus, error) {
 	files, err := GetStatus(worktreePath)
 	if err != nil {
 		return nil, seederr.Wrap(err)
 	}
-	result := []scm.DirtyFile{}
+	result := []scm.FileStatus{}
 	for _, s := range files {
-		result = append(result, scm.DirtyFile{
+		result = append(result, scm.FileStatus{
 			Status: s.Status,
 			To:     s.To,
 			From:   s.From,
