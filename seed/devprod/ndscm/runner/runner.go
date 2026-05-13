@@ -80,9 +80,16 @@ func (r *Runner) runWatcher(watcher *Watcher) (map[string]bool, error) {
 		if err != nil {
 			return nil, seederr.Wrap(err)
 		}
+		runEnv := map[string]string{}
+		runEnv["BUILD_WORKSPACE_DIRECTORY"] = r.worktreePath
+		runEnv["BUILD_WORKING_DIRECTORY"] = filepath.Join(r.worktreePath, runTask.DirPath)
 		err = seedshell.ImpureOptionsRun(
 			[]seedshell.RunOption{func(cmd *exec.Cmd) {
 				cmd.Dir = dirAbsPath
+				cmd.Env = os.Environ()
+				for k, v := range runEnv {
+					cmd.Env = append(cmd.Env, k+"="+v)
+				}
 			}},
 			"bash", "-c", bashCmd)
 		if err != nil {
