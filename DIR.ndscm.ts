@@ -45,6 +45,9 @@ export default {
   },
   bootstrap: {
     pnpm: {
+      // pnpm manages dependencies across the entire monorepo at once and
+      // doesn't support concurrent installs, so all ndscm dir configs must
+      // delegate to this single entry point.
       target: "node_modules",
       watch: "^pnpm-lock.yaml$",
       run: 'bazel run @pnpm//:pnpm -- --dir "$(pwd)" install',
