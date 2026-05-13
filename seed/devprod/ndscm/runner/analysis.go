@@ -56,6 +56,42 @@ type RepoAnalysis struct {
 	Phases map[string]RepoPhase
 }
 
+func (ra RepoAnalysis) TopologicalSort() ([]string, error) {
+	inDegreeMap := map[string]int{}
+	dependentsMap := map[string][]string{}
+	for phase := range ra.Phases {
+		if _, ok := inDegreeMap[phase]; !ok {
+			inDegreeMap[phase] = 0
+		}
+		for _, prerequisite := range ra.Phases[phase].Prerequisites {
+			dependentsMap[prerequisite] = append(dependentsMap[prerequisite], phase)
+			inDegreeMap[phase]++
+		}
+	}
+	fifo := []string{}
+	for phase, inDegree := range inDegreeMap {
+		if inDegree == 0 {
+			fifo = append(fifo, phase)
+		}
+	}
+	result := []string{}
+	for len(fifo) > 0 {
+		phase := fifo[0]
+		fifo = fifo[1:]
+		result = append(result, phase)
+		for _, dependent := range dependentsMap[phase] {
+			inDegreeMap[dependent]--
+			if inDegreeMap[dependent] == 0 {
+				fifo = append(fifo, dependent)
+			}
+		}
+	}
+	if len(result) != len(ra.Phases) {
+		return nil, seederr.WrapErrorf("circular dependency detected in phases")
+	}
+	return result, nil
+}
+
 func (ra RepoAnalysis) String() string {
 	b, _ := json.MarshalIndent(ra, "", "  ")
 	return string(b)
@@ -109,25 +145,6 @@ func analyseDir(
 	relPaths := collectRelPaths(scmDirPath, scmFilePaths)
 	result := map[string]RepoPhase{}
 	for _, phase := range phases {
-		prerequisites := []string{}
-		// The phases are forced to run sequentially for now to avoid breaking the bazel managed tools for each phase.
-		switch phase {
-		case "format":
-			prerequisites = []string{}
-		case "vendor":
-			prerequisites = []string{"format"}
-		case "bootstrap":
-			prerequisites = []string{"format", "vendor"}
-		case "tidy":
-			prerequisites = []string{"format", "vendor", "bootstrap"}
-		case "lock":
-			prerequisites = []string{"format", "vendor", "bootstrap", "tidy"}
-		case "build":
-			prerequisites = []string{"format", "vendor", "bootstrap", "tidy", "lock"}
-		case "test":
-			prerequisites = []string{"format", "vendor", "bootstrap", "tidy", "lock", "build"}
-		}
-
 		rules := map[string]configloader.WatchGenerateRule{}
 		switch phase {
 		case "format":
@@ -207,8 +224,7 @@ func analyseDir(
 			continue
 		}
 		result[phase] = RepoPhase{
-			Prerequisites: prerequisites,
-			Watchers:      watchers,
+			Watchers: watchers,
 		}
 	}
 	return result, nil
@@ -269,6 +285,37 @@ func AnalyseRepo(worktreePath string, phases []string, scmFilePaths []string) (*
 		dirPhases := scmDirPhases[scmDirPath]
 		for phase, dirPhase := range dirPhases {
 			result.Phases[phase] = mergeRepoPhase(result.Phases[phase], dirPhase)
+		}
+	}
+
+	for _, phase := range phases {
+		// The phases are forced to run sequentially for now to avoid breaking the bazel managed tools for each phase.
+		candidates := []string{}
+		switch phase {
+		case "format":
+			candidates = []string{}
+		case "vendor":
+			candidates = []string{"format"}
+		case "bootstrap":
+			candidates = []string{"format", "vendor"}
+		case "tidy":
+			candidates = []string{"format", "vendor", "bootstrap"}
+		case "lock":
+			candidates = []string{"format", "vendor", "bootstrap", "tidy"}
+		case "build":
+			candidates = []string{"format", "vendor", "bootstrap", "tidy", "lock"}
+		case "test":
+			candidates = []string{"format", "vendor", "bootstrap", "tidy", "lock", "build"}
+		}
+		prerequisites := []string{}
+		for _, c := range candidates {
+			if len(result.Phases[c].Watchers) > 0 {
+				prerequisites = append(prerequisites, c)
+			}
+		}
+		result.Phases[phase] = RepoPhase{
+			Prerequisites: prerequisites,
+			Watchers:      result.Phases[phase].Watchers,
 		}
 	}
 
