@@ -21,6 +21,7 @@ go_library(
         "//seed/devprod/ndscm/configloader",
         "//seed/devprod/rbe/bes/go/bep",
         "//seed/infra/error/go/seederr",
+        "//seed/infra/flag/go/seedflag",
         "//seed/infra/log/go/seedlog",
         "//seed/infra/shell/go/seedshell",
         "@org_golang_x_sync//errgroup",

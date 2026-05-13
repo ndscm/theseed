@@ -10,8 +10,7 @@
  *   the task should fire.
  * - `target` — output file(s) the task produces. Used to skip the task
  *   when outputs are already up-to-date. Absent for format and test tasks.
- * - `run` — shell command(s) to execute. Format tasks receive the changed
- *   file path via `{{TARGET}}`.
+ * - `run` — shell command(s) to execute.
  *
  * ### Lifecycle phases
  *
@@ -37,6 +36,29 @@
  * | **test:bazel**  | *(none)*     | Run bazel tests. Depends on vendor only.                           |
  * | **test:other**  | *(none)*     | Run other tests. Also depends on bootstrap.                        |
  * | **test:tidy**   | *(none)*     | Run tidy and lock tests.                                           |
+ *
+ * ### Environment variables
+ *
+ * The following environment variables are set for every `run` command:
+ *
+ * - `BUILD_WORKSPACE_DIRECTORY` — absolute path of the repo root.
+ * - `BUILD_WORKING_DIRECTORY` — absolute path of the task directory.
+ *
+ * ### Template variables
+ *
+ * Template variables are substituted into `run` commands where applicable:
+ *
+ * - `{{TARGET}}` — absolute path of the file being processed. Only
+ *   available in format tasks.
+ * - `{{BAZEL_RUN}}` / `{{BAZEL_RUN[i]}}` — the executable output of the
+ *   first / i-th `needBazelBuild` target. When bazel ground is disabled,
+ *   expands to `bazel run <target> -- ` instead.
+ * - `{{BAZEL_EXECUTABLE}}` / `{{BAZEL_EXECUTABLE[i]}}` — the executable
+ *   path of the first / i-th `needBazelBuild` target. Empty when bazel
+ *   ground is disabled.
+ * - `{{BAZEL_BUILD}}` / `{{BAZEL_BUILD[i]}}` — the artifact output paths
+ *   (space-joined) of the first / i-th `needBazelBuild` target. Only
+ *   available when bazel ground is enabled.
  *
  * @example
  * ```ts
@@ -93,30 +115,14 @@ export type DirConfig = {
       watch: string | string[]
 
       /**
-       * Bazel target(s) that will be built before the formatter runs.
+       * Bazel target(s) to build before the task runs.
        *
-       * All targets across the phase are batched into a single
-       * `bazel build` invocation. After the build, each target's
-       * output paths are resolved and exposed as template variables
-       * in `run`:
-       *
-       * - `{{BAZEL_RUN}}` / `{{BAZEL_RUN[i]}}` — the default
-       *   executable output of the first / i-th target.
-       * - `{{BAZEL_BUILD}}` / `{{BAZEL_BUILD[i]}}` — the default
-       *   artifact (file) output of the first / i-th target.
+       * All targets within the phase are batched into a single
+       * `bazel build` invocation.
        */
       needBazelBuild?: string | string[]
 
-      /**
-       * Shell command executed via `bash -c`.
-       *
-       * Template variables:
-       * - `{{TARGET}}` — absolute path of the file being formatted.
-       * - `{{BAZEL_RUN}}` / `{{BAZEL_RUN[i]}}` — executable from
-       *   `needBazelBuild` (see above).
-       * - `{{BAZEL_BUILD}}` / `{{BAZEL_BUILD[i]}}` — artifact from
-       *   `needBazelBuild` (see above).
-       */
+      /** Shell command executed via `bash -c`. */
       run: string | string[]
     }
   }

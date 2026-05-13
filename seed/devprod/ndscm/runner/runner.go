@@ -111,7 +111,7 @@ func (r *Runner) runWatcher(watcher *Watcher) (map[string]bool, error) {
 }
 
 func (r *Runner) runPhase(repoPhase *RepoPhase, dirtySet map[string]bool) (map[string]bool, error) {
-	r.bazelGround = NewBazelGround(r.worktreePath)
+	r.bazelGround = NewBazelGround(r.worktreePath, repoPhase.UseBazelGround)
 	err := r.bazelGround.collect(*repoPhase)
 	if err != nil {
 		return nil, seederr.Wrap(err)
