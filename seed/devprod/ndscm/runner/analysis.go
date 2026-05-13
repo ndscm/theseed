@@ -1,6 +1,7 @@
 package runner
 
 import (
+	"crypto/sha256"
 	"encoding/json"
 	"path/filepath"
 	"regexp"
@@ -13,28 +14,37 @@ import (
 
 type RunTask struct {
 	// DirPath is the directory to run the command in.
-	DirPath string
+	DirPath string `json:"dirPath"`
 
 	// BazelTargets lists bazel targets whose outputs this command needs.
-	BazelTargets []string
+	BazelTargets []string `json:"bazelTargets"`
 
 	// Cmd is the command to run.
-	Cmd string
+	Cmd string `json:"cmd"`
 }
 
 // Watcher represents a single build rule's matched result.
 // Targets lists all output paths produced by the rule invocation.
 type Watcher struct {
-	Phase string
+	Phase string `json:"phase"`
 
 	// Targets lists the output file paths produced by this rule.
-	Targets []string
+	Targets []string `json:"targets"`
 
 	// Watch lists the source files that matched the rule's watch patterns.
-	Watch []string
+	Watch []string `json:"watch"`
 
 	// Run lists the commands to execute.
-	Run []RunTask
+	Run []RunTask `json:"run"`
+}
+
+func (w Watcher) Sha256() ([32]byte, []byte, error) {
+	data, err := json.Marshal(w)
+	if err != nil {
+		return [32]byte{}, nil, seederr.Wrap(err)
+	}
+	digest := sha256.Sum256(data)
+	return digest, data, nil
 }
 
 // RepoPhase holds the matched targets for a single build phase within a
