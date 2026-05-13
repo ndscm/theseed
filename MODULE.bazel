@@ -112,6 +112,10 @@ include("//seed/vendor/proto:proto.MODULE.bazel")
 
 include("//seed/vendor/python:python.MODULE.bazel")
 
+# Shell
+
+include("//seed/vendor/shell:shell.MODULE.bazel")
+
 # Apps
 
 ## Bazel
