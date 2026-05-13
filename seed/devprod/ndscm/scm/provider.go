@@ -1,7 +1,7 @@
 package scm
 
-// DirtyFile describes a single modified or untracked path in a worktree.
-type DirtyFile struct {
+// FileStatus describes a single modified or untracked path in a worktree.
+type FileStatus struct {
 	// TODO(nagi): add staging status
 	Status string
 	To     string
@@ -74,7 +74,7 @@ type Provider interface {
 	// # filetree
 
 	// ListCommitFiles lists every committed files in single commit.
-	ListCommitFiles(commit string) ([]string, error)
+	ListCommitFiles(commit string) ([]FileStatus, error)
 
 	// # rebase
 
@@ -111,7 +111,7 @@ type Provider interface {
 
 	// GetWorktreeDirtyFiles lists every modified or untracked file in
 	// worktreePath.
-	GetWorktreeDirtyFiles(worktreePath string) ([]DirtyFile, error)
+	GetWorktreeDirtyFiles(worktreePath string) ([]FileStatus, error)
 
 	// ListFiles lists every tracked and untracked files in worktreePath.
 	ListFiles(worktreePath string) ([]string, error)
