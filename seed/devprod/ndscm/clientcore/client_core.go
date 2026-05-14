@@ -42,10 +42,6 @@ func (cc *ClientCore) NdRun(options NdRunOptions) error {
 	return NdRun(cc.scmProvider, options)
 }
 
-func (cc *ClientCore) NdMakefile(options NdMakefileOptions) error {
-	return NdMakefile(cc.scmProvider, options)
-}
-
 func (cc *ClientCore) NdSetup(options NdSetupOptions) error {
 	return NdSetup(options)
 }
