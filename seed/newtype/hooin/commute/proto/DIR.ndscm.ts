@@ -9,7 +9,8 @@ export default {
         "commutepbconnect",
       ],
       watch: "\\.proto$",
-      run: "bazel run :bootstrap",
+      needBazelBuild: ":bootstrap",
+      run: "{{BAZEL_RUN}}",
     },
   },
 } satisfies DirConfig
