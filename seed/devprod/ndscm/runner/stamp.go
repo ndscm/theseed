@@ -13,6 +13,11 @@ import (
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
 )
 
+const (
+	stampGroupTarget = "t"
+	stampGroupWatch  = "w"
+)
+
 type Crc32cChecksum struct {
 	Crc32c uint32
 	Path   string
@@ -117,10 +122,10 @@ type WatcherStamper struct {
 	checksums      map[string]*PathChecksums
 }
 
-func (ws *WatcherStamper) checkChanged(repoPath string) (bool, error) {
+func (ws *WatcherStamper) checkChanged(stampGroup string, repoPath string) (bool, error) {
 	watcherStampHome := filepath.Join(ws.worktreePath, ".cache", "ndscm", "stamp", ws.watcherDigest)
 	targetPath := filepath.Join(ws.worktreePath, repoPath)
-	checksumsPath := filepath.Join(watcherStampHome, repoPath, "checksums.crc32c")
+	checksumsPath := filepath.Join(watcherStampHome, repoPath, stampGroup, "checksums.crc32c")
 
 	targetStat, err := os.Stat(targetPath)
 	if err != nil {
@@ -136,12 +141,15 @@ func (ws *WatcherStamper) checkChanged(repoPath string) (bool, error) {
 					return false, seederr.Wrap(err)
 				}
 			}
+			cacheKey := stampGroup + "/" + repoPath
+			delete(ws.checksums, cacheKey)
 			return true, nil
 		}
 		return false, seederr.Wrap(err)
 	}
 
-	pathChecksums, ok := ws.checksums[repoPath]
+	cacheKey := stampGroup + "/" + repoPath
+	pathChecksums, ok := ws.checksums[cacheKey]
 	if !ok {
 		checksumsStat, err := os.Stat(checksumsPath)
 		if err != nil {
@@ -151,7 +159,7 @@ func (ws *WatcherStamper) checkChanged(repoPath string) (bool, error) {
 			pathChecksums = &PathChecksums{
 				HasOriginal: false,
 			}
-			ws.checksums[repoPath] = pathChecksums
+			ws.checksums[cacheKey] = pathChecksums
 		} else {
 			originalChecksums, err := os.ReadFile(checksumsPath)
 			if err != nil {
@@ -162,7 +170,7 @@ func (ws *WatcherStamper) checkChanged(repoPath string) (bool, error) {
 				OriginalTime:      checksumsStat.ModTime(),
 				OriginalChecksums: originalChecksums,
 			}
-			ws.checksums[repoPath] = pathChecksums
+			ws.checksums[cacheKey] = pathChecksums
 		}
 	}
 
@@ -177,7 +185,7 @@ func (ws *WatcherStamper) checkChanged(repoPath string) (bool, error) {
 		}
 		pathChecksums.NewTime = time.Now()
 		pathChecksums.NewChecksums = newChecksums
-		ws.checksums[repoPath] = pathChecksums
+		ws.checksums[cacheKey] = pathChecksums
 	}
 
 	if bytes.Equal(pathChecksums.OriginalChecksums, pathChecksums.NewChecksums) {
@@ -186,24 +194,25 @@ func (ws *WatcherStamper) checkChanged(repoPath string) (bool, error) {
 	return true, nil
 }
 
-func (ws *WatcherStamper) CheckChanged(repoPath string) (bool, error) {
+func (ws *WatcherStamper) CheckChanged(stampGroup string, repoPath string) (bool, error) {
 	ws.checksumsMutex.Lock()
 	defer ws.checksumsMutex.Unlock()
-	return ws.checkChanged(repoPath)
+	return ws.checkChanged(stampGroup, repoPath)
 }
 
-func (ws *WatcherStamper) stamp(repoPath string) (bool, error) {
-	changed, err := ws.checkChanged(repoPath)
+func (ws *WatcherStamper) stamp(stampGroup string, repoPath string) (bool, error) {
+	changed, err := ws.checkChanged(stampGroup, repoPath)
 	if err != nil {
 		return false, seederr.Wrap(err)
 	}
 	if changed {
-		pathChecksums := ws.checksums[repoPath]
+		cacheKey := stampGroup + "/" + repoPath
+		pathChecksums := ws.checksums[cacheKey]
 		if pathChecksums == nil {
 			return true, nil
 		}
 		watcherStampHome := filepath.Join(ws.worktreePath, ".cache", "ndscm", "stamp", ws.watcherDigest)
-		checksumsPath := filepath.Join(watcherStampHome, repoPath, "checksums.crc32c")
+		checksumsPath := filepath.Join(watcherStampHome, repoPath, stampGroup, "checksums.crc32c")
 		err = os.MkdirAll(filepath.Dir(checksumsPath), 0755)
 		if err != nil {
 			return false, seederr.Wrap(err)
@@ -219,10 +228,23 @@ func (ws *WatcherStamper) stamp(repoPath string) (bool, error) {
 	return changed, nil
 }
 
-func (ws *WatcherStamper) Stamp(repoPath string) (bool, error) {
+func (ws *WatcherStamper) Stamp(stampGroup string, repoPath string) (bool, error) {
 	ws.checksumsMutex.Lock()
 	defer ws.checksumsMutex.Unlock()
-	return ws.stamp(repoPath)
+	return ws.stamp(stampGroup, repoPath)
+}
+
+func (ws *WatcherStamper) RemoveStamps() error {
+	ws.checksumsMutex.Lock()
+	defer ws.checksumsMutex.Unlock()
+
+	ws.checksums = map[string]*PathChecksums{}
+	watcherStampHome := filepath.Join(ws.worktreePath, ".cache", "ndscm", "stamp", ws.watcherDigest)
+	err := os.RemoveAll(watcherStampHome)
+	if err != nil {
+		return seederr.Wrap(err)
+	}
+	return nil
 }
 
 type RepoStamper struct {
@@ -278,47 +300,36 @@ func (rs *RepoStamper) watcherStamper(watcher *Watcher) (*WatcherStamper, error)
 	return ws, nil
 }
 
-func (rs *RepoStamper) CheckChanged(watcher *Watcher, repoPath string) (bool, error) {
+func (rs *RepoStamper) CheckChanged(watcher *Watcher, stampGroup string, repoPath string) (bool, error) {
 	ws, err := rs.watcherStamper(watcher)
 	if err != nil {
 		return false, seederr.Wrap(err)
 	}
-	return ws.CheckChanged(repoPath)
+	return ws.CheckChanged(stampGroup, repoPath)
 }
 
-func (rs *RepoStamper) Stamp(watcher *Watcher, repoPath string) (bool, error) {
+func (rs *RepoStamper) Stamp(watcher *Watcher, stampGroup string, repoPath string) (bool, error) {
 	ws, err := rs.watcherStamper(watcher)
 	if err != nil {
 		return false, seederr.Wrap(err)
 	}
-	return ws.Stamp(repoPath)
+	return ws.Stamp(stampGroup, repoPath)
 }
 
-func (rs *RepoStamper) StampAll(repoAnalysis *RepoAnalysis) (map[string]bool, error) {
-	dirtySet := map[string]bool{}
+func (rs *RepoStamper) RemoveStamps(repoAnalysis *RepoAnalysis) error {
 	for _, repoPhase := range repoAnalysis.Phases {
 		for _, watcher := range repoPhase.Watchers {
-			for _, targetRepoPath := range watcher.Targets {
-				changed, err := rs.Stamp(&watcher, targetRepoPath)
-				if err != nil {
-					return nil, seederr.Wrap(err)
-				}
-				if changed {
-					dirtySet[targetRepoPath] = true
-				}
+			ws, err := rs.watcherStamper(&watcher)
+			if err != nil {
+				return seederr.Wrap(err)
 			}
-			for _, watchRepoPath := range watcher.Watch {
-				changed, err := rs.Stamp(&watcher, watchRepoPath)
-				if err != nil {
-					return nil, seederr.Wrap(err)
-				}
-				if changed {
-					dirtySet[watchRepoPath] = true
-				}
+			err = ws.RemoveStamps()
+			if err != nil {
+				return seederr.Wrap(err)
 			}
 		}
 	}
-	return dirtySet, nil
+	return nil
 }
 
 func NewRepoStamper(worktreePath string) *RepoStamper {

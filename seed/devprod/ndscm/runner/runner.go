@@ -99,9 +99,16 @@ func (r *Runner) runWatcher(watcher *Watcher) (map[string]bool, error) {
 		}
 	}
 
+	for _, watchRepoPath := range watcher.Watch {
+		_, err := r.repoStamper.Stamp(watcher, stampGroupWatch, watchRepoPath)
+		if err != nil {
+			return nil, seederr.Wrap(err)
+		}
+	}
+
 	watcherDirtySet := map[string]bool{}
 	for _, targetRepoPath := range watcher.Targets {
-		changed, err := r.repoStamper.Stamp(watcher, targetRepoPath)
+		changed, err := r.repoStamper.Stamp(watcher, stampGroupTarget, targetRepoPath)
 		if err != nil {
 			return nil, seederr.Wrap(err)
 		}
@@ -112,7 +119,7 @@ func (r *Runner) runWatcher(watcher *Watcher) (map[string]bool, error) {
 	return watcherDirtySet, nil
 }
 
-func (r *Runner) runPhase(repoPhase *RepoPhase, dirtySet map[string]bool) (map[string]bool, error) {
+func (r *Runner) runPhase(repoPhase *RepoPhase) (map[string]bool, error) {
 	r.bazelGround = NewBazelGround(r.worktreePath, repoPhase.UseBazelGround)
 	err := r.bazelGround.collect(*repoPhase)
 	if err != nil {
@@ -137,14 +144,13 @@ func (r *Runner) runPhase(repoPhase *RepoPhase, dirtySet map[string]bool) (map[s
 	for {
 		round++
 		seen := map[*Watcher]bool{}
-		newDirtySet := sync.Map{}
+		roundDirty := sync.Map{}
 		for _, watchers := range watching {
 			for _, watcher := range watchers {
 				if seen[watcher] {
 					continue
 				}
 				ready := true
-				hasDirty := false
 				for _, watching := range watcher.Watch {
 					_, err := os.Stat(filepath.Join(r.worktreePath, watching))
 					if err != nil {
@@ -154,11 +160,22 @@ func (r *Runner) runPhase(repoPhase *RepoPhase, dirtySet map[string]bool) (map[s
 						ready = false
 						break
 					}
-					if dirtySet[watching] {
+				}
+				if !ready {
+					continue
+				}
+
+				hasDirty := false
+				for _, watching := range watcher.Watch {
+					changed, err := r.repoStamper.CheckChanged(watcher, stampGroupWatch, watching)
+					if err != nil {
+						return nil, seederr.Wrap(err)
+					}
+					if changed {
 						hasDirty = true
 					}
 				}
-				if !ready || !hasDirty {
+				if !hasDirty {
 					continue
 				}
 
@@ -176,7 +193,7 @@ func (r *Runner) runPhase(repoPhase *RepoPhase, dirtySet map[string]bool) (map[s
 						return nil
 					}
 					for changedRepoPath := range watcherDirtySet {
-						newDirtySet.Store(changedRepoPath, true)
+						roundDirty.Store(changedRepoPath, true)
 					}
 					return nil
 				})
@@ -186,24 +203,24 @@ func (r *Runner) runPhase(repoPhase *RepoPhase, dirtySet map[string]bool) (map[s
 		if len(errs) > 0 {
 			return nil, errors.Join(errs...)
 		}
-		dirtySet = map[string]bool{}
-		newDirtySet.Range(func(key any, value any) bool {
+		roundDirtySet := map[string]bool{}
+		roundDirty.Range(func(key any, value any) bool {
 			p := key.(string)
-			dirtySet[p] = true
 			phaseDirtySet[p] = true
+			roundDirtySet[p] = true
 			return true
 		})
-		if len(dirtySet) == 0 {
+		if len(roundDirtySet) == 0 {
 			break
 		}
-		seedlog.Infof("Finished round %d: dirty=%v", round, dirtySet)
+		seedlog.Infof("Finished round %d: dirty=%v", round, roundDirtySet)
 	}
 
 	seedlog.Infof("Finished phase: count=%d", finalCount)
 	return phaseDirtySet, nil
 }
 
-func (r *Runner) Run(phases []string, dirtyRepoPaths []string) error {
+func (r *Runner) Run(phases []string, careRepoPaths []string) error {
 	if len(r.phases) > 0 {
 		return seederr.WrapErrorf("phases have already been set, cannot run again")
 	}
@@ -234,21 +251,16 @@ func (r *Runner) Run(phases []string, dirtyRepoPaths []string) error {
 	r.phases = sortedPhases
 	r.repoStamper = NewRepoStamper(r.worktreePath)
 
-	dirtySet := map[string]bool{}
-	if len(dirtyRepoPaths) > 0 {
-		for _, p := range dirtyRepoPaths {
-			dirtySet[p] = true
-		}
-		_, err := r.repoStamper.StampAll(repoAnalysis)
+	if len(careRepoPaths) > 0 {
+		careAnalysis, err := CareAnalysis(repoAnalysis, careRepoPaths)
 		if err != nil {
 			return seederr.Wrap(err)
 		}
-	} else {
-		stampDirtySet, err := r.repoStamper.StampAll(repoAnalysis)
+		err = r.repoStamper.RemoveStamps(careAnalysis)
 		if err != nil {
 			return seederr.Wrap(err)
 		}
-		dirtySet = stampDirtySet
+		repoAnalysis = careAnalysis
 	}
 
 	for _, phase := range r.phases {
@@ -256,18 +268,32 @@ func (r *Runner) Run(phases []string, dirtyRepoPaths []string) error {
 		if !ok {
 			continue
 		}
-		if len(dirtySet) == 0 {
-			seedlog.Infof("Skipping phase: phase=%q dirtyCount=0", phase)
+
+		skipPhase := true
+		for _, watcher := range repoPhase.Watchers {
+			for _, watching := range watcher.Watch {
+				changed, err := r.repoStamper.CheckChanged(&watcher, stampGroupWatch, watching)
+				if err != nil {
+					return seederr.Wrap(err)
+				}
+				if changed {
+					skipPhase = false
+					break
+				}
+			}
+			if !skipPhase {
+				break
+			}
+		}
+		if skipPhase {
+			seedlog.Infof("Skipping phase: phase=%q", phase)
 			continue
 		}
-		seedlog.Infof("Started phase: phase=%q dirtyCount=%d", phase, len(dirtySet))
-		seedlog.Debugf("Started phase: dirty=%v", dirtySet)
-		phaseDirtySet, err := r.runPhase(&repoPhase, dirtySet)
+
+		seedlog.Infof("Started phase: phase=%q", phase)
+		_, err := r.runPhase(&repoPhase)
 		if err != nil {
 			return seederr.Wrap(err)
-		}
-		for repoPath := range phaseDirtySet {
-			dirtySet[repoPath] = true
 		}
 	}
 	return nil
