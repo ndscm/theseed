@@ -5,7 +5,8 @@ export default {
     proto: {
       target: ["dictatepb", "dictatepbconnect"],
       watch: "\\.proto$",
-      run: "bazel run :bootstrap",
+      needBazelBuild: ":bootstrap",
+      run: "{{BAZEL_RUN}}",
     },
   },
 } satisfies DirConfig
