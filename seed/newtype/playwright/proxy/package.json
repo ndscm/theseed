@@ -2,7 +2,6 @@
   "name": "@theseed/newtype-playwright-proxy",
   "version": "0.0.0",
   "description": "",
-  "license": "UNLICENSED",
   "private": true,
   "main": "index.js",
   "scripts": {
