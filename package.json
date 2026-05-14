@@ -3,7 +3,7 @@
   "description": "Theseed Monorepo",
   "version": "25.4.22",
   "author": "ndscm",
-  "license": "UNLICENSED",
+  "license": "MIT",
   "private": true,
   "dependencies": {
     "@ariga/atlas": "^1.2.0",
