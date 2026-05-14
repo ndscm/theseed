@@ -1,6 +1,7 @@
 load("@aspect_rules_js//js:defs.bzl", "js_library")
 load("@aspect_rules_js//npm:defs.bzl", "npm_package")
 load("@aspect_rules_ts//ts:defs.bzl", "ts_project")
+load("//seed/devprod/ndscm/starlark:defs.bzl", "nd_bootstrap")
 
 package(default_visibility = ["//visibility:private"])
 
@@ -37,4 +38,22 @@ npm_package(
         ":ts_project",
     ],
     visibility = ["//visibility:public"],
+)
+
+nd_bootstrap(
+    dsts = [
+        {
+            "dst": "dist",
+            "dir": True,
+            "srcs": [
+                {
+                    "src": ":ts_project",
+                },
+                {
+                    "src": ":ts_project",
+                    "output_group": "types",
+                },
+            ],
+        },
+    ],
 )
