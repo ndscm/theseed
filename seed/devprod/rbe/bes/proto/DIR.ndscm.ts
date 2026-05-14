@@ -14,7 +14,8 @@ export default {
         "strategypolicypb",
       ],
       watch: "^BUILD.bazel$",
-      run: "bazel run :bootstrap",
+      needBazelBuild: ":bootstrap",
+      run: "{{BAZEL_RUN}}",
     },
   },
 } satisfies DirConfig
