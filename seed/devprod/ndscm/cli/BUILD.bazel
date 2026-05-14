@@ -15,6 +15,7 @@ go_library(
     name = "cli_lib",
     srcs = [
         "nd_apply.go",
+        "nd_bootstrap.go",
         "nd_change.go",
         "nd_connect.go",
         "nd_cut.go",
