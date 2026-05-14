@@ -33,6 +33,11 @@ func run() error {
 		if err != nil {
 			return seederr.Wrap(err)
 		}
+	case "bootstrap":
+		err := ndBootstrap(args[1:])
+		if err != nil {
+			return seederr.Wrap(err)
+		}
 	case "change":
 		err := ndChange(args[1:])
 		if err != nil {
