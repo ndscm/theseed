@@ -47,6 +47,8 @@ type Runner struct {
 
 	phases []string
 
+	repoStamper *RepoStamper
+
 	bazelGround *BazelGround
 
 	targetLocks *sync.Map
@@ -99,7 +101,7 @@ func (r *Runner) runWatcher(watcher *Watcher) (map[string]bool, error) {
 
 	watcherDirtySet := map[string]bool{}
 	for _, targetRepoPath := range watcher.Targets {
-		changed, err := Stamp(r.worktreePath, watcher, targetRepoPath)
+		changed, err := r.repoStamper.Stamp(watcher, targetRepoPath)
 		if err != nil {
 			return nil, seederr.Wrap(err)
 		}
@@ -230,18 +232,19 @@ func (r *Runner) Run(phases []string, dirtyRepoPaths []string) error {
 		return seederr.Wrap(err)
 	}
 	r.phases = sortedPhases
+	r.repoStamper = NewRepoStamper(r.worktreePath)
 
 	dirtySet := map[string]bool{}
 	if len(dirtyRepoPaths) > 0 {
 		for _, p := range dirtyRepoPaths {
 			dirtySet[p] = true
 		}
-		_, err := StampAll(r.worktreePath, repoAnalysis)
+		_, err := r.repoStamper.StampAll(repoAnalysis)
 		if err != nil {
 			return seederr.Wrap(err)
 		}
 	} else {
-		stampDirtySet, err := StampAll(r.worktreePath, repoAnalysis)
+		stampDirtySet, err := r.repoStamper.StampAll(repoAnalysis)
 		if err != nil {
 			return seederr.Wrap(err)
 		}
