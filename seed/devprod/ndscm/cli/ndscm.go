@@ -93,6 +93,11 @@ func run() error {
 		if err != nil {
 			return seederr.Wrap(err)
 		}
+	case "vendor":
+		err := ndVendor(args[1:])
+		if err != nil {
+			return seederr.Wrap(err)
+		}
 	default:
 		return seederr.WrapErrorf("unknown command %v", command)
 	}
