@@ -347,3 +347,58 @@ func AnalyseRepo(worktreePath string, phases []string, scmFilePaths []string) (*
 
 	return result, nil
 }
+
+func CareAnalysis(repoAnalysis *RepoAnalysis, careRepoPaths []string) (*RepoAnalysis, error) {
+	dependentWatchers := map[string][]*Watcher{}
+	for _, repoPhase := range repoAnalysis.Phases {
+		for i := range repoPhase.Watchers {
+			watcher := &repoPhase.Watchers[i]
+			for _, watchRepoPath := range watcher.Watch {
+				dependentWatchers[watchRepoPath] = append(dependentWatchers[watchRepoPath], watcher)
+			}
+		}
+	}
+
+	fifo := []string{}
+	for _, p := range careRepoPaths {
+		fifo = append(fifo, p)
+	}
+	careSet := map[string]bool{}
+	for len(fifo) > 0 {
+		repoPath := fifo[0]
+		fifo = fifo[1:]
+		if !careSet[repoPath] {
+			careSet[repoPath] = true
+			for _, watcher := range dependentWatchers[repoPath] {
+				for _, targetRepoPath := range watcher.Targets {
+					fifo = append(fifo, targetRepoPath)
+				}
+			}
+		}
+	}
+
+	careAnalysis := &RepoAnalysis{
+		Phases: map[string]RepoPhase{},
+	}
+	for phase, repoPhase := range repoAnalysis.Phases {
+		phaseWatchers := []Watcher{}
+		for _, watcher := range repoPhase.Watchers {
+			keep := false
+			for _, watchingRepoPath := range watcher.Watch {
+				if careSet[watchingRepoPath] {
+					keep = true
+					break
+				}
+			}
+			if keep {
+				phaseWatchers = append(phaseWatchers, watcher)
+			}
+		}
+		careAnalysis.Phases[phase] = RepoPhase{
+			Prerequisites:  repoPhase.Prerequisites,
+			UseBazelGround: repoPhase.UseBazelGround,
+			Watchers:       phaseWatchers,
+		}
+	}
+	return careAnalysis, nil
+}
