@@ -98,6 +98,11 @@ func run() error {
 		if err != nil {
 			return seederr.Wrap(err)
 		}
+	case "test":
+		err := ndT(args[1:])
+		if err != nil {
+			return seederr.Wrap(err)
+		}
 	case "tidy":
 		err := ndTidy(args[1:])
 		if err != nil {
