@@ -10,7 +10,6 @@
     "test": "tsc --noEmit"
   },
   "author": "ndscm",
-  "license": "UNLICENSED",
   "dependencies": {
     "debug": "^4.4.3",
     "js-yaml": "^4.1.1"
