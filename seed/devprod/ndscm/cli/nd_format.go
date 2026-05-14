@@ -16,7 +16,7 @@ type ndFormatFlags struct {
 func parseNdFormatFlags(args []string) (ndFormatFlags, []string, error) {
 	cf := seedflag.NewCommandFlags("nd-format")
 	cmdFlags := ndFormatFlags{}
-	cmdFlags.all = cf.DefineBool("all", false, "Format all files in the repository")
+	cmdFlags.all = cf.DefineBool("all", false, "Check all watchers regardless of cached modified time")
 	cmdFlags.changed = cf.DefineBool("changed", true, "Also format files changed in the last commit")
 	cmdArgs, err := cf.Parse(args,
 		seedflag.WithAnywhereFlag(true),

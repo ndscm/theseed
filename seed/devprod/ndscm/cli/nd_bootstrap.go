@@ -15,7 +15,7 @@ type ndBootstrapFlags struct {
 func parseNdBootstrapFlags(args []string) (ndBootstrapFlags, []string, error) {
 	cf := seedflag.NewCommandFlags("nd-bootstrap")
 	cmdFlags := ndBootstrapFlags{}
-	cmdFlags.all = cf.DefineBool("all", false, "Bootstrap all files in the repository")
+	cmdFlags.all = cf.DefineBool("all", false, "Check all watchers regardless of cached modified time")
 	cmdArgs, err := cf.Parse(args,
 		seedflag.WithAnywhereFlag(true),
 	)
