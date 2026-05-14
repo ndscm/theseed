@@ -99,6 +99,21 @@ The surcharge covers:
 
 We hope you enjoy our work — and sponsor us by using ndhub ❤️
 
+## License
+
+Theseed project is licensed under the [MIT License](LICENSE).
+
+By submitting a contribution, you agree to license your work under the same
+License and must include a `Signed-off-by:` trailer in each commit to certify
+your right to do so.
+
+Directories (mainly in `*/vendor/*`) contain code sourced from other projects.
+They must be under a permissive license and are distributed under their original
+licenses. Each vendor directory contains its own license file.
+
+In all cases the license that governs a file is the nearest `LICENSE` file found
+by walking up the directory tree from that file.
+
 ## Acknowledgments
 
 In addition to the tech stack listed above, theseed directly uses the following
