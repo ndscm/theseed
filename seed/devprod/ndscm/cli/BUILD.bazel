@@ -26,6 +26,7 @@ go_library(
         "nd_shell.go",
         "nd_submit.go",
         "nd_sync.go",
+        "nd_tidy.go",
         "nd_uncut.go",
         "nd_vendor.go",
         "ndscm.go",
