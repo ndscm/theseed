@@ -6,7 +6,8 @@ export default {
       target: "dist",
       watchRepo: ["node_modules", "seed/office/stuff/proto/stuff_pb.js"],
       watch: "^src/",
-      run: 'bazel run @pnpm//:pnpm -- --dir "$(pwd)" build',
+      needBazelBuild: "@pnpm//:pnpm",
+      run: 'BAZEL_BINDIR="$(dirname "{{BAZEL_EXECUTABLE}}")" {{BAZEL_RUN}} --dir "$(pwd)" build',
     },
   },
 } satisfies DirConfig

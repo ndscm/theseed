@@ -5,7 +5,8 @@ export default {
     ent: {
       target: "ent",
       watch: "^schema/",
-      run: "bazel run :bootstrap",
+      needBazelBuild: ":bootstrap",
+      run: "{{BAZEL_RUN}}",
     },
   },
 } satisfies DirConfig
