@@ -253,6 +253,10 @@ func (r *Runner) Run(phases []string, dirtyRepoPaths []string) error {
 		if !ok {
 			continue
 		}
+		if len(dirtySet) == 0 {
+			seedlog.Infof("Skipping phase: phase=%q dirtyCount=0", phase)
+			continue
+		}
 		seedlog.Infof("Started phase: phase=%q dirtyCount=%d", phase, len(dirtySet))
 		seedlog.Debugf("Started phase: dirty=%v", dirtySet)
 		phaseDirtySet, err := r.runPhase(&repoPhase, dirtySet)
