@@ -88,6 +88,11 @@ func run() error {
 		if err != nil {
 			return seederr.Wrap(err)
 		}
+	case "tidy":
+		err := ndTidy(args[1:])
+		if err != nil {
+			return seederr.Wrap(err)
+		}
 	case "uncut":
 		err := ndUncut(args[1:])
 		if err != nil {
