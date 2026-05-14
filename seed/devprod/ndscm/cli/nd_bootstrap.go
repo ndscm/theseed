@@ -44,7 +44,7 @@ func ndBootstrap(args []string) error {
 		All:     cmdFlags.all.Get(),
 		Changed: false,
 
-		Phases: []string{"bootstrap"},
+		Phases: []string{"vendor", "bootstrap"},
 	})
 	if err != nil {
 		return seederr.Wrap(err)
