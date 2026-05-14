@@ -18,6 +18,7 @@ go_library(
         "nd_bootstrap.go",
         "nd_build.go",
         "nd_change.go",
+        "nd_check.go",
         "nd_connect.go",
         "nd_cut.go",
         "nd_dev.go",

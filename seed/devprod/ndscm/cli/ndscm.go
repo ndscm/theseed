@@ -48,6 +48,11 @@ func run() error {
 		if err != nil {
 			return seederr.Wrap(err)
 		}
+	case "check":
+		err := ndCheck(args[1:])
+		if err != nil {
+			return seederr.Wrap(err)
+		}
 	case "connect":
 		err := ndConnect(args[1:])
 		if err != nil {
