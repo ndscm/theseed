@@ -23,9 +23,9 @@ func NdRun(scmProvider scm.Provider, options NdRunOptions) error {
 	if err != nil {
 		return seederr.Wrap(err)
 	}
-	dirtyPaths := []string{}
+	carePaths := []string{}
 	if options.All {
-		dirtyPaths = filePaths
+		carePaths = filePaths
 	} else if options.Changed {
 		dirtySet := map[string]bool{}
 		headChanges, err := scmProvider.ListCommitFiles("HEAD")
@@ -45,17 +45,17 @@ func NdRun(scmProvider scm.Provider, options NdRunOptions) error {
 		}
 		for repoPath, dirty := range dirtySet {
 			if dirty {
-				dirtyPaths = append(dirtyPaths, repoPath)
+				carePaths = append(carePaths, repoPath)
 			}
 		}
 	} else {
-		// Allow runner to determine dirty paths from stamps
+		// Do not filter repo analysis by care paths.
 	}
 	r, err := runner.CreateRunner(options.Workers, worktreePath, filePaths)
 	if err != nil {
 		return seederr.Wrap(err)
 	}
-	err = r.Run(options.Phases, dirtyPaths)
+	err = r.Run(options.Phases, carePaths)
 	if err != nil {
 		return seederr.Wrap(err)
 	}
