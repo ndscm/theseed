@@ -15,5 +15,7 @@ RUN apt install -y iproute2
 RUN apt install -y iputils-ping
 RUN apt clean
 
+RUN sed -i 's,https://snapshot.ubuntu.com/ubuntu/[^ ]*,http://mirrors.tuna.tsinghua.edu.cn/ubuntu,g' /etc/apt/sources.list.d/ubuntu.sources
+
 RUN /apt/mirror/restore.sh
 RUN rm -rf /apt
