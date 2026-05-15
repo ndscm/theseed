@@ -1,0 +1,21 @@
+// This tsconfig only covers ndscm config files. It exists purely for IDE
+// type-checking and isn't used in any actual transpilation.
+{
+  "compilerOptions": {
+    "strict": true,
+    "noEmit": true,
+    "paths": {
+      "//*": ["./*"]
+    }
+  },
+  "include": [
+    // ndscm
+    "**/*.ndscm.ts"
+  ],
+  "exclude": [
+    // inherit default excludes
+    "node_modules",
+    // bazel
+    "bazel-*"
+  ]
+}
