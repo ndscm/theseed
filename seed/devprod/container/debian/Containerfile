@@ -1,5 +1,7 @@
 FROM docker.io/library/debian:trixie
 
+RUN sed -i 's,http://deb.debian.org/,http://mirrors.tuna.tsinghua.edu.cn/,g' /etc/apt/sources.list.d/debian.sources
+
 ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt update
