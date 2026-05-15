@@ -14,5 +14,7 @@ RUN apt install -y curl
 RUN apt install -y iputils-ping
 RUN apt clean
 
+RUN sed -i 's,https://snapshot.debian.org/archive/\([^/]*\)/[^ ]*,http://mirrors.tuna.tsinghua.edu.cn/\1,g' /etc/apt/sources.list.d/debian.sources
+
 RUN /apt/mirror/restore.sh
 RUN rm -rf /apt
