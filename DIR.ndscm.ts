@@ -42,6 +42,11 @@ export default {
       watch: "\\.(java)$",
       run: 'clang-format -i "{{TARGET}}"',
     },
+    rust: {
+      watch: "\\.(rs)$",
+      needBazelBuild: "@rules_rust//tools/rustfmt:upstream_rustfmt",
+      run: '{{BAZEL_RUN}} "{{TARGET}}"',
+    },
   },
   bootstrap: {
     pnpm: {
