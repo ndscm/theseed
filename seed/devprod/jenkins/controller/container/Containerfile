@@ -1,0 +1,84 @@
+# The official Debian image doesn't create a default user, unlike
+# Ubuntu which claims uid 1000 for "ubuntu". We use Debian so
+# uid 1000 is available for the Jenkins user.
+ARG BASE_DEBIAN=ghcr.io/ndscm/debian:latest
+FROM "${BASE_DEBIAN}" AS jenkins-controller
+# Based on the upstream Jenkins controller Dockerfile:
+# https://github.com/jenkinsci/docker/blob/2.555.2/debian/Dockerfile
+ARG TARGETARCH
+
+ENV LANG=C.UTF-8
+ENV TZ=Etc/UTC
+
+RUN apt update
+RUN apt install -y ca-certificates
+RUN apt install -y curl
+RUN apt install -y git
+RUN apt install -y libfontconfig1
+RUN apt install -y libfreetype6
+RUN apt install -y openjdk-25-jdk
+RUN apt install -y procps
+RUN apt install -y ssh-client
+RUN apt install -y tini
+RUN apt install -y tzdata
+RUN apt install -y unzip
+
+ARG GIT_LFS_VERSION=3.7.1
+RUN curl -L -s -o git-lfs.tgz "https://github.com/git-lfs/git-lfs/releases/download/v${GIT_LFS_VERSION}/git-lfs-linux-${TARGETARCH}-v${GIT_LFS_VERSION}.tar.gz"
+RUN mkdir -p /tmp/git-lfs
+RUN tar xzf git-lfs.tgz -C /tmp/git-lfs --strip-components=1
+RUN bash /tmp/git-lfs/install.sh
+RUN git lfs install --skip-repo --system
+
+ARG user=jenkins
+ARG group=jenkins
+ARG uid=1000
+ARG gid=1000
+
+ENV JENKINS_HOME=/var/jenkins_home
+ENV JENKINS_SLAVE_AGENT_PORT=50000
+ENV REF=/usr/share/jenkins/ref
+
+RUN mkdir -p $JENKINS_HOME
+RUN chown ${uid}:${gid} $JENKINS_HOME
+RUN groupadd -g ${gid} ${group}
+RUN useradd -d "$JENKINS_HOME" -u ${uid} -g ${gid} -l -m -s /bin/bash ${user}
+
+RUN mkdir -p ${REF}/init.groovy.d
+
+ENV JENKINS_UC=https://updates.jenkins.io
+ENV JENKINS_UC_EXPERIMENTAL=https://updates.jenkins.io/experimental
+ENV JENKINS_INCREMENTALS_REPO_MIRROR=https://repo.jenkins-ci.org/incrementals
+RUN chown -R ${user} "$JENKINS_HOME" "$REF"
+
+ENV COPY_REFERENCE_FILE_LOG=$JENKINS_HOME/copy_reference_file.log
+
+ARG JENKINS_VERSION=lts-jdk25
+ENV JENKINS_VERSION=${JENKINS_VERSION}
+COPY --from=docker.io/jenkins/jenkins:"${JENKINS_VERSION}" /usr/share/jenkins/jenkins.war /usr/share/jenkins/jenkins.war
+COPY --from=docker.io/jenkins/jenkins:"${JENKINS_VERSION}" /opt/jenkins-plugin-manager.jar /opt/jenkins-plugin-manager.jar
+COPY --from=docker.io/jenkins/jenkins:"${JENKINS_VERSION}" /usr/local/bin/jenkins-support /usr/local/bin/jenkins-support
+COPY --from=docker.io/jenkins/jenkins:"${JENKINS_VERSION}" /usr/local/bin/jenkins.sh /usr/local/bin/jenkins.sh
+COPY --from=docker.io/jenkins/jenkins:"${JENKINS_VERSION}" /bin/jenkins-plugin-cli /bin/jenkins-plugin-cli
+
+VOLUME $JENKINS_HOME
+
+USER ${user}
+
+ENTRYPOINT ["/usr/bin/tini", "--", "/usr/local/bin/jenkins.sh"]
+
+FROM jenkins-controller AS seed-devprod-jenkins-controller-container
+
+USER root
+
+RUN apt update
+RUN apt install -y gnupg2
+RUN apt install -y lsb-release
+
+RUN curl --fail --silent https://download.docker.com/linux/debian/gpg | gpg --dearmor >/etc/apt/trusted.gpg.d/docker.gpg
+RUN echo "deb https://download.docker.com/linux/debian $(lsb_release -cs) stable" >/etc/apt/sources.list.d/docker.list
+
+RUN apt update
+RUN apt install -y docker-ce-cli
+
+USER jenkins
