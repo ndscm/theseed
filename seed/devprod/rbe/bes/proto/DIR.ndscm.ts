@@ -1,4 +1,4 @@
-import { type DirConfig } from "../../../ndscm/config/DIR"
+import { type DirConfig } from "//seed/devprod/ndscm/config/DIR"
 
 export default {
   bootstrap: {
