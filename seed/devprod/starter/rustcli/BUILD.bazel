@@ -1,0 +1,9 @@
+load("@rules_rust//rust:defs.bzl", "rust_binary")
+
+rust_binary(
+    name = "rustcli",
+    srcs = ["src/main.rs"],
+    deps = [
+        "@crates//:ferris-says",
+    ],
+)
