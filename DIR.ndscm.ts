@@ -9,7 +9,7 @@
  * dot unescaped for readability — the risk of over-matching is negligible
  * when the pattern is already anchored to a specific name.
  */
-import { type DirConfig } from "./seed/devprod/ndscm/config/DIR"
+import { type DirConfig } from "//seed/devprod/ndscm/config/DIR"
 
 export default {
   format: {
