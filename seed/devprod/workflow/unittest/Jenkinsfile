@@ -6,6 +6,9 @@ pipeline {
     string name: 'repository_url', defaultValue: 'https://github.com/ndscm/theseed'
     string name: 'commit_hash'
   }
+  environment {
+    ND_SCM = 'git'
+  }
   stages {
     stage('Validate') {
       steps {
@@ -41,12 +44,21 @@ gh api --method POST /repos/ndscm/theseed/statuses/"$commit_hash" \
     stage('Bootstrap') {
       steps {
         sh '''#!/usr/bin/env bash
+ndscm bootstrap
+'''
+        sh '''#!/usr/bin/env bash
 ./bootstrap.sh
 '''
       }
     }
     stage('Test') {
       steps {
+        sh '''#!/usr/bin/env bash
+ndscm build
+'''
+        sh '''#!/usr/bin/env bash
+ndscm test
+'''
         sh '''#!/usr/bin/env bash
 ./test.sh
 '''
