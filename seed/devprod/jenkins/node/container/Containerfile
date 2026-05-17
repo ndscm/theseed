@@ -68,6 +68,7 @@ RUN apt install -y build-essential
 RUN apt install -y clang
 RUN apt install -y clang-format
 RUN apt install -y curl
+RUN apt install -y direnv
 RUN apt install -y gnupg2
 RUN apt install -y iputils-ping
 RUN apt install -y lsb-release
@@ -87,6 +88,7 @@ RUN apt install -y nodejs
 
 RUN curl --fail --silent --show-error --location "https://github.com/bazelbuild/bazelisk/releases/download/v1.29.0/bazelisk-${TARGETARCH}.deb" -o /root/bazelisk.deb
 RUN dpkg -i /root/bazelisk.deb
+RUN curl -fsSL "https://github.com/facebook/dotslash/releases/latest/download/dotslash-ubuntu-22.04.$(uname -m).tar.gz" | tar xzvf - -C /usr/local/bin
 
 RUN corepack enable
 
