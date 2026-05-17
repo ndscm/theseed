@@ -9,9 +9,12 @@
   "editor.detectIndentation": false,
   "files.associations": {
     ".bazelignore": "ignore",
+    ".buckconfig": "ini",
+    ".buckroot": "ini",
     "*.conf": "plaintext",
     "*.svg": "html",
     "*.uvprojx": "plaintext",
+    "BUCK": "starlark",
     "repository*.xml": "plaintext"
   },
   "files.autoSave": "afterDelay",
