@@ -3,14 +3,18 @@
  *
  * A `DirConfig` declares **what to run** when files change inside a managed
  * directory. Each top-level key is a lifecycle phase; each phase contains
- * named tasks with a `watch` pattern, an optional `target`, and a `run`
- * command:
+ * named tasks with a `watch` pattern, an optional `target`, and one or more
+ * execution methods (`run`, `bazel`):
  *
  * - `watch` — regex matched against changed file paths to decide whether
  *   the task should fire.
  * - `target` — output file(s) the task produces. Used to skip the task
  *   when outputs are already up-to-date. Absent for format and test tasks.
  * - `run` — shell command(s) to execute.
+ * - `bazel` — bazel targets to build and run. Only triggered when
+ *   `build_system` includes `bazel`. `build` target(s) are batched into
+ *   a single `bazel build` invocation per phase; `run` command(s) are
+ *   executed via `bazel run`.
  *
  * ### Lifecycle phases
  *
@@ -51,13 +55,13 @@
  * - `{{TARGET}}` — absolute path of the file being processed. Only
  *   available in format tasks.
  * - `{{BAZEL_RUN}}` / `{{BAZEL_RUN[i]}}` — the executable output of the
- *   first / i-th `needBazelBuild` target. When bazel ground is disabled,
+ *   first / i-th `bazel.build` target. When bazel ground is disabled,
  *   expands to `bazel run <target> -- ` instead.
  * - `{{BAZEL_EXECUTABLE}}` / `{{BAZEL_EXECUTABLE[i]}}` — the executable
- *   path of the first / i-th `needBazelBuild` target. Empty when bazel
+ *   path of the first / i-th `bazel.build` target. Empty when bazel
  *   ground is disabled.
  * - `{{BAZEL_BUILD}}` / `{{BAZEL_BUILD[i]}}` — the artifact output paths
- *   (space-joined) of the first / i-th `needBazelBuild` target. Only
+ *   (space-joined) of the first / i-th `bazel.build` target. Only
  *   available when bazel ground is enabled.
  *
  * @example
@@ -114,16 +118,16 @@ export type DirConfig = {
       /** Regex matched against changed file paths. */
       watch: string | string[]
 
-      /**
-       * Bazel target(s) to build before the task runs.
-       *
-       * All targets within the phase are batched into a single
-       * `bazel build` invocation.
-       */
-      needBazelBuild?: string | string[]
-
       /** Shell command executed via `bash -c`. */
-      run: string | string[]
+      run?: string | string[]
+
+      /** Bazel targets to build and run for this task. */
+      bazel?: {
+        /** Bazel target(s) to build before the task runs. */
+        build: string | string[]
+        /** Bazel command(s) to execute via `bazel run`. */
+        run: string | string[]
+      }
     }
   }
 
@@ -192,16 +196,16 @@ export type DirConfig = {
       /** Regex matched against changed file paths. */
       watch: string | string[]
 
-      /**
-       * Bazel target(s) to build before the task runs.
-       *
-       * All targets within the phase are batched into a single
-       * `bazel build` invocation.
-       */
-      needBazelBuild?: string | string[]
-
       /** Shell command to run. */
-      run: string | string[]
+      run?: string | string[]
+
+      /** Bazel targets to build and run for this task. */
+      bazel?: {
+        /** Bazel target(s) to build before the task runs. */
+        build: string | string[]
+        /** Bazel command(s) to execute via `bazel run`. */
+        run: string | string[]
+      }
     }
   }
 
