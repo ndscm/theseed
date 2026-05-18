@@ -6,8 +6,10 @@ export default {
       target: "dist",
       watchRepo: ["node_modules"],
       watch: "^src/",
-      needBazelBuild: ":bootstrap",
-      run: "{{BAZEL_RUN}}",
+      bazel: {
+        build: ":bootstrap",
+        run: "{{BAZEL_RUN}}",
+      },
     },
   },
 } satisfies DirConfig
