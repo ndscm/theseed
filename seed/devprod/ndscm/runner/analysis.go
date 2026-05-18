@@ -207,6 +207,16 @@ func analyseDir(
 						Cmd:          cmd,
 					})
 				}
+			} else if slices.Contains(buildSystems, "buck") && rule.Buck != nil {
+				if len(rule.Run) > 0 {
+					return nil, seederr.WrapErrorf("watcher rule should not contain both run and buck.run")
+				}
+				for _, cmd := range rule.Buck.Run {
+					runTasks = append(runTasks, RunTask{
+						DirPath: scmDirPath,
+						Cmd:     cmd,
+					})
+				}
 			} else if len(rule.Run) > 0 {
 				for _, cmd := range rule.Run {
 					runTasks = append(runTasks, RunTask{

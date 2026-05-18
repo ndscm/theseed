@@ -5,6 +5,10 @@ type BazelWatcherRule struct {
 	Run   StringOrStrings `json:"run"`
 }
 
+type BuckWatcherRule struct {
+	Run StringOrStrings `json:"run"`
+}
+
 type WatchGenerateRule struct {
 	Target StringOrStrings `json:"target,omitempty"`
 
@@ -15,6 +19,8 @@ type WatchGenerateRule struct {
 	Run StringOrStrings `json:"run,omitempty"`
 
 	Bazel *BazelWatcherRule `json:"bazel,omitempty"`
+
+	Buck *BuckWatcherRule `json:"buck,omitempty"`
 }
 
 type DirConfig struct {
