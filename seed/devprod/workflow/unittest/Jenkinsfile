@@ -39,14 +39,19 @@ gh api --method POST /repos/ndscm/theseed/statuses/"$commit_hash" \
           ],
           userRemoteConfigs: [[url: "${env.repository_url}.git", credentialsId: 'ndscm']],
         )
+        sh '''#!/usr/bin/env bash
+direnv allow
+'''
       }
     }
     stage('Bootstrap') {
       steps {
         sh '''#!/usr/bin/env bash
+eval "$(direnv export bash)"
 ndscm bootstrap
 '''
         sh '''#!/usr/bin/env bash
+eval "$(direnv export bash)"
 ./bootstrap.sh
 '''
       }
@@ -54,12 +59,15 @@ ndscm bootstrap
     stage('Test') {
       steps {
         sh '''#!/usr/bin/env bash
+eval "$(direnv export bash)"
 ndscm build
 '''
         sh '''#!/usr/bin/env bash
+eval "$(direnv export bash)"
 ndscm test
 '''
         sh '''#!/usr/bin/env bash
+eval "$(direnv export bash)"
 ./test.sh
 '''
         sh '''#!/usr/bin/env bash
