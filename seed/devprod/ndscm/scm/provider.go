@@ -111,6 +111,15 @@ type Provider interface {
 	// under remote.
 	ListRemoteBranches(remote string) ([]string, error)
 
+	// # search
+
+	// SearchForkPoint walks both commit chains backwards from ourHead and
+	// theirHead by committer time, matching Change-uuid trailers, and
+	// returns the pair of commits where the two chains first share a
+	// common Change-uuid. It fails if either chain contains a merge
+	// commit or if both chains reach their root without finding a match.
+	SearchForkPoint(ourHead string, theirHead string) (string, string, error)
+
 	// # status
 
 	// ListDirtyFiles lists every modified or untracked file in worktreePath.
