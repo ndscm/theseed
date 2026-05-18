@@ -200,6 +200,12 @@ func (g *GitProvider) ListRemoteBranches(remote string) ([]string, error) {
 	return ListRemoteBranches("", remote)
 }
 
+// # search
+
+func (g *GitProvider) SearchForkPoint(ourTipPoint string, theirTipPoint string) (string, string, error) {
+	return SearchForkPoint("", ourTipPoint, theirTipPoint)
+}
+
 // # status
 
 func (g *GitProvider) ListDirtyFiles(worktreePath string) ([]scm.FileStatus, error) {
