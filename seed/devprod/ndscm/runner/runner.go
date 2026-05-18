@@ -231,7 +231,8 @@ func (r *Runner) Run(phases []string, careRepoPaths []string) error {
 		return nil
 	}
 
-	repoAnalysis, err := AnalyseRepo(r.worktreePath, phases, r.scmFilePaths)
+	buildSystems := strings.Split(flagBuildSystem.Get(), ",")
+	repoAnalysis, err := AnalyseRepo(r.worktreePath, phases, r.scmFilePaths, buildSystems)
 	if err != nil {
 		return seederr.Wrap(err)
 	}
