@@ -4,7 +4,7 @@
  * A `DirConfig` declares **what to run** when files change inside a managed
  * directory. Each top-level key is a lifecycle phase; each phase contains
  * named tasks with a `watch` pattern, an optional `target`, and one or more
- * execution methods (`run`, `bazel`):
+ * execution methods (`run`, `bazel`, `buck`):
  *
  * - `watch` — regex matched against changed file paths to decide whether
  *   the task should fire.
@@ -15,6 +15,8 @@
  *   `build_system` includes `bazel`. `build` target(s) are batched into
  *   a single `bazel build` invocation per phase; `run` command(s) are
  *   executed via `bazel run`.
+ * - `buck` — buck targets to run. Only triggered when `build_system`
+ *   includes `buck`. Optimized build ground is not supported for buck.
  *
  * ### Lifecycle phases
  *
@@ -31,7 +33,7 @@
  * | Phase           | Outputs      | Purpose                                                            |
  * | --------------- | ------------ | ------------------------------------------------------------------ |
  * | **format**      | *(in-place)* | Auto-format individual files. Standalone — no heavy setup.         |
- * | **vendor**      | gitignored   | Fetch deps for bazel hermetic builds.                              |
+ * | **vendor**      | gitignored   | Fetch deps for hermetic builds (bazel, buck).                      |
  * | **bootstrap**   | gitignored   | Set up local dev env (editors, language servers, non-bazel tools). |
  * | **tidy**        | git-tracked  | Regenerate checked-in files (`go.mod`, `BUILD.bazel`).             |
  * | **lock**        | git-tracked  | Regenerate checked-in lock files (`go.sum`, `MODULE.bazel.lock`).  |
@@ -54,6 +56,10 @@
  *
  * - `{{TARGET}}` — absolute path of the file being processed. Only
  *   available in format tasks.
+ *
+ * The following are **bazel-only** template variables, available when
+ * `build_system` includes `bazel`:
+ *
  * - `{{BAZEL_RUN}}` / `{{BAZEL_RUN[i]}}` — the executable output of the
  *   first / i-th `bazel.build` target. When bazel ground is disabled,
  *   expands to `bazel run <target> -- ` instead.
@@ -128,6 +134,12 @@ export type DirConfig = {
         /** Bazel command(s) to execute via `bazel run`. */
         run: string | string[]
       }
+
+      /** Buck targets to run for this task. */
+      buck?: {
+        /** Buck command(s) to execute. */
+        run: string | string[]
+      }
     }
   }
 
@@ -160,6 +172,12 @@ export type DirConfig = {
         /** Bazel target(s) to build before the task runs. */
         build: string | string[]
         /** Bazel command(s) to execute via `bazel run`. */
+        run: string | string[]
+      }
+
+      /** Buck targets to run for this task. */
+      buck?: {
+        /** Buck command(s) to execute. */
         run: string | string[]
       }
     }
@@ -212,6 +230,12 @@ export type DirConfig = {
         /** Bazel target(s) to build before the task runs. */
         build: string | string[]
         /** Bazel command(s) to execute via `bazel run`. */
+        run: string | string[]
+      }
+
+      /** Buck targets to run for this task. */
+      buck?: {
+        /** Buck command(s) to execute. */
         run: string | string[]
       }
     }
