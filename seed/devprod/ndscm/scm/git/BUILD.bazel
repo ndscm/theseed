@@ -17,6 +17,7 @@ go_library(
         "rebase.go",
         "register.go",
         "remote.go",
+        "search.go",
         "status.go",
         "verify.go",
         "worktree.go",
