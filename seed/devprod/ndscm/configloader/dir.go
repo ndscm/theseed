@@ -1,5 +1,10 @@
 package configloader
 
+type BazelWatcherRule struct {
+	Build StringOrStrings `json:"build"`
+	Run   StringOrStrings `json:"run"`
+}
+
 type WatchGenerateRule struct {
 	Target StringOrStrings `json:"target,omitempty"`
 
@@ -7,9 +12,9 @@ type WatchGenerateRule struct {
 
 	Watch StringOrStrings `json:"watch"`
 
-	NeedBazelBuild StringOrStrings `json:"needBazelBuild,omitempty"`
+	Run StringOrStrings `json:"run,omitempty"`
 
-	Run StringOrStrings `json:"run"`
+	Bazel *BazelWatcherRule `json:"bazel,omitempty"`
 }
 
 type DirConfig struct {
