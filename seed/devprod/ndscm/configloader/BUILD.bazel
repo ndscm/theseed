@@ -10,6 +10,7 @@ go_library(
         "common.go",
         "dir.go",
         "loader.go",
+        "repo.go",
     ],
     importpath = "github.com/ndscm/theseed/seed/devprod/ndscm/configloader",
     deps = [
