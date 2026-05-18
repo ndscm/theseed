@@ -6,13 +6,17 @@ export default {
       target: "vendor",
       watchRepo: "Cargo.toml",
       watch: "^reindeer.toml$",
-      run: "reindeer vendor",
+      buck: {
+        run: "reindeer vendor",
+      },
     },
     buck: {
       target: "BUCK",
       watchRepo: "seed/vendor/buck/crates/vendor",
       watch: "^reindeer.toml$",
-      run: "reindeer buckify",
+      buck: {
+        run: "reindeer buckify",
+      },
     },
   },
 } satisfies DirConfig
