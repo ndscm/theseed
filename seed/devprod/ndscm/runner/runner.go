@@ -11,10 +11,13 @@ import (
 	"sync"
 
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
+	"github.com/ndscm/theseed/seed/infra/flag/go/seedflag"
 	"github.com/ndscm/theseed/seed/infra/log/go/seedlog"
 	"github.com/ndscm/theseed/seed/infra/shell/go/seedshell"
 	"golang.org/x/sync/errgroup"
 )
+
+var flagBuildSystem = seedflag.DefineString("build_system", "bazel", "The monorepo build systems, separated by comma.")
 
 var bashEscapeReplacer = strings.NewReplacer(
 	`\`, `\\`,
