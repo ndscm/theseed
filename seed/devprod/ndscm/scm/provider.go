@@ -99,6 +99,10 @@ type Provider interface {
 	// remote-tracking refs that no longer exist upstream.
 	FetchAll() error
 
+	// FetchBranch fetches remoteBranchName from remote and stores it as
+	// the local ref branchName. Stale remote-tracking refs are pruned.
+	FetchBranch(remote string, remoteBranchName string, branchName string) error
+
 	// PushBranch force-pushes the local branchName to remote as
 	// remoteBranchName.
 	PushBranch(branchName string, remote string, remoteBranchName string) error
