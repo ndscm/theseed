@@ -35,7 +35,7 @@ func NdRun(scmProvider scm.Provider, options NdRunOptions) error {
 		for _, headFileStatus := range headChanges {
 			dirtySet[headFileStatus.To] = true
 		}
-		dirtyFiles, err := scmProvider.GetWorktreeDirtyFiles(worktreePath)
+		dirtyFiles, err := scmProvider.ListDirtyFiles(worktreePath)
 		if err != nil {
 			return seederr.Wrap(err)
 		}
