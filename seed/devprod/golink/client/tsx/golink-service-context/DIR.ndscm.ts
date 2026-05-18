@@ -6,8 +6,10 @@ export default {
       target: "dist",
       watchRepo: ["node_modules", "seed/devprod/golink/proto/golink_pb.js"],
       watch: "^src/",
-      needBazelBuild: "@pnpm//:pnpm",
-      run: 'BAZEL_BINDIR="$(dirname "{{BAZEL_EXECUTABLE}}")" {{BAZEL_RUN}} --dir "$(pwd)" build',
+      bazel: {
+        build: "@pnpm//:pnpm",
+        run: 'BAZEL_BINDIR="$(dirname "{{BAZEL_EXECUTABLE}}")" {{BAZEL_RUN}} --dir "$(pwd)" build',
+      },
     },
   },
 } satisfies DirConfig
