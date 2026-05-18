@@ -37,3 +37,21 @@ func LoadDirConfigs(worktree string, scmFilePaths []string) (map[string]*DirConf
 	}
 	return result, nil
 }
+
+func LoadRepoConfig(worktreePath string) (*RepoConfig, error) {
+	repoConfigPath := filepath.Join(worktreePath, "REPO.ndscm.ts")
+	seedlog.Debugf("Loading repo config: %s", repoConfigPath)
+	raw, err := os.ReadFile(repoConfigPath)
+	if err != nil {
+		if os.IsNotExist(err) {
+			return nil, nil
+		}
+		return nil, seederr.Wrap(err)
+	}
+	repoConfig := &RepoConfig{}
+	err = tson.Unmarshal(raw, repoConfig)
+	if err != nil {
+		return nil, seederr.Wrap(err)
+	}
+	return repoConfig, nil
+}
