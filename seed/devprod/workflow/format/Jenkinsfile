@@ -39,14 +39,19 @@ gh api --method POST /repos/ndscm/theseed/statuses/"$commit_hash" \
           ],
           userRemoteConfigs: [[url: "${env.repository_url}.git", credentialsId: 'ndscm']],
         )
+        sh '''#!/usr/bin/env bash
+direnv allow
+'''
       }
     }
     stage('Format') {
       steps {
         sh '''#!/usr/bin/env bash
+eval "$(direnv export bash)"
 ndscm format
 '''
         sh '''#!/usr/bin/env bash
+eval "$(direnv export bash)"
 ./format.sh
 '''
       }
