@@ -109,9 +109,8 @@ type Provider interface {
 
 	// # status
 
-	// GetWorktreeDirtyFiles lists every modified or untracked file in
-	// worktreePath.
-	GetWorktreeDirtyFiles(worktreePath string) ([]FileStatus, error)
+	// ListDirtyFiles lists every modified or untracked file in worktreePath.
+	ListDirtyFiles(worktreePath string) ([]FileStatus, error)
 
 	// ListFiles lists every tracked and untracked files in worktreePath.
 	ListFiles(worktreePath string) ([]string, error)
