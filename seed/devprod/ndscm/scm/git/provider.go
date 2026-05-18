@@ -188,6 +188,10 @@ func (g *GitProvider) FetchAll() error {
 	return FetchAll("")
 }
 
+func (g *GitProvider) FetchBranch(remote string, remoteBranchName string, branchName string) error {
+	return FetchBranch("", remote, remoteBranchName, branchName)
+}
+
 func (g *GitProvider) PushBranch(branchName string, remote string, remoteBranchName string) error {
 	return PushBranch("", branchName, remote, remoteBranchName)
 }
