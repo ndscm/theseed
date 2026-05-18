@@ -153,7 +153,15 @@ export type DirConfig = {
       watch: string | string[]
 
       /** Shell command to run. */
-      run: string | string[]
+      run?: string | string[]
+
+      /** Bazel targets to build and run for this task. */
+      bazel?: {
+        /** Bazel target(s) to build before the task runs. */
+        build: string | string[]
+        /** Bazel command(s) to execute via `bazel run`. */
+        run: string | string[]
+      }
     }
   }
 
