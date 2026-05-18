@@ -38,6 +38,10 @@ func (cc *ClientCore) NdDev(options NdDevOptions) error {
 	return NdDev(cc.scmProvider, options)
 }
 
+func (cc *ClientCore) NdMelt(options NdMeltOptions) error {
+	return NdMelt(cc.scmProvider, options)
+}
+
 func (cc *ClientCore) NdRun(options NdRunOptions) error {
 	return NdRun(cc.scmProvider, options)
 }
