@@ -5,8 +5,10 @@ export default {
     ent: {
       target: "ent",
       watch: "^schema/",
-      needBazelBuild: ":bootstrap",
-      run: "{{BAZEL_RUN}}",
+      bazel: {
+        build: ":bootstrap",
+        run: "{{BAZEL_RUN}}",
+      },
     },
   },
 } satisfies DirConfig
