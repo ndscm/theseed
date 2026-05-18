@@ -39,6 +39,18 @@ func GetBranch(gitDir string, branchName string) (string, error) {
 	return branch, nil
 }
 
+func UpdateBranch(gitDir string, branchName string, newPoint string) error {
+	gitArgs := []string{}
+	if gitDir != "" {
+		gitArgs = append(gitArgs, "--git-dir", gitDir)
+	}
+	err := seedshell.PureRun("git", append(gitArgs, "branch", "--force", branchName, newPoint)...)
+	if err != nil {
+		return seederr.Wrap(scm.ErrBranchNotFound)
+	}
+	return nil
+}
+
 func DeleteBranch(gitDir string, branchName string) error {
 	gitArgs := []string{}
 	if gitDir != "" {
