@@ -198,7 +198,7 @@ func (g *GitProvider) ListRemoteBranches(remote string) ([]string, error) {
 
 // # status
 
-func (g *GitProvider) GetWorktreeDirtyFiles(worktreePath string) ([]scm.FileStatus, error) {
+func (g *GitProvider) ListDirtyFiles(worktreePath string) ([]scm.FileStatus, error) {
 	files, err := GetStatus(worktreePath)
 	if err != nil {
 		return nil, seederr.Wrap(err)
