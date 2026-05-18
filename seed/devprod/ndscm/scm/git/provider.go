@@ -374,3 +374,86 @@ func (g *GitProvider) RemoveDevWorktree(monorepoHome string, focus string) (stri
 	}
 	return newCwd, nil
 }
+
+func (g *GitProvider) CreateMeltWorktree(
+	monorepoHome string, upstreamName string, fromPoint string, toPoint string, tracking string, forkPoint string,
+) (string, error) {
+	branchName := "melt"
+	if upstreamName != "" {
+		branchName = "melt-" + upstreamName
+	}
+	monorepoGitDir, err := MonorepoGitDir()
+	if err != nil {
+		return "", seederr.Wrap(err)
+	}
+	err = CreateBranch(monorepoGitDir, "base/"+branchName, fromPoint, tracking)
+	if err != nil {
+		return "", seederr.WrapErrorf("failed to create base branch %v: %v", "base/"+branchName, err)
+	}
+	err = CreateBranch(monorepoGitDir, branchName, toPoint, "base/"+branchName)
+	if err != nil {
+		return "", seederr.WrapErrorf("failed to create worktree branch %v: %v", branchName, err)
+	}
+	newWorktreePath, err := CreateBranchWorktree(monorepoGitDir, monorepoHome, branchName)
+	if err != nil {
+		return "", seederr.WrapErrorf("failed to create branch worktree %v: %v", branchName, err)
+	}
+	err = UpdateBranch(monorepoGitDir, "base/"+branchName, forkPoint)
+	if err != nil {
+		return "", seederr.WrapErrorf("failed to update base branch %v: %v", "base/"+branchName, err)
+	}
+	return newWorktreePath, nil
+}
+
+func (g *GitProvider) GetMeltWorktree(monorepoHome string, upstreamName string) string {
+	branchName := "melt"
+	if upstreamName != "" {
+		branchName = "melt-" + upstreamName
+	}
+	return GetBranchWorktreePath(monorepoHome, branchName)
+}
+
+func (g *GitProvider) RemoveMeltWorktree(monorepoHome string, upstreamName string) (string, error) {
+	monorepoGitDir, err := MonorepoGitDir()
+	if err != nil {
+		return "", seederr.Wrap(err)
+	}
+	branchName := "melt"
+	if upstreamName != "" {
+		branchName = "melt-" + upstreamName
+	}
+	worktreePath := GetBranchWorktreePath(monorepoHome, branchName)
+	currentWorktreePath, err := GetCurrentWorktreePath()
+	if err != nil {
+		return "", seederr.Wrap(err)
+	}
+	needChdir := currentWorktreePath == worktreePath
+	dirtyFiles, err := GetStatus(worktreePath)
+	if err != nil {
+		return "", seederr.Wrap(err)
+	}
+	if len(dirtyFiles) > 0 {
+		return "", seederr.WrapErrorf("workspace is dirty:\n%v", dirtyFiles)
+	}
+	newCwd := ""
+	if needChdir {
+		err = os.Chdir(monorepoHome)
+		if err != nil {
+			return "", seederr.Wrap(err)
+		}
+		newCwd = monorepoHome
+	}
+	err = RemoveWorktree(monorepoGitDir, worktreePath)
+	if err != nil {
+		return "", seederr.Wrap(err)
+	}
+	err = DeleteBranch(monorepoGitDir, branchName)
+	if err != nil {
+		return "", seederr.Wrap(err)
+	}
+	err = DeleteBranch(monorepoGitDir, "base/"+branchName)
+	if err != nil {
+		return "", seederr.Wrap(err)
+	}
+	return newCwd, nil
+}
