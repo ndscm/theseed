@@ -68,7 +68,7 @@ func NdApply(scmProvider scm.Provider, options NdApplyOptions) error {
 	if !scmProvider.IsDevBranch(devBranch) {
 		return seederr.WrapErrorf("workspace is not a dev worktree: %v", devBranch)
 	}
-	dirtyFiles, err := scmProvider.GetWorktreeDirtyFiles("")
+	dirtyFiles, err := scmProvider.ListDirtyFiles("")
 	if err != nil {
 		return seederr.Wrap(err)
 	}

@@ -21,7 +21,7 @@ func NdCut(scmProvider scm.Provider, options NdCutOptions) error {
 	if seedshell.ShellEval() {
 		return seederr.WrapErrorf("nd-cut should not run with --shell-eval")
 	}
-	dirtyFiles, err := scmProvider.GetWorktreeDirtyFiles("")
+	dirtyFiles, err := scmProvider.ListDirtyFiles("")
 	if err != nil {
 		return seederr.Wrap(err)
 	}

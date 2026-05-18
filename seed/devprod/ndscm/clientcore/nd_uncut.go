@@ -17,7 +17,7 @@ func NdUncut(scmProvider scm.Provider, options NdUncutOptions) error {
 	if seedshell.ShellEval() {
 		return seederr.WrapErrorf("nd-uncut should not run with --shell-eval")
 	}
-	dirtyFiles, err := scmProvider.GetWorktreeDirtyFiles("")
+	dirtyFiles, err := scmProvider.ListDirtyFiles("")
 	if err != nil {
 		return seederr.Wrap(err)
 	}

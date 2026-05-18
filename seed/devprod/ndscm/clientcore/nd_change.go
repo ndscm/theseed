@@ -33,7 +33,7 @@ func NdChange(scmProvider scm.Provider, options NdChangeOptions) error {
 		}
 		if trackingBranch == changeBranch {
 			// Navigation-only: dirty files intentionally carry over to the target branch.
-			dirtyFiles, err := scmProvider.GetWorktreeDirtyFiles("")
+			dirtyFiles, err := scmProvider.ListDirtyFiles("")
 			if err != nil {
 				return seederr.Wrap(err)
 			}

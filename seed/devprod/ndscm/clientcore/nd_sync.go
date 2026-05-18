@@ -25,7 +25,7 @@ func NdSync(scmProvider scm.Provider, _ NdSyncOptions) error {
 	if err != nil {
 		return seederr.Wrap(err)
 	}
-	dirtyFiles, err := scmProvider.GetWorktreeDirtyFiles("")
+	dirtyFiles, err := scmProvider.ListDirtyFiles("")
 	if err != nil {
 		return seederr.Wrap(err)
 	}
