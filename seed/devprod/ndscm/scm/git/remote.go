@@ -31,6 +31,18 @@ func FetchAll(gitDir string) error {
 	return nil
 }
 
+func FetchBranch(gitDir string, remote string, remoteBranchName string, branchName string) error {
+	gitArgs := []string{}
+	if gitDir != "" {
+		gitArgs = append(gitArgs, "--git-dir", gitDir)
+	}
+	err := seedshell.ImpureRun("git", append(gitArgs, "fetch", remote, remoteBranchName+":"+branchName, "--prune")...)
+	if err != nil {
+		return seederr.WrapErrorf("failed to fetch from remote %v: %w", remote, err)
+	}
+	return nil
+}
+
 func PushBranch(gitDir string, branchName string, remote string, remoteBranchName string) error {
 	gitArgs := []string{}
 	if gitDir != "" {
