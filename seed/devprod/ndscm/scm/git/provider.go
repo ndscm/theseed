@@ -129,6 +129,16 @@ func (g *GitProvider) IsDevBranch(branchName string) bool {
 	return false
 }
 
+func (g *GitProvider) IsMeltBranch(branchName string) bool {
+	if branchName == "melt" {
+		return true
+	}
+	if strings.HasPrefix(branchName, "melt-") && !strings.Contains(branchName, "/") {
+		return true
+	}
+	return false
+}
+
 // # commit
 
 func (g *GitProvider) GetCommitId(commit string) (string, error) {
