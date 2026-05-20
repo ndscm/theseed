@@ -4,6 +4,7 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"runtime"
 	"strings"
 
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
@@ -12,6 +13,9 @@ import (
 // CheckSandbox checks if we are running in a bazel linux sandbox
 // by looking for a read-only root mount.
 func CheckSandbox() (bool, error) {
+	if runtime.GOOS == "darwin" {
+		return false, nil
+	}
 	mounts, err := os.ReadFile("/proc/self/mounts")
 	if err != nil {
 		return false, seederr.Wrap(err)
