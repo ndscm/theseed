@@ -1,18 +1,28 @@
---- rules/android_sdk_repository/rule.bzl
-+++ rules/android_sdk_repository/rule.bzl
-@@ -92,8 +92,9 @@
+From ac1c5785575d66935a6b2081fe63ee46062617f8 Mon Sep 17 00:00:00 2001
+From: Nagi <nagi@ndscm.com>
+Date: Wed, 20 May 2026 00:47:07 -0700
+Subject: [PATCH] seed: vendor: android: load sdk from bazel label
 
+---
+ rules/android_sdk_repository/rule.bzl | 20 +++++++++++---------
+ 1 file changed, 11 insertions(+), 9 deletions(-)
+
+diff --git a/rules/android_sdk_repository/rule.bzl b/rules/android_sdk_repository/rule.bzl
+index 34de2b5..1a18a33 100644
+--- a/rules/android_sdk_repository/rule.bzl
++++ b/rules/android_sdk_repository/rule.bzl
+@@ -108,7 +108,9 @@ def _find_system_images(repo_ctx, android_sdk_path):
+ 
  def _android_sdk_repository_impl(repo_ctx):
      # Determine the SDK path to use, either from the attribute or the environment.
 -    android_sdk_path = repo_ctx.attr.path
--    if not android_sdk_path:
++    android_sdk_path = ""
 +    if repo_ctx.attr.sdk:
 +        android_sdk_path = str(repo_ctx.path(repo_ctx.attr.sdk).dirname)
-+    else:
-         android_sdk_path = repo_ctx.os.environ.get("ANDROID_HOME")
      if not android_sdk_path:
-         # Create an empty repository that allows non-Android code to build.
-@@ -105,8 +106,8 @@
+         android_sdk_path = repo_ctx.getenv("ANDROID_HOME")
+     if not android_sdk_path:
+@@ -121,8 +123,8 @@ def _android_sdk_repository_impl(repo_ctx):
      # Symlink the needed contents to this repository.
      for dir_to_link in _DIRS_TO_LINK:
          source = "%s/%s" % (android_sdk_path, dir_to_link)
@@ -20,10 +30,10 @@
 -        repo_ctx.symlink(source, dest)
 +        if repo_ctx.path(source).exists:
 +            repo_ctx.symlink(source, dir_to_link)
-
+ 
      # Read list of supported SDK levels
      api_levels = _read_api_levels(repo_ctx, android_sdk_path)
-@@ -169,7 +170,7 @@
+@@ -191,7 +193,7 @@ _android_sdk_repository = repository_rule(
      attrs = {
          "api_level": attr.int(default = 0),
          "build_tools_version": attr.string(),
@@ -32,8 +42,8 @@
      },
      environ = ["ANDROID_HOME"],
      local = True,
-@@ -177,7 +178,7 @@
-
+@@ -199,7 +201,7 @@ _android_sdk_repository = repository_rule(
+ 
  def android_sdk_repository(
          name,
 -        path = "",
@@ -41,14 +51,14 @@
          api_level = 0,
          build_tools_version = ""):
      """Create a repository with Android SDK toolchains.
-@@ -189,12 +190,12 @@
+@@ -211,12 +213,12 @@ def android_sdk_repository(
        name: The repository name.
        api_level: The SDK API level to use.
        build_tools_version: The build_tools in the SDK to use.
 -      path: The path to the Android SDK.
 +      sdk: Label pointing to the Android SDK.
      """
-
+ 
      _android_sdk_repository(
          name = name,
 -        path = path,
@@ -56,16 +66,16 @@
          api_level = api_level,
          build_tools_version = build_tools_version,
      )
-@@ -216,7 +217,7 @@
+@@ -238,7 +240,7 @@ def _android_sdk_repository_extension_impl(module_ctx):
      if module.tags.configure:
          kwargs["api_level"] = module.tags.configure[0].api_level
          kwargs["build_tools_version"] = module.tags.configure[0].build_tools_version
 -        kwargs["path"] = module.tags.configure[0].path
 +        kwargs["sdk"] = module.tags.configure[0].sdk
-
+ 
      _android_sdk_repository(
          name = "androidsdk",
-@@ -227,7 +228,7 @@
+@@ -249,7 +251,7 @@ android_sdk_repository_extension = module_extension(
      implementation = _android_sdk_repository_extension_impl,
      tag_classes = {
          "configure": tag_class(attrs = {
@@ -74,3 +84,6 @@
              "api_level": attr.int(),
              "build_tools_version": attr.string(),
          }),
+-- 
+2.43.0
+
