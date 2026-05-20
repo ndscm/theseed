@@ -61,6 +61,10 @@ type Provider interface {
 	// itself or a focused variant "dev-<focus>" (no slashes allowed).
 	IsDevBranch(branchName string) bool
 
+	// IsMeltBranch reports whether branchName is a melt branch — either "melt"
+	// itself or a focused variant "melt-<focus>" (no slashes allowed).
+	IsMeltBranch(branchName string) bool
+
 	// # commit
 
 	// GetCommitId resolves commit (a ref, partial id, or full id) to a full
