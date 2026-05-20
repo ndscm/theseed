@@ -70,6 +70,9 @@ if [[ "${SEED_FORMAT_FULL:-}" ]]; then
 else
   prettier_changes=$(grep_changes '\.(ts|tsx|js|jsx|mts|cts|mjs|cjs|css|scss|less|json|yaml|yml|md|mdx|html|vue|svelte|graphql|gql)$')
   if [[ -n "$prettier_changes" ]]; then
-    printf '%s\n' "$prettier_changes" | xargs -d '\n' realpath | tr '\n' '\0' | xargs -0 bazel run //seed/devprod/format/prettier -- --write
+    printf '%s\n' "$prettier_changes" |
+      while IFS= read -r f; do realpath "$f"; done |
+      tr '\n' '\0' |
+      xargs -0 bazel run //seed/devprod/format/prettier -- --write
   fi
 fi
