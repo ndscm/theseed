@@ -105,3 +105,50 @@ def extract_tar(name, srcs, subdir = "", **kwargs):
         extract_tool = "//seed/devprod/starlark/archive:extract_tar",
         **kwargs
     )
+
+def _merge_tar_impl(ctx):
+    out = ctx.actions.declare_file(ctx.attr.out)
+
+    srcs_map = {}
+    for target, dest in ctx.attr.srcs.items():
+        for f in target.files.to_list():
+            srcs_map[f.path] = dest
+
+    srcs_json = ctx.actions.declare_file(ctx.attr.name + "_srcs.json")
+    srcs_json_content = json.encode(srcs_map)
+    ctx.actions.write(output = srcs_json, content = srcs_json_content)
+
+    ctx.actions.run(
+        outputs = [out],
+        inputs = ctx.files.srcs + [srcs_json],
+        executable = ctx.executable.mergetar,
+        arguments = ["--out", out.path, "--srcs", srcs_json.path],
+        mnemonic = "MergeDir",
+        progress_message = "Generating tar file: {out}".format(out = out.path),
+    )
+    return [DefaultInfo(files = depset([out]))]
+
+_merge_tar = rule(
+    implementation = _merge_tar_impl,
+    attrs = {
+        "srcs": attr.label_keyed_string_dict(
+            allow_files = True,
+        ),
+        "out": attr.string(),
+        "mergetar": attr.label(
+            mandatory = True,
+            executable = True,
+            cfg = "exec",
+        ),
+    },
+    doc = "Generates a tar file from directories and files.",
+)
+
+def merge_tar(name, srcs, out = "", **kwargs):
+    _merge_tar(
+        name = name,
+        srcs = srcs,
+        out = out or name + ".tar",
+        mergetar = "//seed/devprod/starlark/archive/mergetar:mergetar",
+        **kwargs
+    )
