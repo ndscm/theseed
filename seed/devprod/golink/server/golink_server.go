@@ -53,7 +53,7 @@ func run() error {
 
 	golinkHandler := &golinkservice.GolinkHandler{}
 	if flagWebapp.Get() != "" {
-		spaServer := seedspa.SpaServer(http.Dir(flagWebapp.Get()), "__spa-fallback.html")
+		spaServer := seedspa.SpaServer(http.Dir(flagWebapp.Get()), map[string]string{"": "__spa-fallback.html"})
 		spaServer = cachecontrol.InterceptCacheControlMiddleware(spaServer, 3600)
 		golinkHandler.Webapp = spaServer
 		seedlog.Infof("Serving webapp from: %v", flagWebapp.Get())
