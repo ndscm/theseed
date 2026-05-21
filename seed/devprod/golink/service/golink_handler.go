@@ -12,12 +12,14 @@ import (
 )
 
 type GolinkHandler struct {
-	Webapp http.Handler
+	webapp http.Handler
+
+	extraLanguages []string
 }
 
 func (h *GolinkHandler) serveWebapp(w http.ResponseWriter, r *http.Request) {
-	if h.Webapp != nil {
-		h.Webapp.ServeHTTP(w, r)
+	if h.webapp != nil {
+		h.webapp.ServeHTTP(w, r)
 		return
 	}
 	http.NotFound(w, r)
@@ -26,7 +28,15 @@ func (h *GolinkHandler) serveWebapp(w http.ResponseWriter, r *http.Request) {
 // ServeHTTP implements http.Handler and handles redirect requests.
 func (h *GolinkHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
-	path := strings.TrimPrefix(r.URL.Path, "/")
+	path := r.URL.Path
+	for _, lang := range h.extraLanguages {
+		langPrefix := "/" + lang
+		if path == langPrefix || strings.HasPrefix(path, langPrefix+"/") {
+			path = strings.TrimPrefix(path, langPrefix)
+			break
+		}
+	}
+	path = strings.TrimPrefix(path, "/")
 	if path == "" || path == "favicon.ico" || strings.HasPrefix(path, ".") {
 		h.serveWebapp(w, r)
 		return
@@ -99,4 +109,11 @@ func (h *GolinkHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			seedlog.Errorf("Failed to increment hit count: %v", err)
 		}
 	}()
+}
+
+func NewGolinkHandler(webapp http.Handler, extraLanguages []string) *GolinkHandler {
+	return &GolinkHandler{
+		webapp:         webapp,
+		extraLanguages: extraLanguages,
+	}
 }
