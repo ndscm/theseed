@@ -3,10 +3,10 @@ set -eux
 set -o pipefail
 cd "$(dirname "${BASH_SOURCE[0]}")"
 
-container_cli=${CONTAINER_CLI:-"docker"}
+container_engine=${CONTAINER_ENGINE:-"podman"}
 
 ./build.sh
 
-"${container_cli}" run --name "golink" --rm --interactive --tty \
+"${container_engine}" run --name "golink" --rm --interactive --tty \
   --network "host" \
   ghcr.io/ndscm/seed-devprod-golink-container:latest
