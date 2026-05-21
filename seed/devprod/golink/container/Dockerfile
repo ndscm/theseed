@@ -6,6 +6,6 @@ RUN useradd --shell /bin/bash --create-home golink
 USER golink
 WORKDIR /home/golink
 
-ENTRYPOINT [ "/opt/golink/golink-server", "--webapp", "/opt/golink/webapp" ]
+ENTRYPOINT [ "/opt/golink/golink-server" ]
 
 CMD ["--verbose"]
