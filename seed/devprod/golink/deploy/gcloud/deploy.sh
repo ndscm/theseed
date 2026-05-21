@@ -3,7 +3,7 @@ set -eux
 set -o pipefail
 cd "$(dirname "${BASH_SOURCE[0]}")/../../../../.."
 
-container_cli=${CONTAINER_CLI:-"docker"}
+container_engine=${CONTAINER_ENGINE:-"podman"}
 
 project="ndscm-prod"
 region="us-west1"
@@ -13,9 +13,17 @@ image_package="us-docker.pkg.dev/ndscm-prod/container-us/seed-devprod-golink-dep
 ./seed/devprod/golink/container/build.sh
 
 cd ./seed/devprod/golink/deploy/gcloud/
-"${container_cli}" build -t "${image_package}:prod" .
 
-"${container_cli}" push "${image_package}:prod"
+build_compat=()
+if [[ "${container_engine}" == "docker" ]]; then
+  build_compat+=("-f" "Containerfile")
+elif [[ "${container_engine}" == "podman" ]]; then
+  build_compat+=("--userns" "auto:size=65536")
+fi
 
-image_digest="$("${container_cli}" inspect --format='{{index .RepoDigests 0}}' "${image_package}:prod")"
-gcloud run services update "${service}" --project="${project}" --region="${region}" --image="${image_digest}"
+"${container_engine}" build "${build_compat[@]}" -t "${image_package}:prod" .
+
+"${container_engine}" push "${image_package}:prod"
+
+image_digest=$(crane digest "${image_package}:prod")
+gcloud run services update "${service}" --project="${project}" --region="${region}" --image="${image_package}@${image_digest}"
