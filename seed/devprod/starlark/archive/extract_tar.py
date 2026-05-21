@@ -20,7 +20,7 @@ async def main():
     target_folder = os.path.join(out, flag_subdir.get())
     os.makedirs(target_folder, exist_ok=True)
     for src in srcs:
-        if src.endswith(".tar.gz"):
+        if src.endswith(".tar.gz") or src.endswith(".tar"):
             shutil.unpack_archive(src, target_folder)
             continue
 
