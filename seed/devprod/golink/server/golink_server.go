@@ -1,24 +1,25 @@
 package main
 
 import (
-	"net/http"
+	"embed"
+	"io/fs"
 	"os"
 
 	"github.com/ndscm/theseed/seed/cloud/login/go/loginservice"
 	"github.com/ndscm/theseed/seed/cloud/login/proto/loginpbconnect"
 	"github.com/ndscm/theseed/seed/devprod/golink/proto/golinkpbconnect"
 	golinkservice "github.com/ndscm/theseed/seed/devprod/golink/service"
+	"github.com/ndscm/theseed/seed/devprod/reactrouter/go/reactrouter"
 	"github.com/ndscm/theseed/seed/infra/auth/go/openidjwt"
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
-	"github.com/ndscm/theseed/seed/infra/flag/go/seedflag"
 	"github.com/ndscm/theseed/seed/infra/grpc/go/seedgrpc"
 	"github.com/ndscm/theseed/seed/infra/http/go/cachecontrol"
 	"github.com/ndscm/theseed/seed/infra/init/go/seedinit"
 	"github.com/ndscm/theseed/seed/infra/log/go/seedlog"
-	"github.com/ndscm/theseed/seed/infra/spa/go/seedspa"
 )
 
-var flagWebapp = seedflag.DefineString("webapp", "", "Path to webapp static files")
+//go:embed all:webapp
+var embedFs embed.FS
 
 func run() error {
 	_, err := seedinit.Initialize()
@@ -51,13 +52,16 @@ func run() error {
 		return seederr.Wrap(err)
 	}
 
-	golinkHandler := &golinkservice.GolinkHandler{}
-	if flagWebapp.Get() != "" {
-		spaServer := seedspa.SpaServer(http.Dir(flagWebapp.Get()), map[string]string{"": "__spa-fallback.html"})
-		spaServer = cachecontrol.InterceptCacheControlMiddleware(spaServer, 3600)
-		golinkHandler.Webapp = spaServer
-		seedlog.Infof("Serving webapp from: %v", flagWebapp.Get())
+	webapp, err := fs.Sub(embedFs, "webapp")
+	if err != nil {
+		return seederr.Wrap(err)
 	}
+	spaServer, extraLanguages, err := reactrouter.I18nSpaServer(webapp)
+	if err != nil {
+		return seederr.Wrap(err)
+	}
+	spaServer = cachecontrol.InterceptCacheControlMiddleware(spaServer, 3600)
+	golinkHandler := golinkservice.NewGolinkHandler(spaServer, extraLanguages)
 	mux.Handle("/", golinkHandler)
 
 	handler, err := mux.Ready()
