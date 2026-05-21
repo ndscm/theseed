@@ -2,7 +2,7 @@ import asyncio
 import logging
 import os
 import shlex
-import shutil
+import tarfile
 import tempfile
 
 import seed.infra.python.seed_flag as seed_flag
@@ -35,11 +35,15 @@ async def main():
     inbazel.copy_srcs(
         srcs, target_folder, strip_components, sandbox=not flag_local.get()
     )
-    output_folder = tempfile.mkdtemp()
-    output_archive_path = shutil.make_archive(
-        os.path.join(output_folder, "out"), "gztar", unpack_folder
-    )
-    shutil.move(output_archive_path, out)
+    # Sort directory and file entries at every level for deterministic builds.
+    # os.walk and os.listdir return entries in OS-dependent order.
+    with tarfile.open(out, "w:gz") as tar:
+        for root, dirs, files in os.walk(unpack_folder):
+            dirs.sort()  # in-place sort controls os.walk's traversal order
+            for name in sorted(files):
+                full_path = os.path.join(root, name)
+                arcname = os.path.relpath(full_path, unpack_folder)
+                tar.add(full_path, arcname=arcname, recursive=False)
 
 
 if __name__ == "__main__":
