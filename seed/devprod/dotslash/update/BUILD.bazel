@@ -1,0 +1,17 @@
+load("@rules_rust//rust:defs.bzl", "rust_binary")
+
+alias(
+    name = "update",
+    actual = ":dotslash-update",
+)
+
+rust_binary(
+    name = "dotslash-update",
+    srcs = ["src/main.rs"],
+    deps = [
+        "@crates//:anyhow",
+        "@crates//:clap",
+        "@crates//:serde",
+        "@crates//:serde_json",
+    ],
+)
