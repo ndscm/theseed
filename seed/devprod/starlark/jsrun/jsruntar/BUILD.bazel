@@ -1,0 +1,24 @@
+load("@rules_go//go:def.bzl", "go_binary", "go_library")
+
+package(default_visibility = [
+    "//seed/devprod/starlark/jsrun:__subpackages__",
+])
+
+go_library(
+    name = "jsruntar_lib",
+    srcs = ["jsruntar.go"],
+    importpath = "github.com/ndscm/theseed/seed/devprod/starlark/jsrun/jsruntar",
+    visibility = ["//visibility:private"],
+    deps = [
+        "//seed/infra/error/go/seederr",
+        "//seed/infra/flag/go/seedflag",
+        "//seed/infra/init/go/seedinit",
+        "//seed/infra/log/go/seedlog",
+    ],
+)
+
+go_binary(
+    name = "jsruntar",
+    embed = [":jsruntar_lib"],
+    visibility = ["//visibility:public"],
+)
