@@ -1,7 +1,7 @@
-load("@aspect_rules_js//js:defs.bzl", "js_run_binary")
 load("@npm//:defs.bzl", "npm_link_all_packages")
 load("@npm//seed/devprod/golink/webapp:@react-router/dev/package_json.bzl", react_router_bin = "bin")
-load("//seed/devprod/starlark/archive:defs.bzl", "create_tar_gz")
+load("//seed/devprod/reactrouter/starlark:defs.bzl", "react_router_webapp")
+load("//seed/devprod/starlark/archive:defs.bzl", "create_tar_gz", "extract_tar")
 
 package(default_visibility = ["//seed/devprod/golink:__subpackages__"])
 
@@ -11,19 +11,9 @@ react_router_bin.react_router_binary(
     name = "react-router",
 )
 
-js_run_binary(
+react_router_webapp(
     name = "webapp",
-    srcs = [
-        "package.json",
-        "react-router.config.ts",
-        "tsconfig.json",
-        "vite.config.ts",
-        ":node_modules",
-        "//seed/cloud/login/client/tsx/login-service-context",
-        "//seed/devprod/buildinfo/ts",
-        "//seed/devprod/golink/client/tsx/golink-service-context",
-        "//seed/devprod/gotcha/tsx",
-    ] + glob(
+    srcs = glob(
         [
             "app/**/*",
             "components/**/*",
@@ -32,24 +22,29 @@ js_run_binary(
             "icons/**/*",
             "locales/**/*",
             "public/**/*",
-            "utils/**/*",
         ],
         allow_empty = True,
     ),
-    args = [
-        "build",
+    out = "webapp.tar",
+    default_language = "en",
+    extra_languages = ["es"],
+    deps = [
+        "//seed/cloud/login/client/tsx/login-service-context",
+        "//seed/devprod/buildinfo/ts",
+        "//seed/devprod/golink/client/tsx/golink-service-context",
+        "//seed/devprod/gotcha/tsx",
     ],
-    chdir = package_name(),
-    mnemonic = "ReactRouter",
-    out_dirs = ["dist/client"],
-    progress_message = "Compile %{label}",
-    tool = ":react-router",
+)
+
+extract_tar(
+    name = "webapp-extracted",
+    srcs = [":webapp"],
 )
 
 create_tar_gz(
     name = "webapp-tar-gz",
     srcs = [
-        ":webapp",
+        ":webapp-extracted",
     ],
     out = "webapp.tar.gz",
 )

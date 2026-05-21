@@ -1,17 +1,15 @@
 import i18next from "i18next"
 import { initReactI18next } from "react-i18next"
 
-import LocalesEnCommon from "../locales/en/common.json"
+import en from "../locales/en/en"
+import es from "../locales/es/es"
+import fallbackLng from "../locales/fallback"
+
+declare const BUILD_LANGUAGE: string
 
 const resources = {
-  en: {
-    common: LocalesEnCommon,
-  },
-}
-
-const fallbackLng = {
-  default: ["en"],
-  "en-US": ["en"],
+  en,
+  es,
 }
 
 // nagi: The automatic language detector will trigger react hydration error,
@@ -23,7 +21,7 @@ const fallbackLng = {
 i18next //
   .use(initReactI18next)
   .init({
-    lng: "en",
+    lng: BUILD_LANGUAGE,
     resources,
     fallbackLng,
     load: "currentOnly",
