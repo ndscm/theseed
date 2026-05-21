@@ -1,0 +1,12 @@
+load("@rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "reactrouter",
+    srcs = ["reactrouter.go"],
+    importpath = "github.com/ndscm/theseed/seed/devprod/reactrouter/go/reactrouter",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//seed/infra/error/go/seederr",
+        "//seed/infra/spa/go/seedspa",
+    ],
+)
