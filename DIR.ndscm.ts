@@ -111,6 +111,11 @@ export default {
       watch: "(^|/)BUILD.bazel$",
       run: "bazel mod tidy",
     },
+    cargo: {
+      target: "Cargo.lock",
+      watch: "(^|/)Cargo.toml$",
+      run: "bazel run @rules_rust//tools/upstream_wrapper:cargo -- build",
+    },
     go: {
       target: "go.sum",
       watch: "^go.mod$",
