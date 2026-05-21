@@ -1517,7 +1517,7 @@
         "usagesDigest": "0pwYS9Cgvpk8d0zX6EoLPtlYzZK2ocqOEM1KffUuizY=",
         "recordedFileInputs": {
           "@@//Cargo.lock": "29edec72feddf5d8edb0cd08ceeefa50aa6b23999776ba5da6a71617feb08344",
-          "@@//Cargo.toml": "4e9e72183c124a0c14db6639a2c8f1cdd01c37c397ff87cab9242cd8ddc9af02",
+          "@@//Cargo.toml": "88eb45a0b8a8f5587fffee6355304d6f9f9bfaceaf7546c07e10b545d0732623",
           "@@//seed/devprod/starter/rustcli/Cargo.toml": "c67b186e190849010435448cf083fde6251a27cf24ae993e91884c5529ee2a69"
         },
         "recordedDirentsInputs": {},
