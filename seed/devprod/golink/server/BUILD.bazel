@@ -1,4 +1,5 @@
 load("@rules_go//go:def.bzl", "go_binary", "go_library")
+load("//seed/devprod/ndscm/starlark:defs.bzl", "nd_bootstrap")
 load("//seed/devprod/starlark/archive:defs.bzl", "create_tar_gz", "extract_tar")
 
 package(default_visibility = ["//visibility:private"])
@@ -45,4 +46,16 @@ create_tar_gz(
         ":golink-server",
     ],
     out = "golink-server.tar.gz",
+)
+
+nd_bootstrap(
+    dsts = [
+        {
+            "dst": "webapp",
+            "dir": True,
+            "srcs": [{
+                "src": ":webapp",
+            }],
+        },
+    ],
 )
