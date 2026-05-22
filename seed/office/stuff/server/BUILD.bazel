@@ -1,6 +1,5 @@
 load("@rules_go//go:def.bzl", "go_binary", "go_library")
-load("//seed/devprod/starlark/archive:defs.bzl", "create_tar_gz", "create_zip", "extract_tar")
-load("//seed/devprod/starlark/secret:defs.bzl", "local_secret")
+load("//seed/devprod/starlark/archive:defs.bzl", "create_tar_gz", "extract_tar")
 
 package(default_visibility = ["//visibility:private"])
 
@@ -9,13 +8,20 @@ alias(
     actual = ":stuff-server",
 )
 
+extract_tar(
+    name = "webapp",
+    srcs = ["//seed/office/stuff/webapp"],
+)
+
 go_library(
     name = "server_lib",
     srcs = ["stuff_server.go"],
+    embedsrcs = [":webapp"],  # keep: prevent gazelle from expanding the ignored webapp directory
     importpath = "github.com/ndscm/theseed/seed/office/stuff/server",
     deps = [
         "//seed/cloud/login/go/loginservice",
         "//seed/cloud/login/proto:login_go_connect",
+        "//seed/devprod/reactrouter/go/reactrouter",
         "//seed/infra/auth/go/openidjwt",
         "//seed/infra/error/go/seederr",
         "//seed/infra/flag/go/seedflag",
@@ -23,7 +29,6 @@ go_library(
         "//seed/infra/http/go/cachecontrol",
         "//seed/infra/init/go/seedinit",
         "//seed/infra/log/go/seedlog",
-        "//seed/infra/spa/go/seedspa",
         "//seed/office/stuff/database/stuffdb",
         "//seed/office/stuff/proto:stuff_go_connect",
         "//seed/office/stuff/service",
@@ -36,26 +41,10 @@ go_binary(
     pure = "on",
 )
 
-extract_tar(
-    name = "webapp",
-    srcs = ["//seed/office/stuff/webapp:webapp-tar-gz"],
-    subdir = "webapp",
-)
-
 create_tar_gz(
     name = "stuff-server_tar_gz",
     srcs = [
         ":stuff-server",
-        ":webapp",
     ],
     out = "stuff-server.tar.gz",
-)
-
-create_zip(
-    name = "stuff-server_zip",
-    srcs = [
-        ":stuff-server",
-        ":webapp",
-    ],
-    out = "stuff-server.zip",
 )
