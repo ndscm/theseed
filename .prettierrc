@@ -5,8 +5,8 @@
     "<THIRD_PARTY_MODULES>",
     "^@mui/material/",
     "^@mui/icons-material/",
-    "^@theseed/",
-    "^[./]"
+    "^@//",
+    "^[.]"
   ],
   "importOrderSeparation": true,
   "importOrderSideEffects": false,
