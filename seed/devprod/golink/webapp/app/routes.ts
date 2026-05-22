@@ -6,15 +6,15 @@ import {
 } from "@react-router/dev/routes"
 
 const routeConfig: RouteConfig = [
-  layout("./layout.tsx", [
-    index("./page.tsx"), //
+  layout("./routes/layout.tsx", [
+    index("./routes/index.tsx"), //
     ...prefix(".link", [
       ...prefix(":linkKey", [
-        index("./link/$linkKey/page.tsx"), //
+        index("./routes/link/$linkKey/index.tsx"), //
       ]),
     ]),
     ...prefix(":linkKey", [
-      index("./page.tsx", { id: "link-key-page" }), //
+      index("./routes/index.tsx", { id: "link-key-page" }), //
     ]),
   ]),
 ]
