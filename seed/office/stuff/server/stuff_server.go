@@ -2,12 +2,14 @@ package main
 
 import (
 	"context"
-	"net/http"
+	"embed"
+	"io/fs"
 	"os"
 	"time"
 
 	"github.com/ndscm/theseed/seed/cloud/login/go/loginservice"
 	"github.com/ndscm/theseed/seed/cloud/login/proto/loginpbconnect"
+	"github.com/ndscm/theseed/seed/devprod/reactrouter/go/reactrouter"
 	"github.com/ndscm/theseed/seed/infra/auth/go/openidjwt"
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
 	"github.com/ndscm/theseed/seed/infra/flag/go/seedflag"
@@ -15,14 +17,15 @@ import (
 	"github.com/ndscm/theseed/seed/infra/http/go/cachecontrol"
 	"github.com/ndscm/theseed/seed/infra/init/go/seedinit"
 	"github.com/ndscm/theseed/seed/infra/log/go/seedlog"
-	"github.com/ndscm/theseed/seed/infra/spa/go/seedspa"
 	"github.com/ndscm/theseed/seed/office/stuff/database/stuffdb"
 	"github.com/ndscm/theseed/seed/office/stuff/proto/stuffpbconnect"
 	stuffservice "github.com/ndscm/theseed/seed/office/stuff/service"
 )
 
-var flagWebapp = seedflag.DefineString("webapp", "", "Path to webapp static files")
-var flagPort = seedflag.DefineString("port", "7883", "Port to run the server on") // STUF
+//go:embed all:webapp
+var embedFs embed.FS
+
+var flagPort = seedflag.DefineString("port", "7883", "Port") // Default port assignment magic word: STUF
 
 func run() error {
 	_, err := seedinit.Initialize()
@@ -66,12 +69,16 @@ func run() error {
 		return seederr.Wrap(err)
 	}
 
-	if flagWebapp.Get() != "" {
-		spaServer := seedspa.SpaServer(http.Dir(flagWebapp.Get()), map[string]string{"": "__spa-fallback.html"})
-		spaServer = cachecontrol.InterceptCacheControlMiddleware(spaServer, 3600)
-		mux.Handle("/", spaServer)
-		seedlog.Infof("Serving webapp from: %v", flagWebapp.Get())
+	webapp, err := fs.Sub(embedFs, "webapp")
+	if err != nil {
+		return seederr.Wrap(err)
 	}
+	spaServer, _, err := reactrouter.I18nSpaServer(webapp)
+	if err != nil {
+		return seederr.Wrap(err)
+	}
+	spaServer = cachecontrol.InterceptCacheControlMiddleware(spaServer, 3600)
+	mux.Handle("/", spaServer)
 
 	handler, err := mux.Ready()
 	if err != nil {
