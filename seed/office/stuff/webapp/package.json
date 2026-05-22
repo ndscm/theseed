@@ -6,6 +6,7 @@
   "scripts": {
     "start": "STUFF_SERVICE_SERVER=http://127.0.0.1:7883 react-router dev --host",
     "build": "react-router build",
+    "build:es": "BUILD_LANGUAGE=es DEFAULT_LANGUAGE=en react-router build",
     "serve": "react-router-serve ./build/server/index.js",
     "translate": "i18next-cli extract",
     "typecheck": "react-router typegen && tsc"
