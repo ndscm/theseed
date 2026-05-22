@@ -1,13 +1,8 @@
 #!/bin/bash
 set -eux
 set -o pipefail
-cd $(dirname "${BASH_SOURCE[0]}")/../../../..
+cd "$(dirname "${BASH_SOURCE[0]}")/../../../.."
 
-webapp_dir=""
-if [[ -d "${PWD}/devprod/golink/webapp/dist/client" ]]; then
-  webapp_dir="${PWD}/devprod/golink/webapp/dist/client"
-fi
-
-bazel run //devprod/golink/server -- \
-  --webapp "$webapp_dir" \
+bazel run //seed/devprod/golink/server -- \
+  --golink_database_secret_file="${ND_USER_SECRET_HOME}/golink/GOLINK_DATABASE_SECRET" \
   --verbose
