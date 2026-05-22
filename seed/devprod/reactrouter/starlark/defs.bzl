@@ -48,29 +48,8 @@ def react_router_webapp(
         **kwargs: Forwarded to the underlying build rules (e.g. ``tags``,
             ``visibility``).
     """
-    js_run_binary_tar(
-        name = name + "_" + default_language,
-        srcs = [
-            package_json,
-            react_router_config,
-            tsconfig_json,
-            vite_config,
-            node_modules,
-        ] + srcs + deps,
-        args = react_router_build_args,
-        chdir = native.package_name(),
-        env = {
-            "BUILD_LANGUAGE": default_language,
-            "DEFAULT_LANGUAGE": default_language,
-        },
-        mnemonic = "ReactRouter",
-        out_dir = "dist/client",
-        out_tar = name + "_" + default_language + ".tar",
-        progress_message = "Compile %{label}",
-        tool = react_router_binary,
-        **kwargs
-    )
-    for lang in extra_languages:
+    all_languages = [default_language] + extra_languages
+    for lang in all_languages:
         js_run_binary_tar(
             name = name + "_" + lang,
             srcs = [
