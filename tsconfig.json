@@ -5,7 +5,9 @@
     "strict": true,
     "noEmit": true,
     "paths": {
-      "//*": ["./*"]
+      // Root-relative imports. We prefix with @ because some tools
+      // treat a bare // as an absolute path.
+      "@//*": ["./*"]
     }
   },
   "include": [
@@ -13,7 +15,7 @@
     "**/*.ndscm.ts"
   ],
   "exclude": [
-    // inherit default excludes
+    // default
     "node_modules",
     // bazel
     "bazel-*"
