@@ -12,12 +12,6 @@ const resources = {
   es,
 }
 
-// nagi: The automatic language detector will trigger react hydration error,
-// because the server is rendering with default language while the client is
-// rendering with navigator language. We have to to detect language on our own
-// in the login context and change to our expected language dynamically during
-// the second round rendering.
-
 i18next //
   .use(initReactI18next)
   .init({
