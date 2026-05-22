@@ -1,13 +1,8 @@
 #!/bin/bash
 set -eux
 set -o pipefail
-cd $(dirname "${BASH_SOURCE[0]}")/../../../..
+cd "$(dirname "${BASH_SOURCE[0]}")/../../../.."
 
-webapp_dir=""
-if [[ -d "${PWD}/office/stuff/webapp/dist/client" ]]; then
-  webapp_dir="${PWD}/office/stuff/webapp/dist/client"
-fi
-
-bazel run //office/stuff/server -- \
-  --webapp "$webapp_dir" \
+bazel run //seed/office/stuff/server -- \
+  --stuff_database_secret_file="${ND_USER_SECRET_HOME}/stuff/STUFF_DATABASE_SECRET" \
   --verbose
