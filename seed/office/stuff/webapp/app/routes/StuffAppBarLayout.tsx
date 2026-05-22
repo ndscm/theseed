@@ -1,7 +1,7 @@
 import React from "react"
 import { Outlet } from "react-router"
 
-import StuffAppBar from "../../containers/StuffAppBar"
+import StuffAppBar from "../../components/StuffAppBar"
 
 const StuffAppBarLayout: React.FC = () => {
   return (

@@ -6,12 +6,12 @@ import {
 } from "@react-router/dev/routes"
 
 const routeConfig: RouteConfig = [
-  layout("./layout.tsx", [
-    layout("./layout/StuffAppBarLayout.tsx", [
-      index("./page.tsx"), //
+  layout("./routes/layout.tsx", [
+    layout("./routes/StuffAppBarLayout.tsx", [
+      index("./routes/index.tsx"), //
     ]),
     ...prefix("print", [
-      index("./print/page.tsx"), //
+      index("./routes/print/index.tsx"), //
     ]),
   ]),
 ]
