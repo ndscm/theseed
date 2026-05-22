@@ -1,0 +1,28 @@
+{
+  "auth": {
+    "loginButton": "Iniciar sesión"
+  },
+  "label": {
+    "printButton": "Imprimir"
+  },
+  "page": {
+    "print": "Imprimir"
+  },
+  "stuff": {
+    "brand": "Marca",
+    "displayName": "Nombre",
+    "fixedAsset": "Activo fijo",
+    "identifier": "ID",
+    "model": "Modelo",
+    "notes": "Notas",
+    "originalUsage": "Uso original",
+    "primaryCategory": "Categoría principal",
+    "purchaseDate": "Fecha de compra",
+    "secondaryCategory": "Categoría secundaria",
+    "source": "Origen"
+  },
+  "system": {
+    "brand": "Stuff",
+    "welcome": "Gestión de activos físicos"
+  }
+}
