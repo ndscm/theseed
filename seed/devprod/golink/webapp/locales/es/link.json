@@ -1,0 +1,17 @@
+{
+  "error": {
+    "title": "Error"
+  },
+  "link": {
+    "createdLabel": "Creado",
+    "hitsLabel": "Visitas",
+    "ownerLabel": "Propietario",
+    "privateOption": "Privado",
+    "publicOption": "Público",
+    "targetLabel": "Destino",
+    "updatedLabel": "Actualizado"
+  },
+  "loading": {
+    "loadingHint": "Cargando..."
+  }
+}
