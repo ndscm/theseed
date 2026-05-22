@@ -18,7 +18,7 @@ import (
 var flagStuffDatabase = seedflag.DefineString("stuff_database", "postgres://127.0.0.1:5432/stuff", "Database connection URL")
 var flagStuffDatabaseDebug = seedflag.DefineBool("stuff_database_debug", false, "Enable debug mode for database")
 var flagStuffDatabaseLogin = seedflag.DefineString("stuff_database_login", "stuff", "Database login user")
-var flagStuffDatabaseSecretFile = seedflag.DefineString("stuff_database_secret_file", "${ND_USER_SECRET_HOME}/stuff/STUFF_DATABASE_SECRET", "Path to database password file")
+var flagStuffDatabaseSecretFile = seedflag.DefineString("stuff_database_secret_file", "user-secret://stuff/STUFF_DATABASE_SECRET/latest", "Path to database password file")
 
 func Open(ctx context.Context) (*ent.Client, error) {
 	connectUrl, err := url.Parse(flagStuffDatabase.Get())
