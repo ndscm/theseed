@@ -27,6 +27,7 @@ go_library(
         "//seed/devprod/reactrouter/go/reactrouter",
         "//seed/infra/auth/go/openidjwt",
         "//seed/infra/error/go/seederr",
+        "//seed/infra/flag/go/seedflag",
         "//seed/infra/grpc/go/seedgrpc",
         "//seed/infra/http/go/cachecontrol",
         "//seed/infra/init/go/seedinit",

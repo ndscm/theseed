@@ -12,6 +12,7 @@ import (
 	"github.com/ndscm/theseed/seed/devprod/reactrouter/go/reactrouter"
 	"github.com/ndscm/theseed/seed/infra/auth/go/openidjwt"
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
+	"github.com/ndscm/theseed/seed/infra/flag/go/seedflag"
 	"github.com/ndscm/theseed/seed/infra/grpc/go/seedgrpc"
 	"github.com/ndscm/theseed/seed/infra/http/go/cachecontrol"
 	"github.com/ndscm/theseed/seed/infra/init/go/seedinit"
@@ -20,6 +21,8 @@ import (
 
 //go:embed all:webapp
 var embedFs embed.FS
+
+var flagPort = seedflag.DefineString("port", "4656", "Port") // Default port assignment magic word: GOLN
 
 func run() error {
 	_, err := seedinit.Initialize()
@@ -69,8 +72,9 @@ func run() error {
 		return seederr.Wrap(err)
 	}
 
-	seedlog.Infof("Starting golink server on :4656")
-	err = seedgrpc.ListenAndServe(":4656", handler) // GOLN
+	port := flagPort.Get()
+	seedlog.Infof("Starting golink server. port=%v", port)
+	err = seedgrpc.ListenAndServe(":"+port, handler)
 	if err != nil {
 		return seederr.Wrap(err)
 	}
