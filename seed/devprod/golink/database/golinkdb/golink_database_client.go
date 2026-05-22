@@ -22,7 +22,7 @@ import (
 var flagGolinkDatabase = seedflag.DefineString("golink_database", "postgres://127.0.0.1:5432/golink", "Database connection URL")
 var flagGolinkDatabaseDebug = seedflag.DefineBool("golink_database_debug", false, "Enable debug mode for database")
 var flagGolinkDatabaseLogin = seedflag.DefineString("golink_database_login", "golink", "Database login user")
-var flagGolinkDatabaseSecretFile = seedflag.DefineString("golink_database_secret_file", "${ND_USER_SECRET_HOME}/golink/GOLINK_DATABASE_SECRET", "Path to database password file")
+var flagGolinkDatabaseSecretFile = seedflag.DefineString("golink_database_secret_file", "user-secret://golink/GOLINK_DATABASE_SECRET/latest", "Path to database password file")
 
 const (
 	dbMaxOpenConns    = 25
