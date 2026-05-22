@@ -6,6 +6,6 @@ RUN useradd --shell /bin/bash --create-home stuff
 USER stuff
 WORKDIR /home/stuff
 
-ENTRYPOINT [ "/opt/stuff/stuff-server", "--webapp", "/opt/stuff/webapp" ]
+ENTRYPOINT [ "/opt/stuff/stuff-server" ]
 
 CMD ["--verbose"]
