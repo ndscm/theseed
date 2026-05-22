@@ -5,10 +5,11 @@ import { Outlet } from "react-router"
 import CssBaseline from "@mui/material/CssBaseline"
 import { ThemeProvider } from "@mui/material/styles"
 
-import { LoginServiceProvider } from "../../../../../seed/cloud/login/client/tsx/login-service-context"
-import Gotcha from "../../../../../seed/devprod/gotcha/tsx/"
-import { GolinkServiceProvider } from "../../client/tsx/golink-service-context"
-import GolinkAppBar from "../containers/GolinkAppBar"
+import { LoginServiceProvider } from "@//seed/cloud/login/client/tsx/login-service-context"
+import { GolinkServiceProvider } from "@//seed/devprod/golink/client/tsx/golink-service-context"
+import Gotcha from "@//seed/devprod/gotcha/tsx"
+
+import GolinkAppBar from "../../components/GolinkAppBar"
 import theme from "./theme"
 
 const RootLayout: React.FC = () => {
