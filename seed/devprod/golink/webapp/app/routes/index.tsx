@@ -175,7 +175,7 @@ const LinkList: React.FC<LinkListProps> = ({
               whiteSpace: "nowrap",
             }}
           >
-            {link.key}
+            <MuiLink href={`/.link/${link.key}`}>{link.key}</MuiLink>
           </Box>
           <Box
             sx={{
