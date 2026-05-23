@@ -31,7 +31,7 @@ react_router_webapp(
     deps = [
         "//seed/cloud/login/client/tsx",
         "//seed/devprod/buildinfo/ts",
-        "//seed/devprod/golink/client/tsx/golink-service-context",
+        "//seed/devprod/golink/client/tsx",
         "//seed/devprod/gotcha/tsx",
     ],
 )
