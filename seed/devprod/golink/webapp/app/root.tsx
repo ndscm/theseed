@@ -15,6 +15,8 @@ import {
 
 import "./i18n"
 
+declare const BUILD_LANGUAGE: string
+
 export const HydrateFallback = () => {
   return <div>Hydrating</div>
 }
@@ -52,7 +54,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   return (
-    <html>
+    <html lang={BUILD_LANGUAGE}>
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
