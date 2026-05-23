@@ -1,9 +1,9 @@
 {
-  "name": "@theseed/seed-office-stuff-client-tsx-stuff-service-context",
+  "name": "@theseed/seed-office-stuff-client-tsx",
   "version": "0.0.0",
   "private": true,
-  "main": "dist/StuffServiceContext.js",
-  "types": "dist/StuffServiceContext.d.ts",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "files": [
     "/dist"
   ],
