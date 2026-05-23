@@ -32,7 +32,7 @@ react_router_webapp(
     deps = [
         "//seed/cloud/login/client/tsx",
         "//seed/devprod/gotcha/tsx",
-        "//seed/office/stuff/client/tsx/stuff-service-context",
+        "//seed/office/stuff/client/tsx",
     ],
 )
 
