@@ -8,7 +8,7 @@ import Link from "@mui/material/Link"
 import Toolbar from "@mui/material/Toolbar"
 import Typography from "@mui/material/Typography"
 
-import { useLoginService } from "@//seed/cloud/login/client/tsx/login-service-context"
+import { useLoginService } from "@//seed/cloud/login/client/tsx/LoginServiceContext"
 import { type LoginStatus } from "@//seed/cloud/login/proto/login_pb"
 
 const GolinkAppBar: React.FC = () => {
