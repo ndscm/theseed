@@ -11,8 +11,16 @@
     "rootDir": "src",
     "outDir": "dist"
   },
+  "include": [
+    // sort
+    "src/**/*"
+  ],
   "exclude": [
-    "*.ndscm.ts", // exclude ndscm tson configs
+    // default
+    "node_modules",
+    // ndscm
+    "*.ndscm.ts",
+    // dist
     "dist"
   ]
 }
