@@ -6,6 +6,14 @@
  */
 export type RepoConfig = {
   /**
+   * Email domain for the repository. Access control identifies users and
+   * services by email address. When an email shares this domain, the domain
+   * part can be omitted — for example, `"alice"` is equivalent to
+   * `"alice@example.com"` if the repo domain is `"example.com"`.
+   */
+  domain?: string
+
+  /**
    * ndscm tooling metadata. Controls which version of ndscm the repository
    * expects, so that the CLI can warn or adapt when running against a
    * mismatched repo.
