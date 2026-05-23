@@ -1,9 +1,9 @@
 {
-  "name": "@theseed/seed-devprod-golink-client-tsx-golink-service-context",
+  "name": "@theseed/seed-devprod-golink-client-tsx",
   "version": "0.0.0",
   "private": true,
-  "main": "dist/GolinkServiceContext.js",
-  "types": "dist/GolinkServiceContext.d.ts",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "files": [
     "/dist"
   ],
