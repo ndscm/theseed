@@ -9,7 +9,7 @@ import {
   GetLoginStatusRequestSchema,
   LoginService,
   type LoginStatus,
-} from "../../../../proto/login_pb"
+} from "../../../proto/login_pb"
 
 export type { LoginStatus }
 

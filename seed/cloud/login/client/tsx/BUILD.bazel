@@ -30,10 +30,15 @@ ts_project(
 )
 
 js_library(
-    name = "login-service-context",
-    srcs = [":package.json"],
+    name = "tsx",
+    srcs = [
+        "LoginServiceContext/index.ts",
+        ":package.json",
+    ],
     visibility = ["//visibility:public"],
-    deps = [":ts_project"],
+    deps = [
+        ":ts_project",
+    ],
 )
 
 npm_package(
