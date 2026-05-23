@@ -96,7 +96,7 @@ importers:
         specifier: ^0.2.1
         version: 0.2.1(prettier@3.8.3)
 
-  seed/devprod/golink/client/tsx/golink-service-context:
+  seed/devprod/golink/client/tsx:
     dependencies:
       '@bufbuild/protobuf':
         specifier: ^2.12.0
@@ -109,7 +109,7 @@ importers:
         version: 2.1.1(@bufbuild/protobuf@2.12.0)(@connectrpc/connect@2.1.1(@bufbuild/protobuf@2.12.0))
       '@theseed/seed-devprod-golink-proto':
         specifier: workspace:^
-        version: link:../../../proto
+        version: link:../../proto
       react:
         specifier: ^19.2.5
         version: 19.2.5
@@ -177,9 +177,9 @@ importers:
       '@theseed/seed-devprod-buildinfo-ts':
         specifier: workspace:^
         version: link:../../buildinfo/ts
-      '@theseed/seed-devprod-golink-client-tsx-golink-service-context':
+      '@theseed/seed-devprod-golink-client-tsx':
         specifier: workspace:^
-        version: link:../client/tsx/golink-service-context
+        version: link:../client/tsx
       '@theseed/seed-devprod-gotcha-tsx':
         specifier: workspace:^
         version: link:../../gotcha/tsx
