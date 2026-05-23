@@ -22,7 +22,7 @@ import {
   StuffService,
   type UpdateStuffRequest,
   UpdateStuffRequestSchema,
-} from "../../../../proto/stuff_pb"
+} from "../../../proto/stuff_pb"
 
 interface StuffServiceInterface {
   ListCategories: () => Promise<ListCategoriesResponse>

@@ -30,8 +30,11 @@ ts_project(
 )
 
 js_library(
-    name = "stuff-service-context",
-    srcs = [":package.json"],
+    name = "tsx",
+    srcs = [
+        "StuffServiceContext/index.ts",
+        ":package.json",
+    ],
     deps = [":ts_project"],
 )
 
