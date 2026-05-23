@@ -18,7 +18,7 @@ import {
   type ListLinksResponse,
   type UpdateLinkRequest,
   UpdateLinkRequestSchema,
-} from "../../../../proto/golink_pb"
+} from "../../../proto/golink_pb"
 
 interface GolinkServiceInterface {
   CreateLink: (link: Link) => Promise<Link>
