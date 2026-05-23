@@ -5,7 +5,7 @@ import { Outlet } from "react-router"
 import CssBaseline from "@mui/material/CssBaseline"
 import { ThemeProvider } from "@mui/material/styles"
 
-import { LoginServiceProvider } from "@//seed/cloud/login/client/tsx/login-service-context"
+import { LoginServiceProvider } from "@//seed/cloud/login/client/tsx/LoginServiceContext"
 import { GolinkServiceProvider } from "@//seed/devprod/golink/client/tsx/golink-service-context"
 import Gotcha from "@//seed/devprod/gotcha/tsx"
 

@@ -23,7 +23,7 @@
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
     "@fontsource/roboto": "^5.2.10",
-    "@theseed/seed-cloud-login-client-tsx-login-service-context": "workspace:^",
+    "@theseed/seed-cloud-login-client-tsx": "workspace:^",
     "@theseed/seed-devprod-buildinfo-ts": "workspace:^",
     "@theseed/seed-devprod-golink-client-tsx-golink-service-context": "workspace:^",
     "@theseed/seed-devprod-gotcha-tsx": "workspace:^",
