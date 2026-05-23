@@ -7,7 +7,7 @@ import { ThemeProvider } from "@mui/material/styles"
 
 import { LoginServiceProvider } from "@//seed/cloud/login/client/tsx/LoginServiceContext"
 import { GolinkServiceProvider } from "@//seed/devprod/golink/client/tsx/golink-service-context"
-import Gotcha from "@//seed/devprod/gotcha/tsx"
+import Gotcha from "@//seed/devprod/gotcha/tsx/Gotcha"
 
 import GolinkAppBar from "../../components/GolinkAppBar"
 import theme from "./theme"
