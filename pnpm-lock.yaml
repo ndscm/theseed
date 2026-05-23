@@ -42,7 +42,7 @@ importers:
         specifier: ^5.9.3
         version: 5.9.3
 
-  seed/cloud/login/client/tsx/login-service-context:
+  seed/cloud/login/client/tsx:
     dependencies:
       '@bufbuild/protobuf':
         specifier: ^2.12.0
@@ -55,7 +55,7 @@ importers:
         version: 2.1.1(@bufbuild/protobuf@2.12.0)(@connectrpc/connect@2.1.1(@bufbuild/protobuf@2.12.0))
       '@theseed/seed-cloud-login-proto':
         specifier: workspace:^
-        version: link:../../../proto
+        version: link:../../proto
       react:
         specifier: ^19.2.5
         version: 19.2.5
@@ -171,9 +171,9 @@ importers:
       '@react-router/serve':
         specifier: ^7.15.0
         version: 7.15.0(react-router@7.15.0(react-dom@19.2.5(react@19.2.5))(react@19.2.5))(typescript@5.9.3)
-      '@theseed/seed-cloud-login-client-tsx-login-service-context':
+      '@theseed/seed-cloud-login-client-tsx':
         specifier: workspace:^
-        version: link:../../../cloud/login/client/tsx/login-service-context
+        version: link:../../../cloud/login/client/tsx
       '@theseed/seed-devprod-buildinfo-ts':
         specifier: workspace:^
         version: link:../../buildinfo/ts
@@ -354,9 +354,9 @@ importers:
       '@react-router/serve':
         specifier: ^7.15.0
         version: 7.15.0(react-router@7.15.0(react-dom@19.2.5(react@19.2.5))(react@19.2.5))(typescript@5.9.3)
-      '@theseed/seed-cloud-login-client-tsx-login-service-context':
+      '@theseed/seed-cloud-login-client-tsx':
         specifier: workspace:^
-        version: link:../../../cloud/login/client/tsx/login-service-context
+        version: link:../../../cloud/login/client/tsx
       '@theseed/seed-devprod-gotcha-tsx':
         specifier: workspace:^
         version: link:../../../devprod/gotcha/tsx
