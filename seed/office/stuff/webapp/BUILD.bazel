@@ -30,7 +30,7 @@ react_router_webapp(
     default_language = "en",
     extra_languages = ["es"],
     deps = [
-        "//seed/cloud/login/client/tsx/login-service-context",
+        "//seed/cloud/login/client/tsx",
         "//seed/devprod/gotcha/tsx",
         "//seed/office/stuff/client/tsx/stuff-service-context",
     ],
