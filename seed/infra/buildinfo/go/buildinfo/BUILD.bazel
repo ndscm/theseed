@@ -1,0 +1,45 @@
+load("@rules_go//go:def.bzl", "go_library")
+load("//seed/devprod/ndscm/starlark:defs.bzl", "nd_bootstrap")
+
+genrule(
+    name = "stable-status",
+    outs = ["stable-status.txt"],
+    cmd_bash = "cat bazel-out/stable-status.txt > $@",
+    stamp = 1,
+)
+
+genrule(
+    name = "volatile-status",
+    outs = ["volatile-status.txt"],
+    cmd_bash = "cat bazel-out/volatile-status.txt > $@",
+    stamp = 1,
+)
+
+go_library(
+    name = "buildinfo",
+    srcs = ["buildinfo.go"],
+    embedsrcs = [
+        ":stable-status",
+        ":volatile-status",
+    ],  # keep: prevent gazelle from expanding the status files
+    importpath = "github.com/ndscm/theseed/seed/infra/buildinfo/go/buildinfo",
+    visibility = ["//visibility:public"],
+    deps = ["//seed/infra/error/go/seederr"],
+)
+
+nd_bootstrap(
+    dsts = [
+        {
+            "dst": "stable-status.txt",
+            "srcs": [{
+                "src": ":stable-status",
+            }],
+        },
+        {
+            "dst": "volatile-status.txt",
+            "srcs": [{
+                "src": ":volatile-status",
+            }],
+        },
+    ],
+)
