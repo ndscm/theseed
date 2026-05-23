@@ -5,7 +5,7 @@ import { useSearchParams } from "react-router"
 import Box from "@mui/material/Box"
 import CircularProgress from "@mui/material/CircularProgress"
 
-import { useStuffService } from "@//seed/office/stuff/client/tsx/stuff-service-context"
+import { useStuffService } from "@//seed/office/stuff/client/tsx/StuffServiceContext"
 import { type Stuff } from "@//seed/office/stuff/proto/stuff_pb"
 
 const TemplateMore: React.FC<{ stuff: Stuff }> = ({ stuff }) => {

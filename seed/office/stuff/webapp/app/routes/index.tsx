@@ -54,7 +54,7 @@ import CircularProgress from "@mui/material/CircularProgress"
 import Toolbar from "@mui/material/Toolbar"
 import Typography from "@mui/material/Typography"
 
-import { useStuffService } from "@//seed/office/stuff/client/tsx/stuff-service-context"
+import { useStuffService } from "@//seed/office/stuff/client/tsx/StuffServiceContext"
 import { StuffSchema } from "@//seed/office/stuff/proto/stuff_pb"
 
 import "@univerjs/sheets/facade"
