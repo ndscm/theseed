@@ -2,8 +2,8 @@
   "name": "@theseed/seed-devprod-gotcha-tsx",
   "version": "0.0.0",
   "private": true,
-  "main": "dist/Gotcha.js",
-  "types": "dist/Gotcha.d.ts",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "files": [
     "/dist"
   ],

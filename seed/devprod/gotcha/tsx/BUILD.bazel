@@ -28,7 +28,10 @@ ts_project(
 
 js_library(
     name = "tsx",
-    srcs = [":package.json"],
+    srcs = [
+        "Gotcha/index.ts",
+        ":package.json",
+    ],
     visibility = ["//visibility:public"],
     deps = [":ts_project"],
 )
