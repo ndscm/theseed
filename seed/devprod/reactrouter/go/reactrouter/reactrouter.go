@@ -8,7 +8,7 @@ import (
 	"github.com/ndscm/theseed/seed/infra/spa/go/seedspa"
 )
 
-func I18nSpaServer(webapp fs.FS) (http.Handler, []string, error) {
+func I18nSpaServer(webapp fs.FS, options ...seedspa.SpaServerOption) (http.Handler, []string, error) {
 	extraLanguages := []string{}
 	fallbacks := map[string]string{"": "/__spa-fallback.html"}
 	langEntries, err := fs.ReadDir(webapp, ".")
@@ -29,6 +29,6 @@ func I18nSpaServer(webapp fs.FS) (http.Handler, []string, error) {
 		fallbacks["/"+lang+"/"] = fallback
 	}
 
-	handler := seedspa.SpaServer(http.FS(webapp), fallbacks)
+	handler := seedspa.SpaServer(http.FS(webapp), fallbacks, options...)
 	return handler, extraLanguages, nil
 }
