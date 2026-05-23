@@ -6,7 +6,7 @@ import CssBaseline from "@mui/material/CssBaseline"
 import { ThemeProvider } from "@mui/material/styles"
 
 import { LoginServiceProvider } from "@//seed/cloud/login/client/tsx/LoginServiceContext"
-import Gotcha from "@//seed/devprod/gotcha/tsx"
+import Gotcha from "@//seed/devprod/gotcha/tsx/Gotcha"
 import { StuffServiceProvider } from "@//seed/office/stuff/client/tsx/stuff-service-context"
 
 import theme from "./theme"
