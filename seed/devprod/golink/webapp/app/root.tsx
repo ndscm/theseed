@@ -13,6 +13,8 @@ import {
   isRouteErrorResponse,
 } from "react-router"
 
+import buildinfo from "@//seed/infra/buildinfo/ts/buildinfo"
+
 import "./i18n"
 
 declare const BUILD_LANGUAGE: string
@@ -71,6 +73,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
 }
 
 const App: React.FC = () => {
+  console.info("Golink webapp started. build=", buildinfo.Get())
   return <Outlet />
 }
 
