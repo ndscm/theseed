@@ -9,7 +9,7 @@ import MuiLink from "@mui/material/Link"
 import Toolbar from "@mui/material/Toolbar"
 import Typography from "@mui/material/Typography"
 
-import { useGolinkService } from "@//seed/devprod/golink/client/tsx/golink-service-context"
+import { useGolinkService } from "@//seed/devprod/golink/client/tsx/GolinkServiceContext"
 import type { Link } from "@//seed/devprod/golink/proto/golink_pb"
 
 const DetailRow: React.FC<{
