@@ -30,9 +30,9 @@ react_router_webapp(
     extra_languages = ["es"],
     deps = [
         "//seed/cloud/login/client/tsx",
-        "//seed/devprod/buildinfo/ts",
         "//seed/devprod/golink/client/tsx",
         "//seed/devprod/gotcha/tsx",
+        "//seed/infra/buildinfo/ts",
     ],
 )
 
