@@ -38,5 +38,6 @@ next-env.d.ts
 __pycache__
 
 # Rust
-.cargo
+.target
+**/*.rs.bk
 /target
