@@ -75,15 +75,6 @@ importers:
 
   seed/cloud/login/proto: {}
 
-  seed/devprod/buildinfo/ts:
-    devDependencies:
-      '@types/node':
-        specifier: ^25.6.0
-        version: 25.6.0
-      typescript:
-        specifier: ^5.9.3
-        version: 5.9.3
-
   seed/devprod/format/prettier:
     dependencies:
       '@trivago/prettier-plugin-sort-imports':
@@ -174,15 +165,15 @@ importers:
       '@theseed/seed-cloud-login-client-tsx':
         specifier: workspace:^
         version: link:../../../cloud/login/client/tsx
-      '@theseed/seed-devprod-buildinfo-ts':
-        specifier: workspace:^
-        version: link:../../buildinfo/ts
       '@theseed/seed-devprod-golink-client-tsx':
         specifier: workspace:^
         version: link:../client/tsx
       '@theseed/seed-devprod-gotcha-tsx':
         specifier: workspace:^
         version: link:../../gotcha/tsx
+      '@theseed/seed-infra-buildinfo-ts':
+        specifier: workspace:^
+        version: link:../../../infra/buildinfo/ts
       '@types/node':
         specifier: ^25.6.0
         version: 25.6.0
@@ -269,6 +260,15 @@ importers:
       tsx:
         specifier: ^4.21.0
         version: 4.21.0
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+
+  seed/infra/buildinfo/ts:
+    devDependencies:
+      '@types/node':
+        specifier: ^25.6.0
+        version: 25.6.0
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
