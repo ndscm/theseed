@@ -15,9 +15,7 @@ import {
 
 import buildinfo from "@//seed/infra/buildinfo/ts/buildinfo"
 
-import "./i18n"
-
-declare const BUILD_LANGUAGE: string
+import i18n from "./i18n"
 
 export const HydrateFallback = () => {
   return <div>Hydrating</div>
@@ -56,7 +54,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   return (
-    <html lang={BUILD_LANGUAGE}>
+    <html lang={i18n.language}>
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
