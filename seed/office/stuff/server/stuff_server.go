@@ -11,12 +11,14 @@ import (
 	"github.com/ndscm/theseed/seed/cloud/login/proto/loginpbconnect"
 	"github.com/ndscm/theseed/seed/devprod/reactrouter/go/reactrouter"
 	"github.com/ndscm/theseed/seed/infra/auth/go/openidjwt"
+	"github.com/ndscm/theseed/seed/infra/buildinfo/go/buildinfo"
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
 	"github.com/ndscm/theseed/seed/infra/flag/go/seedflag"
 	"github.com/ndscm/theseed/seed/infra/grpc/go/seedgrpc"
 	"github.com/ndscm/theseed/seed/infra/http/go/cachecontrol"
 	"github.com/ndscm/theseed/seed/infra/init/go/seedinit"
 	"github.com/ndscm/theseed/seed/infra/log/go/seedlog"
+	"github.com/ndscm/theseed/seed/infra/spa/go/seedspa"
 	"github.com/ndscm/theseed/seed/office/stuff/database/stuffdb"
 	"github.com/ndscm/theseed/seed/office/stuff/proto/stuffpbconnect"
 	stuffservice "github.com/ndscm/theseed/seed/office/stuff/service"
@@ -73,7 +75,11 @@ func run() error {
 	if err != nil {
 		return seederr.Wrap(err)
 	}
-	spaServer, _, err := reactrouter.I18nSpaServer(webapp)
+	buildinfoInjection, err := buildinfo.GenerateWebappHeadInjection()
+	if err != nil {
+		return seederr.Wrap(err)
+	}
+	spaServer, _, err := reactrouter.I18nSpaServer(webapp, seedspa.WithHeadInjection(buildinfoInjection))
 	if err != nil {
 		return seederr.Wrap(err)
 	}
