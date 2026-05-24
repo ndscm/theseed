@@ -10,6 +10,7 @@ go_library(
     ],
     importpath = "github.com/ndscm/theseed/seed/infra/init/go/seedinit",
     deps = [
+        "//seed/infra/buildinfo/go/buildinfo",
         "//seed/infra/dotenv/go/dotenv",
         "//seed/infra/error/go/seederr",
         "//seed/infra/flag/go/seedflag",

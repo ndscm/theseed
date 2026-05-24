@@ -1,8 +1,11 @@
 package seedinit
 
 import (
+	"fmt"
 	"log/slog"
+	"os"
 
+	"github.com/ndscm/theseed/seed/infra/buildinfo/go/buildinfo"
 	"github.com/ndscm/theseed/seed/infra/dotenv/go/dotenv"
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
 	"github.com/ndscm/theseed/seed/infra/flag/go/seedflag"
@@ -10,6 +13,7 @@ import (
 )
 
 var flagVerbose = seedflag.DefineBool("verbose", false, "Enable verbose logging")
+var flagVersion = seedflag.DefineBool("version", false, "Print version and exit")
 
 var packageInitializers = []func() error{}
 
@@ -108,6 +112,13 @@ func Initialize(opts ...initializeOption) ([]string, error) {
 	)
 	if err != nil {
 		return nil, seederr.Wrap(err)
+	}
+	if flagVersion.Get() {
+		info := buildinfo.GetBuildInfo()
+		fmt.Println(info.BuildBrief)
+		// Exit here to mirror the stdlib flag.CommandLine behavior,
+		os.Exit(0)
+		return nil, seederr.WrapErrorf("print version")
 	}
 	if flagVerbose.Get() {
 		seedlog.SetLevel(slog.LevelDebug)
