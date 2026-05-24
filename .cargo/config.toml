@@ -1,0 +1,2 @@
+[build]
+target-dir = ".target" # cheat go mod to ignore cargo build artifacts
