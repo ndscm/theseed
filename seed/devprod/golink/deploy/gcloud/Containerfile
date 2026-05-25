@@ -1,10 +1,10 @@
 FROM ghcr.io/ndscm/seed-devprod-golink-container:latest
 
-COPY ./openid_discovery.json /opt/golink/openid_discovery.json
+COPY ./openid_issuers.json /opt/golink/openid_issuers.json
 
 CMD [ \
   "--port", "8080", \
-  "--openid_discovery", "/opt/golink/openid_discovery.json", \
+  "--trust_openid_issuers_file", "/opt/golink/openid_issuers.json", \
   "--golink_database", "postgres:///golink_prod?host=/cloudsql/ndscm-prod:us-west1:ndscm-cloudsql-prod&sslmode=disable", \
   "--golink_database_login", "golink_prod", \
   "--golink_database_secret_file", "/etc/secret/GOLINK_DATABASE_SECRET", \
