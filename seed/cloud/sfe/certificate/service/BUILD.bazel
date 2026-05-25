@@ -1,0 +1,19 @@
+load("@rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "service",
+    srcs = ["sfe_certificate_service.go"],
+    importpath = "github.com/ndscm/theseed/seed/cloud/sfe/certificate/service",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//seed/cloud/sfe/certificate/account",
+        "//seed/cloud/sfe/certificate/challenge",
+        "//seed/cloud/sfe/certificate/proto:certificate_go_proto",
+        "//seed/cloud/sfe/certificate/storage",
+        "//seed/infra/error/go/seederr",
+        "//seed/infra/flag/go/seedflag",
+        "//seed/infra/log/go/seedlog",
+        "@com_connectrpc_connect//:connect",
+        "@com_github_go_acme_lego_v5//lego",
+    ],
+)
