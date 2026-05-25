@@ -1,0 +1,17 @@
+load("@rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "account",
+    srcs = [
+        "acme_account.go",
+        "acme_account_locker.go",
+    ],
+    importpath = "github.com/ndscm/theseed/seed/cloud/sfe/certificate/account",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//seed/infra/error/go/seederr",
+        "@com_github_go_acme_lego_v5//acme",
+        "@com_github_go_acme_lego_v5//certcrypto",
+        "@com_github_go_acme_lego_v5//registration",
+    ],
+)
