@@ -1,0 +1,32 @@
+load("@rules_go//go:def.bzl", "go_binary", "go_library")
+
+alias(
+    name = "server",
+    actual = ":sfe-certificate-server",
+)
+
+go_library(
+    name = "server_lib",
+    srcs = ["server.go"],
+    importpath = "github.com/ndscm/theseed/seed/cloud/sfe/certificate/server",
+    visibility = ["//visibility:private"],
+    deps = [
+        "//seed/cloud/login/go/login",
+        "//seed/cloud/sfe/certificate/challenge",
+        "//seed/cloud/sfe/certificate/challenge/cloudflarednschallenge",
+        "//seed/cloud/sfe/certificate/proto:certificate_go_connect",
+        "//seed/cloud/sfe/certificate/service",
+        "//seed/infra/auth/go/openidjwt",
+        "//seed/infra/error/go/seederr",
+        "//seed/infra/flag/go/seedflag",
+        "//seed/infra/grpc/go/seedgrpc",
+        "//seed/infra/init/go/seedinit",
+        "//seed/infra/log/go/seedlog",
+    ],
+)
+
+go_binary(
+    name = "sfe-certificate-server",
+    embed = [":server_lib"],
+    visibility = ["//visibility:public"],
+)
