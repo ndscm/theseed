@@ -1,0 +1,53 @@
+{
+  "name": "lego",
+  "platforms": {
+    "linux-aarch64": {
+      "path": "lego",
+      "providers": [
+        {
+          "url": "https://github.com/go-acme/lego/releases/download/{{TAG}}/lego_{{TAG}}_linux_arm64.tar.gz"
+        }
+      ]
+    },
+    "linux-x86_64": {
+      "path": "lego",
+      "providers": [
+        {
+          "url": "https://github.com/go-acme/lego/releases/download/{{TAG}}/lego_{{TAG}}_linux_amd64.tar.gz"
+        }
+      ]
+    },
+    "macos-aarch64": {
+      "path": "lego",
+      "providers": [
+        {
+          "url": "https://github.com/go-acme/lego/releases/download/{{TAG}}/lego_{{TAG}}_darwin_arm64.tar.gz"
+        }
+      ]
+    },
+    "macos-x86_64": {
+      "path": "lego",
+      "providers": [
+        {
+          "url": "https://github.com/go-acme/lego/releases/download/{{TAG}}/lego_{{TAG}}_darwin_amd64.tar.gz"
+        }
+      ]
+    },
+    "windows-aarch64": {
+      "path": "lego.exe",
+      "providers": [
+        {
+          "url": "https://github.com/go-acme/lego/releases/download/{{TAG}}/lego_{{TAG}}_windows_arm64.zip"
+        }
+      ]
+    },
+    "windows-x86_64": {
+      "path": "lego.exe",
+      "providers": [
+        {
+          "url": "https://github.com/go-acme/lego/releases/download/{{TAG}}/lego_{{TAG}}_windows_amd64.zip"
+        }
+      ]
+    }
+  }
+}
