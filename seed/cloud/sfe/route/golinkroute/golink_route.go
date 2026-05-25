@@ -15,7 +15,7 @@ import (
 )
 
 var flagGolinkServiceServer = seedflag.DefineString("golink_service_server", "", "URL of Golink service server")
-var flagGolinkOpenidDiscovery = seedflag.DefineString("golink_openid_discovery", "http://127.0.0.1:8080/realms/ndscm/.well-known/openid-configuration", "Discovery URL of Golink OpenID provider")
+var flagGolinkOpenidDiscoveryUrl = seedflag.DefineString("golink_openid_discovery_url", "http://127.0.0.1:8080/realms/ndscm/.well-known/openid-configuration", "Discovery URL of Golink OpenID provider")
 var flagGolinkOpenidClientId = seedflag.DefineString("golink_openid_client_id", "", "Client ID for Golink OpenID provider")
 var flagGolinkOpenidClientSecretFile = seedflag.DefineString("golink_openid_client_secret_file", "", "Client secret file for Golink OpenID provider")
 
@@ -34,7 +34,7 @@ func (p *GolinkRoute) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 func CreateGolinkRoute(transport http.RoundTripper) (*GolinkRoute, error) {
-	discovery := flagGolinkOpenidDiscovery.Get()
+	discoveryUrl := flagGolinkOpenidDiscoveryUrl.Get()
 	clientId := flagGolinkOpenidClientId.Get()
 	clientSecretFile := flagGolinkOpenidClientSecretFile.Get()
 	clientSecret := ""
@@ -46,7 +46,7 @@ func CreateGolinkRoute(transport http.RoundTripper) (*GolinkRoute, error) {
 		clientSecret = strings.TrimSpace(string(clientSecretBytes))
 	}
 	provider := loginopenid.NewUserOpenidProvider(
-		clientopenid.NewOpenidProvider(discovery, clientId, clientSecret), "golink_")
+		clientopenid.NewOpenidProvider(discoveryUrl, clientId, clientSecret), "golink_")
 	authHandler := authfe.NewAuthHandler(provider)
 	serverUrl, err := url.Parse(flagGolinkServiceServer.Get())
 	if err != nil {
