@@ -19,6 +19,9 @@ type OpenidConfiguration struct {
 	SubjectTypesSupported   []string `json:"subject_types_supported"`
 	ClaimsSupported         []string `json:"claims_supported"`
 
+	// See: https://datatracker.ietf.org/doc/html/rfc8628#section-7.4
+	DeviceAuthorizationEndpoint string `json:"device_authorization_endpoint,omitempty"`
+
 	Raw map[string]any `json:"-"`
 }
 
