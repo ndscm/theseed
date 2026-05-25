@@ -46,4 +46,4 @@ WORKDIR /home/amadeus
 
 ENTRYPOINT [ "/opt/amadeus/entrypoint.sh" ]
 
-CMD ["/opt/amadeus/amadeus-server", "--openid_discovery", "/etc/steins/openid_discovery.json", "--verbose"]
+CMD ["/opt/amadeus/amadeus-server", "--trust_openid_issuers_file", "/etc/steins/openid_issuers.json", "--verbose"]

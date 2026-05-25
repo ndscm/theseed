@@ -23,5 +23,5 @@ printf "    \x1b[1;33m${container_cli} --host \"ssh://${server}\" exec --interac
   ghcr.io/ndscm/seed-newtype-amadeus-container:latest \
   "/opt/amadeus/amadeus-server" \
   --port 2447 \
-  --openid_discovery /etc/steins/openid_discovery.json \
+  --trust_openid_issuers_file /etc/steins/openid_issuers.json \
   --verbose
