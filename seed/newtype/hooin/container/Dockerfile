@@ -22,5 +22,5 @@ WORKDIR /home/hooin
 ENTRYPOINT [ "/opt/hooin/entrypoint.sh" ]
 CMD [ \
   "--static_team_file", "/etc/steins/team.json", \
-  "--openid_discovery", "/etc/steins/openid_discovery.json", \
+  "--trust_openid_issuers_file", "/etc/steins/openid_issuers.json", \
   "--verbose"]
