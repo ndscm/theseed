@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package seed.cloud.sfe.certificate.proto;
+
+option go_package = "github.com/ndscm/theseed/seed/cloud/sfe/certificate/proto/certificatepb";
+
+message RenewCertificateRequest {
+  string domain = 1;
+}
+
+message RenewCertificateResponse {
+  bytes key = 1;
+  bytes crt = 2;
+}
+
+service SfeCertificateService {
+  rpc RenewCertificate(RenewCertificateRequest)
+      returns (RenewCertificateResponse) {}
+}
