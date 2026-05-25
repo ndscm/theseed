@@ -89,15 +89,54 @@ func (provider *UserOpenidProvider) Exchange(
 	return nil
 }
 
+func (provider *UserOpenidProvider) AccessToken(
+	ctx context.Context,
+	session seedsession.SessionAdapter,
+) (string, error) {
+	oauth2Config, err := provider.GetOauth2Config(ctx, "")
+	if err != nil {
+		return "", seederr.Wrap(err)
+	}
+	accessToken, err := session.Get(ctx, provider.prefix+"access_token")
+	if err != nil {
+		return "", seederr.Wrap(err)
+	}
+	refreshToken, err := session.Get(ctx, provider.prefix+"refresh_token")
+	if err != nil {
+		return "", seederr.Wrap(err)
+	}
+	expiryString, err := session.Get(ctx, provider.prefix+"expiry")
+	if err != nil {
+		return "", seederr.Wrap(err)
+	}
+	if accessToken == "" || refreshToken == "" || expiryString == "" {
+		return "", seederr.WrapErrorf("invalid token data")
+	}
+	expiry, err := time.Parse(time.RFC3339Nano, expiryString)
+	if err != nil {
+		expiry = time.Now().Add(-time.Minute)
+	}
+	initialToken := &oauth2.Token{
+		AccessToken:  accessToken,
+		RefreshToken: refreshToken,
+		Expiry:       expiry,
+	}
+	tokenSource := newSessionTokenSource(ctx, provider.prefix, oauth2Config, session, initialToken)
+	token, err := tokenSource.Token()
+	if err != nil {
+		return "", seederr.Wrap(err)
+	}
+	return token.AccessToken, nil
+}
+
 func (provider *UserOpenidProvider) Bearer(
 	ctx context.Context,
 	session seedsession.SessionAdapter,
 ) string {
-	accessToken, err := session.Get(ctx, provider.prefix+"access_token")
+	accessToken, err := provider.AccessToken(ctx, session)
 	if err != nil {
 		return ""
 	}
-	// TODO(nagi): check expiry and refresh with refresh token if needed
 	return "Bearer " + accessToken
 }
 
