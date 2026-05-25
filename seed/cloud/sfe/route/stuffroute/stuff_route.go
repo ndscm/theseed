@@ -15,7 +15,7 @@ import (
 )
 
 var flagStuffServiceServer = seedflag.DefineString("stuff_service_server", "", "URL of Stuff service server")
-var flagStuffOpenidDiscovery = seedflag.DefineString("stuff_openid_discovery", "http://127.0.0.1:8080/realms/ndscm/.well-known/openid-configuration", "Discovery URL of Stuff OpenID provider")
+var flagStuffOpenidDiscoveryUrl = seedflag.DefineString("stuff_openid_discovery_url", "http://127.0.0.1:8080/realms/ndscm/.well-known/openid-configuration", "Discovery URL of Stuff OpenID provider")
 var flagStuffOpenidClientId = seedflag.DefineString("stuff_openid_client_id", "", "Client ID for Stuff OpenID provider")
 var flagStuffOpenidClientSecretFile = seedflag.DefineString("stuff_openid_client_secret_file", "", "Client secret file for Stuff OpenID provider")
 
@@ -34,7 +34,7 @@ func (p *StuffRoute) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 func CreateStuffRoute(transport http.RoundTripper) (*StuffRoute, error) {
-	discovery := flagStuffOpenidDiscovery.Get()
+	discoveryUrl := flagStuffOpenidDiscoveryUrl.Get()
 	clientId := flagStuffOpenidClientId.Get()
 	clientSecretFile := flagStuffOpenidClientSecretFile.Get()
 	clientSecret := ""
@@ -46,7 +46,7 @@ func CreateStuffRoute(transport http.RoundTripper) (*StuffRoute, error) {
 		clientSecret = strings.TrimSpace(string(clientSecretBytes))
 	}
 	provider := loginopenid.NewUserOpenidProvider(
-		clientopenid.NewOpenidProvider(discovery, clientId, clientSecret), "stuff_")
+		clientopenid.NewOpenidProvider(discoveryUrl, clientId, clientSecret), "stuff_")
 	authHandler := authfe.NewAuthHandler(provider)
 	serverUrl, err := url.Parse(flagStuffServiceServer.Get())
 	if err != nil {
