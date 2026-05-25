@@ -5,9 +5,9 @@ import (
 	"encoding/json"
 	"os"
 
+	"github.com/ndscm/theseed/seed/cloud/login/go/devicelogin"
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
 	"github.com/ndscm/theseed/seed/infra/flag/go/seedflag"
-	"github.com/ndscm/theseed/seed/infra/init/go/initctx"
 	"github.com/ndscm/theseed/seed/infra/init/go/seedinit"
 	"github.com/ndscm/theseed/seed/infra/log/go/seedlog"
 	"github.com/ndscm/theseed/seed/newtype/gajetto/proto/brainpb"
@@ -65,7 +65,11 @@ func run() error {
 	if err != nil {
 		return seederr.Wrap(err)
 	}
-	ctx := initctx.Background()
+	ctx := context.Background()
+	ctx, err = devicelogin.DeviceLogin(ctx, "steins-device")
+	if err != nil {
+		return seederr.Wrap(err)
+	}
 	client := dictateclient.NewHooinDictateClient("")
 
 	input := &brainpb.BrainInput{
