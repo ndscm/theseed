@@ -14,9 +14,9 @@ import (
 )
 
 type OpenidProvider struct {
-	configurationUrl string
-	clientId         string
-	clientSecret     string
+	discoveryUrl string
+	clientId     string
+	clientSecret string
 
 	cachedConfiguration *openid.OpenidConfiguration
 	cachedOrigin        string
@@ -32,7 +32,7 @@ func (provider *OpenidProvider) Origin() (string, error) {
 	if provider.cachedOrigin != "" {
 		return provider.cachedOrigin, nil
 	}
-	parsedUrl, err := url.Parse(provider.configurationUrl)
+	parsedUrl, err := url.Parse(provider.discoveryUrl)
 	if err != nil {
 		return "", seederr.Wrap(err)
 	}
@@ -44,8 +44,8 @@ func (provider *OpenidProvider) GetOpenidConfiguration(ctx context.Context) (*op
 	if provider.cachedConfiguration != nil {
 		return provider.cachedConfiguration, nil
 	}
-	seedlog.Infof("Fetching openid configuration from %s", provider.configurationUrl)
-	request, err := http.NewRequestWithContext(ctx, http.MethodGet, provider.configurationUrl, nil)
+	seedlog.Infof("Fetching openid configuration from %s", provider.discoveryUrl)
+	request, err := http.NewRequestWithContext(ctx, http.MethodGet, provider.discoveryUrl, nil)
 	if err != nil {
 		return nil, seederr.Wrap(err)
 	}
@@ -137,10 +137,10 @@ func (provider *OpenidProvider) Client(
 	return client, nil
 }
 
-func NewOpenidProvider(configurationUrl string, clientId string, clientSecret string) *OpenidProvider {
+func NewOpenidProvider(discoveryUrl string, clientId string, clientSecret string) *OpenidProvider {
 	return &OpenidProvider{
-		configurationUrl: configurationUrl,
-		clientId:         clientId,
-		clientSecret:     clientSecret,
+		discoveryUrl: discoveryUrl,
+		clientId:     clientId,
+		clientSecret: clientSecret,
 	}
 }
