@@ -1,0 +1,19 @@
+load("@rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "cloudflarednschallenge",
+    srcs = ["cloudflare_dns_challenge.go"],
+    importpath = "github.com/ndscm/theseed/seed/cloud/sfe/certificate/challenge/cloudflarednschallenge",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//seed/cloud/sfe/certificate/challenge",
+        "//seed/infra/error/go/seederr",
+        "//seed/infra/flag/go/seedflag",
+        "@com_github_go_acme_lego_v5//certcrypto",
+        "@com_github_go_acme_lego_v5//certificate",
+        "@com_github_go_acme_lego_v5//challenge/dns01",
+        "@com_github_go_acme_lego_v5//lego",
+        "@com_github_go_acme_lego_v5//providers/dns/cloudflare",
+        "@com_github_go_acme_lego_v5//registration",
+    ],
+)

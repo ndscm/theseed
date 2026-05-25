@@ -1,0 +1,12 @@
+load("@rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "challenge",
+    srcs = ["challenge.go"],
+    importpath = "github.com/ndscm/theseed/seed/cloud/sfe/certificate/challenge",
+    visibility = ["//visibility:public"],
+    deps = [
+        "@com_github_go_acme_lego_v5//certificate",
+        "@com_github_go_acme_lego_v5//registration",
+    ],
+)
