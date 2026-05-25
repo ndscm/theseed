@@ -1,0 +1,21 @@
+load("@rules_go//go:def.bzl", "go_binary", "go_library")
+
+go_library(
+    name = "renew_lib",
+    srcs = ["renew.go"],
+    importpath = "github.com/ndscm/theseed/seed/cloud/sfe/certificate/cmd/renew",
+    visibility = ["//visibility:private"],
+    deps = [
+        "//seed/cloud/login/go/devicelogin",
+        "//seed/cloud/sfe/certificate/client/go/certificateclient",
+        "//seed/infra/error/go/seederr",
+        "//seed/infra/init/go/seedinit",
+        "//seed/infra/log/go/seedlog",
+    ],
+)
+
+go_binary(
+    name = "renew",
+    embed = [":renew_lib"],
+    visibility = ["//visibility:public"],
+)
