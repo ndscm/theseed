@@ -1,0 +1,17 @@
+load("@rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "certificateclient",
+    srcs = ["certificate_client.go"],
+    importpath = "github.com/ndscm/theseed/seed/cloud/sfe/certificate/client/go/certificateclient",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//seed/cloud/sfe/certificate/proto:certificate_go_connect",
+        "//seed/cloud/sfe/certificate/proto:certificate_go_proto",
+        "//seed/infra/error/go/seederr",
+        "//seed/infra/flag/go/seedflag",
+        "//seed/infra/grpc/go/grpclog",
+        "//seed/infra/http/go/seedbearer",
+        "@com_connectrpc_connect//:connect",
+    ],
+)
