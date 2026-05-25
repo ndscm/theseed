@@ -22,7 +22,7 @@ import (
 	"github.com/ndscm/theseed/seed/infra/log/go/seedlog"
 )
 
-var flagOpenidDiscovery = seedflag.DefineString("openid_discovery", "", `OpenID provider configurations file (in JSON format).`)
+var flagTrustOpenidIssuersFile = seedflag.DefineString("trust_openid_issuers_file", "", `OpenID issuer configurations file (in JSON format).`)
 
 const refreshCooldown = 10 * time.Minute
 
@@ -77,12 +77,12 @@ func loadPublicKey(jwk *openid.OpenidJwk) (crypto.PublicKey, error) {
 	}
 }
 
-type OpenidDiscoveryEntry struct {
-	Discovery string `json:"discovery"`
+type OpenidIssuerEntry struct {
+	DiscoveryUrl string `json:"discoveryUrl"`
 }
 
-type OpenidDiscovery struct {
-	Issuers []OpenidDiscoveryEntry `json:"issuers"`
+type OpenidIssuers struct {
+	Issuers []OpenidIssuerEntry `json:"issuers"`
 }
 
 func fetchOpenidConfiguration(ctx context.Context, discoveryUrl string) (*openid.OpenidConfiguration, error) {
@@ -178,7 +178,7 @@ func fetchOpenidIssuerJwks(ctx context.Context, discoveryUrl string) (string, *O
 
 type OpenidJwksStore struct {
 	discoveryMutex sync.RWMutex
-	discovery      OpenidDiscovery
+	discovery      OpenidIssuers
 
 	issuersMutex sync.RWMutex
 	issuers      map[string]*OpenidIssuerJwks
@@ -187,7 +187,7 @@ type OpenidJwksStore struct {
 	lastRefresh      time.Time
 }
 
-func (s *OpenidJwksStore) getDiscovery() OpenidDiscovery {
+func (s *OpenidJwksStore) getDiscovery() OpenidIssuers {
 	s.discoveryMutex.RLock()
 	defer s.discoveryMutex.RUnlock()
 	return s.discovery
@@ -211,10 +211,10 @@ func (s *OpenidJwksStore) refreshIssuers() error {
 	discovery := s.getDiscovery()
 	s.clearIssuers()
 	for _, entry := range discovery.Issuers {
-		seedlog.Infof("Fetching openid configuration: %s", entry.Discovery)
-		issuer, jwks, err := fetchOpenidIssuerJwks(ctx, entry.Discovery)
+		seedlog.Infof("Fetching openid configuration: %s", entry.DiscoveryUrl)
+		issuer, jwks, err := fetchOpenidIssuerJwks(ctx, entry.DiscoveryUrl)
 		if err != nil {
-			seedlog.Warnf("Failed to fetch keys from provider %s: %v", entry.Discovery, err)
+			seedlog.Warnf("Failed to fetch keys from provider %s: %v", entry.DiscoveryUrl, err)
 			continue
 		}
 		s.setIssuer(issuer, jwks)
@@ -223,8 +223,8 @@ func (s *OpenidJwksStore) refreshIssuers() error {
 }
 
 func CreateOpenidJwksStore() (*OpenidJwksStore, error) {
-	discoveryConfigPath := flagOpenidDiscovery.Get()
-	discovery := OpenidDiscovery{}
+	discoveryConfigPath := flagTrustOpenidIssuersFile.Get()
+	discovery := OpenidIssuers{}
 	if discoveryConfigPath != "" {
 		discoveryConfigBytes, err := os.ReadFile(discoveryConfigPath)
 		if err != nil {
