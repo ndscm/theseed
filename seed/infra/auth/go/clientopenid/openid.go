@@ -74,19 +74,32 @@ func (provider *OpenidProvider) GetOauth2Config(ctx context.Context, origin stri
 	if err != nil {
 		return nil, seederr.Wrap(err)
 	}
-	redirectUri, err := url.Parse(origin)
-	if err != nil {
-		return nil, seederr.WrapErrorf("invalid origin: %v", err)
+
+	redirectUrl := ""
+	if origin != "" {
+		redirectUri, err := url.Parse(origin)
+		if err != nil {
+			return nil, seederr.WrapErrorf("invalid origin: %v", err)
+		}
+		redirectUri.Path = "/auth/callback"
+		redirectUrl = redirectUri.String()
 	}
-	redirectUri.Path = "/auth/callback"
+
+	authStyle := oauth2.AuthStyleAutoDetect
+	if provider.clientSecret == "" {
+		authStyle = oauth2.AuthStyleInParams
+	}
+
 	oauth2Config := &oauth2.Config{
 		ClientID:     provider.clientId,
 		ClientSecret: provider.clientSecret,
 		Scopes:       configuration.ScopesSupported,
-		RedirectURL:  redirectUri.String(),
+		RedirectURL:  redirectUrl,
 		Endpoint: oauth2.Endpoint{
-			AuthURL:  configuration.AuthorizationEndpoint,
-			TokenURL: configuration.TokenEndpoint,
+			AuthURL:       configuration.AuthorizationEndpoint,
+			DeviceAuthURL: configuration.DeviceAuthorizationEndpoint,
+			TokenURL:      configuration.TokenEndpoint,
+			AuthStyle:     authStyle,
 		},
 	}
 	return oauth2Config, nil
