@@ -12,7 +12,6 @@ go_library(
         "//seed/infra/auth/go/clientopenid",
         "//seed/infra/auth/go/openid",
         "//seed/infra/error/go/seederr",
-        "//seed/infra/http/go/seedsession",
         "@org_golang_x_oauth2//:oauth2",
     ],
 )
