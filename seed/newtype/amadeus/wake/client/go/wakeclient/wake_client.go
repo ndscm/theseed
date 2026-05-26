@@ -7,7 +7,7 @@ import (
 	"connectrpc.com/connect"
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
 	"github.com/ndscm/theseed/seed/infra/flag/go/seedflag"
-	"github.com/ndscm/theseed/seed/infra/grpc/go/seedgrpc"
+	"github.com/ndscm/theseed/seed/infra/grpc/go/grpclog"
 	"github.com/ndscm/theseed/seed/infra/http/go/seedbearer"
 	"github.com/ndscm/theseed/seed/newtype/amadeus/wake/proto/wakepb"
 	"github.com/ndscm/theseed/seed/newtype/amadeus/wake/proto/wakepbconnect"
@@ -26,7 +26,7 @@ func NewAmadeusWakeClient(server string) *AmadeusWakeClient {
 	client := wakepbconnect.NewAmadeusWakeServiceClient(
 		seedbearer.InterceptBearerTransport(http.DefaultClient),
 		server,
-		connect.WithInterceptors(seedgrpc.NewLogInterceptor()),
+		connect.WithInterceptors(grpclog.NewLogInterceptor()),
 	)
 	return &AmadeusWakeClient{client}
 }
