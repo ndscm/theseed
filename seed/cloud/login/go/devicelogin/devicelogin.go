@@ -8,6 +8,7 @@ import (
 	"path/filepath"
 	"time"
 
+	"github.com/ndscm/theseed/seed/cloud/login/client/go/discovery"
 	"github.com/ndscm/theseed/seed/infra/auth/go/clientopenid"
 	"github.com/ndscm/theseed/seed/infra/auth/go/loginopenid"
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
@@ -17,7 +18,6 @@ import (
 	"golang.org/x/oauth2"
 )
 
-var flagLoginOpenidDiscoveryUrl = seedflag.DefineString("login_openid_discovery_url", "http://127.0.0.1:8080/realms/ndscm/.well-known/openid-configuration", "Discovery URL of Login OpenID provider")
 var flagLoginTier = seedflag.DefineString("login_tier", "dev", "Login tier (e.g., prod, staging, future, dev)")
 
 type FileTokenStorage struct {
@@ -78,7 +78,7 @@ func DeviceLogin(ctx context.Context, service string) (context.Context, error) {
 	if err != nil {
 		return ctx, seederr.Wrap(err)
 	}
-	discoveryUrl := flagLoginOpenidDiscoveryUrl.Get()
+	discoveryUrl := discovery.LoginOpenidDiscoveryUrl()
 	serviceTier := service + "-" + flagLoginTier.Get()
 	storagePath := filepath.Join(userHome, ".seed", "login", serviceTier+".json")
 	tokenStorage := &FileTokenStorage{storagePath: storagePath}
