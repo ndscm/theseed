@@ -1,0 +1,14 @@
+load("@rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "grpclog",
+    srcs = ["log_interceptor.go"],
+    importpath = "github.com/ndscm/theseed/seed/infra/grpc/go/grpclog",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//seed/infra/error/go/seederr",
+        "//seed/infra/flag/go/seedflag",
+        "//seed/infra/log/go/seedlog",
+        "@com_connectrpc_connect//:connect",
+    ],
+)
