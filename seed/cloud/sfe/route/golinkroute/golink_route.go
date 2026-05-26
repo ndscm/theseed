@@ -33,6 +33,8 @@ func (p *GolinkRoute) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	p.next.ServeHTTP(w, r)
 }
 
+var _ http.Handler = (*GolinkRoute)(nil)
+
 func CreateGolinkRoute(transport http.RoundTripper) (*GolinkRoute, error) {
 	discoveryUrl := flagGolinkOpenidDiscoveryUrl.Get()
 	clientId := flagGolinkOpenidClientId.Get()
