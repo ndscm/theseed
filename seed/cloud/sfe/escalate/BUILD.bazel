@@ -1,0 +1,8 @@
+load("@rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "escalate",
+    srcs = ["escalate_handler.go"],
+    importpath = "github.com/ndscm/theseed/seed/cloud/sfe/escalate",
+    visibility = ["//visibility:public"],
+)
