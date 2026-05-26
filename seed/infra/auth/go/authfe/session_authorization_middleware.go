@@ -22,7 +22,7 @@ func (m SessionAuthorizationMiddleware) ServeHTTP(w http.ResponseWriter, r *http
 		m.next.ServeHTTP(w, r.WithContext(ctx))
 		return
 	}
-	authorization := m.provider.Bearer(ctx, session)
+	authorization := m.provider.Authorization(ctx, session)
 	if authorization != "" {
 		r.Header.Set("Authorization", authorization)
 	}

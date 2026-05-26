@@ -119,21 +119,31 @@ func (provider *OpenidProvider) GetClientCredentialsConfig(ctx context.Context) 
 	return oauth2Config, nil
 }
 
-func (provider *OpenidProvider) Bearer(
+func (provider *OpenidProvider) AccessToken(
 	ctx context.Context,
-) string {
+) (string, error) {
 	if provider.tokenSource == nil {
 		oauth2Config, err := provider.GetClientCredentialsConfig(ctx)
 		if err != nil {
-			return ""
+			return "", seederr.Wrap(err)
 		}
 		provider.tokenSource = oauth2Config.TokenSource(context.Background())
 	}
 	token, err := provider.tokenSource.Token()
 	if err != nil {
+		return "", seederr.Wrap(err)
+	}
+	return token.AccessToken, nil
+}
+
+func (provider *OpenidProvider) Authorization(
+	ctx context.Context,
+) string {
+	accessToken, err := provider.AccessToken(ctx)
+	if err != nil {
 		return ""
 	}
-	return "Bearer " + token.AccessToken
+	return "Bearer " + accessToken
 }
 
 func (provider *OpenidProvider) Client(
