@@ -8,6 +8,7 @@ import (
 	"connectrpc.com/validate"
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
 	"github.com/ndscm/theseed/seed/infra/flag/go/seedflag"
+	"github.com/ndscm/theseed/seed/infra/grpc/go/grpclog"
 	"github.com/ndscm/theseed/seed/infra/log/go/seedlog"
 	"github.com/soheilhy/cmux"
 )
@@ -20,7 +21,7 @@ var flagHttpsCertificateFile = seedflag.DefineString("https_certificate_file", "
 func WithCommonInterceptors(options ...connect.Interceptor) connect.Option {
 	interceptors := []connect.Interceptor{}
 	interceptors = append(interceptors, options...)
-	interceptors = append(interceptors, NewLogInterceptor())
+	interceptors = append(interceptors, grpclog.NewLogInterceptor())
 	interceptors = append(interceptors, validate.NewInterceptor())
 	return connect.WithInterceptors(interceptors...)
 }

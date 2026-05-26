@@ -1,4 +1,4 @@
-package seedgrpc
+package grpclog
 
 import (
 	"context"

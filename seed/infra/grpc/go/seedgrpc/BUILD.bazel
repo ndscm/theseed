@@ -3,7 +3,6 @@ load("@rules_go//go:def.bzl", "go_library")
 go_library(
     name = "seedgrpc",
     srcs = [
-        "log_interceptor.go",
         "mux.go",
         "serve.go",
     ],
@@ -12,6 +11,7 @@ go_library(
     deps = [
         "//seed/infra/error/go/seederr",
         "//seed/infra/flag/go/seedflag",
+        "//seed/infra/grpc/go/grpclog",
         "//seed/infra/log/go/seedlog",
         "@com_connectrpc_connect//:connect",
         "@com_connectrpc_grpchealth//:grpchealth",
