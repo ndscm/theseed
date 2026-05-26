@@ -12,7 +12,7 @@ go_library(
     deps = [
         "//seed/infra/error/go/seederr",
         "//seed/infra/flag/go/seedflag",
-        "//seed/infra/grpc/go/seedgrpc",
+        "//seed/infra/grpc/go/grpclog",
         "//seed/infra/http/go/seedbearer",
         "//seed/newtype/amadeus/wake/proto:wake_go_connect",
         "//seed/newtype/amadeus/wake/proto:wake_go_proto",
