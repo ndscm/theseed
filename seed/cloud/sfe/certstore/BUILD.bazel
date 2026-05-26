@@ -1,0 +1,15 @@
+load("@rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "certstore",
+    srcs = ["certstore.go"],
+    importpath = "github.com/ndscm/theseed/seed/cloud/sfe/certstore",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//seed/cloud/sfe/certificate/client/go/certificateclient",
+        "//seed/infra/auth/go/clientopenid",
+        "//seed/infra/error/go/seederr",
+        "//seed/infra/http/go/seedbearer",
+        "//seed/infra/log/go/seedlog",
+    ],
+)
