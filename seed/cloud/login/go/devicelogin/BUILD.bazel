@@ -6,6 +6,7 @@ go_library(
     importpath = "github.com/ndscm/theseed/seed/cloud/login/go/devicelogin",
     visibility = ["//visibility:public"],
     deps = [
+        "//seed/cloud/login/client/go/discovery",
         "//seed/infra/auth/go/clientopenid",
         "//seed/infra/auth/go/loginopenid",
         "//seed/infra/error/go/seederr",
