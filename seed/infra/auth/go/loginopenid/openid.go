@@ -133,7 +133,7 @@ func (provider *UserOpenidProvider) AccessToken(
 	return token.AccessToken, nil
 }
 
-func (provider *UserOpenidProvider) Bearer(
+func (provider *UserOpenidProvider) Authorization(
 	ctx context.Context,
 	storage ExternalTokenStorage,
 ) string {
