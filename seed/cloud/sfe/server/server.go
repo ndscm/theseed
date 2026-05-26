@@ -14,6 +14,7 @@ import (
 	"github.com/ndscm/theseed/seed/cloud/sfe/escalate"
 	"github.com/ndscm/theseed/seed/cloud/sfe/route/golinkroute"
 	"github.com/ndscm/theseed/seed/cloud/sfe/route/stuffroute"
+	"github.com/ndscm/theseed/seed/cloud/sfe/route/workflowroute"
 	"github.com/ndscm/theseed/seed/cloud/sqlsession"
 	"github.com/ndscm/theseed/seed/infra/auth/go/clientopenid"
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
@@ -45,6 +46,8 @@ type SfeRouteHandler struct {
 	golinkRoute http.Handler
 
 	stuffRoute http.Handler
+
+	workflowRoute http.Handler
 }
 
 func (h *SfeRouteHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -61,6 +64,9 @@ func (h *SfeRouteHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	case "stuff.ndscm.com":
 		h.stuffRoute.ServeHTTP(w, r)
+		return
+	case "workflow.ndscm.biz":
+		h.workflowRoute.ServeHTTP(w, r)
 		return
 	}
 	http.Redirect(w, r, "https://www.ndscm.com", http.StatusTemporaryRedirect)
@@ -86,10 +92,15 @@ func CreateSfeRouteHandler() (*SfeRouteHandler, error) {
 	if err != nil {
 		return nil, seederr.Wrap(err)
 	}
+	workflowRoute, err := workflowroute.CreateWorkflowRoute(optimizedTransport)
+	if err != nil {
+		return nil, seederr.Wrap(err)
+	}
 
 	h := &SfeRouteHandler{
-		golinkRoute: seedsession.InterceptSessionMiddleware(golinkRoute, sessionInitializer),
-		stuffRoute:  seedsession.InterceptSessionMiddleware(stuffRoute, sessionInitializer),
+		golinkRoute:   seedsession.InterceptSessionMiddleware(golinkRoute, sessionInitializer),
+		stuffRoute:    seedsession.InterceptSessionMiddleware(stuffRoute, sessionInitializer),
+		workflowRoute: workflowRoute,
 	}
 
 	return h, nil
