@@ -1,0 +1,11 @@
+FROM ghcr.io/ndscm/seed-cloud-sfe-certificate-container:latest
+
+COPY ./openid_issuers.json /opt/sfe-certificate/openid_issuers.json
+
+CMD [ \
+  "--port", "8080", \
+  "--trust_openid_issuers_file", "/opt/sfe-certificate/openid_issuers.json", \
+  "--acme_account_email", "sfe-prod@ndscm.com", \
+  "--cloudflare_dns_api_token_file", "/run/secrets/CLOUDFLARE_DNS_API_TOKEN/latest", \
+  "--verbose" \
+  ]
