@@ -33,6 +33,8 @@ func (p *StuffRoute) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	p.next.ServeHTTP(w, r)
 }
 
+var _ http.Handler = (*StuffRoute)(nil)
+
 func CreateStuffRoute(transport http.RoundTripper) (*StuffRoute, error) {
 	discoveryUrl := flagStuffOpenidDiscoveryUrl.Get()
 	clientId := flagStuffOpenidClientId.Get()
