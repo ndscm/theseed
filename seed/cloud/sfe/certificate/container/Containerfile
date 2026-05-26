@@ -1,0 +1,11 @@
+FROM ghcr.io/ndscm/debian:latest
+
+ADD ./sfe-certificate-server /opt/sfe-certificate/sfe-certificate-server
+
+RUN useradd --shell /bin/bash --create-home sfe-certificate
+USER sfe-certificate
+WORKDIR /home/sfe-certificate
+
+ENTRYPOINT [ "/opt/sfe-certificate/sfe-certificate-server" ]
+
+CMD [ "--verbose" ]
