@@ -10,6 +10,7 @@ region="us-west1"
 service="seed-cloud-sfe-prod"
 image_package="us-docker.pkg.dev/ndscm-prod/container-us/seed-cloud-sfe-deploy-gcloud"
 
+export CONTAINER_ENGINE="${container_engine}"
 ./seed/cloud/sfe/container/build.sh
 
 cd ./seed/cloud/sfe/deploy/gcloud/
