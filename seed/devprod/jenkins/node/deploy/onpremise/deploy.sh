@@ -5,7 +5,7 @@ cd "$(dirname "${BASH_SOURCE[0]}")/../../../../../.."
 
 server=${1:-"jenkins-node-1"}
 service_user=${2:-"jenkins-node"}
-jenkins_url=${3:-"https://workflow.ndscm.com/"}
+jenkins_url=${3:-"https://workflow.ndscm.biz/"}
 jenkins_agent_name=${4:-"jenkins-node-1"}
 set +x
 jenkins_agent_secret=${5:-""}

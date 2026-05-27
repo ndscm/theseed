@@ -6,4 +6,4 @@ cd "$(dirname "${BASH_SOURCE[0]}")"
 set +x
 jenkins_agent_secret="${1:-""}"
 
-./deploy.sh "jenkins-node-0" "jenkins-node" "https://workflow.ndscm.com/" "jenkins-node-0" "${jenkins_agent_secret}"
+./deploy.sh "jenkins-node-0" "jenkins-node" "https://workflow.ndscm.biz/" "jenkins-node-0" "${jenkins_agent_secret}"
