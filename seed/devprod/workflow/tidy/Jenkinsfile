@@ -50,10 +50,6 @@ direnv allow
 eval "$(direnv export bash)"
 ndscm bootstrap
 '''
-        sh '''#!/usr/bin/env bash
-eval "$(direnv export bash)"
-./bootstrap.sh
-'''
       }
     }
     stage('Tidy') {
@@ -65,10 +61,6 @@ ndscm tidy
         sh '''#!/usr/bin/env bash
 eval "$(direnv export bash)"
 ndscm lock
-'''
-        sh '''#!/usr/bin/env bash
-eval "$(direnv export bash)"
-SEED_TIDY_FULL=1 ./tidy.sh
 '''
       }
     }
