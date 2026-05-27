@@ -4,6 +4,8 @@ set -o pipefail
 cd "$(dirname "${BASH_SOURCE[0]}")/../../../.."
 
 container_engine=${CONTAINER_ENGINE:-"podman"}
+
+export CONTAINER_ENGINE="${container_engine}"
 ./seed/devprod/container/ubuntu/build.sh
 
 bazel build //seed/devprod/golink/server:golink-server_tar_gz
