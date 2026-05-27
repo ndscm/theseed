@@ -15,6 +15,7 @@ dependencies = [
     "grpcio-tools==1.67.1",
     "httpx>=0.28.1",
     "intervaltree>=3.1.0",
+    "isort>=8.0.1",
     "markupsafe==2.1.5",
     "mcp>=1.9.4",
     "openai>=1.86.0",
