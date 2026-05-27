@@ -17,6 +17,3 @@ not be used in new projects.
 
 `Dockerfile` was used when theseed only supported `docker` as the container
 engine.
-
-`CONTAINER_CLI` was used when theseed only supported container commands
-compatible with all container engines.
