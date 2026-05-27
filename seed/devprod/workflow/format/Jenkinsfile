@@ -50,10 +50,6 @@ direnv allow
 eval "$(direnv export bash)"
 ndscm format
 '''
-        sh '''#!/usr/bin/env bash
-eval "$(direnv export bash)"
-./format.sh
-'''
       }
     }
     stage('Test') {
