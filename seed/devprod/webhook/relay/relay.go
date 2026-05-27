@@ -31,17 +31,22 @@ import (
 
 var flagEventSource = seedflag.DefineString("event_source", "https://webhook.ndscm.com/ndscm/github/subscribe", "URL of the event source to connect to")
 var flagRelayTo = seedflag.DefineString("relay_to", "https://workflow.ndscm.biz/generic-webhook-trigger/invoke", "URL of the event source to relay to")
+var flagRelayToAuthorizationFile = seedflag.DefineString("relay_to_authorization_file", "", "Path to a file containing the Authorization header value, including the scheme (e.g. 'Basic dXNlcjpwYXNz' or 'Bearer token')")
 
 // relay parses data as a wire-format HTTP request (as written by
 // httputil.DumpRequest on the broadcast side) and re-issues it to `to`,
 // preserving method and headers. Host and Content-Length are dropped so
 // net/http can recompute them for the new destination and body.
 //
+// When authorization is non-empty it overwrites any Authorization header
+// from the upstream request. When empty, an upstream Authorization header
+// (if present) is forwarded as-is.
+//
 // The per-call 30s timeout bounds a single relay attempt; the parent ctx
 // still governs overall shutdown. Returns an error for transport failures
 // or any 4xx/5xx response — the caller decides whether to log and drop or
 // retry.
-func relay(ctx context.Context, to string, data []byte) error {
+func relay(ctx context.Context, to string, authorization string, data []byte) error {
 	entity, err := http.ReadRequest(bufio.NewReader(bytes.NewReader(data)))
 	if err != nil {
 		return seederr.Wrap(err)
@@ -65,6 +70,9 @@ func relay(ctx context.Context, to string, data []byte) error {
 		}
 		out.Header[k] = vs
 	}
+	if len(authorization) > 0 {
+		out.Header.Set("Authorization", authorization)
+	}
 
 	resp, err := http.DefaultClient.Do(out)
 	if err != nil {
@@ -87,13 +95,24 @@ func run() error {
 	seedlog.Infof("Subscribe to: %v", flagEventSource.Get())
 	seedlog.Infof("Relay to: %v", flagRelayTo.Get())
 
+	toAuthorizationHeader := []byte{}
+	relayToAuthorizationFilePath := flagRelayToAuthorizationFile.Get()
+	if relayToAuthorizationFilePath != "" {
+		data, err := os.ReadFile(relayToAuthorizationFilePath)
+		if err != nil {
+			return seederr.Wrap(err)
+		}
+		toAuthorizationHeader = bytes.TrimSpace(data)
+		seedlog.Infof("Loaded relay to authorization header.")
+	}
+
 	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
 	defer stop()
 
 	err = eventstream.Subscribe(ctx, flagEventSource.Get(), "", func(ev *eventstream.Event) {
 		seedlog.Infof("[Event] event:%s id=%s", ev.Event(), ev.Id())
 		seedlog.Debugf("data:\n%s", ev.Data())
-		err := relay(ctx, flagRelayTo.Get(), ev.Data())
+		err := relay(ctx, flagRelayTo.Get(), string(toAuthorizationHeader), ev.Data())
 		if err != nil {
 			seedlog.Errorf("relay id=%s: %v", ev.Id(), err)
 		}
