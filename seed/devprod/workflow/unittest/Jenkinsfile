@@ -50,10 +50,6 @@ direnv allow
 eval "$(direnv export bash)"
 ndscm bootstrap
 '''
-        sh '''#!/usr/bin/env bash
-eval "$(direnv export bash)"
-./bootstrap.sh
-'''
       }
     }
     stage('Test') {
@@ -65,10 +61,6 @@ ndscm build
         sh '''#!/usr/bin/env bash
 eval "$(direnv export bash)"
 ndscm test
-'''
-        sh '''#!/usr/bin/env bash
-eval "$(direnv export bash)"
-./test.sh
 '''
         sh '''#!/usr/bin/env bash
 if [ -n "$(git status --porcelain)" ]; then
