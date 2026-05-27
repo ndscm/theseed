@@ -9,6 +9,9 @@ if [[ "${container_engine}" != "podman" ]]; then
   exit 1
 fi
 
+export CONTAINER_ENGINE="${container_engine}"
+./seed/devprod/container/debian/build.sh
+
 cd ./seed/devprod/jenkins/controller/container/
 
 # --userns=auto: required for rootless podman to correctly preserve file
