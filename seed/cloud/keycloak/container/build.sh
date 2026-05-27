@@ -5,8 +5,8 @@ cd "$(dirname "${BASH_SOURCE[0]}")/../../../.."
 
 container_cli=${CONTAINER_CLI:-"docker"}
 
-bazel build //seed/cloud/keycloak:keycloak_tar_gz
-cp -f ./bazel-bin/seed/cloud/keycloak/keycloak.tar.gz ./seed/cloud/keycloak/container/keycloak.tar.gz
+bazel build //seed/cloud/keycloak:keycloak-release_tar_gz
+cp -f ./bazel-bin/seed/cloud/keycloak/keycloak-release.tar.gz ./seed/cloud/keycloak/container/keycloak-release.tar.gz
 
 bazel build @keycloak_maven//:com_kohlschutter_junixsocket_junixsocket_common_2_10_1
 cp -f \
