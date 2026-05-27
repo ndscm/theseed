@@ -1,0 +1,53 @@
+{
+  "name": "bazelisk",
+  "platforms": {
+    "linux-aarch64": {
+      "path": "bazelisk",
+      "providers": [
+        {
+          "url": "https://github.com/bazelbuild/bazelisk/releases/download/{{TAG}}/bazelisk-linux-arm64"
+        }
+      ]
+    },
+    "linux-x86_64": {
+      "path": "bazelisk",
+      "providers": [
+        {
+          "url": "https://github.com/bazelbuild/bazelisk/releases/download/{{TAG}}/bazelisk-linux-amd64"
+        }
+      ]
+    },
+    "macos-aarch64": {
+      "path": "bazelisk",
+      "providers": [
+        {
+          "url": "https://github.com/bazelbuild/bazelisk/releases/download/{{TAG}}/bazelisk-darwin-arm64"
+        }
+      ]
+    },
+    "macos-x86_64": {
+      "path": "bazelisk",
+      "providers": [
+        {
+          "url": "https://github.com/bazelbuild/bazelisk/releases/download/{{TAG}}/bazelisk-darwin-amd64"
+        }
+      ]
+    },
+    "windows-aarch64": {
+      "path": "bazelisk.exe",
+      "providers": [
+        {
+          "url": "https://github.com/bazelbuild/bazelisk/releases/download/{{TAG}}/bazelisk-windows-arm64.exe"
+        }
+      ]
+    },
+    "windows-x86_64": {
+      "path": "bazelisk.exe",
+      "providers": [
+        {
+          "url": "https://github.com/bazelbuild/bazelisk/releases/download/{{TAG}}/bazelisk-windows-amd64.exe"
+        }
+      ]
+    }
+  }
+}
