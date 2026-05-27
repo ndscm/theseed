@@ -1,0 +1,43 @@
+#!/usr/bin/env dotslash
+
+{
+  "name": "clang",
+  "platforms": {
+    "linux-aarch64": {
+      "path": "LLVM-21.1.8-Linux-ARM64/bin/clang",
+      "size": 1873847788,
+      "hash": "blake3",
+      "digest": "794a076afbe6ef5549826efddf9d04ba6f1178789b435e2c5df97bb4189e6ecd",
+      "format": "tar.xz",
+      "providers": [
+        {
+          "url": "https://github.com/llvm/llvm-project/releases/download/llvmorg-21.1.8/LLVM-21.1.8-Linux-ARM64.tar.xz"
+        }
+      ]
+    },
+    "linux-x86_64": {
+      "path": "LLVM-21.1.8-Linux-X64/bin/clang",
+      "size": 2019005384,
+      "hash": "blake3",
+      "digest": "9090af1fac7fba35008f09baaf3a8373c63127df759fe1675ea9f56bdbafb01e",
+      "format": "tar.xz",
+      "providers": [
+        {
+          "url": "https://github.com/llvm/llvm-project/releases/download/llvmorg-21.1.8/LLVM-21.1.8-Linux-X64.tar.xz"
+        }
+      ]
+    },
+    "macos-aarch64": {
+      "path": "LLVM-21.1.8-macOS-ARM64/bin/clang",
+      "size": 1503047352,
+      "hash": "blake3",
+      "digest": "677ea000ca74dd3e9935421d346317fdb1c5bf707ac3d362f29afdcccdf9fb35",
+      "format": "tar.xz",
+      "providers": [
+        {
+          "url": "https://github.com/llvm/llvm-project/releases/download/llvmorg-21.1.8/LLVM-21.1.8-macOS-ARM64.tar.xz"
+        }
+      ]
+    }
+  }
+}
