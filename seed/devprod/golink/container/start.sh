@@ -5,6 +5,7 @@ cd "$(dirname "${BASH_SOURCE[0]}")"
 
 container_engine=${CONTAINER_ENGINE:-"podman"}
 
+export CONTAINER_ENGINE="${container_engine}"
 ./build.sh
 
 "${container_engine}" run --name "golink" --rm --interactive --tty \
