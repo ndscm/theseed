@@ -14,6 +14,9 @@ struct Args {
 
     #[arg(long, default_value = "v0.0.0")]
     tag: String,
+
+    #[arg(long, default_value_t = false)]
+    no_format: bool,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -24,14 +27,19 @@ struct Provider {
 #[derive(Debug, Serialize, Deserialize)]
 struct Platform {
     path: String,
+
     #[serde(skip_serializing_if = "Option::is_none")]
     size: Option<u64>,
+
     #[serde(skip_serializing_if = "Option::is_none")]
     hash: Option<String>,
+
     #[serde(skip_serializing_if = "Option::is_none")]
     digest: Option<String>,
+
     #[serde(skip_serializing_if = "Option::is_none")]
     format: Option<String>,
+
     providers: Vec<Provider>,
 }
 
@@ -68,7 +76,11 @@ fn run() -> Result<()> {
             platform.size = entry.size;
             platform.hash = entry.hash;
             platform.digest = entry.digest;
-            platform.format = entry.format;
+            if args.no_format {
+                platform.format = None;
+            } else {
+                platform.format = entry.format;
+            }
         }
         eprintln!("Fetched: platform={:#?}", platform);
     }
