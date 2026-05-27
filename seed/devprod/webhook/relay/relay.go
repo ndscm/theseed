@@ -29,7 +29,7 @@ import (
 	"github.com/ndscm/theseed/seed/infra/log/go/seedlog"
 )
 
-var flagEventSource = seedflag.DefineString("event_source", "https://webhook.ndscm.com/github/subscribe", "URL of the event source to connect to")
+var flagEventSource = seedflag.DefineString("event_source", "https://webhook.ndscm.com/ndscm/github/subscribe", "URL of the event source to connect to")
 var flagRelayTo = seedflag.DefineString("relay_to", "https://workflow.ndscm.biz/generic-webhook-trigger/invoke", "URL of the event source to relay to")
 
 // relay parses data as a wire-format HTTP request (as written by
