@@ -57,6 +57,7 @@ fn run() -> Result<()> {
     let mut result: DotSlash = serde_json::from_str(&skeleton_bytes).context("parsing skeleton")?;
 
     for (platform_name, platform) in &mut result.platforms {
+        platform.path = platform.path.replace("{{TAG}}", &args.tag);
         for provider in &mut platform.providers {
             provider.url = provider.url.replace("{{TAG}}", &args.tag);
 
