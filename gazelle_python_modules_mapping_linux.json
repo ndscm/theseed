@@ -127,6 +127,7 @@
   "idna": "idna",
   "importlib_metadata": "importlib_metadata",
   "intervaltree": "intervaltree",
+  "isort": "isort",
   "isympy": "sympy",
   "jaraco.classes": "jaraco.classes",
   "jaraco.context": "jaraco_context",

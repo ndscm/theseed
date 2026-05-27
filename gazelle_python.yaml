@@ -151,6 +151,7 @@ manifest:
     idna: idna
     importlib_metadata: importlib_metadata
     intervaltree: intervaltree
+    isort: isort
     isympy: sympy
     jaraco.classes: jaraco.classes
     jaraco.context: jaraco_context
@@ -257,4 +258,4 @@ manifest:
     zipp: zipp
   pip_repository:
     name: pypi
-integrity: 6cddc678af4f4b526b24614c7668df1542e033fcaab8767783558b34b864d69b
+integrity: a43e0b301067291b671a97f8081af577bec0b7736064bdd3f7a7e8f2e7094e1c
