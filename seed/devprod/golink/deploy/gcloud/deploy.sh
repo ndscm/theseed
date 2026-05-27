@@ -10,6 +10,7 @@ region="us-west1"
 service="seed-devprod-golink-prod"
 image_package="us-docker.pkg.dev/ndscm-prod/container-us/seed-devprod-golink-deploy-gcloud"
 
+export CONTAINER_ENGINE="${container_engine}"
 ./seed/devprod/golink/container/build.sh
 
 cd ./seed/devprod/golink/deploy/gcloud/
