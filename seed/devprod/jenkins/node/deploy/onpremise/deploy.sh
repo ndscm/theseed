@@ -70,6 +70,7 @@ Volume=/mnt/volatile/jenkins/node/agent:/home/jenkins/agent:U,Z
 Volume=/mnt/volatile/jenkins/node/cache:/home/jenkins/.cache:U,Z
 
 [Service]
+TimeoutStartSec=600
 Restart=on-failure
 RestartSec=2s
 SuccessExitStatus=143
