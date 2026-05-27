@@ -3,10 +3,10 @@ set -eux
 set -o pipefail
 cd "$(dirname "${BASH_SOURCE[0]}")/../../../.."
 
-server=${1:-"workflow.ndscm.com"}
+server=${1:-"workflow.ndscm.biz"}
 container_name=${2:-"workflow-github-webhook-relay"}
 event_source=${3:-"https://webhook.ndscm.com/github/subscribe"}
-relay_to=${4:-"https://workflow.ndscm.com/generic-webhook-trigger/invoke"}
+relay_to=${4:-"https://workflow.ndscm.biz/generic-webhook-trigger/invoke"}
 
 ./seed/devprod/webhook/relay/container/build.sh
 "${CONTAINER_CLI}" save ghcr.io/ndscm/seed-devprod-webhook-relay-container:latest | ssh "${server}" "${CONTAINER_CLI} load"
