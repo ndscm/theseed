@@ -3,11 +3,12 @@ set -eux
 set -o pipefail
 cd "$(dirname "${BASH_SOURCE[0]}")"
 
-container_cli=${CONTAINER_CLI:-"docker"}
+container_engine=${CONTAINER_ENGINE:-"podman"}
 
+export CONTAINER_ENGINE="${container_engine}"
 ./build.sh
 
-"${container_cli}" run --name "keycloak" \
+"${container_engine}" run --name "keycloak" \
   --interactive --rm --tty \
   --network "host" \
   --env KC_HOSTNAME="localhost" \
