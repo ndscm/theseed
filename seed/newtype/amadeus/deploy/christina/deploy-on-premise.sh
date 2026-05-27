@@ -7,7 +7,13 @@ server=${1:-"steins.ndscm.com"}
 mount_etc_steins=${2:-"/mnt/data/steins/etc/steins"}
 mount_home=${3:-"/mnt/data/christina/home"}
 
-export CONTAINER_ENGINE="docker"
+container_engine=${CONTAINER_ENGINE:-"docker"}
+if [[ "${container_engine}" != "docker" ]]; then
+  printf 'Only docker is supported for now\n'
+  exit 1
+fi
+
+export CONTAINER_ENGINE="${container_engine}"
 ./seed/newtype/amadeus/container/build.sh
 
 docker save ghcr.io/ndscm/seed-newtype-amadeus-container:latest | ssh "${server}" "docker load"
