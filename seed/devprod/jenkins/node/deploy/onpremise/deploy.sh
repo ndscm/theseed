@@ -18,6 +18,7 @@ if [[ "${container_engine}" != "podman" ]]; then
   exit 1
 fi
 
+export CONTAINER_ENGINE="${container_engine}"
 ./seed/devprod/jenkins/node/container/build.sh
 
 # Stage the container image on the remote.

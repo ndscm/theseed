@@ -15,6 +15,7 @@ fi
 
 mount_jenkins_home=${MOUNT_JENKINS_HOME:-"/mnt/data/jenkins/controller/jenkins_home"}
 
+export CONTAINER_ENGINE="${container_engine}"
 ./seed/devprod/jenkins/controller/container/build.sh
 
 # Stage the container image on the remote.

@@ -11,6 +11,7 @@ if [[ "${container_engine}" != "podman" ]]; then
   exit 1
 fi
 
+export CONTAINER_ENGINE="${container_engine}"
 ./build.sh
 
 podman run --name jenkins-node \

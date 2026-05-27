@@ -9,6 +9,9 @@ if [[ "${container_engine}" != "podman" ]]; then
   exit 1
 fi
 
+export CONTAINER_ENGINE="${container_engine}"
+./seed/devprod/container/debian/build.sh
+
 bazel build //seed/devprod/ndscm/cli
 cp -f ./bazel-bin/seed/devprod/ndscm/cli/ndscm_/ndscm ./seed/devprod/jenkins/node/container/ndscm
 
