@@ -3,7 +3,7 @@ set -eux
 set -o pipefail
 cd "$(dirname "${BASH_SOURCE[0]}")/../../../../../.."
 
-server=${1:-"jenkins-controller"}
+server=${1:-"workflow.ndscm.biz"}
 service_user=${2:-"jenkins-controller"}
 port=${3:-"8080"}
 
