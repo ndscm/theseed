@@ -6,7 +6,7 @@
 #include <unistd.h>
 
 int main() {
-  struct passwd *pw = getpwnam("amadeus");
+  struct passwd* pw = getpwnam("amadeus");
   if (pw == NULL) {
     return 1;
   }
