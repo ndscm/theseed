@@ -3,8 +3,21 @@ set -eux
 set -o pipefail
 cd "$(dirname "${BASH_SOURCE[0]}")/../../../../.."
 
+container_engine=${CONTAINER_ENGINE:-"podman"}
+
+export CONTAINER_ENGINE="${container_engine}"
+./seed/devprod/container/ubuntu/build.sh
+
 bazel build //seed/devprod/webhook/relay
 cp -f ./bazel-bin/seed/devprod/webhook/relay/webhook-relay_/webhook-relay ./seed/devprod/webhook/relay/container/webhook-relay
 
 cd ./seed/devprod/webhook/relay/container/
-"${CONTAINER_CLI}" build -t ghcr.io/ndscm/seed-devprod-webhook-relay-container:latest .
+
+build_compat=()
+if [[ "${container_engine}" == "docker" ]]; then
+  build_compat+=("-f" "Containerfile")
+elif [[ "${container_engine}" == "podman" ]]; then
+  build_compat+=("--userns" "auto:size=65536")
+fi
+
+"${container_engine}" build "${build_compat[@]}" -t ghcr.io/ndscm/seed-devprod-webhook-relay-container:latest .
