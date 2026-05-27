@@ -8,7 +8,7 @@ RUN apt install -y gzip
 RUN apt install -y openjdk-25-jdk-headless
 RUN apt install -y tar
 
-ADD ./keycloak.tar.gz /opt/keycloak/
+ADD ./keycloak-release.tar.gz /opt/keycloak/
 COPY ./junixsocket-common.jar /opt/keycloak/providers/junixsocket-common.jar
 COPY ./junixsocket-native-common.jar /opt/keycloak/providers/junixsocket-native-common.jar
 

@@ -4,12 +4,12 @@ package(default_visibility = ["//seed/cloud/keycloak:__subpackages__"])
 
 alias(
     name = "keycloak",
-    actual = ":keycloak_tar_gz",
+    actual = ":keycloak-release_tar_gz",
 )
 
 create_tar_gz(
-    name = "keycloak_tar_gz",
-    srcs = ["@keycloak//:files"],
-    out = "keycloak.tar.gz",
+    name = "keycloak-release_tar_gz",
+    srcs = ["@keycloak_release//:files"],
+    out = "keycloak-release.tar.gz",
     strip_components = 2,
 )
