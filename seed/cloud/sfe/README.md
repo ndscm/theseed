@@ -23,3 +23,37 @@ SFE has three common deployment patterns:
   routing.
 - Sidecar for an individual service, adding features like auth guards.
 - Melt SFE into your server for the best possible performance.
+
+## Port 80 and 443
+
+Rootless Podman can't bind to ports 80 or 443 by default. To work around this,
+use a lightweight reverse proxy like HAProxy to forward port 443 to SFE's
+default port 9443. Install HAProxy with `sudo dnf install haproxy`, then replace
+`/etc/haproxy/haproxy.cfg` with the following:
+
+```cfg
+frontend http
+    bind *:80
+    mode tcp
+    default_backend sfe_http
+
+backend sfe_http
+    mode tcp
+    server sfe_http 127.0.0.1:9080
+
+frontend https
+    bind *:443
+    mode tcp
+    default_backend sfe_https
+
+backend sfe_https
+    mode tcp
+    server sfe_https 127.0.0.1:9443
+```
+
+On SELinux-enabled systems, you'll also need to allow HAProxy to connect to
+arbitrary ports:
+
+```bash
+sudo setsebool -P haproxy_connect_any 1
+```
