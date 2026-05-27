@@ -7,6 +7,15 @@ server=${1:-"workflow.ndscm.biz"}
 service_user=${2:-"jenkins-controller"}
 event_source=${3:-"https://webhook.ndscm.com/ndscm/github/subscribe"}
 relay_to=${4:-"http://127.0.0.1:8080/generic-webhook-trigger/invoke"}
+jenkins_user=${5:-""}
+set +x
+jenkins_api_token=${6:-""}
+jenkins_authorization=""
+if [[ -n "${jenkins_api_token}" ]]; then
+  jenkins_authorization="Basic $(printf "%s:%s" "${jenkins_user}" "${jenkins_api_token}" | base64 -w0)"
+  printf 'jenkins_authorization=%s\n' "${jenkins_authorization:+REDACTED}" >&2
+fi
+set -x
 
 container_engine=${CONTAINER_ENGINE:-"podman"}
 if [[ "${container_engine}" != "podman" ]]; then
@@ -34,6 +43,21 @@ if ! id '${service_user}' &>/dev/null; then
   sudo loginctl enable-linger '${service_user}'
 fi
 
+if [[ -n "${jenkins_authorization}" ]]; then
+  echo 'Creating jenkins authorization secret...' >&2
+  set +x
+  sudo machinectl shell '${service_user}@' /bin/bash -c 'printf "${jenkins_authorization}" | podman secret create --replace JENKINS_AUTHORIZATION -'
+  printf 'Created podman secret: %s\n' "JENKINS_AUTHORIZATION" >&2
+  set -x
+fi
+
+secret_configs=''
+authorization_flags=''
+if sudo machinectl shell '${service_user}@' /usr/bin/podman secret exists JENKINS_AUTHORIZATION; then
+  secret_configs="Secret=JENKINS_AUTHORIZATION"
+  authorization_flags="--relay_to_authorization_file /run/secrets/JENKINS_AUTHORIZATION"
+fi
+
 echo 'Creating quadlets...' >&2
 service_user_home=\$(eval echo ~'${service_user}')
 quadlet_dir=\${service_user_home}/.config/containers/systemd
@@ -51,8 +75,9 @@ Image=ghcr.io/ndscm/seed-devprod-webhook-relay-container:latest
 PidsLimit=-1
 RunInit=true
 Network=host
+\${secret_configs}
 EnvironmentFile=%S/github-webhook-relay/env
-Exec=--event_source ${event_source} --relay_to ${relay_to} --verbose
+Exec=--event_source ${event_source} --relay_to ${relay_to} \${authorization_flags} --verbose
 
 [Service]
 Restart=always
