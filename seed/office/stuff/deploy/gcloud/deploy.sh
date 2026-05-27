@@ -10,6 +10,7 @@ region="us-west1"
 service="seed-office-stuff-prod"
 image_package="us-docker.pkg.dev/ndscm-prod/container-us/seed-office-stuff-deploy-gcloud"
 
+export CONTAINER_ENGINE="${container_engine}"
 ./seed/office/stuff/container/build.sh
 
 cd ./seed/office/stuff/deploy/gcloud/
