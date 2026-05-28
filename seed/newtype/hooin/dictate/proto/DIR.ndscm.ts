@@ -3,7 +3,13 @@ import { type DirConfig } from "@//seed/devprod/ndscm/config/DIR"
 export default {
   bootstrap: {
     proto: {
-      target: ["dictatepb", "dictatepbconnect"],
+      target: [
+        // sort
+        "dictate_pb.d.ts",
+        "dictate_pb.js",
+        "dictatepb",
+        "dictatepbconnect",
+      ],
       watch: "\\.proto$",
       bazel: {
         build: ":bootstrap",
