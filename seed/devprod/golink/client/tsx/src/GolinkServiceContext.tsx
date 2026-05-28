@@ -89,7 +89,7 @@ export const GolinkServiceProvider: React.FC<{
         UpdateLinkRequestSchema,
         {
           link,
-          updateMask: { paths: updatePaths },
+          ...(updatePaths && { updateMask: { paths: updatePaths } }),
           etag: link.etag,
         },
       )
