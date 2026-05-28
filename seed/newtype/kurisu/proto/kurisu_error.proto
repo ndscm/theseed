@@ -1,0 +1,66 @@
+syntax = "proto3";
+
+package seed.newtype.kurisu.proto;
+
+option go_package = "github.com/ndscm/theseed/seed/newtype/kurisu/proto/kurisuerrorpb";
+
+// The code enum is uint32 in format of 0xAAAABBCC
+// AAAA is the application code (0x5874 for kurisu)
+// BB is the error index
+// CC is the corresponding gRPC error code
+//
+// The error name is in the format of CATEGORY_ERROR_DESCRIPTION
+// The category prefix are defined as follows:
+// [0x01] CANCELLED: CANCELLED_
+// [0x02] UNKNOWN: UNKNOWN_
+// [0x03] INVALID_ARGUMENT: INVALID_
+// [0x04] DEADLINE_EXCEEDED: DEADLINE_
+// [0x05] NOT_FOUND: NOTFOUND_
+// [0x06] ALREADY_EXISTS: EXISTS_;
+// [0x07] PERMISSION_DENIED: DENIED_
+// [0x08] RESOURCE_EXHAUSTED: EXHAUSTED_
+// [0x09] FAILED_PRECONDITION: PRECONDITION_
+// [0x0a] ABORTED: ABORTED_
+// [0x0b] OUT_OF_RANGE: RANGE_
+// [0x0c] UNIMPLEMENTED: UNIMPLEMENTED_
+// [0x0d] INTERNAL: INTERNAL_
+// [0x0e] UNAVAILABLE: UNAVAILABLE_
+// [0x0f] DATA_LOSS: LOSS_
+// [0x10] UNAUTHENTICATED: UNAUTHENTICATED_
+// See: https://grpc.io/docs/guides/status-codes/
+
+enum Code {
+  OK = 0;
+
+  // [0x01] CANCELLED
+
+  // [0x02] UNKNOWN
+
+  // [0x03] INVALID_ARGUMENT
+
+  INVALID_TEAM = 0x58740103;
+
+  // [0x04] DEADLINE_EXCEEDED
+
+  // [0x05] NOT_FOUND
+
+  // [0x06] ALREADY_EXISTS
+
+  // [0x07] PERMISSION_DENIED
+
+  // [0x08] RESOURCE_EXHAUSTED
+
+  // [0x09] FAILED_PRECONDITION
+
+  // [0x0a] ABORTED
+
+  // [0x0b] OUT_OF_RANGE
+
+  // [0x0c] UNIMPLEMENTED
+
+  // [0x0d] INTERNAL
+
+  // [0x0e] UNAVAILABLE
+
+  // [0x0f] DATA_LOSS
+}

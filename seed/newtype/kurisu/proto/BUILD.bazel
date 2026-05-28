@@ -1,0 +1,129 @@
+load("@aspect_rules_js//npm:defs.bzl", "npm_package")
+load("@aspect_rules_ts//ts:proto.bzl", "ts_proto_library")
+load("@protobuf//bazel:proto_library.bzl", "proto_library")
+load("@rules_go//proto:def.bzl", "go_proto_library")
+load("//seed/devprod/go:proto.bzl", "go_connect_library")
+load("//seed/devprod/ndscm/starlark:defs.bzl", "nd_bootstrap")
+
+# gazelle:proto file
+
+package(default_visibility = [
+    "//seed/newtype/kurisu:__subpackages__",
+])
+
+proto_library(
+    name = "kurisu_proto",
+    srcs = ["kurisu.proto"],
+)
+
+go_proto_library(
+    name = "kurisu_go_proto",
+    compilers = ["@rules_go//proto:go_grpc"],
+    importpath = "github.com/ndscm/theseed/seed/newtype/kurisu/proto/kurisupb",
+    proto = ":kurisu_proto",
+)
+
+go_connect_library(
+    name = "kurisu_go_connect",
+    importpath = "github.com/ndscm/theseed/seed/newtype/kurisu/proto/kurisupbconnect",
+    proto = ":kurisu_proto",
+    deps = [
+        ":kurisu_go_proto",
+        "@com_connectrpc_connect//:connect",
+        "@org_golang_google_protobuf//types/known/emptypb",
+    ],
+)
+
+ts_proto_library(
+    name = "kurisu_ts_proto",
+    copy_files = False,
+    node_modules = "//:node_modules",
+    proto = ":kurisu_proto",
+)
+
+proto_library(
+    name = "kurisu_error_proto",
+    srcs = ["kurisu_error.proto"],
+)
+
+go_proto_library(
+    name = "kurisu_error_go_proto",
+    compilers = ["@rules_go//proto:go_grpc"],
+    importpath = "github.com/ndscm/theseed/seed/newtype/kurisu/proto/kurisuerrorpb",
+    proto = ":kurisu_error_proto",
+)
+
+ts_proto_library(
+    name = "kurisu_error_ts_proto",
+    copy_files = False,
+    node_modules = "//:node_modules",
+    proto = ":kurisu_error_proto",
+)
+
+npm_package(
+    name = "kurisu_ts_proto_pkg",
+    srcs = [
+        ":kurisu_error_ts_proto",
+        ":kurisu_ts_proto",
+    ],
+)
+
+alias(
+    name = "pkg",  # Required by aspect_rules_js
+    actual = ":kurisu_ts_proto_pkg",
+    visibility = ["//visibility:public"],
+)
+
+nd_bootstrap(
+    dsts = [
+        {
+            "dst": "kurisupb",
+            "dir": True,
+            "srcs": [{
+                "src": ":kurisu_go_proto",
+                "output_group": "go_generated_srcs",
+            }],
+        },
+        {
+            "dst": "kurisupbconnect",
+            "dir": True,
+            "srcs": [{
+                "src": ":kurisu_go_connect_go",
+            }],
+        },
+        {
+            "dst": "kurisuerrorpb",
+            "dir": True,
+            "srcs": [{
+                "src": ":kurisu_error_go_proto",
+                "output_group": "go_generated_srcs",
+            }],
+        },
+        {
+            "dst": "kurisu_pb.js",
+            "srcs": [{
+                "src": ":kurisu_ts_proto",
+            }],
+        },
+        {
+            "dst": "kurisu_pb.d.ts",
+            "srcs": [{
+                "src": ":kurisu_ts_proto",
+                "output_group": "types",
+            }],
+        },
+        {
+            "dst": "kurisu_error_pb.js",
+            "srcs": [{
+                "src": ":kurisu_error_ts_proto",
+            }],
+        },
+        {
+            "dst": "kurisu_error_pb.d.ts",
+            "srcs": [{
+                "src": ":kurisu_error_ts_proto",
+                "output_group": "types",
+            }],
+        },
+    ],
+)
