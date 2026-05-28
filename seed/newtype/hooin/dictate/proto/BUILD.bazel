@@ -1,3 +1,5 @@
+load("@aspect_rules_js//npm:defs.bzl", "npm_package")
+load("@aspect_rules_ts//ts:proto.bzl", "ts_proto_library")
 load("@protobuf//bazel:proto_library.bzl", "proto_library")
 load("@rules_go//proto:def.bzl", "go_proto_library")
 load("//seed/devprod/go:proto.bzl", "go_connect_library")
@@ -6,6 +8,7 @@ load("//seed/devprod/ndscm/starlark:defs.bzl", "nd_bootstrap")
 package(default_visibility = [
     "//seed/newtype/amadeus:__subpackages__",
     "//seed/newtype/hooin:__subpackages__",
+    "//seed/newtype/kurisu:__subpackages__",
 ])
 
 proto_library(
@@ -37,6 +40,26 @@ go_connect_library(
     ],
 )
 
+ts_proto_library(
+    name = "dictate_ts_proto",
+    copy_files = False,
+    node_modules = "//:node_modules",
+    proto = ":dictate_proto",
+)
+
+npm_package(
+    name = "dictate_ts_proto_pkg",
+    srcs = [
+        ":dictate_ts_proto",
+    ],
+)
+
+alias(
+    name = "pkg",  # Required by aspect_rules_js
+    actual = ":dictate_ts_proto_pkg",
+    visibility = ["//visibility:public"],
+)
+
 nd_bootstrap(
     dsts = [
         {
@@ -52,6 +75,19 @@ nd_bootstrap(
             "dir": True,
             "srcs": [{
                 "src": ":dictate_go_connect_go",
+            }],
+        },
+        {
+            "dst": "dictate_pb.js",
+            "srcs": [{
+                "src": ":dictate_ts_proto",
+            }],
+        },
+        {
+            "dst": "dictate_pb.d.ts",
+            "srcs": [{
+                "src": ":dictate_ts_proto",
+                "output_group": "types",
             }],
         },
     ],
