@@ -14,7 +14,7 @@ import {
 export type { LoginStatus }
 
 interface LoginServiceInterface {
-  current?: LoginStatus
+  current: LoginStatus | undefined
   GetLoginStatus: () => Promise<LoginStatus>
   reload: () => Promise<void>
 }
