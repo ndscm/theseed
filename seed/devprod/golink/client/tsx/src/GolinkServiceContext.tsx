@@ -2,7 +2,7 @@ import * as Protobuf from "@bufbuild/protobuf"
 import { createClient } from "@connectrpc/connect"
 import type { Client as ConnectClient } from "@connectrpc/connect"
 import { createGrpcWebTransport } from "@connectrpc/connect-web"
-import React, { useEffect, useState } from "react"
+import React, { useCallback, useEffect, useMemo, useState } from "react"
 
 import {
   type CreateLinkRequest,
@@ -34,66 +34,13 @@ interface GolinkServiceInterface {
 export const GolinkServiceContext =
   React.createContext<GolinkServiceInterface | null>(null)
 
-const wrapInterface = (
-  grpcWeb: ConnectClient<typeof GolinkService>,
-): GolinkServiceInterface => {
-  return {
-    CreateLink: async (link: Link) => {
-      const requestPb: CreateLinkRequest = Protobuf.create(
-        CreateLinkRequestSchema,
-        { link },
-      )
-      const replyPb = await grpcWeb.createLink(requestPb)
-      return replyPb
-    },
-    GetLink: async (key: string) => {
-      const requestPb: GetLinkRequest = Protobuf.create(GetLinkRequestSchema, {
-        key,
-      })
-      const replyPb = await grpcWeb.getLink(requestPb)
-      return replyPb
-    },
-    UpdateLink: async (link: Link, updatePaths?: string[]) => {
-      const requestPb: UpdateLinkRequest = Protobuf.create(
-        UpdateLinkRequestSchema,
-        {
-          link,
-          updateMask: { paths: updatePaths },
-          etag: link.etag,
-        },
-      )
-      const replyPb = await grpcWeb.updateLink(requestPb)
-      return replyPb
-    },
-    DeleteLink: async (key: string, options?: { etag?: string }) => {
-      const requestPb: DeleteLinkRequest = Protobuf.create(
-        DeleteLinkRequestSchema,
-        {
-          key,
-          etag: options?.etag || "",
-        },
-      )
-      await grpcWeb.deleteLink(requestPb)
-    },
-    ListLinks: async (options?: { pageSize?: number; pageToken?: string }) => {
-      const requestPb: ListLinksRequest = Protobuf.create(
-        ListLinksRequestSchema,
-        {
-          pageSize: options?.pageSize || 0,
-          pageToken: options?.pageToken || "",
-        },
-      )
-      const replyPb: ListLinksResponse = await grpcWeb.listLinks(requestPb)
-      return replyPb
-    },
-  }
-}
-
 export const GolinkServiceProvider: React.FC<{
   children?: React.ReactNode
 }> = ({ children }) => {
-  const [serviceInterface, setServiceInterface] =
-    useState<GolinkServiceInterface | null>(null)
+  const [clientGrpcWeb, setClientGrpcWeb] = useState<ConnectClient<
+    typeof GolinkService
+  > | null>(null)
+
   useEffect(() => {
     const baseUrl = "/"
     console.info("Golink Service Base Url:", baseUrl)
@@ -102,10 +49,104 @@ export const GolinkServiceProvider: React.FC<{
       useBinaryFormat: true,
       fetch: (input, init) => fetch(input, { ...init, credentials: "include" }),
     })
-    const grpcWebClient = createClient(GolinkService, grpcWebTransport)
-    const wrapped = wrapInterface(grpcWebClient)
-    setServiceInterface(wrapped)
+    const client = createClient(GolinkService, grpcWebTransport)
+    setClientGrpcWeb(client)
   }, [])
+
+  const CreateLink = useCallback(
+    async (link: Link): Promise<Link> => {
+      if (!clientGrpcWeb) {
+        throw new Error("Golink service not initialized")
+      }
+      const requestPb: CreateLinkRequest = Protobuf.create(
+        CreateLinkRequestSchema,
+        { link },
+      )
+      return await clientGrpcWeb.createLink(requestPb)
+    },
+    [clientGrpcWeb],
+  )
+
+  const GetLink = useCallback(
+    async (key: string): Promise<Link> => {
+      if (!clientGrpcWeb) {
+        throw new Error("Golink service not initialized")
+      }
+      const requestPb: GetLinkRequest = Protobuf.create(GetLinkRequestSchema, {
+        key,
+      })
+      return await clientGrpcWeb.getLink(requestPb)
+    },
+    [clientGrpcWeb],
+  )
+
+  const UpdateLink = useCallback(
+    async (link: Link, updatePaths?: string[]): Promise<Link> => {
+      if (!clientGrpcWeb) {
+        throw new Error("Golink service not initialized")
+      }
+      const requestPb: UpdateLinkRequest = Protobuf.create(
+        UpdateLinkRequestSchema,
+        {
+          link,
+          updateMask: { paths: updatePaths },
+          etag: link.etag,
+        },
+      )
+      return await clientGrpcWeb.updateLink(requestPb)
+    },
+    [clientGrpcWeb],
+  )
+
+  const DeleteLink = useCallback(
+    async (key: string, options?: { etag?: string }): Promise<void> => {
+      if (!clientGrpcWeb) {
+        throw new Error("Golink service not initialized")
+      }
+      const requestPb: DeleteLinkRequest = Protobuf.create(
+        DeleteLinkRequestSchema,
+        {
+          key,
+          etag: options?.etag || "",
+        },
+      )
+      await clientGrpcWeb.deleteLink(requestPb)
+    },
+    [clientGrpcWeb],
+  )
+
+  const ListLinks = useCallback(
+    async (options?: {
+      pageSize?: number
+      pageToken?: string
+    }): Promise<ListLinksResponse> => {
+      if (!clientGrpcWeb) {
+        throw new Error("Golink service not initialized")
+      }
+      const requestPb: ListLinksRequest = Protobuf.create(
+        ListLinksRequestSchema,
+        {
+          pageSize: options?.pageSize || 0,
+          pageToken: options?.pageToken || "",
+        },
+      )
+      return await clientGrpcWeb.listLinks(requestPb)
+    },
+    [clientGrpcWeb],
+  )
+
+  const serviceInterface = useMemo<GolinkServiceInterface | null>(() => {
+    if (!clientGrpcWeb) {
+      return null
+    }
+    return {
+      CreateLink,
+      GetLink,
+      UpdateLink,
+      DeleteLink,
+      ListLinks,
+    }
+  }, [clientGrpcWeb, CreateLink, GetLink, UpdateLink, DeleteLink, ListLinks])
 
   return (
     <GolinkServiceContext.Provider value={serviceInterface}>
