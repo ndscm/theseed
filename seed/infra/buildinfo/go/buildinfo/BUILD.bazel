@@ -1,18 +1,23 @@
 load("@rules_go//go:def.bzl", "go_library")
 load("//seed/devprod/ndscm/starlark:defs.bzl", "nd_bootstrap")
 
+# Status files are only populated when --stamp is set. Without it, these
+# produce empty files. This matters because build tools that embed version
+# info are no longer hermetic across commits — a changed hash makes the
+# tool itself a different artifact, which invalidates the action cache for
+# every target that depends on it.
 genrule(
     name = "stable-status",
     outs = ["stable-status.txt"],
-    cmd_bash = "cat bazel-out/stable-status.txt > $@",
-    stamp = 1,
+    cmd_bash = "cat bazel-out/stable-status.txt > $@ || printf '' > $@",
+    stamp = -1,
 )
 
 genrule(
     name = "volatile-status",
     outs = ["volatile-status.txt"],
-    cmd_bash = "cat bazel-out/volatile-status.txt > $@",
-    stamp = 1,
+    cmd_bash = "cat bazel-out/volatile-status.txt > $@ || printf '' > $@",
+    stamp = -1,
 )
 
 go_library(
