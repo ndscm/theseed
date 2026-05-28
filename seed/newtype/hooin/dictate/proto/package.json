@@ -1,0 +1,8 @@
+{
+  "name": "@theseed/seed-newtype-hooin-dictate-proto",
+  "version": "0.0.0",
+  "private": true,
+  "dependencies": {
+    "@theseed/seed-newtype-gajetto-proto": "workspace:^"
+  }
+}
