@@ -1,3 +1,5 @@
+load("@aspect_rules_js//npm:defs.bzl", "npm_package")
+load("@aspect_rules_ts//ts:proto.bzl", "ts_proto_library")
 load("@protobuf//bazel:proto_library.bzl", "proto_library")
 load("@rules_go//proto:def.bzl", "go_proto_library")
 load("//seed/devprod/ndscm/starlark:defs.bzl", "nd_bootstrap")
@@ -22,6 +24,26 @@ go_proto_library(
     proto = ":brain_proto",
 )
 
+ts_proto_library(
+    name = "brain_ts_proto",
+    copy_files = False,
+    node_modules = "//:node_modules",
+    proto = ":brain_proto",
+)
+
+npm_package(
+    name = "brain_ts_proto_pkg",
+    srcs = [
+        ":brain_ts_proto",
+    ],
+)
+
+alias(
+    name = "pkg",  # Required by aspect_rules_js
+    actual = ":brain_ts_proto_pkg",
+    visibility = ["//visibility:public"],
+)
+
 nd_bootstrap(
     dsts = [
         {
@@ -30,6 +52,19 @@ nd_bootstrap(
             "srcs": [{
                 "src": ":brain_go_proto",
                 "output_group": "go_generated_srcs",
+            }],
+        },
+        {
+            "dst": "brain_pb.js",
+            "srcs": [{
+                "src": ":brain_ts_proto",
+            }],
+        },
+        {
+            "dst": "brain_pb.d.ts",
+            "srcs": [{
+                "src": ":brain_ts_proto",
+                "output_group": "types",
             }],
         },
     ],
