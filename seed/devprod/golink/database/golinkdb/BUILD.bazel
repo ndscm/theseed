@@ -1,4 +1,5 @@
 load("@rules_go//go:def.bzl", "go_library")
+load("//seed/devprod/stack/starlark:defs.bzl", "seed_stack_client")
 
 go_library(
     name = "golinkdb",
@@ -19,4 +20,24 @@ go_library(
         "@io_entgo_ent//dialect",
         "@io_entgo_ent//dialect/sql",
     ],
+)
+
+seed_stack_client(
+    name = "stack_client",
+    depend_services = {
+        "//seed/cloud/postgres/stack:stack_service": {
+            "stack": "//seed/cloud/postgres/stack:stack",
+            "connect": {
+                "protocol": "postgres",
+                "flags": ["--golink_database=postgres://{{HOST}}:{{PORT}}/golink"],
+            },
+            "login": {
+                "flags": [
+                    "--golink_database_login={{DATABASE_LOGIN}}",
+                    "--golink_database_secret_file={{DATABASE_SECRET_FILE}}",
+                ],
+            },
+        },
+    },
+    visibility = ["//visibility:public"],
 )

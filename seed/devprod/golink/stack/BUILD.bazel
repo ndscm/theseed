@@ -1,0 +1,18 @@
+load("//seed/devprod/stack/starlark:defs.bzl", "seed_stack")
+
+package(default_visibility = ["//visibility:public"])
+
+seed_stack(
+    name = "stack",
+    providers = ["//seed/devprod/golink/server:stack_server"],
+    services = ["//seed/devprod/golink/service:stack_service"],
+)
+
+seed_stack(
+    name = "mock_stack",
+    testonly = True,
+    stacks = [
+        ":stack",
+        "//seed/cloud/postgres/stack:mock_stack",
+    ],
+)
