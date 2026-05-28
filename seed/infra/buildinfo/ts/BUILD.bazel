@@ -14,6 +14,7 @@ ts_project(
     name = "ts_project",
     srcs = glob(["src/**/*.ts"]),
     declaration = True,
+    declaration_map = True,
     out_dir = "dist",
     root_dir = "src",
     source_map = True,
