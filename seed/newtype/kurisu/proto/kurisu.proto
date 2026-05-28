@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package seed.newtype.kurisu.proto;
+
+option go_package = "github.com/ndscm/theseed/seed/newtype/kurisu/proto/kurisupb";
+
+message CreateSiliconJwtRequest {
+  string person_id = 1;
+}
+
+message SiliconJwt {
+  string refresh_token = 1;
+}
+
+service KurisuService {
+  rpc CreateSiliconJwt(CreateSiliconJwtRequest) returns (SiliconJwt) {}
+}
