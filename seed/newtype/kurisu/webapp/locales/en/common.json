@@ -1,0 +1,15 @@
+{
+  "auth": {
+    "loginButton": "Login"
+  },
+  "page": {
+    "home": "Home",
+    "team": "Team"
+  },
+  "side": {
+    "people": "People"
+  },
+  "system": {
+    "brand": "Kurisu"
+  }
+}

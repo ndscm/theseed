@@ -1,0 +1,58 @@
+@import "tailwindcss";
+
+@plugin "daisyui";
+
+@plugin "daisyui/theme" {
+  name: "kurisu-light";
+  default: true;
+  color-scheme: light;
+
+  --color-base-100: #ffffff;
+  --color-base-200: #f6f7f9;
+  --color-base-300: #e3e6ec;
+  --color-base-content: #161a21;
+  --color-primary: #954535;
+  --color-primary-content: #ffffff;
+  --color-accent: oklch(0.95 0.028 38);
+  --color-accent-content: oklch(0.47 0.1 38);
+  --color-neutral: #8b93a2;
+  --color-neutral-content: #59616f;
+
+  --color-carbon: #1660a5;
+  --color-silicon: #8c9395;
+}
+
+@plugin "daisyui/theme" {
+  name: "kurisu-dark";
+  color-scheme: dark;
+  prefersdark: true;
+
+  --color-base-100: #14171d;
+  --color-base-200: #1a1e25;
+  --color-base-300: #272c35;
+  --color-base-content: #eef1f6;
+  --color-primary: oklch(0.66 0.11 38);
+  --color-primary-content: #0a0c10;
+  --color-accent: oklch(0.33 0.06 38);
+  --color-accent-content: oklch(0.8 0.09 38);
+  --color-neutral: #69727f;
+  --color-neutral-content: #9aa3b2;
+
+  --color-carbon: #1660a5;
+  --color-silicon: #8c9395;
+}
+
+@theme {
+  --color-carbon: var(--color-carbon);
+  --color-silicon: var(--color-silicon);
+}
+
+@layer base {
+  * {
+    touch-action: pan-x pan-y;
+  }
+
+  body {
+    background-color: var(--color-base-300);
+  }
+}
