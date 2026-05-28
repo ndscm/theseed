@@ -5,10 +5,9 @@ import { Outlet } from "react-router"
 import CssBaseline from "@mui/material/CssBaseline"
 import { ThemeProvider } from "@mui/material/styles"
 
-import { LoginServiceProvider } from "@//seed/cloud/login/client/tsx/LoginServiceContext"
-import Gotcha from "@//seed/devprod/gotcha/tsx/Gotcha"
-import { StuffServiceProvider } from "@//seed/office/stuff/client/tsx/StuffServiceContext"
-
+import { LoginServiceProvider } from "../../../../../cloud/login/client/tsx/LoginServiceContext"
+import Gotcha from "../../../../../devprod/gotcha/tsx/Gotcha"
+import { StuffServiceProvider } from "../../../client/tsx/StuffServiceContext"
 import theme from "./theme"
 
 const RootLayout: React.FC = () => {
