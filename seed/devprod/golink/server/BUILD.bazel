@@ -1,5 +1,6 @@
 load("@rules_go//go:def.bzl", "go_binary", "go_library")
 load("//seed/devprod/ndscm/starlark:defs.bzl", "nd_bootstrap")
+load("//seed/devprod/stack/starlark:defs.bzl", "seed_stack_service_provider")
 load("//seed/devprod/starlark/archive:defs.bzl", "create_tar_gz", "extract_tar")
 
 package(default_visibility = ["//visibility:private"])
@@ -49,6 +50,18 @@ create_tar_gz(
         ":golink-server",
     ],
     out = "golink-server.tar.gz",
+)
+
+seed_stack_service_provider(
+    name = "stack_server",
+    connect = {
+        "grpc": {
+            "flags": ["--port={{PORT}}"],
+        },
+    },
+    provider_type = "server",
+    provides = ["//seed/devprod/golink/service:stack_service"],
+    visibility = ["//visibility:public"],
 )
 
 nd_bootstrap(
