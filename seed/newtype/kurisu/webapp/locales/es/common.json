@@ -1,0 +1,15 @@
+{
+  "auth": {
+    "loginButton": "Iniciar sesión"
+  },
+  "page": {
+    "home": "Inicio",
+    "team": "Equipo"
+  },
+  "side": {
+    "people": "Personas"
+  },
+  "system": {
+    "brand": "Kurisu"
+  }
+}

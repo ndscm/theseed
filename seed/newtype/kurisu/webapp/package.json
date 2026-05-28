@@ -1,0 +1,48 @@
+{
+  "name": "@theseed/seed-newtype-kurisu-webapp",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "react-router dev --host",
+    "build": "react-router build",
+    "build:es": "BUILD_LANGUAGE=es DEFAULT_LANGUAGE=en react-router build",
+    "serve": "react-router-serve ./build/server/index.js",
+    "typecheck": "react-router typegen && tsc"
+  },
+  "dependencies": {
+    "@react-router/node": "catalog:",
+    "isbot": "catalog:"
+  },
+  "devDependencies": {
+    "@bufbuild/protobuf": "catalog:",
+    "@connectrpc/connect": "catalog:",
+    "@connectrpc/connect-web": "catalog:",
+    "@react-router/dev": "catalog:",
+    "@react-router/serve": "catalog:",
+    "@tailwindcss/vite": "catalog:",
+    "@theseed/seed-cloud-login-client-tsx": "workspace:^",
+    "@theseed/seed-cloud-login-ts-vite-plugin-unsafe-dev-login": "workspace:^",
+    "@theseed/seed-devprod-gotcha-tsx": "workspace:^",
+    "@theseed/seed-infra-buildinfo-ts": "workspace:^",
+    "@theseed/seed-newtype-hooin-dictate-client-tsx": "workspace:^",
+    "@theseed/seed-newtype-hooin-roster-client-tsx": "workspace:^",
+    "@types/node": "catalog:",
+    "@types/react": "catalog:",
+    "@types/react-dom": "catalog:",
+    "daisyui": "catalog:",
+    "i18next": "catalog:",
+    "i18next-cli": "catalog:",
+    "lucide-react": "catalog:",
+    "react": "catalog:",
+    "react-dom": "catalog:",
+    "react-i18next": "catalog:",
+    "react-router": "catalog:",
+    "rollup": "catalog:",
+    "tailwind-merge": "catalog:",
+    "tailwindcss": "catalog:",
+    "typescript": "catalog:",
+    "vite": "catalog:",
+    "vite-tsconfig-paths": "catalog:"
+  }
+}

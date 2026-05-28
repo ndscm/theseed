@@ -1,0 +1,40 @@
+load("@npm//:defs.bzl", "npm_link_all_packages")
+load("@npm//seed/newtype/kurisu/webapp:@react-router/dev/package_json.bzl", react_router_bin = "bin")
+load("//seed/devprod/reactrouter/starlark:defs.bzl", "react_router_webapp")
+
+package(default_visibility = ["//seed/newtype/kurisu:__subpackages__"])
+
+npm_link_all_packages()
+
+react_router_bin.react_router_binary(
+    name = "react-router",
+)
+
+react_router_webapp(
+    name = "webapp",
+    srcs = glob(
+        [
+            "app/**/*",
+            "components/**/*",
+            "containers/**/*",
+            "context/**/*",
+            "icons/**/*",
+            "locales/**/*",
+            "public/**/*",
+            "utils/**/*",
+        ],
+        allow_empty = True,
+    ),
+    out = "webapp.tar",
+    default_language = "en",
+    extra_languages = ["es"],
+    deps = [
+        "//seed/cloud/login/client/tsx",
+        "//seed/cloud/login/ts/vite-plugin-unsafe-dev-login",
+        "//seed/devprod/gotcha/tsx",
+        "//seed/devprod/ts/grouping-tailwind",
+        "//seed/infra/buildinfo/ts",
+        "//seed/newtype/hooin/dictate/client/tsx",
+        "//seed/newtype/hooin/roster/client/tsx",
+    ],
+)
