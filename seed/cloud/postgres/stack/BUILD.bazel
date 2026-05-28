@@ -1,0 +1,46 @@
+load("//seed/devprod/stack/starlark:defs.bzl", "seed_stack", "seed_stack_service", "seed_stack_service_provider")
+
+package(default_visibility = ["//visibility:public"])
+
+seed_stack_service(
+    name = "stack_service",
+)
+
+seed_stack_service_provider(
+    name = "stack_server",
+    connect = {"postgres": {}},
+    provider_type = "server",
+    provides = [":stack_service"],
+)
+
+seed_stack(
+    name = "stack",
+    providers = [":stack_server"],
+    services = [":stack_service"],
+)
+
+seed_stack_service(
+    name = "mock_stack_service",
+    testonly = True,
+)
+
+seed_stack_service_provider(
+    name = "mock_stack_server",
+    testonly = True,
+    connect = {"postgres": {}},
+    provider_type = "server",
+    provides = [":mock_stack_service"],
+)
+
+seed_stack(
+    name = "mock_stack",
+    testonly = True,
+    overrides = {
+        "//seed/cloud/postgres/server:stack_service": {
+            "actual": "//seed/cloud/postgres/stack:mock_stack_service",
+        },
+    },
+    providers = [":mock_stack_server"],
+    services = [":mock_stack_service"],
+    stacks = [":stack"],
+)
