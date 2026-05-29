@@ -15,6 +15,7 @@ load("@rules_python_gazelle_plugin//modules_mapping:def.bzl", "modules_mapping")
 # gazelle:proto file
 # gazelle:python_default_visibility NONE
 # gazelle:python_generation_mode file
+# gazelle:resolve_regexp go github.com/([^/]+)/([^/]+)/(.*)/([^/]+)pbconnect //${3}:${4}_go_connect
 
 # CC
 
