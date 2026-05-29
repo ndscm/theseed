@@ -16,11 +16,6 @@ type HooinDictateService struct {
 	office *onsite.Office
 }
 
-func (svc *HooinDictateService) Initialize(office *onsite.Office) error {
-	svc.office = office
-	return nil
-}
-
 func (svc *HooinDictateService) SendBrainInput(
 	ctx context.Context,
 	req *connect.Request[dictatepb.SendBrainInputRequest],
@@ -159,5 +154,11 @@ func (svc *HooinDictateService) SubscribeBrainStep(
 				return seederr.Wrap(err)
 			}
 		}
+	}
+}
+
+func NewHooinDictateService(office *onsite.Office) *HooinDictateService {
+	return &HooinDictateService{
+		office: office,
 	}
 }

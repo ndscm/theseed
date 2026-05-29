@@ -59,11 +59,7 @@ func run() error {
 		return seederr.Wrap(err)
 	}
 
-	dictateSvc := &dictateservice.HooinDictateService{}
-	err = dictateSvc.Initialize(office)
-	if err != nil {
-		return seederr.Wrap(err)
-	}
+	dictateSvc := dictateservice.NewHooinDictateService(office)
 	err = mux.Register(dictatepbconnect.NewHooinDictateServiceHandler(
 		dictateSvc,
 		seedgrpc.WithCommonInterceptors(),
