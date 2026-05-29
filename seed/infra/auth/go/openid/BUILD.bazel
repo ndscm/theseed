@@ -4,10 +4,14 @@ go_library(
     name = "openid",
     srcs = [
         "configuration.go",
+        "discovery.go",
         "jwks.go",
         "user.go",
     ],
     importpath = "github.com/ndscm/theseed/seed/infra/auth/go/openid",
     visibility = ["//visibility:public"],
-    deps = ["//seed/infra/error/go/seederr"],
+    deps = [
+        "//seed/infra/error/go/seederr",
+        "//seed/infra/flag/go/seedflag",
+    ],
 )
