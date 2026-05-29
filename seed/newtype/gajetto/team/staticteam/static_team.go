@@ -17,11 +17,17 @@ import (
 var flagStaticTeamFile = seedflag.DefineString("static_team_file", "/etc/steins/team.json", "Static team file path")
 
 type StaticPerson struct {
+	personId string `json:"-"`
+
 	Handle string `json:"handle"`
 
 	DisplayName string `json:"displayName,omitempty"`
 
 	Token string `json:"token,omitempty"`
+}
+
+func (p *StaticPerson) GetPersonId() string {
+	return p.personId
 }
 
 func (p *StaticPerson) GetHandle() string {
@@ -39,12 +45,18 @@ func (p *StaticPerson) Auth(token string) error {
 	return nil
 }
 
+var _ team.Person = (*StaticPerson)(nil)
+
 type StaticTeam struct {
 	Handle string `json:"handle"`
 
 	DisplayName string `json:"displayName,omitempty"`
 
 	Members map[string]*StaticPerson `json:"members"`
+}
+
+func (t *StaticTeam) GetTeamUuid() string {
+	return ""
 }
 
 func (t *StaticTeam) GetHandle() string {
@@ -72,6 +84,8 @@ func (t *StaticTeam) Auth(token string) (personId string, err error) {
 	return "", seederr.CodeErrorf(codes.Unauthenticated, "invalid token")
 }
 
+var _ team.Team = (*StaticTeam)(nil)
+
 func LoadTeam() (team.Team, error) {
 	staticTeamFilePath := flagStaticTeamFile.Get()
 	if strings.HasPrefix(staticTeamFilePath, "~/") {
@@ -94,6 +108,9 @@ func LoadTeam() (team.Team, error) {
 		err = json.Unmarshal(data, &team)
 		if err != nil {
 			return nil, seederr.Wrap(err)
+		}
+		for id, member := range team.Members {
+			member.personId = id
 		}
 	}
 	return team, nil
