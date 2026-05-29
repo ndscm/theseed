@@ -20,6 +20,8 @@ import (
 	"github.com/ndscm/theseed/seed/newtype/hooin/dictate/proto/dictatepbconnect"
 	dictateservice "github.com/ndscm/theseed/seed/newtype/hooin/dictate/service"
 	"github.com/ndscm/theseed/seed/newtype/hooin/onsite"
+	"github.com/ndscm/theseed/seed/newtype/hooin/roster/proto/rosterpbconnect"
+	rosterservice "github.com/ndscm/theseed/seed/newtype/hooin/roster/service"
 )
 
 var flagPort = seedflag.DefineString("port", "4664", "Server port") // Default port assignment word: HOOI (4664)
@@ -104,6 +106,15 @@ func run() error {
 	dictateSvc := dictateservice.NewHooinDictateService(office)
 	err = mux.Register(dictatepbconnect.NewHooinDictateServiceHandler(
 		dictateSvc,
+		seedgrpc.WithCommonInterceptors(),
+	))
+	if err != nil {
+		return seederr.Wrap(err)
+	}
+
+	rosterSvc := rosterservice.NewHooinRosterService(office)
+	err = mux.Register(rosterpbconnect.NewHooinRosterServiceHandler(
+		rosterSvc,
 		seedgrpc.WithCommonInterceptors(),
 	))
 	if err != nil {
