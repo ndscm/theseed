@@ -22,7 +22,10 @@ import (
 	"github.com/ndscm/theseed/seed/infra/log/go/seedlog"
 )
 
-var flagTrustOpenidIssuersFile = seedflag.DefineString("trust_openid_issuers_file", "", `OpenID issuer configurations file (in JSON format).`)
+var flagTrustOpenidIssuersFile = seedflag.DefineString(
+	"trust_openid_issuers_file", "",
+	`OpenID issuer configurations file (in JSON format). If specified, the --openid_discovery_url flag will be ignored.`,
+)
 
 const refreshCooldown = 10 * time.Minute
 
@@ -177,79 +180,55 @@ func fetchOpenidIssuerJwks(ctx context.Context, discoveryUrl string) (string, *O
 }
 
 type OpenidJwksStore struct {
-	discoveryMutex sync.RWMutex
-	discovery      OpenidIssuers
-
 	issuersMutex sync.RWMutex
-	issuers      map[string]*OpenidIssuerJwks
+	issuers      OpenidIssuers
+
+	jwksMutex sync.RWMutex
+	jwks      map[string]*OpenidIssuerJwks
 
 	lastRefreshMutex sync.Mutex
 	lastRefresh      time.Time
 }
 
-func (s *OpenidJwksStore) getDiscovery() OpenidIssuers {
-	s.discoveryMutex.RLock()
-	defer s.discoveryMutex.RUnlock()
-	return s.discovery
+func (s *OpenidJwksStore) getIssuers() OpenidIssuers {
+	s.issuersMutex.RLock()
+	defer s.issuersMutex.RUnlock()
+	return s.issuers
 }
 
-func (s *OpenidJwksStore) clearIssuers() {
-	s.issuersMutex.Lock()
-	defer s.issuersMutex.Unlock()
-	s.issuers = map[string]*OpenidIssuerJwks{}
+func (s *OpenidJwksStore) clearIssuerJwks() {
+	s.jwksMutex.Lock()
+	defer s.jwksMutex.Unlock()
+	s.jwks = map[string]*OpenidIssuerJwks{}
 }
 
-func (s *OpenidJwksStore) setIssuer(issuer string, issuerJwks *OpenidIssuerJwks) {
-	s.issuersMutex.Lock()
-	defer s.issuersMutex.Unlock()
-	s.issuers[issuer] = issuerJwks
+func (s *OpenidJwksStore) setIssuerJwks(issuer string, issuerJwks *OpenidIssuerJwks) {
+	s.jwksMutex.Lock()
+	defer s.jwksMutex.Unlock()
+	s.jwks[issuer] = issuerJwks
 }
 
 func (s *OpenidJwksStore) refreshIssuers() error {
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
-	discovery := s.getDiscovery()
-	s.clearIssuers()
-	for _, entry := range discovery.Issuers {
+	issuers := s.getIssuers()
+	s.clearIssuerJwks()
+	for _, entry := range issuers.Issuers {
 		seedlog.Infof("Fetching openid configuration: %s", entry.DiscoveryUrl)
 		issuer, jwks, err := fetchOpenidIssuerJwks(ctx, entry.DiscoveryUrl)
 		if err != nil {
 			seedlog.Warnf("Failed to fetch keys from provider %s: %v", entry.DiscoveryUrl, err)
 			continue
 		}
-		s.setIssuer(issuer, jwks)
+		s.setIssuerJwks(issuer, jwks)
 	}
 	return nil
 }
 
-func CreateOpenidJwksStore() (*OpenidJwksStore, error) {
-	discoveryConfigPath := flagTrustOpenidIssuersFile.Get()
-	discovery := OpenidIssuers{}
-	if discoveryConfigPath != "" {
-		discoveryConfigBytes, err := os.ReadFile(discoveryConfigPath)
-		if err != nil {
-			return nil, seederr.Wrap(err)
-		}
-		err = json.Unmarshal(discoveryConfigBytes, &discovery)
-		if err != nil {
-			return nil, seederr.Wrap(err)
-		}
-	}
-	store := &OpenidJwksStore{
-		discovery: discovery,
-		issuers:   map[string]*OpenidIssuerJwks{},
-	}
-	err := store.refreshIssuers()
-	if err != nil {
-		return nil, seederr.Wrap(err)
-	}
-	return store, nil
-}
-
 func (s *OpenidJwksStore) getPublicKey(issuer string, kid string) (crypto.PublicKey, error) {
-	s.issuersMutex.RLock()
-	defer s.issuersMutex.RUnlock()
-	issuerJwks, ok := s.issuers[issuer]
+	s.jwksMutex.RLock()
+	defer s.jwksMutex.RUnlock()
+	issuerJwks, ok := s.jwks[issuer]
 	if !ok {
 		return nil, nil
 	}
@@ -302,4 +281,33 @@ func (s *OpenidJwksStore) GetByKid(issuer string, kid string) (crypto.PublicKey,
 		return nil, seederr.WrapErrorf("public key not found for kid: %s", kid)
 	}
 	return key, nil
+}
+
+func CreateOpenidJwksStore() (*OpenidJwksStore, error) {
+	trustIssuersPath := flagTrustOpenidIssuersFile.Get()
+	issuers := OpenidIssuers{}
+	if trustIssuersPath != "" {
+		issuersBytes, err := os.ReadFile(trustIssuersPath)
+		if err != nil {
+			return nil, seederr.Wrap(err)
+		}
+		err = json.Unmarshal(issuersBytes, &issuers)
+		if err != nil {
+			return nil, seederr.Wrap(err)
+		}
+	} else {
+		discoveryUrl := openid.OpenidDiscoveryUrlFlag()
+		if discoveryUrl != "" {
+			issuers.Issuers = append(issuers.Issuers, OpenidIssuerEntry{DiscoveryUrl: discoveryUrl})
+		}
+	}
+	store := &OpenidJwksStore{
+		issuers: issuers,
+		jwks:    map[string]*OpenidIssuerJwks{},
+	}
+	err := store.refreshIssuers()
+	if err != nil {
+		return nil, seederr.Wrap(err)
+	}
+	return store, nil
 }
