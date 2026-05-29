@@ -68,6 +68,14 @@ func (t *StaticTeam) GetMember(personId string) (team.Person, bool) {
 	return member, true
 }
 
+func (t *StaticTeam) ListMembers() map[string]team.Person {
+	members := map[string]team.Person{}
+	for id, p := range t.Members {
+		members[id] = p
+	}
+	return members
+}
+
 func (t *StaticTeam) Auth(ctx context.Context) (personId string, err error) {
 	openidUser, err := login.EnsureLoginUser(ctx)
 	if err != nil {
