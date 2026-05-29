@@ -46,11 +46,7 @@ func run() error {
 		return seederr.Wrap(err)
 	}
 
-	commuteSvc := &commuteservice.HooinCommuteService{}
-	err = commuteSvc.Initialize(office)
-	if err != nil {
-		return seederr.Wrap(err)
-	}
+	commuteSvc := commuteservice.NewHooinCommuteService(office)
 	err = mux.Register(commutepbconnect.NewHooinCommuteServiceHandler(
 		commuteSvc,
 		seedgrpc.WithCommonInterceptors(),
