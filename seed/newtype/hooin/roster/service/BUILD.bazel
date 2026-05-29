@@ -1,0 +1,16 @@
+load("@rules_go//go:def.bzl", "go_library")
+
+package(default_visibility = ["//seed/newtype/hooin:__subpackages__"])
+
+go_library(
+    name = "service",
+    srcs = ["roster_service.go"],
+    importpath = "github.com/ndscm/theseed/seed/newtype/hooin/roster/service",
+    deps = [
+        "//seed/cloud/login/go/login",
+        "//seed/infra/error/go/seederr",
+        "//seed/newtype/hooin/onsite",
+        "//seed/newtype/hooin/roster/proto:roster_go_proto",
+        "@com_connectrpc_connect//:connect",
+    ],
+)
