@@ -7,7 +7,6 @@ token=${1:-"christina:unsecure"}
 
 bazel run //seed/newtype/amadeus/cmd/wake -- \
   --amadeus_service_server http://newtype.ndscm.com:2447 \
-  --login_openid_discovery_url https://account.ndscm.com/realms/ndscm/.well-known/openid-configuration \
   --login_tier prod \
   --hooin_direct_server http://newtype.ndscm.com:4664 \
   --token "${token}" \
