@@ -8,9 +8,9 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/ndscm/theseed/seed/cloud/login/client/go/discovery"
 	"github.com/ndscm/theseed/seed/infra/auth/go/clientopenid"
 	"github.com/ndscm/theseed/seed/infra/auth/go/loginopenid"
+	"github.com/ndscm/theseed/seed/infra/auth/go/openid"
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
 	"github.com/ndscm/theseed/seed/infra/flag/go/seedflag"
 	"github.com/ndscm/theseed/seed/infra/http/go/seedbearer"
@@ -78,7 +78,7 @@ func DeviceLogin(ctx context.Context, service string) (context.Context, error) {
 	if err != nil {
 		return ctx, seederr.Wrap(err)
 	}
-	discoveryUrl := discovery.LoginOpenidDiscoveryUrl()
+	discoveryUrl := openid.OpenidDiscoveryUrlFlag()
 	serviceTier := service + "-" + flagLoginTier.Get()
 	storagePath := filepath.Join(userHome, ".seed", "login", serviceTier+".json")
 	tokenStorage := &FileTokenStorage{storagePath: storagePath}
