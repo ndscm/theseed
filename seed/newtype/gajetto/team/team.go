@@ -33,6 +33,9 @@ type Team interface {
 	// if found, or nil and false otherwise.
 	GetMember(personId string) (Person, bool)
 
+	// ListMembers returns all members of the team, keyed by personId.
+	ListMembers() map[string]Person
+
 	// Auth validates the context authentication and returns the personId of the
 	// authenticated member.
 	Auth(ctx context.Context) (personId string, err error)
