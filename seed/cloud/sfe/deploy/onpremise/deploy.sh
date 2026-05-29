@@ -73,7 +73,7 @@ WantedBy=default.target
 EOF
 
 cat <<EOF | sudo tee "\${state_dir}/env"
-SFE_LOGIN_OPENID_DISCOVERY_URL=https://account.ndscm.com/realms/ndscm/.well-known/openid-configuration
+SFE_OPENID_DISCOVERY_URL=https://account.ndscm.com/realms/ndscm/.well-known/openid-configuration
 SFE_SFE_OPENID_CLIENT_ID=${sfe_openid_client_id}
 SFE_SFE_OPENID_CLIENT_SECRET_FILE=/run/secrets/SFE_OPENID_CLIENT_SECRET
 SFE_SFE_CERTIFICATE_SERVICE_SERVER=https://certificate.sfe.ndscm.com
