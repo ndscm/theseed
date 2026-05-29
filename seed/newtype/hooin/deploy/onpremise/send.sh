@@ -9,7 +9,6 @@ text=${3:-"I need to review the pull requests."}
 
 bazel run //seed/newtype/hooin/cmd/send -- \
   --hooin_dictate_service_server http://newtype.ndscm.com:4664 \
-  --login_openid_discovery_url https://account.ndscm.com/realms/ndscm/.well-known/openid-configuration \
   --login_tier prod \
   --person "${person}" \
   --topic "${topic}" \
