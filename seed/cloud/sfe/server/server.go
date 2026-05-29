@@ -9,7 +9,6 @@ import (
 	"os"
 	"time"
 
-	"github.com/ndscm/theseed/seed/cloud/login/client/go/discovery"
 	"github.com/ndscm/theseed/seed/cloud/sfe/certstore"
 	"github.com/ndscm/theseed/seed/cloud/sfe/escalate"
 	"github.com/ndscm/theseed/seed/cloud/sfe/route/golinkroute"
@@ -17,6 +16,7 @@ import (
 	"github.com/ndscm/theseed/seed/cloud/sfe/route/workflowroute"
 	"github.com/ndscm/theseed/seed/cloud/sqlsession"
 	"github.com/ndscm/theseed/seed/infra/auth/go/clientopenid"
+	"github.com/ndscm/theseed/seed/infra/auth/go/openid"
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
 	"github.com/ndscm/theseed/seed/infra/flag/go/seedflag"
 	"github.com/ndscm/theseed/seed/infra/http/go/seedsession"
@@ -109,6 +109,7 @@ func CreateSfeRouteHandler() (*SfeRouteHandler, error) {
 func run() error {
 	_, err := seedinit.Initialize(
 		seedinit.WithEnvPrefix("SFE_"),
+		seedinit.WithFallbackEnvPrefix("SEED_"),
 	)
 	if err != nil {
 		return seederr.Wrap(err)
@@ -126,7 +127,7 @@ func run() error {
 		clientSecret = string(secretBytes)
 	}
 	serviceOpenid := clientopenid.NewOpenidProvider(
-		discovery.LoginOpenidDiscoveryUrl(), clientId, clientSecret,
+		openid.OpenidDiscoveryUrlFlag(), clientId, clientSecret,
 	)
 
 	// Create routes

@@ -11,7 +11,6 @@ go_library(
     importpath = "github.com/ndscm/theseed/seed/cloud/sfe/server",
     visibility = ["//visibility:private"],
     deps = [
-        "//seed/cloud/login/client/go/discovery",
         "//seed/cloud/sfe/certstore",
         "//seed/cloud/sfe/escalate",
         "//seed/cloud/sfe/route/golinkroute",
@@ -19,6 +18,7 @@ go_library(
         "//seed/cloud/sfe/route/workflowroute",
         "//seed/cloud/sqlsession",
         "//seed/infra/auth/go/clientopenid",
+        "//seed/infra/auth/go/openid",
         "//seed/infra/error/go/seederr",
         "//seed/infra/flag/go/seedflag",
         "//seed/infra/http/go/seedsession",
