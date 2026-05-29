@@ -27,6 +27,8 @@ go_library(
         "//seed/newtype/hooin/dictate/proto:dictate_go_connect",
         "//seed/newtype/hooin/dictate/service",
         "//seed/newtype/hooin/onsite",
+        "//seed/newtype/hooin/roster/proto:roster_go_connect",
+        "//seed/newtype/hooin/roster/service",
     ],
 )
 
