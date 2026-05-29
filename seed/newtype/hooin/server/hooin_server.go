@@ -20,7 +20,9 @@ import (
 var flagPort = seedflag.DefineString("port", "4664", "Server port") // Default port assignment word: HOOI (4664)
 
 func run() error {
-	_, err := seedinit.Initialize()
+	_, err := seedinit.Initialize(
+		seedinit.WithFallbackEnvPrefix("SEED_"),
+	)
 	if err != nil {
 		return seederr.Wrap(err)
 	}
