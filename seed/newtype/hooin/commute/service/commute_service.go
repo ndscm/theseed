@@ -16,11 +16,6 @@ type HooinCommuteService struct {
 	office *onsite.Office
 }
 
-func (svc *HooinCommuteService) Initialize(office *onsite.Office) error {
-	svc.office = office
-	return nil
-}
-
 func (svc *HooinCommuteService) Commute(
 	ctx context.Context,
 	req *connect.Request[commutepb.CommuteRequest],
@@ -67,4 +62,10 @@ func (svc *HooinCommuteService) ReportBrainStep(
 	svc.office.BroadcastStep(personId, step.GetTopic(), step)
 
 	return connect.NewResponse(&emptypb.Empty{}), nil
+}
+
+func NewHooinCommuteService(office *onsite.Office) *HooinCommuteService {
+	return &HooinCommuteService{
+		office: office,
+	}
 }
