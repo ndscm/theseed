@@ -50,7 +50,7 @@ def _js_run_binary_tar_impl(ctx):
         "JS_BINARY__CHDIR": ctx.attr.chdir if ctx.attr.chdir else ctx.label.package,
         "JS_BINARY__SILENT_ON_SUCCESS": "1",
         "JS_BINARY__USE_EXECROOT_ENTRY_POINT": "1",
-        "JS_BINARY__PATCH_NODE_FS": "1",
+        "JS_BINARY__PATCH_NODE_FS": "0",  # Vite requires to run in a singleton module context.
     }
     env.update(ctx.attr.env)
 
