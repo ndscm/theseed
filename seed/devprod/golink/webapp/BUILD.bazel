@@ -35,16 +35,3 @@ react_router_webapp(
         "//seed/infra/buildinfo/ts",
     ],
 )
-
-extract_tar(
-    name = "webapp-extracted",
-    srcs = [":webapp"],
-)
-
-create_tar_gz(
-    name = "webapp-tar-gz",
-    srcs = [
-        ":webapp-extracted",
-    ],
-    out = "webapp.tar.gz",
-)
