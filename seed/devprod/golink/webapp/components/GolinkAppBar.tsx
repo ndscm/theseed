@@ -4,10 +4,12 @@ import { useTranslation } from "react-i18next"
 import AppBar from "@mui/material/AppBar"
 import Box from "@mui/material/Box"
 import Button from "@mui/material/Button"
+import CircularProgress from "@mui/material/CircularProgress"
 import Link from "@mui/material/Link"
 import Toolbar from "@mui/material/Toolbar"
 import Typography from "@mui/material/Typography"
 
+import LoginButton from "../../../../cloud/login/client/tsx/LoginButton"
 import { useLoginService } from "../../../../cloud/login/client/tsx/LoginServiceContext"
 import { type LoginStatus } from "../../../../cloud/login/proto/login_pb"
 
@@ -25,10 +27,6 @@ const GolinkAppBar: React.FC = () => {
       setLogin(currentLogin)
     })()
   }, [loginService])
-
-  const onLoginClick = async () => {
-    window.location.href = `${window.location.origin}/auth/login?return=${encodeURIComponent(window.location.href)}`
-  }
 
   return (
     <AppBar position="fixed" elevation={1}>
@@ -59,37 +57,30 @@ const GolinkAppBar: React.FC = () => {
           </Typography>
         </Box>
         <Box>
-          {login?.userUuid ? (
-            <Box
-              sx={{
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "start",
-              }}
-            >
-              <Button
-                color="inherit"
-                sx={{
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "start",
-                  textTransform: "none",
-                }}
-              >
-                <Typography variant="body1">{login.displayName}</Typography>
-                <Typography variant="body2">@{login.userHandle}</Typography>
-              </Button>
-            </Box>
-          ) : (
-            <Button
-              color="inherit"
-              onClick={async () => {
-                await onLoginClick()
-              }}
-            >
-              {t("auth.loginButton", "Login")}
-            </Button>
-          )}
+          <Button
+            component={(props) => (
+              <LoginButton
+                anonymous={t("auth.loginButton", "Login")}
+                loading={
+                  <CircularProgress color="inherit" aria-label="Loading…" />
+                }
+                {...props}
+              />
+            )}
+            color="inherit"
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "start",
+              textTransform: "none",
+            }}
+            onClick={() => {
+              console.info("Login status: ", login)
+            }}
+          >
+            <Typography variant="body1">{login?.displayName}</Typography>
+            <Typography variant="body2">{login?.userHandle}@</Typography>
+          </Button>
         </Box>
       </Toolbar>
     </AppBar>
