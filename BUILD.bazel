@@ -5,6 +5,17 @@ load("@pypi//:requirements.bzl", "all_whl_requirements")
 load("@rules_python_gazelle_plugin//manifest:defs.bzl", "gazelle_python_manifest")
 load("@rules_python_gazelle_plugin//modules_mapping:def.bzl", "modules_mapping")
 
+# gazelle:exclude **/*_pb2_grpc.py
+# gazelle:exclude **/*_pb2.py
+# gazelle:exclude **/*_pb2.pyi
+# gazelle:exclude **/*pb
+# gazelle:exclude **/*pbconnect
+# gazelle:exclude **/ent
+# gazelle:exclude **/node_modules
+# gazelle:proto file
+# gazelle:python_default_visibility NONE
+# gazelle:python_generation_mode file
+
 # CC
 
 refresh_compile_commands(
@@ -56,17 +67,6 @@ gazelle_binary(
         "@rules_python_gazelle_plugin//python",
     ],
 )
-
-# gazelle:exclude **/*_pb2_grpc.py
-# gazelle:exclude **/*_pb2.py
-# gazelle:exclude **/*_pb2.pyi
-# gazelle:exclude **/*pb
-# gazelle:exclude **/*pbconnect
-# gazelle:exclude **/node_modules
-# gazelle:exclude **/ent
-# gazelle:proto file
-# gazelle:python_default_visibility NONE
-# gazelle:python_generation_mode file
 
 gazelle(
     name = "gazelle",
