@@ -15,6 +15,7 @@ export type { LoginStatus }
 
 interface LoginServiceInterface {
   current: LoginStatus | undefined
+  loading: boolean
   GetLoginStatus: () => Promise<LoginStatus>
   reload: () => Promise<void>
 }
@@ -26,6 +27,7 @@ export const LoginServiceProvider: React.FC<{
   children?: React.ReactNode
 }> = ({ children }) => {
   const [current, setCurrent] = useState<LoginStatus | undefined>(undefined)
+  const [loading, setLoading] = useState(true)
   const [clientGrpcWeb, setClientGrpcWeb] = useState<ConnectClient<
     typeof LoginService
   > | null>(null)
@@ -58,8 +60,13 @@ export const LoginServiceProvider: React.FC<{
     if (!clientGrpcWeb) {
       return
     }
-    const loginStatus = await GetLoginStatus()
-    setCurrent(loginStatus)
+    setLoading(true)
+    try {
+      const loginStatus = await GetLoginStatus()
+      setCurrent(loginStatus)
+    } finally {
+      setLoading(false)
+    }
   }, [clientGrpcWeb, GetLoginStatus])
 
   useEffect(() => {
@@ -72,10 +79,11 @@ export const LoginServiceProvider: React.FC<{
     }
     return {
       current,
+      loading,
       GetLoginStatus,
       reload,
     }
-  }, [clientGrpcWeb, current, GetLoginStatus, reload])
+  }, [clientGrpcWeb, current, loading, GetLoginStatus, reload])
 
   return (
     <LoginServiceContext.Provider value={serviceInterface}>
