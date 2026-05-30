@@ -1,1 +1,0 @@
-# gazelle:resolve go github.com/ndscm/theseed/seed/cloud/sfe/certificate/proto/certificatepbconnect //seed/cloud/sfe/certificate/proto:certificate_go_connect
