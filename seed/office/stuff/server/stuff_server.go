@@ -30,7 +30,9 @@ var embedFs embed.FS
 var flagPort = seedflag.DefineString("port", "7883", "Port") // Default port assignment magic word: STUF
 
 func run() error {
-	_, err := seedinit.Initialize()
+	_, err := seedinit.Initialize(
+		seedinit.WithFallbackEnvPrefix("SEED_"),
+	)
 	if err != nil {
 		return seederr.Wrap(err)
 	}
