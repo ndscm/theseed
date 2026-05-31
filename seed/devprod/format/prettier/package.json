@@ -5,6 +5,7 @@
   "main": "index.js",
   "dependencies": {
     "@trivago/prettier-plugin-sort-imports": "catalog:",
-    "prettier": "catalog:"
+    "prettier": "catalog:",
+    "prettier-plugin-tailwindcss": "catalog:"
   }
 }
