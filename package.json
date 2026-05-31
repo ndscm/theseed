@@ -15,6 +15,7 @@
     "@types/node": "catalog:",
     "babel-plugin-react-compiler": "catalog:",
     "prettier": "catalog:",
+    "prettier-plugin-tailwindcss": "catalog:",
     "typescript": "catalog:"
   },
   "packageManager": "pnpm@11.0.5"
