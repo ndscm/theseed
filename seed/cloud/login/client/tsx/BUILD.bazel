@@ -34,7 +34,8 @@ ts_project(
 js_library(
     name = "tsx",
     srcs = [
-        "LoginServiceContext/index.ts",
+        "LoginServiceContext/index.d.ts",
+        "LoginServiceContext/index.js",
         ":package.json",
     ],
     visibility = ["//visibility:public"],
