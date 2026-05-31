@@ -36,16 +36,3 @@ react_router_webapp(
         "//seed/office/stuff/client/tsx",
     ],
 )
-
-extract_tar(
-    name = "webapp-extracted",
-    srcs = [":webapp"],
-)
-
-create_tar_gz(
-    name = "webapp-tar-gz",
-    srcs = [
-        ":webapp-extracted",
-    ],
-    out = "webapp.tar.gz",
-)
