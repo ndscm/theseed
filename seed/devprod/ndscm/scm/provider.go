@@ -160,6 +160,12 @@ type Provider interface {
 	// commit or if both chains reach their root without finding a match.
 	SearchForkPoint(ourTipPoint string, theirTipPoint string) (string, string, error)
 
+	// SearchExtendedMetadata searches for a commit with a specific extended
+	// metadata key and value. If value is empty, it searches for the presence
+	// of the key regardless of its value. It returns the commit id of the most
+	// recent matching commit, or an error if no match is found.
+	SearchExtendedMetadata(tipPoint string, key string, value string) (string, error)
+
 	// # status
 
 	// ListDirtyFiles lists every modified or untracked file in worktreePath.
