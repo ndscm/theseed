@@ -6,16 +6,16 @@
   "license": "MIT",
   "private": true,
   "dependencies": {
-    "@ariga/atlas": "^1.2.0",
-    "@bufbuild/protobuf": "^2.12.0",
-    "@bufbuild/protoc-gen-es": "^2.12.0",
-    "@connectrpc/connect": "^2.1.1",
-    "@connectrpc/connect-node": "^2.1.1",
-    "@trivago/prettier-plugin-sort-imports": "^6.0.2",
-    "@types/node": "^25.6.0",
-    "babel-plugin-react-compiler": "^1.0.0",
-    "prettier": "^3.8.3",
-    "typescript": "^5.9.3"
+    "@ariga/atlas": "catalog:",
+    "@bufbuild/protobuf": "catalog:",
+    "@bufbuild/protoc-gen-es": "catalog:",
+    "@connectrpc/connect": "catalog:",
+    "@connectrpc/connect-node": "catalog:",
+    "@trivago/prettier-plugin-sort-imports": "catalog:",
+    "@types/node": "catalog:",
+    "babel-plugin-react-compiler": "catalog:",
+    "prettier": "catalog:",
+    "typescript": "catalog:"
   },
   "packageManager": "pnpm@11.0.5"
 }
