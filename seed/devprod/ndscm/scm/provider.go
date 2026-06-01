@@ -43,6 +43,13 @@ type Provider interface {
 	// before any other method.
 	Initialize() error
 
+	// # amend
+
+	// AmendAppendExtendedMetadata amends the current worktree's head commit,
+	// appending a "<key>: <value>" extended metadata entry to its message
+	// without otherwise editing it.
+	AmendAppendExtendedMetadata(key string, value string) error
+
 	// # connect
 
 	// Connect clones repoEndpoint into monorepoHome, sets up the default
