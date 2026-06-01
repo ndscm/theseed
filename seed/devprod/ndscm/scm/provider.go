@@ -75,6 +75,8 @@ type Provider interface {
 	// It fails if the segment is not pure (e.g. contains a merge commit).
 	ListCommitIds(from string, to string) ([]string, error)
 
+	AmendHeadCommit(trailerKey string, text string) error
+
 	// # filetree
 
 	// ListCommitFiles lists every committed files in single commit.

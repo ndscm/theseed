@@ -164,3 +164,16 @@ func GetCommitMetadata(gitDir string, commit string) (*CommitMetadata, error) {
 	seedlog.Debugf("Commit %v: %#v", result.Hash, result)
 	return result, nil
 }
+
+func AmendHeadCommit(worktreePath string, trailerKey string, text string) error {
+	gitArgs := []string{}
+	if worktreePath != "" {
+		gitArgs = append(gitArgs, "-C", worktreePath)
+	}
+	gitArgs = append(gitArgs, "commit", "--amend", "--no-edit", "--trailer", trailerKey+": "+text)
+	err := seedshell.ImpureRun("git", gitArgs...)
+	if err != nil {
+		return seederr.WrapErrorf("failed to amend head commit with trailer %v: %w", trailerKey, err)
+	}
+	return nil
+}

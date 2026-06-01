@@ -145,6 +145,10 @@ func (g *GitProvider) GetCommitId(commit string) (string, error) {
 	return GetCommitHash("", commit)
 }
 
+func (g *GitProvider) AmendHeadCommit(trailerKey string, text string) error {
+	return AmendHeadCommit("", trailerKey, text)
+}
+
 func (g *GitProvider) ListCommitIds(from string, to string) ([]string, error) {
 	mergeCommits, err := ListMergeCommitHash("", from, to)
 	if err != nil {
