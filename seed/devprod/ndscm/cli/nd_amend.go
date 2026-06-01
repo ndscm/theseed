@@ -7,8 +7,9 @@ import (
 )
 
 type ndAmendFlags struct {
-	breakText   *seedflag.StringFlag
-	migrateText *seedflag.StringFlag
+	breakText    *seedflag.StringFlag
+	migrateText  *seedflag.StringFlag
+	sideEffectOf *seedflag.StringFlag
 }
 
 func parseNdAmendFlags(args []string) (ndAmendFlags, []string, error) {
@@ -16,6 +17,7 @@ func parseNdAmendFlags(args []string) (ndAmendFlags, []string, error) {
 	cmdFlags := ndAmendFlags{}
 	cmdFlags.breakText = cf.DefineString("break", "", "Breaking change description")
 	cmdFlags.migrateText = cf.DefineString("migrate", "", "Migration instruction")
+	cmdFlags.sideEffectOf = cf.DefineString("side-effect-of", "", "Change UUID this commit is a side effect of")
 	cmdArgs, err := cf.Parse(args)
 	if err != nil {
 		return cmdFlags, nil, seederr.Wrap(err)
@@ -38,8 +40,9 @@ func ndAmend(args []string) error {
 		return seederr.Wrap(err)
 	}
 	err = cc.NdAmend(clientcore.NdAmendOptions{
-		Break:   cmdFlags.breakText.Get(),
-		Migrate: cmdFlags.migrateText.Get(),
+		Break:        cmdFlags.breakText.Get(),
+		Migrate:      cmdFlags.migrateText.Get(),
+		SideEffectOf: cmdFlags.sideEffectOf.Get(),
 	})
 	if err != nil {
 		return seederr.Wrap(err)

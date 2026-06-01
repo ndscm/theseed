@@ -165,6 +165,14 @@ func GetCommitMetadata(gitDir string, commit string) (*CommitMetadata, error) {
 	return result, nil
 }
 
+func ListCommitTrailers(gitDir string, commit string) ([]Trailer, error) {
+	meta, err := GetCommitMetadata(gitDir, commit)
+	if err != nil {
+		return nil, seederr.Wrap(err)
+	}
+	return meta.Trailers, nil
+}
+
 func AmendHeadCommit(worktreePath string, trailerKey string, text string) error {
 	gitArgs := []string{}
 	if worktreePath != "" {

@@ -145,6 +145,21 @@ func (g *GitProvider) GetCommitId(commit string) (string, error) {
 	return GetCommitHash("", commit)
 }
 
+func (g *GitProvider) ListCommitTrailers(commit string) ([]scm.Trailer, error) {
+	trailers, err := ListCommitTrailers("", commit)
+	if err != nil {
+		return nil, seederr.Wrap(err)
+	}
+	result := []scm.Trailer{}
+	for _, t := range trailers {
+		result = append(result, scm.Trailer{
+			Key:  t.Key,
+			Text: t.Value,
+		})
+	}
+	return result, nil
+}
+
 func (g *GitProvider) AmendHeadCommit(trailerKey string, text string) error {
 	return AmendHeadCommit("", trailerKey, text)
 }
@@ -218,6 +233,10 @@ func (g *GitProvider) ListRemoteBranches(remote string) ([]string, error) {
 
 func (g *GitProvider) SearchForkPoint(ourTipPoint string, theirTipPoint string) (string, string, error) {
 	return SearchForkPoint("", ourTipPoint, theirTipPoint)
+}
+
+func (g *GitProvider) SearchTrailer(trailerKey string, text string) (string, error) {
+	return SearchTrailer("", trailerKey, text)
 }
 
 // # status

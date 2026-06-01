@@ -29,5 +29,6 @@ go_library(
         "//seed/infra/error/go/seederr",
         "//seed/infra/log/go/seedlog",
         "//seed/infra/shell/go/seedshell",
+        "@com_github_google_uuid//:uuid",
     ],
 )

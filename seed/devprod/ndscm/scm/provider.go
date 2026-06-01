@@ -8,6 +8,11 @@ type FileStatus struct {
 	From   string
 }
 
+type Trailer struct {
+	Key  string
+	Text string
+}
+
 // Provider is the abstraction over a Source Code Management backend (e.g.
 // git). Each backend registers a provider via Register, and the active one is
 // selected at runtime through the --scm flag.
@@ -75,6 +80,8 @@ type Provider interface {
 	// It fails if the segment is not pure (e.g. contains a merge commit).
 	ListCommitIds(from string, to string) ([]string, error)
 
+	ListCommitTrailers(commit string) ([]Trailer, error)
+
 	AmendHeadCommit(trailerKey string, text string) error
 
 	// # filetree
@@ -125,6 +132,9 @@ type Provider interface {
 	// common Change-uuid. It fails if either chain contains a merge
 	// commit or if both chains reach their root without finding a match.
 	SearchForkPoint(ourHead string, theirHead string) (string, string, error)
+
+	// SearchTrailer searches for a commit with a specific trailer key and text. If text is empty, it searches for the presence of the trailer key regardless of its value. It returns the commit id of the most recent matching commit, or an error if no match is found.
+	SearchTrailer(trailerKey string, text string) (string, error)
 
 	// # status
 
