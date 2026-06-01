@@ -25,6 +25,14 @@ export type RepoConfig = {
     version?: string
   }
 
+  commit?: {
+    rewrite?: {
+      pattern: string
+      replace?: string
+      finish?: boolean
+    }[]
+  }
+
   /**
    * Upstream sources the repository can sync from. Each entry is keyed by a
    * remote name (for example `"theseed"`) and describes how to fetch and
