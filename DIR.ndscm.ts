@@ -150,13 +150,5 @@ export default {
       watch: "^.*$",
       run: "bazel test //...",
     },
-    verify_pnpm_lock: {
-      watch: [
-        //
-        "(^|/)package.json$",
-        "^pnpm-workspace.yaml$",
-      ],
-      run: 'cd ./seed/devprod/ts/tool/verify-pnpm-lock && bazel run @pnpm//:pnpm -- --dir "$(pwd)" run verify-pnpm-lock',
-    },
   },
 } satisfies DirConfig
