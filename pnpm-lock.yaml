@@ -98,32 +98,32 @@ importers:
   seed/cloud/login/client/tsx:
     dependencies:
       '@bufbuild/protobuf':
-        specifier: ^2.12.0
+        specifier: 2.12.0
         version: 2.12.0
       '@connectrpc/connect':
-        specifier: ^2.1.1
+        specifier: 2.1.1
         version: 2.1.1(@bufbuild/protobuf@2.12.0)
       '@connectrpc/connect-web':
-        specifier: ^2.1.1
+        specifier: 2.1.1
         version: 2.1.1(@bufbuild/protobuf@2.12.0)(@connectrpc/connect@2.1.1(@bufbuild/protobuf@2.12.0))
       '@theseed/seed-cloud-login-proto':
         specifier: workspace:^
         version: link:../../proto
       react:
-        specifier: ^19.2.5
+        specifier: 19.2.5
         version: 19.2.5
       react-dom:
-        specifier: ^19.2.5
+        specifier: 19.2.5
         version: 19.2.5(react@19.2.5)
     devDependencies:
       '@types/react':
-        specifier: ^19.2.7
-        version: 19.2.14
+        specifier: 19.2.7
+        version: 19.2.7
       '@types/react-dom':
-        specifier: ^19.2.3
-        version: 19.2.3(@types/react@19.2.14)
+        specifier: 19.2.3
+        version: 19.2.3(@types/react@19.2.7)
       typescript:
-        specifier: ^5.9.3
+        specifier: 5.9.3
         version: 5.9.3
 
   seed/cloud/login/proto: {}
@@ -134,16 +134,16 @@ importers:
         specifier: workspace:^
         version: link:../../../../infra/auth/ts
       '@types/node':
-        specifier: ^25.6.0
+        specifier: 25.6.0
         version: 25.6.0
       rollup:
-        specifier: ^4.43.0
+        specifier: 4.60.3
         version: 4.60.3
       typescript:
-        specifier: ^5.9.3
+        specifier: 5.9.3
         version: 5.9.3
       vite:
-        specifier: ^7.3.2
+        specifier: 7.3.2
         version: 7.3.2(@types/node@25.6.0)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.4)
 
   seed/devprod/format/prettier:
@@ -1917,6 +1917,9 @@ packages:
 
   '@types/react@19.2.14':
     resolution: {integrity: sha512-ilcTH/UniCkMdtexkoCN0bI7pMcJDvmQFPvuPvmEaYA/NSfFTAgdUSLAoVjaRJm7+6PvcM+q1zYOwS4wTYMF9w==}
+
+  '@types/react@19.2.7':
+    resolution: {integrity: sha512-MWtvHrGZLFttgeEj28VXHxpmwYbor/ATPYbBfSFZEIRK0ecCFLl2Qo55z52Hss+UV9CRN7trSeq1zbgx7YDWWg==}
 
   '@typescript/vfs@1.6.4':
     resolution: {integrity: sha512-PJFXFS4ZJKiJ9Qiuix6Dz/OwEIqHD7Dme1UwZhTK11vR+5dqW2ACbdndWQexBzCx+CPuMe5WBYQWCsFyGlQLlQ==}
@@ -4624,11 +4627,19 @@ snapshots:
     dependencies:
       '@types/react': 19.2.14
 
+  '@types/react-dom@19.2.3(@types/react@19.2.7)':
+    dependencies:
+      '@types/react': 19.2.7
+
   '@types/react-transition-group@4.4.12(@types/react@19.2.14)':
     dependencies:
       '@types/react': 19.2.14
 
   '@types/react@19.2.14':
+    dependencies:
+      csstype: 3.2.3
+
+  '@types/react@19.2.7':
     dependencies:
       csstype: 3.2.3
 
