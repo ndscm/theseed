@@ -32,6 +32,7 @@
   },
   "go.toolsManagement.autoUpdate": true,
   "isort.args": ["--profile", "black"],
+  "prettier.prettierPath": "./node_modules/prettier",
   "prettier.documentSelectors": ["**/Jenkinsfile"],
   "prettier.proseWrap": "always",
   "prettier.semi": false,
