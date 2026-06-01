@@ -13,6 +13,14 @@ export type RepoConfig = {
    */
   domain?: string
 
+  commit?: {
+    rewrite?: {
+      pattern: string
+      replace?: string
+      finish?: boolean
+    }[]
+  }
+
   /**
    * Collaboration surfaces for the repository: where issues are tracked and
    * where pending code changes are discussed. Each surface can be backed by
