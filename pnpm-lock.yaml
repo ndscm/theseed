@@ -353,7 +353,7 @@ importers:
   seed/newtype/playwright/proxy:
     dependencies:
       http-proxy:
-        specifier: ^1.18.1
+        specifier: 1.18.1
         version: 1.18.1
 
   seed/office/stuff/client/tsx:
