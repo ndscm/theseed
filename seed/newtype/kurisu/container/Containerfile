@@ -1,0 +1,11 @@
+FROM ghcr.io/ndscm/ubuntu:latest
+
+ADD ./kurisu-server.tar.gz /opt/kurisu/
+
+RUN useradd --shell /bin/bash --create-home kurisu
+USER kurisu
+WORKDIR /home/kurisu
+
+ENTRYPOINT [ "/opt/kurisu/kurisu-server" ]
+
+CMD ["--verbose"]
