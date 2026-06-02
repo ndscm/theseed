@@ -14,6 +14,7 @@ go_library(
         "//seed/cloud/sfe/certstore",
         "//seed/cloud/sfe/escalate",
         "//seed/cloud/sfe/route/golinkroute",
+        "//seed/cloud/sfe/route/kurisuroute",
         "//seed/cloud/sfe/route/stuffroute",
         "//seed/cloud/sfe/route/workflowroute",
         "//seed/cloud/sqlsession",
