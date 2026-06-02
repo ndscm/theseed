@@ -1,5 +1,6 @@
 FROM docker.io/library/nginx:latest
 
 COPY ./default.conf /etc/nginx/conf.d/default.conf
+COPY ./10-fix-www-ownership.sh /docker-entrypoint.d/10-fix-www-ownership.sh
 
 EXPOSE 22243
