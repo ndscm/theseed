@@ -1,0 +1,66 @@
+load("@rules_go//go:def.bzl", "go_binary", "go_library")
+load("//seed/devprod/ndscm/starlark:defs.bzl", "nd_bootstrap")
+load("//seed/devprod/starlark/archive:defs.bzl", "create_tar_gz", "extract_tar")
+
+package(default_visibility = ["//visibility:private"])
+
+alias(
+    name = "server",
+    actual = ":kurisu-server",
+)
+
+extract_tar(
+    name = "webapp",
+    srcs = ["//seed/newtype/kurisu/webapp"],
+)
+
+go_library(
+    name = "server_lib",
+    srcs = ["kurisu_server.go"],
+    embedsrcs = [":webapp"],  # keep: prevent gazelle from expanding the ignored webapp directory
+    importpath = "github.com/ndscm/theseed/seed/newtype/kurisu/server",
+    deps = [
+        "//seed/cloud/login/go/loginservice",
+        "//seed/cloud/login/proto:login_go_connect",
+        "//seed/devprod/reactrouter/go/reactrouter",
+        "//seed/infra/auth/go/openidjwt",
+        "//seed/infra/buildinfo/go/buildinfo",
+        "//seed/infra/error/go/seederr",
+        "//seed/infra/flag/go/seedflag",
+        "//seed/infra/grpc/go/seedgrpc",
+        "//seed/infra/http/go/cachecontrol",
+        "//seed/infra/init/go/seedinit",
+        "//seed/infra/log/go/seedlog",
+        "//seed/infra/spa/go/seedspa",
+        "//seed/newtype/hooin/dictate/client/go/dictateclient",
+        "//seed/newtype/hooin/dictate/proto:dictate_go_connect",
+        "//seed/newtype/hooin/roster/client/go/rosterclient",
+        "//seed/newtype/hooin/roster/proto:roster_go_connect",
+    ],
+)
+
+go_binary(
+    name = "kurisu-server",
+    embed = [":server_lib"],
+    pure = "on",
+)
+
+create_tar_gz(
+    name = "kurisu-server_tar_gz",
+    srcs = [
+        ":kurisu-server",
+    ],
+    out = "kurisu-server.tar.gz",
+)
+
+nd_bootstrap(
+    dsts = [
+        {
+            "dst": "webapp",
+            "dir": True,
+            "srcs": [{
+                "src": ":webapp",
+            }],
+        },
+    ],
+)
