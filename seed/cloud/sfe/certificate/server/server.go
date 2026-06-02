@@ -27,6 +27,18 @@ func challenger(ctx context.Context, domain string) (challenge.AcmeChallenge, er
 	}
 	seedlog.Infof("Verified login user. user=%v", loginUser)
 	switch domain {
+	case "kurisu.ndscm.biz":
+		permissionDenied := true
+		if loginUser.PreferredUsername == "service-account-kurisu-sfe-prod" {
+			permissionDenied = false
+		}
+		if slices.Contains(loginUser.Groups, "sfe-dev") {
+			permissionDenied = false
+		}
+		if permissionDenied {
+			return nil, seederr.WrapErrorf("permission denied")
+		}
+		return cloudflarednschallenge.NewCloudflareDnsChallenge(), nil
 	case "workflow.ndscm.biz":
 		permissionDenied := true
 		if loginUser.PreferredUsername == "service-account-workflow-sfe-prod" {
