@@ -12,6 +12,7 @@ import (
 	"github.com/ndscm/theseed/seed/cloud/sfe/certstore"
 	"github.com/ndscm/theseed/seed/cloud/sfe/escalate"
 	"github.com/ndscm/theseed/seed/cloud/sfe/route/golinkroute"
+	"github.com/ndscm/theseed/seed/cloud/sfe/route/kurisuroute"
 	"github.com/ndscm/theseed/seed/cloud/sfe/route/stuffroute"
 	"github.com/ndscm/theseed/seed/cloud/sfe/route/workflowroute"
 	"github.com/ndscm/theseed/seed/cloud/sqlsession"
@@ -45,6 +46,8 @@ var optimizedTransport = &http.Transport{
 type SfeRouteHandler struct {
 	golinkRoute http.Handler
 
+	kurisuRoute http.Handler
+
 	stuffRoute http.Handler
 
 	workflowRoute http.Handler
@@ -61,6 +64,12 @@ func (h *SfeRouteHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	switch hostname {
 	case "go.ndscm.com":
 		h.golinkRoute.ServeHTTP(w, r)
+		return
+	case "kurisu.ndscm.com":
+		h.kurisuRoute.ServeHTTP(w, r)
+		return
+	case "kurisu.ndscm.biz":
+		h.kurisuRoute.ServeHTTP(w, r)
 		return
 	case "stuff.ndscm.com":
 		h.stuffRoute.ServeHTTP(w, r)
@@ -88,6 +97,10 @@ func CreateSfeRouteHandler() (*SfeRouteHandler, error) {
 	if err != nil {
 		return nil, seederr.Wrap(err)
 	}
+	kurisuRoute, err := kurisuroute.CreateKurisuRoute(optimizedTransport)
+	if err != nil {
+		return nil, seederr.Wrap(err)
+	}
 	stuffRoute, err := stuffroute.CreateStuffRoute(optimizedTransport)
 	if err != nil {
 		return nil, seederr.Wrap(err)
@@ -99,6 +112,7 @@ func CreateSfeRouteHandler() (*SfeRouteHandler, error) {
 
 	h := &SfeRouteHandler{
 		golinkRoute:   seedsession.InterceptSessionMiddleware(golinkRoute, sessionInitializer),
+		kurisuRoute:   seedsession.InterceptSessionMiddleware(kurisuRoute, sessionInitializer),
 		stuffRoute:    seedsession.InterceptSessionMiddleware(stuffRoute, sessionInitializer),
 		workflowRoute: workflowRoute,
 	}
