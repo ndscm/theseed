@@ -37,7 +37,7 @@ fi
 if [[ -n "${sfe_openid_client_secret}" ]]; then
   echo 'Creating openid client secret...' >&2
   set +x
-  sudo machinectl shell '${service_user}@' /bin/bash -c 'printf "${sfe_openid_client_secret}" | podman secret create --replace SFE_OPENID_CLIENT_SECRET -'
+  sudo machinectl shell '${service_user}@' /bin/bash -c 'printf %s "${sfe_openid_client_secret}" | podman secret create --replace SFE_OPENID_CLIENT_SECRET -'
   printf 'Created podman secret: %s\n' "SFE_OPENID_CLIENT_SECRET" >&2
   set -x
 fi
@@ -62,6 +62,7 @@ Network=host
 Secret=SFE_OPENID_CLIENT_SECRET
 EnvironmentFile=%S/sfe/env
 Exec=--http=escalate --https route --verbose
+${EXTRA_SFE_CONTAINER_CONFIG:-}
 
 [Service]
 Restart=always
@@ -77,7 +78,7 @@ SFE_OPENID_DISCOVERY_URL=https://account.ndscm.com/realms/ndscm/.well-known/open
 SFE_SFE_OPENID_CLIENT_ID=${sfe_openid_client_id}
 SFE_SFE_OPENID_CLIENT_SECRET_FILE=/run/secrets/SFE_OPENID_CLIENT_SECRET
 SFE_SFE_CERTIFICATE_SERVICE_SERVER=https://certificate.sfe.ndscm.com
-SFE_WORKFLOW_SERVICE_SERVER=http://127.0.0.1:8080
+${EXTRA_SFE_ENV:-}
 EOF
 
 echo 'Loading container and restarting service...' >&2
