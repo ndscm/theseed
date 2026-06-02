@@ -3,6 +3,7 @@ load("@rules_go//go:def.bzl", "go_library")
 package(default_visibility = [
     "//seed/newtype/amadeus:__subpackages__",
     "//seed/newtype/hooin:__subpackages__",
+    "//seed/newtype/kurisu:__subpackages__",
 ])
 
 go_library(

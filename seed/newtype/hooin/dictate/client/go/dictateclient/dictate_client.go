@@ -16,13 +16,17 @@ import (
 
 var flagHooinDictateServiceServer = seedflag.DefineString("hooin_dictate_service_server", "http://127.0.0.1:4664", "Hooin dictate service server address")
 
+func HooinDictateServiceServer() string {
+	return flagHooinDictateServiceServer.Get()
+}
+
 type HooinDictateClient struct {
 	client dictatepbconnect.HooinDictateServiceClient
 }
 
 func NewHooinDictateClient(server string) *HooinDictateClient {
 	if server == "" {
-		server = flagHooinDictateServiceServer.Get()
+		server = HooinDictateServiceServer()
 	}
 	client := dictatepbconnect.NewHooinDictateServiceClient(
 		seedbearer.InterceptBearerTransport(http.DefaultClient),
