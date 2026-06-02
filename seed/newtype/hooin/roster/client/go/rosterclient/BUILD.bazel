@@ -1,0 +1,21 @@
+load("@rules_go//go:def.bzl", "go_library")
+
+package(default_visibility = [
+    "//seed/newtype/hooin:__subpackages__",
+    "//seed/newtype/kurisu:__subpackages__",
+])
+
+go_library(
+    name = "rosterclient",
+    srcs = ["roster_client.go"],
+    importpath = "github.com/ndscm/theseed/seed/newtype/hooin/roster/client/go/rosterclient",
+    deps = [
+        "//seed/infra/error/go/seederr",
+        "//seed/infra/flag/go/seedflag",
+        "//seed/infra/grpc/go/grpclog",
+        "//seed/infra/http/go/seedbearer",
+        "//seed/newtype/hooin/roster/proto:roster_go_connect",
+        "//seed/newtype/hooin/roster/proto:roster_go_proto",
+        "@com_connectrpc_connect//:connect",
+    ],
+)
