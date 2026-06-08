@@ -1,0 +1,9 @@
+FROM ghcr.io/ndscm/seed-newtype-kurisu-container:latest
+
+CMD [ \
+  "--port", "8080", \
+  "--openid_discovery_url", "https://account.ndscm.com/realms/ndscm/.well-known/openid-configuration", \
+  "--hooin_dictate_service_server", "https://seed-newtype-hooin-prod-58770640413.us-west1.run.app", \
+  "--hooin_roster_service_server", "https://seed-newtype-hooin-prod-58770640413.us-west1.run.app", \
+  "--verbose" \
+  ]
