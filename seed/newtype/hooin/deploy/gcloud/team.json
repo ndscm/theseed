@@ -1,0 +1,48 @@
+{
+  "handle": "ndscm",
+  "displayName": "Team Ndscm",
+  "members": {
+    "nagi": {
+      "handle": "nagi",
+      "displayName": "Nagi",
+      "organic": "carbon",
+      "role": "admin"
+    },
+    "charlie": {
+      "handle": "charlie",
+      "displayName": "Charlie",
+      "organic": "carbon",
+      "role": "admin"
+    },
+    "sadie": {
+      "handle": "sadie",
+      "displayName": "Sadie",
+      "organic": "carbon",
+      "role": "pm"
+    },
+    "christina": {
+      "handle": "christina",
+      "displayName": "Christina",
+      "organic": "silicon",
+      "role": "reviewer"
+    },
+    "okarin": {
+      "handle": "okarin",
+      "displayName": "Okarin",
+      "organic": "silicon",
+      "role": "lead"
+    },
+    "daru": {
+      "handle": "daru",
+      "displayName": "Daru",
+      "organic": "silicon",
+      "role": "coder"
+    },
+    "mayushii": {
+      "handle": "mayushii",
+      "displayName": "Mayushii",
+      "organic": "silicon",
+      "role": "pm"
+    }
+  }
+}

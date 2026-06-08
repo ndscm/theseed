@@ -1,0 +1,10 @@
+FROM ghcr.io/ndscm/seed-newtype-hooin-container:latest
+
+COPY ./team.json /etc/steins/team.json
+
+CMD [ \
+  "--port", "8080", \
+  "--static_team_file", "/etc/steins/team.json", \
+  "--openid_discovery_url", "https://account.ndscm.com/realms/ndscm/.well-known/openid-configuration", \
+  "--verbose" \
+  ]
