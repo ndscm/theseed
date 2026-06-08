@@ -11,6 +11,17 @@ import (
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
 )
 
+type resizedFileInfo struct {
+	os.FileInfo
+	size int64
+}
+
+func (rfi *resizedFileInfo) Size() int64 {
+	return rfi.size
+}
+
+var _ os.FileInfo = (*resizedFileInfo)(nil)
+
 type memoryFile struct {
 	*strings.Reader
 	stat os.FileInfo
@@ -27,6 +38,8 @@ func (f *memoryFile) Readdir(int) ([]os.FileInfo, error) {
 func (f *memoryFile) Stat() (os.FileInfo, error) {
 	return f.stat, nil
 }
+
+var _ http.File = (*memoryFile)(nil)
 
 // containsExtension checks whether the final segment of filePath contains a
 // dot. A dot signals a static asset (e.g. "app.js"), so the SPA fallback is
@@ -99,16 +112,22 @@ func (sfs *spaFileSystem) Open(name string) (http.File, error) {
 		if err != nil {
 			return nil, seederr.Wrap(err)
 		}
+		err = file.Close()
+		if err != nil {
+			return nil, seederr.Wrap(err)
+		}
 		injectedHtmlContent := strings.Replace(
 			string(htmlContent),
 			`</head>`,
 			sfs.headInjection+`</head>`,
 			1,
 		)
-		file.Close()
 		file = &memoryFile{
 			Reader: strings.NewReader(injectedHtmlContent),
-			stat:   stat,
+			stat: &resizedFileInfo{
+				FileInfo: stat,
+				size:     int64(len(injectedHtmlContent)),
+			},
 		}
 	}
 	return file, nil
