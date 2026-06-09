@@ -58,13 +58,13 @@ func (s *Conscious) checkTopicStarted(topic string) bool {
 // Brain.RegisterStepHandler and the second would fail with "step handler
 // already registered".
 func (s *Conscious) ensureTopicStarted(
-	client *commuteclient.HooinCommuteClient, token string, topic string,
+	client *commuteclient.HooinCommuteClient, topic string,
 ) error {
 	if s.checkTopicStarted(topic) {
 		return nil
 	}
 
-	reporter := &StepReporter{client: client, token: token}
+	reporter := &StepReporter{client: client}
 	err := s.brain.RegisterStepHandler(topic, reporter)
 	if err != nil {
 		return seederr.Wrap(err)
@@ -76,7 +76,7 @@ func (s *Conscious) ensureTopicStarted(
 	return nil
 }
 
-func (s *Conscious) commute(token string) {
+func (s *Conscious) commute() {
 	defer func() {
 		s.hooinClientMutex.Lock()
 		defer s.hooinClientMutex.Unlock()
@@ -111,7 +111,7 @@ func (s *Conscious) commute(token string) {
 
 	for s.commuteStream.Receive() {
 		input := s.commuteStream.Msg()
-		err := s.Input(client, token, input)
+		err := s.Input(client, input)
 		if err != nil {
 			seedlog.Errorf("Brain input error: %v", err)
 		}
@@ -128,12 +128,12 @@ func (s *Conscious) commute(token string) {
 }
 
 func (s *Conscious) Input(
-	client *commuteclient.HooinCommuteClient, token string, input *brainpb.BrainInput,
+	client *commuteclient.HooinCommuteClient, input *brainpb.BrainInput,
 ) error {
 	seedlog.Infof("Commute input: %v", input)
 
 	topic := input.GetTopic()
-	err := s.ensureTopicStarted(client, token, topic)
+	err := s.ensureTopicStarted(client, topic)
 	if err != nil {
 		return seederr.Wrap(err)
 	}
@@ -147,7 +147,6 @@ func (s *Conscious) Input(
 
 func (s *Conscious) Wake(
 	ctx context.Context,
-	token string,
 	hooinDirectServer string,
 ) error {
 	s.hooinClientMutex.Lock()
@@ -174,7 +173,7 @@ func (s *Conscious) Wake(
 		cancelCommute()
 		return seederr.Wrap(err)
 	}
-	commuteStream, err := client.Commute(commuteCtx, token)
+	commuteStream, err := client.Commute(commuteCtx)
 	if err != nil {
 		cancelCommute()
 		return seederr.Wrap(err)
@@ -187,7 +186,7 @@ func (s *Conscious) Wake(
 	s.commuteDone = make(chan struct{})
 	s.topics = map[string]*LiveTopic{}
 
-	go s.commute(token)
+	go s.commute()
 
 	return nil
 }

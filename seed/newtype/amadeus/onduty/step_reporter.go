@@ -11,7 +11,6 @@ import (
 
 type StepReporter struct {
 	client *commuteclient.HooinCommuteClient
-	token  string
 }
 
 func (r *StepReporter) HandleBrainStep(
@@ -21,7 +20,7 @@ func (r *StepReporter) HandleBrainStep(
 	if err != nil {
 		seedlog.Warnf("Silicon login failed: %v", err)
 	}
-	err = r.client.ReportBrainStep(ctx, r.token, step)
+	err = r.client.ReportBrainStep(ctx, step)
 	if err != nil {
 		seedlog.Errorf("Report brain step failed: %v", err)
 	}
