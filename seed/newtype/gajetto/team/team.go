@@ -17,9 +17,6 @@ type Person interface {
 	GetHandle() string
 	// GetDisplayName reports the person's human-readable display name.
 	GetDisplayName() string
-
-	// Auth verifies that the given token is valid for this person.
-	Auth(token string) error
 }
 
 // Team is a named group of [Person] members.
@@ -36,7 +33,7 @@ type Team interface {
 	// if found, or nil and false otherwise.
 	GetMember(personId string) (Person, bool)
 
-	// Auth validates the given token and returns the personId of the
+	// Auth validates the context authentication and returns the personId of the
 	// authenticated member.
-	Auth(ctx context.Context, token string) (personId string, err error)
+	Auth(ctx context.Context) (personId string, err error)
 }
