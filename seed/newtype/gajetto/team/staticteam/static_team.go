@@ -24,8 +24,6 @@ type StaticPerson struct {
 	Handle string `json:"handle"`
 
 	DisplayName string `json:"displayName,omitempty"`
-
-	Token string `json:"token,omitempty"`
 }
 
 func (p *StaticPerson) GetPersonId() string {
@@ -38,13 +36,6 @@ func (p *StaticPerson) GetHandle() string {
 
 func (p *StaticPerson) GetDisplayName() string {
 	return p.DisplayName
-}
-
-func (p *StaticPerson) Auth(token string) error {
-	if p.Token == "" || p.Token != token {
-		return seederr.CodeErrorf(codes.Unauthenticated, "invalid token")
-	}
-	return nil
 }
 
 var _ team.Person = (*StaticPerson)(nil)
@@ -77,25 +68,16 @@ func (t *StaticTeam) GetMember(personId string) (team.Person, bool) {
 	return member, true
 }
 
-func (t *StaticTeam) Auth(ctx context.Context, token string) (personId string, err error) {
-	openidUser, err := login.LoginUser(ctx)
-	if err == nil {
-		member, ok := t.Members[openidUser.PreferredUsername]
-		if !ok {
-			return "", seederr.CodeErrorf(codes.Unauthenticated, "invalid token")
-		}
-		return member.personId, nil
+func (t *StaticTeam) Auth(ctx context.Context) (personId string, err error) {
+	openidUser, err := login.EnsureLoginUser(ctx)
+	if err != nil {
+		return "", seederr.CodeErrorf(codes.Unauthenticated, "user not logged in")
 	}
-	if token == "" {
-		return "", seederr.CodeErrorf(codes.Unauthenticated, "invalid token")
+	member, ok := t.Members[openidUser.PreferredUsername]
+	if !ok {
+		return "", seederr.CodeErrorf(codes.PermissionDenied, "permission denied")
 	}
-	for _, member := range t.Members {
-		err := member.Auth(token)
-		if err == nil {
-			return member.personId, nil
-		}
-	}
-	return "", seederr.CodeErrorf(codes.Unauthenticated, "invalid token")
+	return member.personId, nil
 }
 
 var _ team.Team = (*StaticTeam)(nil)
