@@ -1,6 +1,7 @@
 package staticteam
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"io/fs"
@@ -8,6 +9,7 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/ndscm/theseed/seed/cloud/login/go/login"
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
 	"github.com/ndscm/theseed/seed/infra/flag/go/seedflag"
 	"github.com/ndscm/theseed/seed/newtype/gajetto/team"
@@ -75,10 +77,22 @@ func (t *StaticTeam) GetMember(personId string) (team.Person, bool) {
 	return member, true
 }
 
-func (t *StaticTeam) Auth(token string) (personId string, err error) {
-	for id, member := range t.Members {
-		if member.Auth(token) == nil {
-			return id, nil
+func (t *StaticTeam) Auth(ctx context.Context, token string) (personId string, err error) {
+	openidUser, err := login.LoginUser(ctx)
+	if err == nil {
+		member, ok := t.Members[openidUser.PreferredUsername]
+		if !ok {
+			return "", seederr.CodeErrorf(codes.Unauthenticated, "invalid token")
+		}
+		return member.personId, nil
+	}
+	if token == "" {
+		return "", seederr.CodeErrorf(codes.Unauthenticated, "invalid token")
+	}
+	for _, member := range t.Members {
+		err := member.Auth(token)
+		if err == nil {
+			return member.personId, nil
 		}
 	}
 	return "", seederr.CodeErrorf(codes.Unauthenticated, "invalid token")

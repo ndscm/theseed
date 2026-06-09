@@ -1,5 +1,9 @@
 package team
 
+import (
+	"context"
+)
+
 // Person is a member of a [Team].
 //
 // Each person is identified by a personId, which may be either a UUID or a
@@ -34,5 +38,5 @@ type Team interface {
 
 	// Auth validates the given token and returns the personId of the
 	// authenticated member.
-	Auth(token string) (personId string, err error)
+	Auth(ctx context.Context, token string) (personId string, err error)
 }
