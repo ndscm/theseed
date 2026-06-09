@@ -11,6 +11,7 @@ go_library(
     srcs = ["static_team.go"],
     importpath = "github.com/ndscm/theseed/seed/newtype/gajetto/team/staticteam",
     deps = [
+        "//seed/cloud/login/go/login",
         "//seed/infra/error/go/seederr",
         "//seed/infra/flag/go/seedflag",
         "//seed/newtype/gajetto/team",
