@@ -113,9 +113,6 @@ func (provider *UserOpenidProvider) AccessToken(
 	if err != nil {
 		return "", seederr.Wrap(err)
 	}
-	if accessToken == "" || refreshToken == "" || expiryString == "" {
-		return "", seederr.WrapErrorf("invalid token data")
-	}
 	expiry, err := time.Parse(time.RFC3339Nano, expiryString)
 	if err != nil {
 		expiry = time.Now().Add(-time.Minute)
