@@ -3,6 +3,7 @@ package onduty
 import (
 	"context"
 
+	"github.com/ndscm/theseed/seed/cloud/login/go/siliconlogin"
 	"github.com/ndscm/theseed/seed/infra/log/go/seedlog"
 	"github.com/ndscm/theseed/seed/newtype/gajetto/proto/brainpb"
 	"github.com/ndscm/theseed/seed/newtype/hooin/commute/client/go/commuteclient"
@@ -16,7 +17,11 @@ type StepReporter struct {
 func (r *StepReporter) HandleBrainStep(
 	ctx context.Context, topic string, step *brainpb.BrainStep,
 ) {
-	err := r.client.ReportBrainStep(ctx, r.token, step)
+	ctx, err := siliconlogin.SiliconLogin(ctx)
+	if err != nil {
+		seedlog.Warnf("Silicon login failed: %v", err)
+	}
+	err = r.client.ReportBrainStep(ctx, r.token, step)
 	if err != nil {
 		seedlog.Errorf("Report brain step failed: %v", err)
 	}
