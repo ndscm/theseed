@@ -6,6 +6,7 @@ import (
 	"sync"
 
 	"connectrpc.com/connect"
+	"github.com/ndscm/theseed/seed/cloud/login/go/siliconlogin"
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
 	"github.com/ndscm/theseed/seed/infra/log/go/seedlog"
 	"github.com/ndscm/theseed/seed/newtype/amadeus/brain"
@@ -152,10 +153,6 @@ func (s *Conscious) Wake(
 	s.hooinClientMutex.Lock()
 	defer s.hooinClientMutex.Unlock()
 
-	if token == "" {
-		return seederr.CodeErrorf(codes.Unauthenticated, "missing token")
-	}
-
 	// Wake is exclusive. A Hibernate → Wake sequence can briefly still
 	// observe commuteStream != nil: Hibernate only cancels the commute
 	// context and returns immediately, while the commute goroutine's
@@ -172,6 +169,11 @@ func (s *Conscious) Wake(
 	client := commuteclient.NewHooinCommuteClient(hooinDirectServer)
 
 	commuteCtx, cancelCommute := context.WithCancel(context.Background())
+	commuteCtx, err := siliconlogin.SiliconLogin(commuteCtx)
+	if err != nil {
+		cancelCommute()
+		return seederr.Wrap(err)
+	}
 	commuteStream, err := client.Commute(commuteCtx, token)
 	if err != nil {
 		cancelCommute()
