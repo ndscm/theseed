@@ -11,6 +11,7 @@ go_library(
     ],
     importpath = "github.com/ndscm/theseed/seed/newtype/amadeus/onduty",
     deps = [
+        "//seed/cloud/login/go/siliconlogin",
         "//seed/infra/error/go/seederr",
         "//seed/infra/log/go/seedlog",
         "//seed/newtype/amadeus/brain",
