@@ -27,11 +27,7 @@ func (svc *HooinCommuteService) Commute(
 	stream *connect.ServerStream[brainpb.BrainInput],
 ) error {
 	token := req.Msg.GetToken()
-	if token == "" {
-		return seederr.CodeErrorf(codes.Unauthenticated, "invalid token")
-	}
-
-	personId, err := svc.office.Team.Auth(token)
+	personId, err := svc.office.Team.Auth(ctx, token)
 	if err != nil {
 		return seederr.Wrap(err)
 	}
@@ -60,11 +56,7 @@ func (svc *HooinCommuteService) ReportBrainStep(
 	req *connect.Request[commutepb.ReportBrainStepRequest],
 ) (*connect.Response[emptypb.Empty], error) {
 	token := req.Msg.GetToken()
-	if token == "" {
-		return nil, seederr.CodeErrorf(codes.Unauthenticated, "invalid token")
-	}
-
-	personId, err := svc.office.Team.Auth(token)
+	personId, err := svc.office.Team.Auth(ctx, token)
 	if err != nil {
 		return nil, seederr.Wrap(err)
 	}
