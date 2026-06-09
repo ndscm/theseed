@@ -26,8 +26,7 @@ func (svc *HooinCommuteService) Commute(
 	req *connect.Request[commutepb.CommuteRequest],
 	stream *connect.ServerStream[brainpb.BrainInput],
 ) error {
-	token := req.Msg.GetToken()
-	personId, err := svc.office.Team.Auth(ctx, token)
+	personId, err := svc.office.Team.Auth(ctx)
 	if err != nil {
 		return seederr.Wrap(err)
 	}
@@ -55,8 +54,7 @@ func (svc *HooinCommuteService) ReportBrainStep(
 	ctx context.Context,
 	req *connect.Request[commutepb.ReportBrainStepRequest],
 ) (*connect.Response[emptypb.Empty], error) {
-	token := req.Msg.GetToken()
-	personId, err := svc.office.Team.Auth(ctx, token)
+	personId, err := svc.office.Team.Auth(ctx)
 	if err != nil {
 		return nil, seederr.Wrap(err)
 	}
