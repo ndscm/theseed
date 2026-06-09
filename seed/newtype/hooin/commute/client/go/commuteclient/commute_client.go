@@ -36,22 +36,17 @@ func NewHooinCommuteClient(server string) *HooinCommuteClient {
 // commuting agent. See HooinCommuteService.Commute.
 func (c *HooinCommuteClient) Commute(
 	ctx context.Context,
-	token string,
 ) (*connect.ServerStreamForClient[brainpb.BrainInput], error) {
-	return c.client.Commute(ctx, connect.NewRequest(&commutepb.CommuteRequest{
-		Token: token,
-	}))
+	return c.client.Commute(ctx, connect.NewRequest(&commutepb.CommuteRequest{}))
 }
 
 // ReportBrainStep publishes a BrainStep emitted by the commuting agent.
 // See HooinCommuteService.ReportBrainStep.
 func (c *HooinCommuteClient) ReportBrainStep(
 	ctx context.Context,
-	token string,
 	step *brainpb.BrainStep,
 ) error {
 	_, err := c.client.ReportBrainStep(ctx, connect.NewRequest(&commutepb.ReportBrainStepRequest{
-		Token:     token,
 		BrainStep: step,
 	}))
 	if err != nil {
