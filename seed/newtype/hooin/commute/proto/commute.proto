@@ -8,17 +8,11 @@ import "seed/newtype/gajetto/proto/brain.proto";
 option go_package = "github.com/ndscm/theseed/seed/newtype/hooin/commute/proto/commutepb";
 
 // CommuteRequest initiates a commute session for an Amadeus-side agent.
-message CommuteRequest {
-  // Token authenticating the commuting agent.
-  string token = 1;
-}
+message CommuteRequest {}
 
 // ReportBrainStepRequest is sent by an Amadeus-side agent to publish a
 // `BrainStep` emitted while processing inputs.
 message ReportBrainStepRequest {
-  // Token authenticating the reporting agent.
-  string token = 1;
-
   // The brain step to publish. See `seed.newtype.gajetto.proto.BrainStep`.
   seed.newtype.gajetto.proto.BrainStep brain_step = 2;
 }
