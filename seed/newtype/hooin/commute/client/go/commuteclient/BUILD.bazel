@@ -13,6 +13,7 @@ go_library(
         "//seed/infra/error/go/seederr",
         "//seed/infra/flag/go/seedflag",
         "//seed/infra/grpc/go/grpclog",
+        "//seed/infra/http/go/seedbearer",
         "//seed/newtype/gajetto/proto:brain_go_proto",
         "//seed/newtype/hooin/commute/proto:commute_go_connect",
         "//seed/newtype/hooin/commute/proto:commute_go_proto",

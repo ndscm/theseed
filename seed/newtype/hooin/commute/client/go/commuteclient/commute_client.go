@@ -8,6 +8,7 @@ import (
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
 	"github.com/ndscm/theseed/seed/infra/flag/go/seedflag"
 	"github.com/ndscm/theseed/seed/infra/grpc/go/grpclog"
+	"github.com/ndscm/theseed/seed/infra/http/go/seedbearer"
 	"github.com/ndscm/theseed/seed/newtype/gajetto/proto/brainpb"
 	"github.com/ndscm/theseed/seed/newtype/hooin/commute/proto/commutepb"
 	"github.com/ndscm/theseed/seed/newtype/hooin/commute/proto/commutepbconnect"
@@ -24,7 +25,7 @@ func NewHooinCommuteClient(server string) *HooinCommuteClient {
 		server = flagHooinCommuteServiceServer.Get()
 	}
 	client := commutepbconnect.NewHooinCommuteServiceClient(
-		http.DefaultClient,
+		seedbearer.InterceptBearerTransport(http.DefaultClient),
 		server,
 		connect.WithInterceptors(grpclog.NewLogInterceptor()),
 	)
