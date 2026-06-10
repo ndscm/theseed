@@ -7,6 +7,7 @@ import (
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
 	"github.com/ndscm/theseed/seed/infra/flag/go/seedflag"
 	"github.com/ndscm/theseed/seed/infra/grpc/go/seedgrpc"
+	"github.com/ndscm/theseed/seed/infra/http/go/seedbearer"
 	"github.com/ndscm/theseed/seed/infra/init/go/seedinit"
 	"github.com/ndscm/theseed/seed/infra/log/go/seedlog"
 	"github.com/ndscm/theseed/seed/newtype/gajetto/team/staticteam"
@@ -41,7 +42,7 @@ func run() error {
 		return seederr.Wrap(err)
 	}
 
-	mux, err := seedgrpc.CreateGrpcMux(openidInterceptor.Intercept)
+	mux, err := seedgrpc.CreateGrpcMux(openidInterceptor.Intercept, seedbearer.InterceptBearerMiddleware)
 	if err != nil {
 		return seederr.Wrap(err)
 	}
