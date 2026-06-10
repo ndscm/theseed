@@ -157,7 +157,7 @@ func (s *Conscious) Wake() error {
 		return seederr.CodeErrorf(codes.FailedPrecondition, "already awake")
 	}
 
-	client := commuteclient.NewHooinCommuteClient("")
+	client := commuteclient.NewHooinCommuteClient()
 
 	commuteCtx, cancelCommute := context.WithCancel(context.Background())
 	commuteCtx, err := siliconlogin.SiliconLogin(commuteCtx)
