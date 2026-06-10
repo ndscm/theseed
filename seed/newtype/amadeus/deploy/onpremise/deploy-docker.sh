@@ -60,4 +60,5 @@ docker --host "ssh://${server}" run --name "${user_handle}" --interactive --tty 
   --port "${port}" \
   --openid_discovery_url "https://account.ndscm.com/realms/ndscm/.well-known/openid-configuration" \
   --silicon_refresh_token_file "/run/secrets/SILICON_REFRESH_TOKEN" \
+  --hooin_commute_service_server "http://steins.ndscm.biz:4664" \
   --verbose
