@@ -1,6 +1,7 @@
 package onsite
 
 import (
+	"context"
 	"sync"
 
 	"connectrpc.com/connect"
@@ -22,7 +23,7 @@ func NewPersonDuty(stream *connect.ServerStream[brainpb.BrainInput]) *PersonDuty
 	}
 }
 
-func (d *PersonDuty) Send(brainInput *brainpb.BrainInput) error {
+func (d *PersonDuty) Send(ctx context.Context, brainInput *brainpb.BrainInput) error {
 	d.streamMutex.Lock()
 	defer d.streamMutex.Unlock()
 	return d.stream.Send(brainInput)

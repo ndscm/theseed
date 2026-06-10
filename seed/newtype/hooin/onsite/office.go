@@ -1,6 +1,7 @@
 package onsite
 
 import (
+	"context"
 	"sync"
 
 	"github.com/google/uuid"
@@ -118,7 +119,7 @@ func (ofc *Office) BroadcastStep(personId string, topic string, step *brainpb.Br
 // DispatchBrainInput sends brainInput on personId's commute stream, under
 // that duty's stream mutex. It returns FailedPrecondition if the person has
 // no active commute session.
-func (ofc *Office) DispatchBrainInput(personId string, brainInput *brainpb.BrainInput) error {
+func (ofc *Office) DispatchBrainInput(ctx context.Context, personId string, brainInput *brainpb.BrainInput) error {
 	if brainInput.GetUuid() == "" {
 		brainInput.Uuid = uuid.NewString()
 	}
@@ -128,7 +129,7 @@ func (ofc *Office) DispatchBrainInput(personId string, brainInput *brainpb.Brain
 		return seederr.CodeErrorf(codes.FailedPrecondition, "person %q is not on duty", personId)
 	}
 
-	err := duty.Send(brainInput)
+	err := duty.Send(ctx, brainInput)
 	if err != nil {
 		return seederr.Wrap(err)
 	}

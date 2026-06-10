@@ -38,7 +38,8 @@ func (svc *HooinDictateService) SendBrainInput(
 	svc.office.SubscribeSteps(sub)
 	defer svc.office.UnsubscribeSteps(sub)
 
-	if err := svc.office.DispatchBrainInput(personId, brainInput); err != nil {
+	err = svc.office.DispatchBrainInput(ctx, personId, brainInput)
+	if err != nil {
 		return nil, seederr.Wrap(err)
 	}
 
@@ -78,7 +79,7 @@ func (svc *HooinDictateService) SendBrainInputStreamBrainStep(
 	svc.office.SubscribeSteps(sub)
 	defer svc.office.UnsubscribeSteps(sub)
 
-	err = svc.office.DispatchBrainInput(personId, brainInput)
+	err = svc.office.DispatchBrainInput(ctx, personId, brainInput)
 	if err != nil {
 		return seederr.Wrap(err)
 	}
