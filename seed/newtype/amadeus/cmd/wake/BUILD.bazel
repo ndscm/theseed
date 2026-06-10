@@ -13,7 +13,6 @@ go_library(
     deps = [
         "//seed/cloud/login/go/devicelogin",
         "//seed/infra/error/go/seederr",
-        "//seed/infra/flag/go/seedflag",
         "//seed/infra/init/go/seedinit",
         "//seed/infra/log/go/seedlog",
         "//seed/newtype/amadeus/wake/client/go/wakeclient",
