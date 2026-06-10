@@ -2,9 +2,12 @@ package onsite
 
 import (
 	"context"
+	"net/http"
 	"sync"
 
-	"connectrpc.com/connect"
+	"github.com/ndscm/theseed/seed/cloud/bidirequest/go/bidirequest"
+	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
+	"github.com/ndscm/theseed/seed/newtype/amadeus/commute/client/go/commuteclient"
 	"github.com/ndscm/theseed/seed/newtype/gajetto/proto/brainpb"
 )
 
@@ -13,28 +16,26 @@ import (
 // connect.ServerStream.Send is not safe for concurrent use, so every
 // goroutine forwarding a BrainInput to the agent must hold streamMutex.
 type PersonDuty struct {
-	streamMutex sync.Mutex
-	stream      *connect.ServerStream[brainpb.BrainInput]
-}
-
-func NewPersonDuty(stream *connect.ServerStream[brainpb.BrainInput]) *PersonDuty {
-	return &PersonDuty{
-		stream: stream,
-	}
+	mutex  sync.Mutex
+	stream bidirequest.PayloadStream
+	client *http.Client
 }
 
 func (d *PersonDuty) Send(ctx context.Context, brainInput *brainpb.BrainInput) error {
-	d.streamMutex.Lock()
-	defer d.streamMutex.Unlock()
-	return d.stream.Send(brainInput)
+	d.mutex.Lock()
+	defer d.mutex.Unlock()
+	client := commuteclient.NewAmadeusCommuteClient(commuteclient.WithHttpClient(d.client))
+	err := client.SendBrainInput(ctx, brainInput)
+	if err != nil {
+		return seederr.Wrap(err)
+	}
+	return nil
 }
 
-// Flush forces the underlying HTTP response headers to be written to
-// the client without sending a BrainInput. connect-go treats Send(nil)
-// as a no-op that only flushes headers, which is how the hooin service
-// lets a Commute client know its session is established.
-func (d *PersonDuty) Flush() error {
-	d.streamMutex.Lock()
-	defer d.streamMutex.Unlock()
-	return d.stream.Send(nil)
+func CreatePersonDuty(stream bidirequest.PayloadStream, handler http.Handler) *PersonDuty {
+	client := bidirequest.WrapServerSide(stream, handler)
+	return &PersonDuty{
+		stream: stream,
+		client: client,
+	}
 }
