@@ -60,9 +60,14 @@ func InterceptBearerTransport(next *http.Client) *http.Client {
 	if next == nil {
 		next = http.DefaultClient
 	}
-	if next.Transport == nil {
-		next.Transport = http.DefaultTransport
+	transport := next.Transport
+	if transport == nil {
+		transport = http.DefaultTransport
 	}
-	next.Transport = &bearerTransport{next: next.Transport}
-	return next
+	return &http.Client{
+		Transport:     &bearerTransport{next: transport},
+		CheckRedirect: next.CheckRedirect,
+		Jar:           next.Jar,
+		Timeout:       next.Timeout,
+	}
 }
