@@ -1,8 +1,12 @@
 package main
 
 import (
+	"context"
+	"net/http"
 	"os"
 
+	"github.com/ndscm/theseed/seed/cloud/bidirequest/go/bidirequest"
+	"github.com/ndscm/theseed/seed/cloud/bidirequest/go/bidirequestservice"
 	"github.com/ndscm/theseed/seed/infra/auth/go/openidjwt"
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
 	"github.com/ndscm/theseed/seed/infra/flag/go/seedflag"
@@ -19,6 +23,39 @@ import (
 )
 
 var flagPort = seedflag.DefineString("port", "4664", "Server port") // Default port assignment word: HOOI (4664)
+
+type OfficeConnectHandler struct {
+	office *onsite.Office
+
+	personHandler http.Handler
+}
+
+func (h *OfficeConnectHandler) HandleConnect(
+	ctx context.Context, stream bidirequest.PayloadStream,
+) error {
+
+	personId, err := h.office.Team.Auth(ctx)
+	if err != nil {
+		return seederr.Wrap(err)
+	}
+
+	duty := onsite.CreatePersonDuty(stream, h.personHandler)
+	err = h.office.SetDuty(personId, duty)
+	if err != nil {
+		return seederr.Wrap(err)
+	}
+	defer h.office.ClearDuty(personId)
+
+	<-ctx.Done()
+
+	err = ctx.Err()
+	if err != nil && err != context.Canceled {
+		return seederr.Wrap(err)
+	}
+	return nil
+}
+
+var _ bidirequestservice.ConnectHandler = (*OfficeConnectHandler)(nil)
 
 func run() error {
 	_, err := seedinit.Initialize(
@@ -47,11 +84,19 @@ func run() error {
 		return seederr.Wrap(err)
 	}
 
+	personGrpcMux, err := seedgrpc.CreateGrpcMux(openidInterceptor.Intercept, seedbearer.InterceptBearerMiddleware)
+	if err != nil {
+		return seederr.Wrap(err)
+	}
 	commuteSvc := commuteservice.NewHooinCommuteService(office)
-	err = mux.Register(commutepbconnect.NewHooinCommuteServiceHandler(
+	err = personGrpcMux.Register(commutepbconnect.NewHooinCommuteServiceHandler(
 		commuteSvc,
 		seedgrpc.WithCommonInterceptors(),
 	))
+	if err != nil {
+		return seederr.Wrap(err)
+	}
+	personHandler, err := personGrpcMux.Ready()
 	if err != nil {
 		return seederr.Wrap(err)
 	}
@@ -64,6 +109,16 @@ func run() error {
 	if err != nil {
 		return seederr.Wrap(err)
 	}
+
+	bidirequestPath, bidirequestHandler := bidirequestservice.NewBidirequestServiceHandler(
+		&OfficeConnectHandler{
+			office:        office,
+			personHandler: personHandler,
+		},
+	)
+	bidiHandler := seedbearer.InterceptBearerMiddleware(bidirequestHandler)
+	bidiHandler = openidInterceptor.Intercept(bidiHandler)
+	mux.Handle(bidirequestPath, bidiHandler)
 
 	handler, err := mux.Ready()
 	if err != nil {

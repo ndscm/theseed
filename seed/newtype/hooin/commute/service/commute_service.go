@@ -21,28 +21,7 @@ func (svc *HooinCommuteService) Commute(
 	req *connect.Request[commutepb.CommuteRequest],
 	stream *connect.ServerStream[brainpb.BrainInput],
 ) error {
-	personId, err := svc.office.Team.Auth(ctx)
-	if err != nil {
-		return seederr.Wrap(err)
-	}
-
-	duty := onsite.NewPersonDuty(stream)
-	err = svc.office.SetDuty(personId, duty)
-	if err != nil {
-		return seederr.Wrap(err)
-	}
-	defer svc.office.ClearDuty(personId)
-
-	// Flush response headers immediately so the client's Commute call
-	// returns once the session is established, instead of blocking until
-	// the first BrainInput is forwarded.
-	err = duty.Flush()
-	if err != nil {
-		return seederr.Wrap(err)
-	}
-
-	<-ctx.Done()
-	return nil
+	return seederr.CodeErrorf(codes.Unimplemented, "Commute is not implemented")
 }
 
 func (svc *HooinCommuteService) ReportBrainStep(
