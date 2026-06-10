@@ -16,6 +16,7 @@ go_library(
         "//seed/infra/error/go/seederr",
         "//seed/infra/flag/go/seedflag",
         "//seed/infra/grpc/go/seedgrpc",
+        "//seed/infra/http/go/seedbearer",
         "//seed/infra/init/go/seedinit",
         "//seed/infra/log/go/seedlog",
         "//seed/newtype/gajetto/team/staticteam",
