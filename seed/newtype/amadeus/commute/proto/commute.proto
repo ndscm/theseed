@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+package seed.newtype.amadeus.commute.proto;
+
+import "google/protobuf/empty.proto";
+import "seed/newtype/gajetto/proto/brain.proto";
+
+option go_package = "github.com/ndscm/theseed/seed/newtype/amadeus/commute/proto/commutepb";
+
+message SendBrainInputRequest {
+  seed.newtype.gajetto.proto.BrainInput brain_input = 2;
+}
+
+service AmadeusCommuteService {
+  rpc SendBrainInput(SendBrainInputRequest) returns (google.protobuf.Empty) {}
+}
