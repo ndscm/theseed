@@ -56,6 +56,11 @@ func run() error {
 		return seederr.Wrap(err)
 	}
 
+	err = conscious.Wake()
+	if err != nil {
+		return seederr.Wrap(err)
+	}
+
 	seedlog.Infof("Starting amadeus server on :%v", flagPort.Get())
 	err = seedgrpc.ListenAndServe(":"+flagPort.Get(), handler)
 	if err != nil {
