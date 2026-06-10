@@ -58,13 +58,13 @@ func (s *Conscious) checkTopicStarted(topic string) bool {
 // Brain.RegisterStepHandler and the second would fail with "step handler
 // already registered".
 func (s *Conscious) ensureTopicStarted(
-	client *commuteclient.HooinCommuteClient, topic string,
+	topic string,
 ) error {
 	if s.checkTopicStarted(topic) {
 		return nil
 	}
 
-	reporter := &StepReporter{client: client}
+	reporter := &StepReporter{client: s.hooinClient}
 	err := s.brain.RegisterStepHandler(topic, reporter)
 	if err != nil {
 		return seederr.Wrap(err)
@@ -73,6 +73,24 @@ func (s *Conscious) ensureTopicStarted(
 	s.topicsMutex.Lock()
 	defer s.topicsMutex.Unlock()
 	s.topics[topic] = &LiveTopic{reporter: reporter}
+	return nil
+}
+
+func (s *Conscious) Input(
+	input *brainpb.BrainInput,
+) error {
+	seedlog.Infof("Processing conscious input. input=%v", input)
+
+	topic := input.GetTopic()
+	err := s.ensureTopicStarted(topic)
+	if err != nil {
+		return seederr.Wrap(err)
+	}
+
+	err = s.brain.Input(s.commuteCtx, topic, input)
+	if err != nil {
+		return seederr.Wrap(err)
+	}
 	return nil
 }
 
@@ -107,11 +125,9 @@ func (s *Conscious) commute() {
 	}()
 	defer s.commuteStream.Close()
 
-	client := s.hooinClient
-
 	for s.commuteStream.Receive() {
 		input := s.commuteStream.Msg()
-		err := s.Input(client, input)
+		err := s.Input(input)
 		if err != nil {
 			seedlog.Errorf("Brain input error: %v", err)
 		}
@@ -125,24 +141,6 @@ func (s *Conscious) commute() {
 			seedlog.Errorf("Commute stream error: %v", err)
 		}
 	}
-}
-
-func (s *Conscious) Input(
-	client *commuteclient.HooinCommuteClient, input *brainpb.BrainInput,
-) error {
-	seedlog.Infof("Commute input: %v", input)
-
-	topic := input.GetTopic()
-	err := s.ensureTopicStarted(client, topic)
-	if err != nil {
-		return seederr.Wrap(err)
-	}
-
-	err = s.brain.Input(s.commuteCtx, topic, input)
-	if err != nil {
-		return seederr.Wrap(err)
-	}
-	return nil
 }
 
 func (s *Conscious) Wake(
