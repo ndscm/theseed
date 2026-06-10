@@ -143,10 +143,7 @@ func (s *Conscious) commute() {
 	}
 }
 
-func (s *Conscious) Wake(
-	ctx context.Context,
-	hooinDirectServer string,
-) error {
+func (s *Conscious) Wake() error {
 	s.hooinClientMutex.Lock()
 	defer s.hooinClientMutex.Unlock()
 
@@ -160,10 +157,7 @@ func (s *Conscious) Wake(
 		return seederr.CodeErrorf(codes.FailedPrecondition, "already awake")
 	}
 
-	if hooinDirectServer == "" {
-		return seederr.CodeErrorf(codes.InvalidArgument, "hooin_direct_server is required")
-	}
-	client := commuteclient.NewHooinCommuteClient(hooinDirectServer)
+	client := commuteclient.NewHooinCommuteClient("")
 
 	commuteCtx, cancelCommute := context.WithCancel(context.Background())
 	commuteCtx, err := siliconlogin.SiliconLogin(commuteCtx)
