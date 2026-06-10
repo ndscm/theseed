@@ -1,0 +1,15 @@
+load("@rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "bidirequestclient",
+    srcs = ["bidirequest_client.go"],
+    importpath = "github.com/ndscm/theseed/seed/cloud/bidirequest/client/go/bidirequestclient",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//seed/cloud/bidirequest/go/bidiwss",
+        "//seed/infra/error/go/seederr",
+        "//seed/infra/http/go/seedbearer",
+        "//seed/infra/log/go/seedlog",
+        "@com_github_coder_websocket//:websocket",
+    ],
+)
