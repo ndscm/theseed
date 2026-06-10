@@ -33,11 +33,8 @@ func NewAmadeusWakeClient(server string) *AmadeusWakeClient {
 
 func (c *AmadeusWakeClient) Wake(
 	ctx context.Context,
-	hooinDirectServer string,
 ) error {
-	_, err := c.client.Wake(ctx, connect.NewRequest(&wakepb.WakeRequest{
-		HooinDirectServer: hooinDirectServer,
-	}))
+	_, err := c.client.Wake(ctx, connect.NewRequest(&wakepb.WakeRequest{}))
 	if err != nil {
 		return seederr.Wrap(err)
 	}
