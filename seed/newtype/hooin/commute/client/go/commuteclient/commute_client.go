@@ -16,17 +16,44 @@ import (
 
 var flagHooinCommuteServiceServer = seedflag.DefineString("hooin_commute_service_server", "http://127.0.0.1:4664", "Hooin commute service server address")
 
+func HooinCommuteServiceServerFlag() string {
+	return flagHooinCommuteServiceServer.Get()
+}
+
 type HooinCommuteClient struct {
 	client commutepbconnect.HooinCommuteServiceClient
 }
 
-func NewHooinCommuteClient(server string) *HooinCommuteClient {
-	if server == "" {
-		server = flagHooinCommuteServiceServer.Get()
+type hooinCommuteClientOptions struct {
+	httpClient *http.Client
+	server     string
+}
+
+type HooinCommuteClientOption func(*hooinCommuteClientOptions)
+
+func WithHttpClient(httpClient *http.Client) HooinCommuteClientOption {
+	return func(opts *hooinCommuteClientOptions) {
+		opts.httpClient = httpClient
+	}
+}
+
+func WithServer(server string) HooinCommuteClientOption {
+	return func(opts *hooinCommuteClientOptions) {
+		opts.server = server
+	}
+}
+
+func NewHooinCommuteClient(opts ...HooinCommuteClientOption) *HooinCommuteClient {
+	o := &hooinCommuteClientOptions{
+		httpClient: http.DefaultClient,
+		server:     flagHooinCommuteServiceServer.Get(),
+	}
+	for _, opt := range opts {
+		opt(o)
 	}
 	client := commutepbconnect.NewHooinCommuteServiceClient(
-		seedbearer.InterceptBearerTransport(http.DefaultClient),
-		server,
+		seedbearer.InterceptBearerTransport(o.httpClient),
+		o.server,
 		connect.WithInterceptors(grpclog.NewLogInterceptor()),
 	)
 	return &HooinCommuteClient{client}
