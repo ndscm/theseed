@@ -11,10 +11,6 @@ option go_package = "github.com/ndscm/theseed/seed/newtype/amadeus/wake/proto/wa
 message WakeRequest {
   // Address of the hooin service the agent should commute to.
   string hooin_direct_server = 1;
-
-  // Token for the commute session. See
-  // `seed.newtype.hooin.commute.proto.CommuteRequest`.
-  string token = 2;
 }
 
 // RestartBrainRequest asks the Amadeus container to restart every
