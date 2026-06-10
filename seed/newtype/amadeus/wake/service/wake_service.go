@@ -31,7 +31,7 @@ func (svc *AmadeusWakeService) Wake(
 		return nil, seederr.Wrap(err)
 	}
 	// TODO(nagi): add fine-grained authorization
-	err = svc.conscious.Wake(ctx, req.Msg.GetHooinDirectServer())
+	err = svc.conscious.Wake()
 	if err != nil {
 		return nil, seederr.Wrap(err)
 	}
