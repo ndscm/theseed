@@ -9,6 +9,8 @@ import (
 	"github.com/ndscm/theseed/seed/infra/grpc/go/seedgrpc"
 	"github.com/ndscm/theseed/seed/infra/init/go/seedinit"
 	"github.com/ndscm/theseed/seed/infra/log/go/seedlog"
+	"github.com/ndscm/theseed/seed/newtype/amadeus/commute/proto/commutepbconnect"
+	commuteservice "github.com/ndscm/theseed/seed/newtype/amadeus/commute/service"
 	"github.com/ndscm/theseed/seed/newtype/amadeus/onduty"
 	"github.com/ndscm/theseed/seed/newtype/amadeus/wake/proto/wakepbconnect"
 	wakeservice "github.com/ndscm/theseed/seed/newtype/amadeus/wake/service"
@@ -51,11 +53,21 @@ func run() error {
 		return seederr.Wrap(err)
 	}
 
+	commuteSvc := commuteservice.NewAmadeusCommuteService(conscious)
+	err = mux.Register(commutepbconnect.NewAmadeusCommuteServiceHandler(
+		commuteSvc,
+		seedgrpc.WithCommonInterceptors(),
+	))
+	if err != nil {
+		return seederr.Wrap(err)
+	}
+
 	handler, err := mux.Ready()
 	if err != nil {
 		return seederr.Wrap(err)
 	}
 
+	conscious.SetConnectHandler(handler)
 	err = conscious.Wake()
 	if err != nil {
 		return seederr.Wrap(err)

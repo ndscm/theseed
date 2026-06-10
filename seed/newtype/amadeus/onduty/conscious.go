@@ -2,10 +2,11 @@ package onduty
 
 import (
 	"context"
-	"errors"
+	"net/http"
 	"sync"
 
-	"connectrpc.com/connect"
+	"github.com/ndscm/theseed/seed/cloud/bidirequest/client/go/bidirequestclient"
+	"github.com/ndscm/theseed/seed/cloud/bidirequest/go/bidirequest"
 	"github.com/ndscm/theseed/seed/cloud/login/go/siliconlogin"
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
 	"github.com/ndscm/theseed/seed/infra/log/go/seedlog"
@@ -21,10 +22,11 @@ type Conscious struct {
 	hooinClientMutex sync.Mutex
 	hooinClient      *commuteclient.HooinCommuteClient
 
-	commuteCtx    context.Context
-	cancelCommute context.CancelFunc
-	commuteStream *connect.ServerStreamForClient[brainpb.BrainInput]
-	commuteDone   chan struct{}
+	connectHandler http.Handler
+	connectCtx     context.Context
+	cancelConnect  context.CancelFunc
+	connectStream  bidirequest.PayloadStream
+	connectDone    chan struct{}
 
 	topicsMutex sync.Mutex
 	topics      map[string]*LiveTopic
@@ -43,20 +45,21 @@ func (s *Conscious) Initialize() error {
 	return nil
 }
 
+func (s *Conscious) SetConnectHandler(handler http.Handler) {
+	s.connectHandler = handler
+}
+
 func (s *Conscious) checkTopicStarted(topic string) bool {
 	s.topicsMutex.Lock()
 	defer s.topicsMutex.Unlock()
-	if _, ok := s.topics[topic]; ok {
-		return true
-	}
-	return false
+	_, ok := s.topics[topic]
+	return ok
 }
 
-// ensureTopicStarted must be called from a single goroutine per Conscious instance
-// (today: the commute loop). The check-then-act on s.topics is not atomic, so
-// concurrent callers for the same new topic would both reach
-// Brain.RegisterStepHandler and the second would fail with "step handler
-// already registered".
+// ensureTopicStarted must be called from a single goroutine per Conscious instance.
+// The check-then-act on s.topics is not atomic, so concurrent callers for the
+// same new topic would both reach Brain.RegisterStepHandler and the second would
+// fail with "step handler already registered".
 func (s *Conscious) ensureTopicStarted(
 	topic string,
 ) error {
@@ -87,7 +90,7 @@ func (s *Conscious) Input(
 		return seederr.Wrap(err)
 	}
 
-	err = s.brain.Input(s.commuteCtx, topic, input)
+	err = s.brain.Input(s.connectCtx, topic, input)
 	if err != nil {
 		return seederr.Wrap(err)
 	}
@@ -98,13 +101,13 @@ func (s *Conscious) commute() {
 	defer func() {
 		s.hooinClientMutex.Lock()
 		defer s.hooinClientMutex.Unlock()
-		s.cancelCommute()
-		close(s.commuteDone)
+		s.cancelConnect()
+		close(s.connectDone)
 		s.hooinClient = nil
-		s.commuteCtx = nil
-		s.cancelCommute = nil
-		s.commuteStream = nil
-		s.commuteDone = nil
+		s.connectCtx = nil
+		s.cancelConnect = nil
+		s.connectStream = nil
+		s.connectDone = nil
 	}()
 	defer func() {
 		s.topicsMutex.Lock()
@@ -123,24 +126,10 @@ func (s *Conscious) commute() {
 		wg.Wait()
 		s.topics = nil
 	}()
-	defer s.commuteStream.Close()
+	defer s.connectStream.Close()
 
-	for s.commuteStream.Receive() {
-		input := s.commuteStream.Msg()
-		err := s.Input(input)
-		if err != nil {
-			seedlog.Errorf("Brain input error: %v", err)
-		}
-	}
-	err := s.commuteStream.Err()
-	if err != nil {
-		// if error is cancel
-		if errors.Is(err, context.Canceled) {
-			seedlog.Infof("Commute stream closed: %v", err)
-		} else {
-			seedlog.Errorf("Commute stream error: %v", err)
-		}
-	}
+	<-s.connectCtx.Done()
+
 }
 
 func (s *Conscious) Wake() error {
@@ -148,34 +137,37 @@ func (s *Conscious) Wake() error {
 	defer s.hooinClientMutex.Unlock()
 
 	// Wake is exclusive. A Hibernate → Wake sequence can briefly still
-	// observe commuteStream != nil: Hibernate only cancels the commute
-	// context and returns immediately, while the commute goroutine's
-	// cleanup defer (which clears commuteStream under hooinClientMutex)
-	// may not have run yet. Callers that need a clean re-wake should
-	// wait on Hibernate's returned done channel before calling Wake.
-	if s.commuteStream != nil {
+	// observe connectStream != nil: Hibernate only cancels the connect
+	// context and returns immediately, while the commute goroutine
+	// (which clears connectStream under hooinClientMutex) may not have
+	// run yet. Callers that need a clean re-wake should wait on
+	// Hibernate's returned done channel before calling Wake.
+	if s.connectStream != nil {
 		return seederr.CodeErrorf(codes.FailedPrecondition, "already awake")
 	}
 
-	client := commuteclient.NewHooinCommuteClient()
+	connectClient := bidirequestclient.NewBidirequestClient(commuteclient.HooinCommuteServiceServerFlag())
 
-	commuteCtx, cancelCommute := context.WithCancel(context.Background())
-	commuteCtx, err := siliconlogin.SiliconLogin(commuteCtx)
+	connectCtx, cancelConnect := context.WithCancel(context.Background())
+	connectCtx, err := siliconlogin.SiliconLogin(connectCtx)
 	if err != nil {
-		cancelCommute()
+		cancelConnect()
 		return seederr.Wrap(err)
 	}
-	commuteStream, err := client.Commute(commuteCtx)
+	connectStream, err := connectClient.Connect(connectCtx)
 	if err != nil {
-		cancelCommute()
+		cancelConnect()
 		return seederr.Wrap(err)
 	}
+	muxClient := bidirequest.WrapClientSide(connectStream, s.connectHandler)
 
-	s.hooinClient = client
-	s.commuteCtx = commuteCtx
-	s.cancelCommute = cancelCommute
-	s.commuteStream = commuteStream
-	s.commuteDone = make(chan struct{})
+	s.hooinClient = commuteclient.NewHooinCommuteClient(
+		commuteclient.WithHttpClient(muxClient),
+	)
+	s.connectCtx = connectCtx
+	s.cancelConnect = cancelConnect
+	s.connectStream = connectStream
+	s.connectDone = make(chan struct{})
 	s.topics = map[string]*LiveTopic{}
 
 	go s.commute()
@@ -186,9 +178,9 @@ func (s *Conscious) Wake() error {
 func (s *Conscious) Hibernate() chan struct{} {
 	s.hooinClientMutex.Lock()
 	defer s.hooinClientMutex.Unlock()
-	if s.commuteStream == nil {
+	if s.connectStream == nil {
 		return nil
 	}
-	s.cancelCommute()
-	return s.commuteDone
+	s.cancelConnect()
+	return s.connectDone
 }

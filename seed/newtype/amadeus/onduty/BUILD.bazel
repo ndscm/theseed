@@ -11,13 +11,14 @@ go_library(
     ],
     importpath = "github.com/ndscm/theseed/seed/newtype/amadeus/onduty",
     deps = [
+        "//seed/cloud/bidirequest/client/go/bidirequestclient",
+        "//seed/cloud/bidirequest/go/bidirequest",
         "//seed/cloud/login/go/siliconlogin",
         "//seed/infra/error/go/seederr",
         "//seed/infra/log/go/seedlog",
         "//seed/newtype/amadeus/brain",
         "//seed/newtype/gajetto/proto:brain_go_proto",
         "//seed/newtype/hooin/commute/client/go/commuteclient",
-        "@com_connectrpc_connect//:connect",
         "@org_golang_google_grpc//codes",
     ],
 )
