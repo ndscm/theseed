@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+package seed.cloud.bidirequest.proto;
+
+option go_package = "github.com/ndscm/theseed/seed/cloud/bidirequest/proto/bidirequestpb";
+
+message Payload {
+  uint32 stream_id = 1;
+  bytes data = 2;
+}
+
+service BidirequestService {
+  // Connect declares the route path; the handler is served via WebSocket,
+  // not a gRPC stream. See the README.
+  rpc Connect(stream Payload) returns (stream Payload) {}
+}
