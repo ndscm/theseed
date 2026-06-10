@@ -13,7 +13,6 @@ import (
 )
 
 var flagHooinDirectServer = seedflag.DefineString("hooin_direct_server", "", "Hooin instance address")
-var flagToken = seedflag.DefineString("token", "", "Commute token for authentication")
 
 func run() error {
 	_, err := seedinit.Initialize(
@@ -28,7 +27,7 @@ func run() error {
 		return seederr.Wrap(err)
 	}
 	client := wakeclient.NewAmadeusWakeClient("")
-	err = client.Wake(ctx, flagHooinDirectServer.Get(), flagToken.Get())
+	err = client.Wake(ctx, flagHooinDirectServer.Get())
 	if err != nil {
 		return seederr.Wrap(err)
 	}
