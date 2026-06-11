@@ -29,7 +29,7 @@ func challenger(ctx context.Context, domain string) (challenge.AcmeChallenge, er
 	switch domain {
 	case "workflow.ndscm.biz":
 		permissionDenied := true
-		if loginUser.Email == "service-account-workflow-sfe-prod@ndscm.com" {
+		if loginUser.PreferredUsername == "service-account-workflow-sfe-prod" {
 			permissionDenied = false
 		}
 		if slices.Contains(loginUser.Groups, "sfe-dev") {
