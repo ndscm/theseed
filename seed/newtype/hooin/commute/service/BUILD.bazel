@@ -8,7 +8,6 @@ go_library(
     importpath = "github.com/ndscm/theseed/seed/newtype/hooin/commute/service",
     deps = [
         "//seed/infra/error/go/seederr",
-        "//seed/newtype/gajetto/proto:brain_go_proto",
         "//seed/newtype/hooin/commute/proto:commute_go_proto",
         "//seed/newtype/hooin/onsite",
         "@com_connectrpc_connect//:connect",
