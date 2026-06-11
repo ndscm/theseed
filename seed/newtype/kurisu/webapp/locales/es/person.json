@@ -1,0 +1,24 @@
+{
+  "brain": {
+    "title": "Cerebro"
+  },
+  "breadcrumb": {
+    "person": "Persona"
+  },
+  "chat": {
+    "title": "Chat"
+  },
+  "memory": {
+    "title": "Memoria"
+  },
+  "status": {
+    "offDuty": "Fuera de servicio",
+    "onDuty": "En servicio"
+  },
+  "terminal": {
+    "title": "Terminal"
+  },
+  "workstation": {
+    "title": "Estación de trabajo"
+  }
+}
