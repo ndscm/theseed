@@ -16,6 +16,17 @@ const routeConfig: RouteConfig = [
         ]),
       ]),
     ]),
+    ...prefix("person", [
+      index("./routes/person/index.tsx"), //
+      ...prefix(":handle", [
+        layout("./routes/person/$handle/layout.tsx", [
+          index("./routes/person/$handle/index.tsx"), //
+          ...prefix("chat", [
+            index("./routes/person/$handle/chat/index.tsx"), //
+          ]),
+        ]),
+      ]),
+    ]),
   ]),
 ]
 
