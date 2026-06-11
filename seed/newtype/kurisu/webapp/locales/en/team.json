@@ -1,0 +1,19 @@
+{
+  "breadcrumb": {
+    "team": "Team"
+  },
+  "info": {
+    "displayNamePlaceholder": "Team"
+  },
+  "member": {
+    "nameLabel": "Name",
+    "offDutyStatus": "Off Duty",
+    "onDutyStatus": "On Duty",
+    "statusLabel": "Status"
+  },
+  "members": {
+    "addMemberButton": "Add member",
+    "noMembersHint": "No members",
+    "title": "Members"
+  }
+}

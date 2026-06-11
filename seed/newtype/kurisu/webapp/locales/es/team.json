@@ -1,0 +1,19 @@
+{
+  "breadcrumb": {
+    "team": "Equipo"
+  },
+  "info": {
+    "displayNamePlaceholder": "Equipo"
+  },
+  "member": {
+    "nameLabel": "Nombre",
+    "offDutyStatus": "Fuera de servicio",
+    "onDutyStatus": "En servicio",
+    "statusLabel": "Estado"
+  },
+  "members": {
+    "addMemberButton": "Agregar miembro",
+    "noMembersHint": "Sin miembros",
+    "title": "Miembros"
+  }
+}
