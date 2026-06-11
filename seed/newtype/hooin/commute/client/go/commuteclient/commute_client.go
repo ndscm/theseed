@@ -59,14 +59,6 @@ func NewHooinCommuteClient(opts ...HooinCommuteClientOption) *HooinCommuteClient
 	return &HooinCommuteClient{client}
 }
 
-// Commute opens the Amadeus-side stream that delivers BrainInputs to the
-// commuting agent. See HooinCommuteService.Commute.
-func (c *HooinCommuteClient) Commute(
-	ctx context.Context,
-) (*connect.ServerStreamForClient[brainpb.BrainInput], error) {
-	return c.client.Commute(ctx, connect.NewRequest(&commutepb.CommuteRequest{}))
-}
-
 // ReportBrainStep publishes a BrainStep emitted by the commuting agent.
 // See HooinCommuteService.ReportBrainStep.
 func (c *HooinCommuteClient) ReportBrainStep(
