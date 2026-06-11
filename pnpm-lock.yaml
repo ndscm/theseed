@@ -377,6 +377,12 @@ importers:
 
   seed/newtype/gajetto/proto: {}
 
+  seed/newtype/hooin/dictate/proto:
+    dependencies:
+      '@theseed/seed-newtype-gajetto-proto':
+        specifier: workspace:^
+        version: link:../../../gajetto/proto
+
   seed/newtype/playwright/proxy:
     dependencies:
       http-proxy:
