@@ -7,9 +7,6 @@ import "seed/newtype/gajetto/proto/brain.proto";
 
 option go_package = "github.com/ndscm/theseed/seed/newtype/hooin/commute/proto/commutepb";
 
-// CommuteRequest initiates a commute session for an Amadeus-side agent.
-message CommuteRequest {}
-
 // ReportBrainStepRequest is sent by an Amadeus-side agent to publish a
 // `BrainStep` emitted while processing inputs.
 message ReportBrainStepRequest {
@@ -22,11 +19,6 @@ message ReportBrainStepRequest {
 // The external-facing RPCs for submitting inputs and subscribing to
 // steps live on `HooinDictateService`.
 service HooinCommuteService {
-  // Commute opens a stream through which the hooin service delivers
-  // `BrainInput`s to the commuting agent.
-  rpc Commute(CommuteRequest)
-      returns (stream seed.newtype.gajetto.proto.BrainInput) {}
-
   // ReportBrainStep publishes a `BrainStep` emitted by the commuting
   // agent while processing inputs.
   rpc ReportBrainStep(ReportBrainStepRequest) returns (google.protobuf.Empty) {}
