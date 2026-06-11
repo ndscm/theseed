@@ -30,6 +30,9 @@ const routeConfig: RouteConfig = [
           ...prefix("memory", [
             index("./routes/person/$handle/memory/index.tsx"), //
           ]),
+          ...prefix("terminal", [
+            index("./routes/person/$handle/terminal/index.tsx"), //
+          ]),
           ...prefix("workstation", [
             index("./routes/person/$handle/workstation/index.tsx"), //
           ]),
