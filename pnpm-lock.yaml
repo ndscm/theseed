@@ -417,6 +417,8 @@ importers:
         specifier: workspace:^
         version: link:../../../gajetto/proto
 
+  seed/newtype/hooin/roster/proto: {}
+
   seed/newtype/playwright/proxy:
     dependencies:
       http-proxy:
