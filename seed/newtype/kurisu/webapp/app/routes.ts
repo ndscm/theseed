@@ -21,6 +21,9 @@ const routeConfig: RouteConfig = [
       ...prefix(":handle", [
         layout("./routes/person/$handle/layout.tsx", [
           index("./routes/person/$handle/index.tsx"), //
+          ...prefix("brain", [
+            index("./routes/person/$handle/brain/index.tsx"), //
+          ]),
           ...prefix("chat", [
             index("./routes/person/$handle/chat/index.tsx"), //
           ]),
