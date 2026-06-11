@@ -296,9 +296,6 @@ importers:
 
   seed/devprod/gotcha/tsx:
     dependencies:
-      notistack:
-        specifier: 3.0.2
-        version: 3.0.2(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
       react:
         specifier: 19.2.5
         version: 19.2.5
