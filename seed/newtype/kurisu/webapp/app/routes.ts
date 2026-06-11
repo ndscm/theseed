@@ -27,6 +27,9 @@ const routeConfig: RouteConfig = [
           ...prefix("chat", [
             index("./routes/person/$handle/chat/index.tsx"), //
           ]),
+          ...prefix("memory", [
+            index("./routes/person/$handle/memory/index.tsx"), //
+          ]),
         ]),
       ]),
     ]),
