@@ -1,0 +1,14 @@
+load("@rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "bidiwss",
+    srcs = ["bidiwss.go"],
+    importpath = "github.com/ndscm/theseed/seed/cloud/bidirequest/go/bidiwss",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//seed/cloud/bidirequest/proto:bidirequest_go_proto",
+        "//seed/infra/error/go/seederr",
+        "@com_github_coder_websocket//:websocket",
+        "@org_golang_google_protobuf//proto",
+    ],
+)
