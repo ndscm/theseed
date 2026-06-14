@@ -29,6 +29,7 @@ go_library(
         "//seed/infra/flag/go/seedflag",
         "//seed/infra/grpc/go/seedgrpc",
         "//seed/infra/http/go/cachecontrol",
+        "//seed/infra/http/go/seedbearer",
         "//seed/infra/init/go/seedinit",
         "//seed/infra/log/go/seedlog",
         "//seed/infra/spa/go/seedspa",
@@ -36,6 +37,8 @@ go_library(
         "//seed/newtype/hooin/dictate/proto:dictate_go_connect",
         "//seed/newtype/hooin/roster/client/go/rosterclient",
         "//seed/newtype/hooin/roster/proto:roster_go_connect",
+        "//seed/newtype/kurisu/proto:kurisu_go_connect",
+        "//seed/newtype/kurisu/service",
     ],
 )
 
