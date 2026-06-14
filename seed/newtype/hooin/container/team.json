@@ -5,26 +5,22 @@
     "christina": {
       "handle": "christina",
       "displayName": "Christina",
-      "role": "reviewer",
-      "token": "christina:unsecure"
+      "role": "reviewer"
     },
     "okarin": {
       "handle": "okarin",
       "displayName": "Okarin",
-      "role": "lead",
-      "token": "okarin:unsecure"
+      "role": "lead"
     },
     "daru": {
       "handle": "daru",
       "displayName": "Daru",
-      "role": "coder",
-      "token": "daru:unsecure"
+      "role": "coder"
     },
     "mayushii": {
       "handle": "mayushii",
       "displayName": "Mayushii",
-      "role": "pm",
-      "token": "mayushii:unsecure"
+      "role": "pm"
     }
   }
 }
