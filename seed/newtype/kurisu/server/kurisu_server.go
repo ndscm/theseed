@@ -16,6 +16,7 @@ import (
 	"github.com/ndscm/theseed/seed/infra/flag/go/seedflag"
 	"github.com/ndscm/theseed/seed/infra/grpc/go/seedgrpc"
 	"github.com/ndscm/theseed/seed/infra/http/go/cachecontrol"
+	"github.com/ndscm/theseed/seed/infra/http/go/seedbearer"
 	"github.com/ndscm/theseed/seed/infra/init/go/seedinit"
 	"github.com/ndscm/theseed/seed/infra/log/go/seedlog"
 	"github.com/ndscm/theseed/seed/infra/spa/go/seedspa"
@@ -23,6 +24,8 @@ import (
 	"github.com/ndscm/theseed/seed/newtype/hooin/dictate/proto/dictatepbconnect"
 	"github.com/ndscm/theseed/seed/newtype/hooin/roster/client/go/rosterclient"
 	"github.com/ndscm/theseed/seed/newtype/hooin/roster/proto/rosterpbconnect"
+	"github.com/ndscm/theseed/seed/newtype/kurisu/proto/kurisupbconnect"
+	kurisuservice "github.com/ndscm/theseed/seed/newtype/kurisu/service"
 )
 
 //go:embed all:webapp
@@ -43,13 +46,28 @@ func run() error {
 		return seederr.Wrap(err)
 	}
 
-	mux, err := seedgrpc.CreateGrpcMux(openidInterceptor.Intercept)
+	mux, err := seedgrpc.CreateGrpcMux(
+		openidInterceptor.Intercept,
+		seedbearer.InterceptBearerMiddleware,
+	)
 	if err != nil {
 		return seederr.Wrap(err)
 	}
 
 	err = mux.Register(loginpbconnect.NewLoginServiceHandler(
 		&loginservice.LoginService{},
+		seedgrpc.WithCommonInterceptors(),
+	))
+	if err != nil {
+		return seederr.Wrap(err)
+	}
+
+	kurisuSvc, err := kurisuservice.CreateKurisuService()
+	if err != nil {
+		return seederr.Wrap(err)
+	}
+	err = mux.Register(kurisupbconnect.NewKurisuServiceHandler(
+		kurisuSvc,
 		seedgrpc.WithCommonInterceptors(),
 	))
 	if err != nil {
