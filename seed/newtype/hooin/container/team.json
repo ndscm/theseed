@@ -2,24 +2,34 @@
   "handle": "ndscm",
   "displayName": "Team Ndscm",
   "members": {
+    "admin": {
+      "handle": "admin",
+      "displayName": "Admin",
+      "organic": "carbon",
+      "role": "admin"
+    },
     "christina": {
       "handle": "christina",
       "displayName": "Christina",
+      "organic": "silicon",
       "role": "reviewer"
     },
     "okarin": {
       "handle": "okarin",
       "displayName": "Okarin",
+      "organic": "silicon",
       "role": "lead"
     },
     "daru": {
       "handle": "daru",
       "displayName": "Daru",
+      "organic": "silicon",
       "role": "coder"
     },
     "mayushii": {
       "handle": "mayushii",
       "displayName": "Mayushii",
+      "organic": "silicon",
       "role": "pm"
     }
   }
