@@ -1,0 +1,118 @@
+#!/usr/bin/env bash
+set -eux
+set -o pipefail
+cd "$(dirname "${BASH_SOURCE[0]}")/../../../../.."
+
+server="${1:-"steins.ndscm.biz"}"
+linux_user="${2:-"christina"}"
+port="${3:-"2447"}"
+hooin_url="${4:-"https://hooin.ndscm.biz/"}"
+user_handle="${5:-"${linux_user}"}"
+set +x
+user_refresh_token="${6:-""}"
+set -x
+
+container_engine="${CONTAINER_ENGINE:-"podman"}"
+if [[ "${container_engine}" != "podman" ]]; then
+  printf 'Only podman is supported\n'
+  exit 1
+fi
+
+mount_home=${MOUNT_HOME:-"/mnt/data/${user_handle}/home"}
+
+export CONTAINER_ENGINE="${container_engine}"
+./seed/newtype/amadeus/container/build.sh
+
+# Stage the container image on the remote.
+podman save "ghcr.io/ndscm/seed-newtype-amadeus-container:latest" | ssh "${server}" "cat > /tmp/seed-newtype-amadeus-container.tar"
+
+# Deploy quadlet unit and the silicon refresh token secret, then start the service.
+#
+# Each silicon user runs as its own rootless service user, so the quadlet and the
+# install script are namespaced by linux_user to coexist on a shared host.
+#
+# Becareful to preserve the ~/.local/share/containers uid/gid ownerships, which is the subuid of the running container.
+
+printf 'Ensuring service user existence...\n' >&2
+ssh -t "${server}" "#!/usr/bin/env bash
+set -eux
+set -o pipefail
+
+if ! id '${linux_user}' &>/dev/null; then
+  sudo useradd --create-home --shell /usr/sbin/nologin '${linux_user}'
+  sudo loginctl enable-linger '${linux_user}'
+fi
+"
+
+set +x
+if [[ -n "${user_refresh_token}" ]]; then
+  printf 'Updating silicon refresh token secret...' >&2
+  printf '%s' "${user_refresh_token}" | ssh "${server}" "cat >~/SILICON_REFRESH_TOKEN"
+  ssh -t "${server}" "#!/usr/bin/env bash
+set -eux
+set -o pipefail
+
+sudo mv ~/SILICON_REFRESH_TOKEN ~${linux_user}/SILICON_REFRESH_TOKEN
+sudo chown '${linux_user}:${linux_user}' ~${linux_user}/SILICON_REFRESH_TOKEN
+trap 'sudo rm -f ~${linux_user}/SILICON_REFRESH_TOKEN' EXIT
+sudo machinectl shell '${linux_user}@' /bin/bash -c 'podman secret create --replace SILICON_REFRESH_TOKEN ~/SILICON_REFRESH_TOKEN'
+"
+fi
+set -x
+
+cat <<END | ssh "${server}" "cat > ~/install-amadeus-${linux_user}.sh"
+#!/usr/bin/env bash
+set -eux
+set -o pipefail
+
+printf 'Creating quadlets...\n' >&2
+service_user_home=\$(eval printf ~'${linux_user}')
+quadlet_dir=\${service_user_home}/.config/containers/systemd
+sudo machinectl shell '${linux_user}@' /usr/bin/mkdir -p "\${quadlet_dir}"
+
+cat <<EOF | sudo tee "\${quadlet_dir}/amadeus.container"
+[Unit]
+Description=Amadeus Server Container
+
+[Container]
+ContainerName=amadeus
+Image=ghcr.io/ndscm/seed-newtype-amadeus-container:latest
+Pull=never
+PidsLimit=-1
+RunInit=true
+Network=host
+Secret=SILICON_REFRESH_TOKEN
+Volume=${mount_home}:/home:Z
+Exec=/opt/amadeus/amadeus-server --port ${port} --openid_discovery_url https://account.ndscm.com/realms/ndscm/.well-known/openid-configuration --silicon_refresh_token_file /run/secrets/SILICON_REFRESH_TOKEN --hooin_commute_service_server ${hooin_url} --verbose
+
+[Service]
+Restart=always
+RestartSec=2s
+TasksMax=infinity
+
+[Install]
+WantedBy=default.target
+EOF
+
+printf 'Creating quadlet volumes...\n' >&2
+sudo mkdir -p "${mount_home}"
+sudo chown '${linux_user}:${linux_user}' "${mount_home}"
+
+printf 'Loading container and restarting service...\n' >&2
+sudo chmod 644 /tmp/seed-newtype-amadeus-container.tar
+sudo machinectl shell '${linux_user}@' /bin/bash -c 'podman load --input /tmp/seed-newtype-amadeus-container.tar'
+sudo machinectl shell '${linux_user}@' /bin/bash -c 'podman image exists ghcr.io/ndscm/seed-newtype-amadeus-container:latest'
+sudo machinectl shell '${linux_user}@' /bin/bash -c 'systemctl --user daemon-reload && systemctl --user restart amadeus'
+END
+
+ssh -t "${server}" "
+trap 'rm -f ~/install-amadeus-${linux_user}.sh' EXIT
+chmod +x ~/install-amadeus-${linux_user}.sh
+~/install-amadeus-${linux_user}.sh
+"
+
+printf "Use this command to access the container:\n"
+printf "    \x1b[1;33mssh -t ${server} sudo machinectl shell ${linux_user}@ /bin/bash\x1b[0m\n"
+printf "    \x1b[1;33mssh -t ${server} sudo machinectl shell ${linux_user}@ /usr/bin/podman exec --interactive --tty --user amadeus amadeus /usr/bin/zsh\x1b[0m\n"
+
+ssh -t ${server} sudo machinectl shell ${linux_user}@ /usr/bin/podman logs --follow amadeus
