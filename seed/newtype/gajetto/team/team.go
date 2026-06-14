@@ -17,6 +17,8 @@ type Person interface {
 	GetHandle() string
 	// GetDisplayName reports the person's human-readable display name.
 	GetDisplayName() string
+	// GetOrganic reports the person's organic identifier.
+	GetOrganic() string
 }
 
 // Team is a named group of [Person] members.
