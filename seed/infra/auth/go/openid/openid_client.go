@@ -233,6 +233,44 @@ func (oc *OpenidClient) AccessToken(
 	return token.AccessToken, nil
 }
 
+// TokenExchange performs an RFC 8693 token exchange against the token endpoint
+// and returns a TokenSource that re-runs the exchange when the token expires.
+// The client authenticates with its configured credentials: a JWT client
+// assertion when one is set (injected via WithClientAssertion), otherwise
+// client_secret_basic when a secret is set, or a public client_id.
+func (oc *OpenidClient) TokenExchange(
+	ctx context.Context,
+	subjectToken string,
+	audiences []string,
+	scopes []string,
+) (oauth2.TokenSource, error) {
+	configuration, err := oc.GetOpenidConfiguration(ctx)
+	if err != nil {
+		return nil, seederr.Wrap(err)
+	}
+
+	endpointParams := url.Values{}
+	endpointParams.Set("grant_type", "urn:ietf:params:oauth:grant-type:token-exchange")
+	endpointParams.Set("subject_token", subjectToken)
+	endpointParams.Set("subject_token_type", "urn:ietf:params:oauth:token-type:access_token")
+	if len(audiences) > 0 {
+		endpointParams.Set("audience", strings.Join(audiences, " "))
+	}
+
+	oauth2Config := &clientcredentials.Config{
+		ClientID:       oc.clientId,
+		ClientSecret:   oc.clientSecret,
+		TokenURL:       configuration.TokenEndpoint,
+		Scopes:         scopes,
+		EndpointParams: endpointParams,
+		AuthStyle:      oauth2.AuthStyleInParams,
+	}
+
+	refreshCtx := oc.WithClientAssertion(ctx)
+	tokenSource := oauth2Config.TokenSource(refreshCtx)
+	return tokenSource, nil
+}
+
 func (oc *OpenidClient) Client(
 	ctx context.Context, scopes []string,
 ) (*http.Client, error) {
