@@ -2,9 +2,12 @@ package clientopenid
 
 import (
 	"context"
+	"encoding/json"
 	"io"
 	"net/http"
 	"net/url"
+	"strings"
+	"time"
 
 	"github.com/ndscm/theseed/seed/infra/auth/go/openid"
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
@@ -150,6 +153,72 @@ func (provider *OpenidProvider) Authorization(
 		return ""
 	}
 	return "Bearer " + accessToken
+}
+
+// TokenExchange performs an RFC 8693 token exchange against the token endpoint,
+// authenticating this client with its configured credentials (client_secret_basic
+// when a secret is set, otherwise a public client_id).
+func (provider *OpenidProvider) TokenExchange(
+	ctx context.Context,
+	subjectToken string,
+	audience string,
+	scopes []string,
+) (*oauth2.Token, error) {
+	configuration, err := provider.GetOpenidConfiguration(ctx)
+	if err != nil {
+		return nil, seederr.Wrap(err)
+	}
+
+	form := url.Values{}
+	form.Set("grant_type", "urn:ietf:params:oauth:grant-type:token-exchange")
+	form.Set("subject_token", subjectToken)
+	form.Set("subject_token_type", "urn:ietf:params:oauth:token-type:access_token")
+	if audience != "" {
+		form.Set("audience", audience)
+	}
+	if len(scopes) > 0 {
+		form.Set("scope", strings.Join(scopes, " "))
+	}
+	if provider.clientSecret == "" {
+		form.Set("client_id", provider.clientId)
+	}
+
+	request, err := http.NewRequestWithContext(
+		ctx, http.MethodPost, configuration.TokenEndpoint, strings.NewReader(form.Encode()))
+	if err != nil {
+		return nil, seederr.Wrap(err)
+	}
+	request.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	if provider.clientSecret != "" {
+		request.SetBasicAuth(url.QueryEscape(provider.clientId), url.QueryEscape(provider.clientSecret))
+	}
+
+	response, err := http.DefaultClient.Do(request)
+	if err != nil {
+		return nil, seederr.Wrap(err)
+	}
+	defer response.Body.Close()
+
+	responseBytes, err := io.ReadAll(response.Body)
+	if err != nil {
+		return nil, seederr.Wrap(err)
+	}
+	if response.StatusCode != http.StatusOK {
+		return nil, seederr.WrapErrorf("token exchange failed: status %d, body: %s",
+			response.StatusCode, string(responseBytes))
+	}
+
+	offlineToken := &oauth2.Token{}
+	err = json.Unmarshal(responseBytes, offlineToken)
+	if err != nil {
+		return nil, seederr.Wrap(err)
+	}
+	// The wire format carries expires_in, not expiry; derive Expiry so the token
+	// is not treated as non-expiring (see oauth2.Token docs).
+	if offlineToken.ExpiresIn > 0 {
+		offlineToken.Expiry = time.Now().Add(time.Duration(offlineToken.ExpiresIn) * time.Second)
+	}
+	return offlineToken, nil
 }
 
 func (provider *OpenidProvider) Client(
