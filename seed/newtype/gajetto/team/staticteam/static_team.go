@@ -24,6 +24,8 @@ type StaticPerson struct {
 	Handle string `json:"handle"`
 
 	DisplayName string `json:"displayName,omitempty"`
+
+	Organic string `json:"organic,omitempty"`
 }
 
 func (p *StaticPerson) GetPersonId() string {
@@ -36,6 +38,10 @@ func (p *StaticPerson) GetHandle() string {
 
 func (p *StaticPerson) GetDisplayName() string {
 	return p.DisplayName
+}
+
+func (p *StaticPerson) GetOrganic() string {
+	return p.Organic
 }
 
 var _ team.Person = (*StaticPerson)(nil)
