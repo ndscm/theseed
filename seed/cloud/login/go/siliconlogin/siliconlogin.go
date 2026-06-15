@@ -2,7 +2,6 @@ package siliconlogin
 
 import (
 	"context"
-	"maps"
 	"os"
 	"sync"
 
@@ -16,35 +15,9 @@ import (
 
 var flagSiliconRefreshTokenFile = seedflag.DefineString("silicon_refresh_token_file", "", "Path to file containing refresh token for Silicon login.")
 
-type MemoryTokenStorage struct {
-	mutex sync.RWMutex
-	data  map[string]string
-}
-
-func (s *MemoryTokenStorage) Get(ctx context.Context, key string) (string, error) {
-	s.mutex.RLock()
-	defer s.mutex.RUnlock()
-	if s.data == nil {
-		return "", nil
-	}
-	return s.data[key], nil
-}
-
-func (s *MemoryTokenStorage) Update(ctx context.Context, change map[string]string) error {
-	s.mutex.Lock()
-	defer s.mutex.Unlock()
-	if s.data == nil {
-		s.data = map[string]string{}
-	}
-	maps.Copy(s.data, change)
-	return nil
-}
-
-var _ loginopenid.ExternalTokenStorage = (*MemoryTokenStorage)(nil)
-
 type SiliconSession struct {
 	mutex    sync.Mutex
-	token    *MemoryTokenStorage
+	token    *loginopenid.MemoryTokenStorage
 	provider *loginopenid.UserOpenidProvider
 }
 
@@ -61,9 +34,9 @@ func SiliconLogin(ctx context.Context) (context.Context, error) {
 			if err != nil {
 				return ctx, seederr.Wrap(err)
 			}
-			session.token = &MemoryTokenStorage{
-				data: map[string]string{"refresh_token": string(refreshToken)},
-			}
+			session.token = loginopenid.NewMemoryTokenStorage(
+				map[string]string{"refresh_token": string(refreshToken)},
+			)
 
 			discoveryUrl := openid.OpenidDiscoveryUrlFlag()
 			base := clientopenid.NewOpenidProvider(discoveryUrl, "silicon-prod", "")
