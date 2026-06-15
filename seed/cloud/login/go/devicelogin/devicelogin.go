@@ -91,7 +91,7 @@ func DeviceLogin(ctx context.Context, service string) (context.Context, error) {
 		return seedbearer.WithBearer(ctx, accessToken), nil
 	}
 
-	oauth2Config, err := base.GetOauth2Config(ctx, "")
+	oauth2Config, err := base.GetOauth2Config(ctx, "", nil)
 	if err != nil {
 		return ctx, seederr.Wrap(err)
 	}
