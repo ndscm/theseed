@@ -68,6 +68,33 @@ type UserOpenidProvider struct {
 	prefix string
 }
 
+func (provider *UserOpenidProvider) PasswordGrant(
+	ctx context.Context,
+	storage ExternalTokenStorage,
+	username string,
+	password string,
+) error {
+	oauth2Config, err := provider.GetOauth2Config(
+		ctx, "", []string{"openid", "basic", "profile", "email", "offline_access"},
+	)
+	if err != nil {
+		return seederr.Wrap(err)
+	}
+	token, err := oauth2Config.PasswordCredentialsToken(ctx, username, password)
+	if err != nil {
+		return seederr.Wrap(err)
+	}
+	err = storage.Update(ctx, map[string]string{
+		provider.prefix + "access_token":  token.AccessToken,
+		provider.prefix + "refresh_token": token.RefreshToken,
+		provider.prefix + "expiry":        token.Expiry.Format(time.RFC3339Nano),
+	})
+	if err != nil {
+		return seederr.Wrap(err)
+	}
+	return nil
+}
+
 func (provider *UserOpenidProvider) Exchange(
 	ctx context.Context,
 	storage ExternalTokenStorage,
