@@ -33,7 +33,7 @@ fi
       -H "Content-Type: application/x-www-form-urlencoded" \
       -d "grant_type=password" \
       -d "client_id=silicon-prod" \
-      -d "username=christina" \
+      -d "username=${user_handle}" \
       -d "password=${user_password}" \
       -d "scope=openid basic profile email offline_access" |
       jq -r ".refresh_token"
@@ -60,5 +60,5 @@ docker --host "ssh://${server}" run --name "${user_handle}" --interactive --tty 
   --port "${port}" \
   --openid_discovery_url "https://account.ndscm.com/realms/ndscm/.well-known/openid-configuration" \
   --silicon_refresh_token_file "/run/secrets/SILICON_REFRESH_TOKEN" \
-  --hooin_commute_service_server "http://steins.ndscm.biz:4664" \
+  --hooin_commute_service_server "https://hooin.ndscm.biz" \
   --verbose
