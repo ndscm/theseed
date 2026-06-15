@@ -1,0 +1,53 @@
+{
+  "name": "claude",
+  "platforms": {
+    "linux-aarch64": {
+      "path": "claude",
+      "providers": [
+        {
+          "url": "https://downloads.claude.ai/claude-code-releases/{{TAG}}/linux-arm64/claude"
+        }
+      ]
+    },
+    "linux-x86_64": {
+      "path": "claude",
+      "providers": [
+        {
+          "url": "https://downloads.claude.ai/claude-code-releases/{{TAG}}/linux-x64/claude"
+        }
+      ]
+    },
+    "macos-aarch64": {
+      "path": "claude",
+      "providers": [
+        {
+          "url": "https://downloads.claude.ai/claude-code-releases/{{TAG}}/darwin-arm64/claude"
+        }
+      ]
+    },
+    "macos-x86_64": {
+      "path": "claude",
+      "providers": [
+        {
+          "url": "https://downloads.claude.ai/claude-code-releases/{{TAG}}/darwin-x64/claude"
+        }
+      ]
+    },
+    "windows-aarch64": {
+      "path": "claude.exe",
+      "providers": [
+        {
+          "url": "https://downloads.claude.ai/claude-code-releases/{{TAG}}/win32-arm64/claude.exe"
+        }
+      ]
+    },
+    "windows-x86_64": {
+      "path": "claude.exe",
+      "providers": [
+        {
+          "url": "https://downloads.claude.ai/claude-code-releases/{{TAG}}/win32-x64/claude.exe"
+        }
+      ]
+    }
+  }
+}
