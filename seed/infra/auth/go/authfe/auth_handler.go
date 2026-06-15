@@ -78,7 +78,7 @@ func (h *AuthHandler) handleLogin(w http.ResponseWriter, r *http.Request) {
 	}
 
 	origin := "https://" + r.Host
-	oauth2Config, err := h.provider.GetOauth2Config(ctx, origin)
+	oauth2Config, err := h.provider.GetOauth2Config(ctx, origin, nil)
 	if err != nil {
 		seedlog.Errorf("Failed to get oauth2 config: %v", err)
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
