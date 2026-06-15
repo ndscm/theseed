@@ -1,0 +1,16 @@
+load("@rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "keycloak",
+    srcs = [
+        "client.go",
+        "credential.go",
+        "user.go",
+    ],
+    importpath = "github.com/ndscm/theseed/seed/cloud/keycloak/client/go/keycloak",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//seed/infra/error/go/seederr",
+        "@com_github_google_uuid//:uuid",
+    ],
+)
