@@ -2,7 +2,10 @@ load("@rules_go//go:def.bzl", "go_library")
 
 go_library(
     name = "loginopenid",
-    srcs = ["openid.go"],
+    srcs = [
+        "memory_token_storage.go",
+        "openid.go",
+    ],
     importpath = "github.com/ndscm/theseed/seed/infra/auth/go/loginopenid",
     visibility = [
         "//seed/cloud/login:__subpackages__",
