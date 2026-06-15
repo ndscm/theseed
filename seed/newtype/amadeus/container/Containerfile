@@ -29,19 +29,18 @@ RUN apt install -y gh
 RUN apt install -y nodejs
 
 RUN corepack enable
-RUN npm install --global @bazel/bazelisk
 
-COPY ./ndscm /usr/bin/ndscm
+RUN curl --fail --silent --show-error --location "https://github.com/facebook/dotslash/releases/latest/download/dotslash-ubuntu-22.04.$(uname -m).tar.gz" | tar fxz - -C /usr/local/bin --no-same-owner
+
+COPY ./bin/. /usr/local/bin/.
+
 COPY ./amadeus-server /opt/amadeus/amadeus-server
-
-COPY ./gain-home.c /opt/amadeus/gain-home.c
-RUN gcc /opt/amadeus/gain-home.c -o /opt/amadeus/gain-home
-RUN setcap cap_chown,cap_fowner+ep /opt/amadeus/gain-home
 
 COPY --chmod=0755 ./entrypoint.sh /opt/amadeus/entrypoint.sh
 
 RUN useradd --shell /usr/bin/zsh --create-home amadeus
-USER amadeus
+# The container starts as root so the entrypoint can chown the mounted home; it
+# drops to the amadeus user before running the workload.
 WORKDIR /home/amadeus
 
 ENTRYPOINT [ "/opt/amadeus/entrypoint.sh" ]
