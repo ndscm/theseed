@@ -74,7 +74,7 @@ func (provider *UserOpenidProvider) Exchange(
 	origin string,
 	code string,
 ) error {
-	oauth2Config, err := provider.GetOauth2Config(ctx, origin)
+	oauth2Config, err := provider.GetOauth2Config(ctx, origin, nil)
 	if err != nil {
 		return seederr.Wrap(err)
 	}
@@ -97,7 +97,7 @@ func (provider *UserOpenidProvider) AccessToken(
 	ctx context.Context,
 	storage ExternalTokenStorage,
 ) (string, error) {
-	oauth2Config, err := provider.GetOauth2Config(ctx, "")
+	oauth2Config, err := provider.GetOauth2Config(ctx, "", nil)
 	if err != nil {
 		return "", seederr.Wrap(err)
 	}
@@ -146,7 +146,7 @@ func (provider *UserOpenidProvider) Client(
 	storage ExternalTokenStorage,
 	origin string,
 ) (*http.Client, error) {
-	oauth2Config, err := provider.GetOauth2Config(ctx, origin)
+	oauth2Config, err := provider.GetOauth2Config(ctx, origin, nil)
 	if err != nil {
 		return nil, seederr.Wrap(err)
 	}

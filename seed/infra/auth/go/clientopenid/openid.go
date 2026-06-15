@@ -69,7 +69,9 @@ func (provider *OpenidProvider) GetOpenidConfiguration(ctx context.Context) (*op
 	return provider.cachedConfiguration, nil
 }
 
-func (provider *OpenidProvider) GetOauth2Config(ctx context.Context, origin string) (*oauth2.Config, error) {
+func (provider *OpenidProvider) GetOauth2Config(
+	ctx context.Context, origin string, scopes []string,
+) (*oauth2.Config, error) {
 	configuration, err := provider.GetOpenidConfiguration(ctx)
 	if err != nil {
 		return nil, seederr.Wrap(err)
@@ -90,10 +92,14 @@ func (provider *OpenidProvider) GetOauth2Config(ctx context.Context, origin stri
 		authStyle = oauth2.AuthStyleInParams
 	}
 
+	if len(scopes) == 0 {
+		scopes = configuration.ScopesSupported
+	}
+
 	oauth2Config := &oauth2.Config{
 		ClientID:     provider.clientId,
 		ClientSecret: provider.clientSecret,
-		Scopes:       configuration.ScopesSupported,
+		Scopes:       scopes,
 		RedirectURL:  redirectUrl,
 		Endpoint: oauth2.Endpoint{
 			AuthURL:       configuration.AuthorizationEndpoint,
