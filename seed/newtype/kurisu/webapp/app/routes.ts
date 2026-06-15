@@ -37,6 +37,9 @@ const routeConfig: RouteConfig = [
             ...prefix("workstation", [
               index("./routes/person/$handle/workstation/index.tsx"), //
             ]),
+            ...prefix("attendance", [
+              index("./routes/person/$handle/attendance/index.tsx"), //
+            ]),
           ]),
         ]),
       ]),

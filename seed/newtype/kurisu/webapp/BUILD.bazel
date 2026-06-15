@@ -36,5 +36,6 @@ react_router_webapp(
         "//seed/infra/buildinfo/ts",
         "//seed/newtype/hooin/dictate/client/tsx",
         "//seed/newtype/hooin/roster/client/tsx",
+        "//seed/newtype/kurisu/client/tsx",
     ],
 )

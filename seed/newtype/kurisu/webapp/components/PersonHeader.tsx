@@ -186,6 +186,15 @@ const PersonHeader: React.FC = () => {
           >
             {t("terminal.title", "Terminal")}
           </NavLink>
+          <NavLink
+            to={`/person/${handle}/attendance`}
+            role="tab"
+            className={({ isActive }) =>
+              tw({ component: "tab" }, isActive && { component: "tab-active" })
+            }
+          >
+            {t("attendance.title", "Attendance")}
+          </NavLink>
         </div>
       </div>
     </header>
