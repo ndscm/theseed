@@ -7,6 +7,7 @@ import { ChevronRightIcon } from "lucide-react"
 import tw from "../../../../devprod/ts/grouping-tailwind/dist"
 import { useHooinRosterService } from "../../../hooin/roster/client/tsx/HooinRosterServiceContext"
 import { type TeamMember } from "../../../hooin/roster/proto/roster_pb"
+import OrganicUtils from "../utils/OrganicUtils"
 import KurisuAvatar from "./KurisuAvatar"
 import KurisuTopBar from "./KurisuTopBar"
 
@@ -14,16 +15,17 @@ const PersonHeader: React.FC = () => {
   const { t } = useTranslation("person")
   const { handle } = useParams<{ handle: string }>()
   const rosterService = useHooinRosterService()
-  const [member, setMember] = React.useState<TeamMember | null>(null)
+  const [person, setPerson] = React.useState<TeamMember | null>(null)
 
   const reload = useCallback(async () => {
+    setPerson(null)
     if (!rosterService || !handle) {
       return
     }
     const listResponse = await rosterService.ListTeamMembers()
     const found = listResponse.teamMembers.find((m) => m.handle === handle)
     if (found) {
-      setMember(found)
+      setPerson(found)
     }
   }, [rosterService, handle])
 
@@ -61,7 +63,7 @@ const PersonHeader: React.FC = () => {
                 appearance: "text-base-content",
               })}
             >
-              {member?.displayName ?? handle}
+              {person?.displayName ?? handle}
             </span>
           </div>
         }
@@ -78,13 +80,16 @@ const PersonHeader: React.FC = () => {
             layout: "mb-5 flex flex-wrap items-center gap-5",
           })}
         >
-          <KurisuAvatar size="large" organic="silicon">
+          <KurisuAvatar
+            size="large"
+            organic={OrganicUtils.GetOrganic(person?.organic)}
+          >
             <span
               className={tw({
                 appearance: "text-xl font-semibold",
               })}
             >
-              {member?.displayName?.charAt(0)?.toUpperCase() ??
+              {person?.displayName?.charAt(0)?.toUpperCase() ??
                 handle?.charAt(0)?.toUpperCase() ??
                 "?"}
             </span>
@@ -102,10 +107,10 @@ const PersonHeader: React.FC = () => {
                     "text-base-content text-2xl font-semibold tracking-tight",
                 })}
               >
-                {member?.displayName ?? handle}
+                {person?.displayName ?? handle}
               </h2>
-              {member &&
-                (member.onDuty ? (
+              {person &&
+                (person.onDuty ? (
                   <span
                     className={tw({
                       component: "badge badge-success badge-sm",

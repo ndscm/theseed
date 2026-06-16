@@ -18,6 +18,7 @@ import { type LoginStatus } from "../../../../cloud/login/proto/login_pb"
 import tw from "../../../../devprod/ts/grouping-tailwind"
 import { useHooinRosterService } from "../../../hooin/roster/client/tsx/HooinRosterServiceContext"
 import { type TeamMember } from "../../../hooin/roster/proto/roster_pb"
+import OrganicUtils from "../utils/OrganicUtils"
 import KurisuAvatar from "./KurisuAvatar"
 
 type ColorScheme = "" | "light" | "dark"
@@ -236,7 +237,10 @@ const SidePeopleList: React.FC = () => {
               )
             }
           >
-            <KurisuAvatar size="small" organic="silicon">
+            <KurisuAvatar
+              size="small"
+              organic={OrganicUtils.GetOrganic(member.organic)}
+            >
               <span
                 className={tw({
                   appearance: "text-base font-bold",
