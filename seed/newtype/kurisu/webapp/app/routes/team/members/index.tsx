@@ -6,6 +6,7 @@ import tw from "../../../../../../../devprod/ts/grouping-tailwind"
 import { useHooinRosterService } from "../../../../../../hooin/roster/client/tsx/HooinRosterServiceContext"
 import { type TeamMember } from "../../../../../../hooin/roster/proto/roster_pb"
 import KurisuAvatar from "../../../../components/KurisuAvatar"
+import OrganicUtils from "../../../../utils/OrganicUtils"
 
 const TeamMembersPage: React.FC<{}> = ({}) => {
   const { t } = useTranslation("team")
@@ -72,7 +73,10 @@ const TeamMembersPage: React.FC<{}> = ({}) => {
                     layout: "flex items-center gap-3",
                   })}
                 >
-                  <KurisuAvatar size="small" organic="silicon">
+                  <KurisuAvatar
+                    size="small"
+                    organic={OrganicUtils.GetOrganic(member.organic)}
+                  >
                     <span
                       className={tw({
                         appearance: "text-sm font-semibold",
