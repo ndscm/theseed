@@ -1,0 +1,19 @@
+bazel_dep(name = "toolchains_llvm", version = "1.8.0")
+
+llvm = use_extension("@toolchains_llvm//toolchain/extensions:llvm.bzl", "llvm")
+llvm.toolchain(
+    extra_cxx_flags = {"": [
+        # -stdlib=libc++ is a link-time flag, but the toolchain adds it to C++ compile
+        # actions too, where -nostdinc++ makes it a no-op. Clang then warns "argument
+        # unused during compilation", which is fatal under deps that compile with
+        # -Werror,-Wunused-command-line-argument (e.g. boringssl). -Qunused-arguments
+        # is a driver-level suppression that takes effect regardless of flag order, so
+        # it survives the later -Werror.
+        "-Qunused-arguments",
+    ]},
+    llvm_version = "21.1.8",
+)
+use_repo(llvm, "llvm_toolchain")
+use_repo(llvm, "llvm_toolchain_llvm")
+
+register_toolchains("@llvm_toolchain//:all")
