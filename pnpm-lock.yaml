@@ -447,6 +447,37 @@ importers:
 
   seed/newtype/hooin/roster/proto: {}
 
+  seed/newtype/kurisu/client/tsx:
+    dependencies:
+      '@bufbuild/protobuf':
+        specifier: 2.12.0
+        version: 2.12.0
+      '@connectrpc/connect':
+        specifier: 2.1.1
+        version: 2.1.1(@bufbuild/protobuf@2.12.0)
+      '@connectrpc/connect-web':
+        specifier: 2.1.1
+        version: 2.1.1(@bufbuild/protobuf@2.12.0)(@connectrpc/connect@2.1.1(@bufbuild/protobuf@2.12.0))
+      '@theseed/seed-newtype-kurisu-proto':
+        specifier: workspace:^
+        version: link:../../proto
+      react:
+        specifier: 19.2.5
+        version: 19.2.5
+      react-dom:
+        specifier: 19.2.5
+        version: 19.2.5(react@19.2.5)
+    devDependencies:
+      '@types/react':
+        specifier: 19.2.7
+        version: 19.2.7
+      '@types/react-dom':
+        specifier: 19.2.3
+        version: 19.2.3(@types/react@19.2.7)
+      typescript:
+        specifier: 5.9.3
+        version: 5.9.3
+
   seed/newtype/kurisu/proto: {}
 
   seed/newtype/kurisu/webapp:
