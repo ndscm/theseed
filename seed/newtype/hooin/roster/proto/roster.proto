@@ -17,6 +17,8 @@ message TeamMember {
   string person_id = 2;
   string handle = 3;
   string display_name = 4;
+  string organic = 6;
+
   bool on_duty = 5;
 }
 
