@@ -103,6 +103,10 @@ include("//seed/vendor/java:java.MODULE.bazel")
 
 include("//seed/vendor/ts:ts.MODULE.bazel")
 
+# LLVM
+
+include("//seed/vendor/llvm:llvm.MODULE.bazel")
+
 # Pkg
 
 bazel_dep(name = "rules_pkg", version = "1.1.0")
