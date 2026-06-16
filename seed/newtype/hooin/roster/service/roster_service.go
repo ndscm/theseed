@@ -49,6 +49,7 @@ func (svc *HooinRosterService) ListTeamMembers(
 			PersonId:    personId,
 			Handle:      person.GetHandle(),
 			DisplayName: person.GetDisplayName(),
+			Organic:     person.GetOrganic(),
 			OnDuty:      svc.office.GetDuty(personId) != nil,
 		})
 	}
