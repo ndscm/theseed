@@ -8,6 +8,7 @@ go_library(
         "//seed/cloud/login:__subpackages__",
         "//seed/cloud/sfe:__subpackages__",
         "//seed/infra/auth:__subpackages__",
+        "//seed/newtype/kurisu:__subpackages__",
     ],
     deps = [
         "//seed/infra/auth/go/openid",
