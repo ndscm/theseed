@@ -447,6 +447,8 @@ importers:
 
   seed/newtype/hooin/roster/proto: {}
 
+  seed/newtype/kurisu/proto: {}
+
   seed/newtype/kurisu/webapp:
     dependencies:
       '@react-router/node':
