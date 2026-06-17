@@ -55,6 +55,10 @@ export default {
         run: '{{BAZEL_RUN}} "{{TARGET}}"',
       },
     },
+    sh: {
+      watch: "\\.(sh)$",
+      run: 'shfmt -w "{{TARGET}}"',
+    },
   },
   bootstrap: {
     pnpm: {
