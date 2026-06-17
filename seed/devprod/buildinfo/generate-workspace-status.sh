@@ -24,11 +24,3 @@ echo STABLE_BUILD_BRANCH ${branch:-"unknown"}
 echo STABLE_BUILD_DIRTY ${dirty:-"unknown"}
 echo STABLE_BUILD_BRIEF ${brief:-"unknown"}
 echo STABLE_GIT_COMMIT ${commit:-"unknown"}
-
-
-
-
-
-
-
-
