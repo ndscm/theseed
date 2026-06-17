@@ -1,0 +1,45 @@
+{
+  "name": "jq",
+  "platforms": {
+    "linux-aarch64": {
+      "path": "jq",
+      "providers": [
+        {
+          "url": "https://github.com/jqlang/jq/releases/download/jq-{{TAG}}/jq-linux-arm64"
+        }
+      ]
+    },
+    "linux-x86_64": {
+      "path": "jq",
+      "providers": [
+        {
+          "url": "https://github.com/jqlang/jq/releases/download/jq-{{TAG}}/jq-linux-amd64"
+        }
+      ]
+    },
+    "macos-aarch64": {
+      "path": "jq",
+      "providers": [
+        {
+          "url": "https://github.com/jqlang/jq/releases/download/jq-{{TAG}}/jq-macos-arm64"
+        }
+      ]
+    },
+    "macos-x86_64": {
+      "path": "jq",
+      "providers": [
+        {
+          "url": "https://github.com/jqlang/jq/releases/download/jq-{{TAG}}/jq-macos-amd64"
+        }
+      ]
+    },
+    "windows-x86_64": {
+      "path": "jq.exe",
+      "providers": [
+        {
+          "url": "https://github.com/jqlang/jq/releases/download/jq-{{TAG}}/jq-windows-amd64.exe"
+        }
+      ]
+    }
+  }
+}
