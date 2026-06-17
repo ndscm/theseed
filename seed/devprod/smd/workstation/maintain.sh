@@ -10,6 +10,7 @@ cd "$(dirname "${BASH_SOURCE[0]}")/../../../.."
 . seed/devprod/smd/workstation/maintain-21-shell.sh
 . seed/devprod/smd/workstation/maintain-22-font.sh
 . seed/devprod/smd/workstation/maintain-31-managed-profile.sh
+. seed/devprod/smd/workstation/maintain-32-managed-proxy.sh
 . seed/devprod/smd/workstation/maintain-41-system-packages.sh
 . seed/devprod/smd/workstation/maintain-42-snap.sh
 . seed/devprod/smd/workstation/maintain-43-scm.sh
