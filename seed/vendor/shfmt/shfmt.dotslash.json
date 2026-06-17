@@ -1,0 +1,45 @@
+{
+  "name": "shfmt",
+  "platforms": {
+    "linux-aarch64": {
+      "path": "shfmt",
+      "providers": [
+        {
+          "url": "https://github.com/mvdan/sh/releases/download/{{TAG}}/shfmt_{{TAG}}_linux_arm64"
+        }
+      ]
+    },
+    "linux-x86_64": {
+      "path": "shfmt",
+      "providers": [
+        {
+          "url": "https://github.com/mvdan/sh/releases/download/{{TAG}}/shfmt_{{TAG}}_linux_amd64"
+        }
+      ]
+    },
+    "macos-aarch64": {
+      "path": "shfmt",
+      "providers": [
+        {
+          "url": "https://github.com/mvdan/sh/releases/download/{{TAG}}/shfmt_{{TAG}}_darwin_arm64"
+        }
+      ]
+    },
+    "macos-x86_64": {
+      "path": "shfmt",
+      "providers": [
+        {
+          "url": "https://github.com/mvdan/sh/releases/download/{{TAG}}/shfmt_{{TAG}}_darwin_amd64"
+        }
+      ]
+    },
+    "windows-x86_64": {
+      "path": "shfmt.exe",
+      "providers": [
+        {
+          "url": "https://github.com/mvdan/sh/releases/download/{{TAG}}/shfmt_{{TAG}}_windows_amd64.exe"
+        }
+      ]
+    }
+  }
+}
