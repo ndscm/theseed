@@ -1,0 +1,53 @@
+{
+  "name": "gh",
+  "platforms": {
+    "linux-aarch64": {
+      "path": "gh_{{TAG}}_linux_arm64/bin/gh",
+      "providers": [
+        {
+          "url": "https://github.com/cli/cli/releases/download/v{{TAG}}/gh_{{TAG}}_linux_arm64.tar.gz"
+        }
+      ]
+    },
+    "linux-x86_64": {
+      "path": "gh_{{TAG}}_linux_amd64/bin/gh",
+      "providers": [
+        {
+          "url": "https://github.com/cli/cli/releases/download/v{{TAG}}/gh_{{TAG}}_linux_amd64.tar.gz"
+        }
+      ]
+    },
+    "macos-aarch64": {
+      "path": "gh_{{TAG}}_macOS_arm64/bin/gh",
+      "providers": [
+        {
+          "url": "https://github.com/cli/cli/releases/download/v{{TAG}}/gh_{{TAG}}_macOS_arm64.zip"
+        }
+      ]
+    },
+    "macos-x86_64": {
+      "path": "gh_{{TAG}}_macOS_amd64/bin/gh",
+      "providers": [
+        {
+          "url": "https://github.com/cli/cli/releases/download/v{{TAG}}/gh_{{TAG}}_macOS_amd64.zip"
+        }
+      ]
+    },
+    "windows-aarch64": {
+      "path": "bin/gh.exe",
+      "providers": [
+        {
+          "url": "https://github.com/cli/cli/releases/download/v{{TAG}}/gh_{{TAG}}_windows_arm64.zip"
+        }
+      ]
+    },
+    "windows-x86_64": {
+      "path": "bin/gh.exe",
+      "providers": [
+        {
+          "url": "https://github.com/cli/cli/releases/download/v{{TAG}}/gh_{{TAG}}_windows_amd64.zip"
+        }
+      ]
+    }
+  }
+}
