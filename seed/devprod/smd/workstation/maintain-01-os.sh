@@ -7,6 +7,7 @@ uname="$(uname)"
 distro="unknown"
 oslike="unknown"
 wsl="false"
+run_sudo="false"
 
 if [[ "${uname}" == "Linux" ]]; then
   if [[ -f /etc/os-release ]]; then
@@ -35,6 +36,14 @@ if [[ ! -z "${WSL_DISTRO_NAME+x}" ]]; then
   printf "\e[33mWSL: true\e[0m\n"
 fi
 
+if id -nG "$(id -un)" | tr ' ' '\n' | grep -qx -e sudo -e admin -e wheel; then
+  read -p "You have sudo privileges. Use sudo for installation? [y/N]: " use_sudo_reply
+  if [[ "${use_sudo_reply,,}" == "y" || "${use_sudo_reply,,}" == "yes" ]]; then
+    run_sudo="true"
+  fi
+fi
+printf "\e[33mUse sudo: ${run_sudo}\e[0m\n"
+
 if [[ "${oslike}" == "darwin" ]]; then
   if ! xcode-select -p >/dev/null 2>&1; then
     printf "\e[33mXcode Command Line Tools not found. Installing...\e[0m\n"
@@ -42,7 +51,12 @@ if [[ "${oslike}" == "darwin" ]]; then
   fi
   if ! xcodebuild -license check >/dev/null 2>&1; then
     printf "\e[33mXcode license is NOT accepted yet...\e[0m\n"
-    sudo xcodebuild -license accept
+    if [[ "${run_sudo}" == "true" ]]; then
+      sudo xcodebuild -license accept
+    else
+      printf "\e[31mPlease accept the license with\n    sudo xcodebuild -license accept\e[0m\n"
+      exit 1
+    fi
   fi
 fi
 
@@ -50,3 +64,4 @@ export uname
 export distro
 export oslike
 export wsl
+export run_sudo

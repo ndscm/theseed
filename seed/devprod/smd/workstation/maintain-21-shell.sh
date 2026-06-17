@@ -8,7 +8,11 @@ cd "$(dirname "${BASH_SOURCE[0]}")/../../../.."
 printf "\e[34mChecking zsh shell...\e[0m\n"
 
 if [[ "${oslike}" == "debian" ]]; then
-  sudo apt install -y zsh
+  if [[ "${run_sudo}" == "true" ]]; then
+    sudo apt install -y zsh
+  else
+    printf "\e[31mSkipping system zsh installation\e[0m\n"
+  fi
 fi
 
 if [[ "${oslike}" == "debian" || "${oslike}" == "darwin" ]]; then
