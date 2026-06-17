@@ -1,19 +1,29 @@
-#!/bin/bash
+#!/usr/bin/env bash
 set -eux
 set -o pipefail
+cd "$(dirname "${BASH_SOURCE[0]}")/../../../.."
 
 if [[ -z "${ND_USER_HANDLE+x}" ]]; then
-  read -p "Enter nd user handle (username before @ndscm.com): " ND_USER_HANDLE
+  read -p "Enter user handle (username before @company.com): " ND_USER_HANDLE
 fi
-echo -e "\e[33mUsername: ${ND_USER_HANDLE}\e[0m"
-export ND_USER_HANDLE
+printf "\e[33mUser handle: ${ND_USER_HANDLE}\e[0m\n"
+
+if [[ -z "${ND_USER_DOMAIN+x}" ]]; then
+  read -p "Enter user domain (domain after ${ND_USER_HANDLE}@): " ND_USER_DOMAIN
+fi
+printf "\e[33mUser email: ${ND_USER_HANDLE}@${ND_USER_DOMAIN}\e[0m\n"
+
 if [[ -z "${ND_USER_DISPLAY_NAME+x}" ]]; then
   read -p "Enter user display name: " ND_USER_DISPLAY_NAME
 fi
-echo -e "\e[33mDisplay Name: ${ND_USER_DISPLAY_NAME}\e[0m"
+printf "\e[33mUser display Name: ${ND_USER_DISPLAY_NAME}\e[0m\n"
+
+export ND_USER_HANDLE
+export ND_USER_DOMAIN
+export ND_USER_EMAIL="${ND_USER_HANDLE}@${ND_USER_DOMAIN}"
 export ND_USER_DISPLAY_NAME
 
-sudo apt update -y
+sudo apt update
 sudo apt upgrade -y
 sudo apt install -y git
 sudo apt install -y netcat-openbsd
@@ -28,14 +38,6 @@ else
   public_key=$(cat ${HOME}/.ssh/id_ed25519.pub)
   echo -e "\e[33mCopy your public key to your github account:\n    ${public_key}\e[0m"
   read -p "Press <Enter> to continue..."
-fi
-
-if grep -o -P -z "Host github.com[\n]?[\s]*ProxyCommand.*[\n]?" ${HOME}/.ssh/config; then
-  echo "Found ssh proxy to github.com for git"
-else
-
-  mkdir -p -m 700 ${HOME}/.ssh
-
 fi
 
 mkdir -p ${HOME}/theseed
