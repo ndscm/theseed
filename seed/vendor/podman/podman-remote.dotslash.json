@@ -1,0 +1,53 @@
+{
+  "name": "podman-remote",
+  "platforms": {
+    "linux-aarch64": {
+      "path": "bin/podman-remote-static-linux_arm64",
+      "providers": [
+        {
+          "url": "https://github.com/containers/podman/releases/download/v{{TAG}}/podman-remote-static-linux_arm64.tar.gz"
+        }
+      ]
+    },
+    "linux-x86_64": {
+      "path": "bin/podman-remote-static-linux_amd64",
+      "providers": [
+        {
+          "url": "https://github.com/containers/podman/releases/download/v{{TAG}}/podman-remote-static-linux_amd64.tar.gz"
+        }
+      ]
+    },
+    "macos-aarch64": {
+      "path": "podman-{{TAG}}/usr/bin/podman",
+      "providers": [
+        {
+          "url": "https://github.com/containers/podman/releases/download/v{{TAG}}/podman-remote-release-darwin_arm64.zip"
+        }
+      ]
+    },
+    "macos-x86_64": {
+      "path": "podman-{{TAG}}/usr/bin/podman",
+      "providers": [
+        {
+          "url": "https://github.com/containers/podman/releases/download/v{{TAG}}/podman-remote-release-darwin_amd64.zip"
+        }
+      ]
+    },
+    "windows-aarch64": {
+      "path": "podman-{{TAG}}/usr/bin/podman.exe",
+      "providers": [
+        {
+          "url": "https://github.com/containers/podman/releases/download/v{{TAG}}/podman-remote-release-windows_arm64.zip"
+        }
+      ]
+    },
+    "windows-x86_64": {
+      "path": "podman-{{TAG}}/usr/bin/podman.exe",
+      "providers": [
+        {
+          "url": "https://github.com/containers/podman/releases/download/v{{TAG}}/podman-remote-release-windows_amd64.zip"
+        }
+      ]
+    }
+  }
+}
