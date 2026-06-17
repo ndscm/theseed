@@ -1,0 +1,53 @@
+{
+  "name": "node",
+  "platforms": {
+    "linux-aarch64": {
+      "path": "node-{{TAG}}-linux-arm64/bin/node",
+      "providers": [
+        {
+          "url": "https://nodejs.org/dist/{{TAG}}/node-{{TAG}}-linux-arm64.tar.xz"
+        }
+      ]
+    },
+    "linux-x86_64": {
+      "path": "node-{{TAG}}-linux-x64/bin/node",
+      "providers": [
+        {
+          "url": "https://nodejs.org/dist/{{TAG}}/node-{{TAG}}-linux-x64.tar.xz"
+        }
+      ]
+    },
+    "macos-aarch64": {
+      "path": "node-{{TAG}}-darwin-arm64/bin/node",
+      "providers": [
+        {
+          "url": "https://nodejs.org/dist/{{TAG}}/node-{{TAG}}-darwin-arm64.tar.xz"
+        }
+      ]
+    },
+    "macos-x86_64": {
+      "path": "node-{{TAG}}-darwin-x64/bin/node",
+      "providers": [
+        {
+          "url": "https://nodejs.org/dist/{{TAG}}/node-{{TAG}}-darwin-x64.tar.xz"
+        }
+      ]
+    },
+    "windows-aarch64": {
+      "path": "node-{{TAG}}-win-arm64/node.exe",
+      "providers": [
+        {
+          "url": "https://nodejs.org/dist/{{TAG}}/node-{{TAG}}-win-arm64.zip"
+        }
+      ]
+    },
+    "windows-x86_64": {
+      "path": "node-{{TAG}}-win-x64/node.exe",
+      "providers": [
+        {
+          "url": "https://nodejs.org/dist/{{TAG}}/node-{{TAG}}-win-x64.zip"
+        }
+      ]
+    }
+  }
+}
