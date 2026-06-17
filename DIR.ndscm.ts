@@ -72,6 +72,11 @@ export default {
     },
   },
   tidy: {
+    bazel: {
+      target: "MODULE.bazel",
+      watch: "(^|/)BUILD.bazel$",
+      run: "bazel mod tidy",
+    },
     go: {
       target: "go.mod",
       watch: "\\.go$",
@@ -93,15 +98,6 @@ export default {
     gazelle_build: {
       target: "BUILD.bazel",
       watch: "(^|/)BUILD.bazel$",
-      run: "bazel run //:gazelle",
-    },
-    gazelle_module: {
-      target: "MODULE.bazel",
-      watch: [
-        //
-        "\\.(go|py)$",
-        "(^|/)BUILD.bazel$",
-      ],
       run: "bazel run //:gazelle",
     },
   },
