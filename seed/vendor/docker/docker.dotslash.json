@@ -1,0 +1,45 @@
+{
+  "name": "docker",
+  "platforms": {
+    "linux-aarch64": {
+      "path": "docker/docker",
+      "providers": [
+        {
+          "url": "https://download.docker.com/linux/static/stable/aarch64/docker-{{TAG}}.tgz"
+        }
+      ]
+    },
+    "linux-x86_64": {
+      "path": "docker/docker",
+      "providers": [
+        {
+          "url": "https://download.docker.com/linux/static/stable/x86_64/docker-{{TAG}}.tgz"
+        }
+      ]
+    },
+    "macos-aarch64": {
+      "path": "docker/docker",
+      "providers": [
+        {
+          "url": "https://download.docker.com/mac/static/stable/aarch64/docker-{{TAG}}.tgz"
+        }
+      ]
+    },
+    "macos-x86_64": {
+      "path": "docker/docker",
+      "providers": [
+        {
+          "url": "https://download.docker.com/mac/static/stable/x86_64/docker-{{TAG}}.tgz"
+        }
+      ]
+    },
+    "windows-x86_64": {
+      "path": "docker/docker.exe",
+      "providers": [
+        {
+          "url": "https://download.docker.com/win/static/stable/x86_64/docker-{{TAG}}.zip"
+        }
+      ]
+    }
+  }
+}
