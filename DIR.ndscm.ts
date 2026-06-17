@@ -75,7 +75,7 @@ export default {
     go: {
       target: "go.mod",
       watch: "\\.go$",
-      run: "bazel run @rules_go//go -- mod tidy",
+      run: "bazel run @rules_go//go -- mod tidy -e",
     },
     gazelle_python_modules_mapping: {
       target: [
@@ -119,7 +119,7 @@ export default {
     go: {
       target: "go.sum",
       watch: "^go.mod$",
-      run: "bazel run @rules_go//go -- mod tidy",
+      run: "bazel run @rules_go//go -- mod tidy -e",
     },
     pnpm: {
       target: "pnpm-lock.yaml",
