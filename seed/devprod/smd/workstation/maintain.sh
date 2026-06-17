@@ -20,6 +20,5 @@ cd "$(dirname "${BASH_SOURCE[0]}")/../../../.."
 . seed/devprod/smd/workstation/maintain-47-python.sh
 . seed/devprod/smd/workstation/maintain-48-container.sh
 . seed/devprod/smd/workstation/maintain-51-monorepo.sh
-. seed/devprod/smd/workstation/maintain-52-monodrive.sh
 . seed/devprod/smd/workstation/maintain-61-shortcut.sh
 . seed/devprod/smd/workstation/maintain-99-finalize.sh
