@@ -30,6 +30,16 @@ export default {
       watch: "\\.(c|cc|cpp|h|hh|hpp)$",
       run: 'clang-format -i "{{TARGET}}"',
     },
+    container: {
+      watch: [
+        // sort
+        "(^|/)(Containerfile)$",
+        "(^|/)(Dockerfile)$",
+        "\\.(Containerfile)$",
+        "\\.(Dockerfile)$",
+      ],
+      run: 'shfmt -w "{{TARGET}}"',
+    },
     go: {
       watch: "\\.(go)$",
       bazel: {
