@@ -54,7 +54,7 @@ func NdSubmit(scmProvider scm.Provider, options NdSubmitOptions) error {
 	}
 	if err == nil {
 		seedlog.Warnf("Worktree %v already exists, removing...", worktreePath)
-		err = scmProvider.RemoveWorktree(worktreePath)
+		err = scmProvider.RemoveWorktree(monorepoHome, worktreePath)
 		if err != nil {
 			return seederr.Wrap(err)
 		}
@@ -95,7 +95,7 @@ func NdSubmit(scmProvider scm.Provider, options NdSubmitOptions) error {
 	if err != nil {
 		return seederr.Wrap(err)
 	}
-	err = scmProvider.RemoveWorktree(worktreePath)
+	err = scmProvider.RemoveWorktree(monorepoHome, worktreePath)
 	if err != nil {
 		return seederr.Wrap(err)
 	}
