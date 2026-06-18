@@ -26,10 +26,7 @@ func QuickVerifyMonorepo() error {
 		return seederr.WrapErrorf("monorepo home (%v) is not a folder", monorepoHome)
 	}
 
-	monorepoGitDir, err := MonorepoGitDir()
-	if err != nil {
-		return seederr.Wrap(err)
-	}
+	monorepoGitDir := guessMonorepoGitDir(monorepoHome)
 	if monorepoGitDir == "" {
 		return seederr.WrapErrorf("monorepo git dir is not defined")
 	}

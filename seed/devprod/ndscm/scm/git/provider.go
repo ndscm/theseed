@@ -42,8 +42,7 @@ func (g *GitProvider) Connect(repoIdentifier string, monorepoHome string, repoEn
 
 	repoEnvLines = append(repoEnvLines, `ND_SCM="git"`)
 
-	gitDir := filepath.Join(monorepoHome, repoIdentifier+".git")
-	repoEnvLines = append(repoEnvLines, `ND_MONOREPO_GIT_DIR="`+gitDir+`"`)
+	gitDir := guessMonorepoGitDir(monorepoHome)
 
 	mainBranch, err := BareClone(repoEndpoint, gitDir)
 	if err != nil {
@@ -79,7 +78,6 @@ func (g *GitProvider) Connect(repoIdentifier string, monorepoHome string, repoEn
 	if err != nil {
 		return "", "", seederr.WrapErrorf("failed to set git user.email: %w", err)
 	}
-	SetMonorepoGitDir(gitDir)
 	return remoteMainBranch, worktreePath, nil
 }
 
@@ -257,10 +255,7 @@ func (g *GitProvider) Checkout(worktreePath string, branchName string) error {
 }
 
 func (g *GitProvider) CreateBranchWorktree(monorepoHome string, branchName string) (string, error) {
-	monorepoGitDir, err := MonorepoGitDir()
-	if err != nil {
-		return "", seederr.Wrap(err)
-	}
+	monorepoGitDir := guessMonorepoGitDir(monorepoHome)
 	return CreateBranchWorktree(monorepoGitDir, monorepoHome, branchName)
 }
 
@@ -273,10 +268,8 @@ func (g *GitProvider) GetBranchWorktreeBranch(monorepoHome string, worktreePath 
 }
 
 func (g *GitProvider) RemoveWorktree(worktreePath string) error {
-	monorepoGitDir, err := MonorepoGitDir()
-	if err != nil {
-		return seederr.Wrap(err)
-	}
+	monorepoHome := filepath.Dir(worktreePath)
+	monorepoGitDir := guessMonorepoGitDir(monorepoHome)
 	return RemoveWorktree(monorepoGitDir, worktreePath)
 }
 
@@ -285,11 +278,8 @@ func (g *GitProvider) CreateDevWorktree(monorepoHome string, focus string, track
 	if focus != "" {
 		branchName = "dev-" + focus
 	}
-	monorepoGitDir, err := MonorepoGitDir()
-	if err != nil {
-		return "", seederr.Wrap(err)
-	}
-	err = CreateBranch(monorepoGitDir, "base/"+branchName, tracking, tracking)
+	monorepoGitDir := guessMonorepoGitDir(monorepoHome)
+	err := CreateBranch(monorepoGitDir, "base/"+branchName, tracking, tracking)
 	if err != nil {
 		return "", seederr.WrapErrorf("failed to create base branch %v: %v", "base/"+branchName, err)
 	}
@@ -313,10 +303,7 @@ func (g *GitProvider) GetDevWorktree(monorepoHome string, focus string) string {
 }
 
 func (g *GitProvider) RemoveDevWorktree(monorepoHome string, focus string) (string, error) {
-	monorepoGitDir, err := MonorepoGitDir()
-	if err != nil {
-		return "", seederr.Wrap(err)
-	}
+	monorepoGitDir := guessMonorepoGitDir(monorepoHome)
 	branchName := "dev"
 	if focus != "" {
 		branchName = "dev-" + focus
@@ -392,11 +379,8 @@ func (g *GitProvider) CreateMeltWorktree(
 		return "", seederr.WrapErrorf("upstream name is required for melt worktree")
 	}
 	branchName := "melt-" + upstreamName
-	monorepoGitDir, err := MonorepoGitDir()
-	if err != nil {
-		return "", seederr.Wrap(err)
-	}
-	err = CreateBranch(monorepoGitDir, "base/"+branchName, fromPoint, tracking)
+	monorepoGitDir := guessMonorepoGitDir(monorepoHome)
+	err := CreateBranch(monorepoGitDir, "base/"+branchName, fromPoint, tracking)
 	if err != nil {
 		return "", seederr.WrapErrorf("failed to create base branch %v: %v", "base/"+branchName, err)
 	}
@@ -423,10 +407,7 @@ func (g *GitProvider) GetMeltWorktree(monorepoHome string, upstreamName string) 
 }
 
 func (g *GitProvider) RemoveMeltWorktree(monorepoHome string, upstreamName string) (string, error) {
-	monorepoGitDir, err := MonorepoGitDir()
-	if err != nil {
-		return "", seederr.Wrap(err)
-	}
+	monorepoGitDir := guessMonorepoGitDir(monorepoHome)
 	if upstreamName == "" {
 		return "", seederr.WrapErrorf("upstream name is required for melt worktree")
 	}
