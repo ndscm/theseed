@@ -1,8 +1,6 @@
 package clientcore
 
 import (
-	"strings"
-
 	"github.com/ndscm/theseed/seed/devprod/ndscm/scm"
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
 	"github.com/ndscm/theseed/seed/infra/log/go/seedlog"
@@ -24,9 +22,12 @@ func NdChange(scmProvider scm.Provider, options NdChangeOptions) error {
 	if !scmProvider.IsDevBranch(devBranch, scm.CanonicalBranch()) {
 		return seederr.WrapErrorf("workspace branch is not a dev branch: %v", devBranch)
 	}
-	changeBranch := "change/" + options.FeatureName
+	changeBranch, err := scm.ChangeBranchName(devBranch, options.FeatureName, scm.CanonicalBranch())
+	if err != nil {
+		return seederr.Wrap(err)
+	}
 	currentBranch := devBranch
-	for !strings.HasPrefix(currentBranch, "base/") {
+	for !scm.IsBranchType(currentBranch, "base") {
 		trackingBranch, err := scmProvider.GetBranchTracking(currentBranch)
 		if err != nil {
 			return seederr.Wrap(err)
@@ -46,7 +47,8 @@ func NdChange(scmProvider scm.Provider, options NdChangeOptions) error {
 			}
 			return nil
 		}
-		if !strings.HasPrefix(trackingBranch, "change/") && !strings.HasPrefix(trackingBranch, "base/") {
+		if !scm.IsBranchType(trackingBranch, "change") &&
+			!scm.IsBranchType(trackingBranch, "base") {
 			return seederr.WrapErrorf("tracking chain is broken for %v (points to %v)", currentBranch, trackingBranch)
 		}
 		currentBranch = trackingBranch

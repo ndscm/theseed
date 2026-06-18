@@ -2,7 +2,6 @@ package clientcore
 
 import (
 	"slices"
-	"strings"
 
 	"github.com/ndscm/theseed/seed/devprod/ndscm/scm"
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
@@ -44,9 +43,10 @@ func NdSync(scmProvider scm.Provider, _ NdSyncOptions) error {
 		!scmProvider.IsMeltBranch(worktreeName, scm.CanonicalBranch()) {
 		return seederr.WrapErrorf("workspace is not a ndscm managed worktree: %v", worktreeName)
 	}
+	baseBranch := scm.BaseBranchName(worktreeName, scm.CanonicalBranch())
 	// # Iterate changes tree
 	chain := []string{worktreeName}
-	for iter := worktreeName; iter != ("base/" + worktreeName); {
+	for iter := worktreeName; iter != baseBranch; {
 		inspectBranch, err := scmProvider.GetBranchTracking(iter)
 		if err != nil {
 			return seederr.Wrap(err)
@@ -54,7 +54,7 @@ func NdSync(scmProvider scm.Provider, _ NdSyncOptions) error {
 		if inspectBranch == "" {
 			return seederr.WrapErrorf("tracking upstream is missing for %v", iter)
 		}
-		if !strings.HasPrefix(inspectBranch, "change/") && inspectBranch != ("base/"+worktreeName) {
+		if !scm.IsBranchType(inspectBranch, "change") && inspectBranch != baseBranch {
 			return seederr.WrapErrorf("tracking chain is broken for %v (point to %v)", iter, inspectBranch)
 		}
 		chain = append([]string{inspectBranch}, chain...)
@@ -73,16 +73,16 @@ func NdSync(scmProvider scm.Provider, _ NdSyncOptions) error {
 		return seederr.Wrap(err)
 	}
 	// # Rebase dev branch
-	baseTracking, err := scmProvider.GetBranchTracking("base/" + worktreeName)
+	baseTracking, err := scmProvider.GetBranchTracking(baseBranch)
 	if err != nil {
 		return seederr.Wrap(err)
 	}
 	seedlog.Infof("\x1b[34mRebasing onto %v: %v\x1b[0m", baseTracking, chain)
-	incomingCommits, err := scmProvider.ListCommitIds("base/"+worktreeName, baseTracking)
+	incomingCommits, err := scmProvider.ListCommitIds(baseBranch, baseTracking)
 	if err != nil {
 		return seederr.Wrap(err)
 	}
-	baseCommitId, err := scmProvider.GetCommitId("base/" + worktreeName)
+	baseCommitId, err := scmProvider.GetCommitId(baseBranch)
 	if err != nil {
 		return seederr.Wrap(err)
 	}
@@ -91,7 +91,7 @@ func NdSync(scmProvider scm.Provider, _ NdSyncOptions) error {
 		// Reverse iteration
 		incomingCommitId := incomingCommits[i]
 		seedlog.Infof("\x1b[34mRebasing to: %v\x1b[0m", incomingCommitId)
-		err := scmProvider.Checkout("", "base/"+worktreeName)
+		err := scmProvider.Checkout("", baseBranch)
 		if err != nil {
 			return seederr.Wrap(err)
 		}
@@ -112,7 +112,7 @@ func NdSync(scmProvider scm.Provider, _ NdSyncOptions) error {
 		seedlog.Infof("\x1b[32mRebased to: %v\x1b[0m", incomingCommitId)
 	}
 	// # Cleanup local change branches
-	for iter := worktreeName; iter != ("base/" + worktreeName); {
+	for iter := worktreeName; iter != baseBranch; {
 		inspectBranch, err := scmProvider.GetBranchTracking(iter)
 		if err != nil {
 			return seederr.Wrap(err)
@@ -120,10 +120,10 @@ func NdSync(scmProvider scm.Provider, _ NdSyncOptions) error {
 		if inspectBranch == "" {
 			return seederr.WrapErrorf("tracking upstream is missing for %v", iter)
 		}
-		if !strings.HasPrefix(inspectBranch, "change/") && inspectBranch != ("base/"+worktreeName) {
+		if !scm.IsBranchType(inspectBranch, "change") && inspectBranch != baseBranch {
 			return seederr.WrapErrorf("tracking chain is broken for %v (point to %v)", iter, inspectBranch)
 		}
-		if inspectBranch == ("base/" + worktreeName) {
+		if inspectBranch == baseBranch {
 			break
 		}
 		nextBranch, err := scmProvider.GetBranchTracking(inspectBranch)
@@ -139,7 +139,7 @@ func NdSync(scmProvider scm.Provider, _ NdSyncOptions) error {
 			return seederr.Wrap(err)
 		}
 		if inspectCommitId == nextCommitId {
-			if !strings.HasPrefix(inspectBranch, "change/") {
+			if !scm.IsBranchType(inspectBranch, "change") {
 				return seederr.WrapErrorf("unexpected empty branch %v", inspectBranch)
 			}
 			err := scmProvider.DeleteMergedBranch(inspectBranch)
