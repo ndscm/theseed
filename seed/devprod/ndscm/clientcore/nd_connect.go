@@ -6,6 +6,7 @@ import (
 	"path/filepath"
 
 	"github.com/ndscm/theseed/seed/devprod/ndscm/scm"
+	"github.com/ndscm/theseed/seed/devprod/ndscm/user"
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
 	"github.com/ndscm/theseed/seed/infra/log/go/seedlog"
 	"github.com/ndscm/theseed/seed/infra/shell/go/seedshell"
@@ -21,6 +22,10 @@ type NdConnectOptions struct {
 func NdConnect(scmProvider scm.Provider, options NdConnectOptions) error {
 	if !seedshell.ShellEval() {
 		seedlog.Warnf("It's recommended to run nd-connect with --shell-eval")
+	}
+	currentUserHandle, err := user.CurrentUserHandle()
+	if err != nil {
+		return seederr.Wrap(err)
 	}
 	monorepoHome, err := scm.MonorepoHome()
 	if err != nil {
@@ -44,7 +49,9 @@ func NdConnect(scmProvider scm.Provider, options NdConnectOptions) error {
 		}
 		return seederr.WrapErrorf("failed to create new monorepo home %v: %w", monorepoHome, err)
 	}
-	remoteMainBranch, mainWorktree, err := scmProvider.Connect(options.RepoIdentifier, monorepoHome, options.RepoEndpoint)
+	remoteMainBranch, mainWorktree, err := scmProvider.Connect(
+		options.RepoIdentifier, monorepoHome, options.RepoEndpoint, scm.CanonicalBranch(),
+	)
 	if err != nil {
 		removeErr := os.RemoveAll(monorepoHome)
 		if removeErr != nil {
@@ -54,7 +61,9 @@ func NdConnect(scmProvider scm.Provider, options NdConnectOptions) error {
 	}
 	worktreePath := mainWorktree
 	if !options.NoDev {
-		devWorktree, err := scmProvider.CreateDevWorktree(monorepoHome, "", remoteMainBranch)
+		devWorktree, err := scmProvider.CreateDevWorktree(
+			monorepoHome, currentUserHandle, "", remoteMainBranch, scm.CanonicalBranch(),
+		)
 		if err != nil {
 			return seederr.Wrap(err)
 		}
