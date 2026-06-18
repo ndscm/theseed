@@ -16,7 +16,6 @@ import (
 	"github.com/ndscm/theseed/seed/cloud/sfe/route/stuffroute"
 	"github.com/ndscm/theseed/seed/cloud/sfe/route/workflowroute"
 	"github.com/ndscm/theseed/seed/cloud/sqlsession"
-	"github.com/ndscm/theseed/seed/infra/auth/go/clientopenid"
 	"github.com/ndscm/theseed/seed/infra/auth/go/openid"
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
 	"github.com/ndscm/theseed/seed/infra/flag/go/seedflag"
@@ -140,7 +139,7 @@ func run() error {
 		}
 		clientSecret = string(secretBytes)
 	}
-	serviceOpenid := clientopenid.NewOpenidProvider(
+	serviceOpenid := openid.NewOpenidClient(
 		openid.OpenidDiscoveryUrlFlag(), clientId, clientSecret,
 	)
 
