@@ -21,9 +21,13 @@
   "files.insertFinalNewline": true,
   "files.trimFinalNewlines": true,
   "files.watcherExclude": {
+    "**/.cache/**": true,
     "**/.git/objects/**": true,
     "**/.git/subtree-cache/**": true,
+    "**/.target/**": true,
     "**/.venv/**": true,
+    "**/bazel-*/**": true,
+    "**/dist/**": true,
     "**/node_modules/**": true,
     "**/tmproots/**": true
   },
