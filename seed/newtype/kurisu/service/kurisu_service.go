@@ -8,7 +8,6 @@ import (
 	"connectrpc.com/connect"
 	"github.com/ndscm/theseed/seed/cloud/keycloak/client/go/keycloak"
 	"github.com/ndscm/theseed/seed/cloud/login/go/login"
-	"github.com/ndscm/theseed/seed/infra/auth/go/loginopenid"
 	"github.com/ndscm/theseed/seed/infra/auth/go/openid"
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
 	"github.com/ndscm/theseed/seed/infra/http/go/seedbearer"
@@ -17,7 +16,7 @@ import (
 )
 
 type KurisuService struct {
-	siliconOpenidProvider *loginopenid.UserOpenidProvider
+	siliconOpenidProvider *openid.OpenidProvider
 
 	keycloakClient *keycloak.KeycloakClient
 }
@@ -53,7 +52,7 @@ func (svc *KurisuService) CreateSiliconJwt(
 		}
 	}()
 
-	tokenStorage := loginopenid.NewMemoryTokenStorage(nil)
+	tokenStorage := openid.NewMemoryTokenStorage(nil)
 
 	err = svc.siliconOpenidProvider.PasswordGrant(
 		ctx, tokenStorage, personId, password)
@@ -72,7 +71,7 @@ func (svc *KurisuService) CreateSiliconJwt(
 }
 
 func CreateKurisuService() (*KurisuService, error) {
-	siliconOpenidProvider := loginopenid.NewUserOpenidProvider(
+	siliconOpenidProvider := openid.NewOpenidProvider(
 		openid.NewOpenidClient(openid.OpenidDiscoveryUrlFlag(), "silicon-prod", ""),
 		"",
 	)
