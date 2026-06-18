@@ -83,14 +83,14 @@ printf "\e[34mChecking basic packages...\e[0m\n"
 if [[ "${oslike}" == "debian" ]]; then
   mkdir -p "${HOME}/.local/bin"
   if [[ "${run_sudo}" == "true" ]]; then
-    sudo apt update
-    sudo apt upgrade -y
-    sudo apt install -y curl
-    sudo apt install -y direnv
-    sudo apt install -y git
-    sudo apt install -y netcat-openbsd
-    sudo apt install -y ssh
-    sudo apt install -y tar
+    sudo -E apt update
+    sudo -E apt upgrade -y
+    sudo -E apt install -y curl
+    sudo -E apt install -y direnv
+    sudo -E apt install -y git
+    sudo -E apt install -y netcat-openbsd
+    sudo -E apt install -y ssh
+    sudo -E apt install -y tar
   else
     printf "\e[31mSkipping system package installation\e[0m\n"
   fi
