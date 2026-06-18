@@ -11,6 +11,8 @@ import (
 type ndSubmitFlags struct {
 	force  *seedflag.BoolFlag
 	remote *seedflag.StringFlag
+
+	owner *seedflag.StringFlag
 }
 
 func parseNdSubmitFlags(args []string) (ndSubmitFlags, []string, error) {
@@ -18,6 +20,7 @@ func parseNdSubmitFlags(args []string) (ndSubmitFlags, []string, error) {
 	cmdFlags := ndSubmitFlags{}
 	cmdFlags.force = cf.DefineBool("force", false, "Force cut even if the change branch already exists")
 	cmdFlags.remote = cf.DefineString("remote", "origin", "Remote identifier for submitting the branch")
+	cmdFlags.owner = cf.DefineString("owner", "", "Owner identifier for submitting the branch")
 	cmdArgs, err := cf.Parse(args)
 	if err != nil {
 		return cmdFlags, nil, seederr.Wrap(err)
@@ -47,6 +50,7 @@ func ndSubmit(args []string) error {
 	err = cc.NdSubmit(clientcore.NdSubmitOptions{
 		Force:  cmdFlags.force.Get(),
 		Remote: cmdFlags.remote.Get(),
+		Owner:  cmdFlags.owner.Get(),
 
 		FeatureName: featureName,
 		CutPoint:    cutPoint,

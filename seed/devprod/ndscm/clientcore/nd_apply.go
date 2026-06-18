@@ -134,14 +134,15 @@ func NdApply(scmProvider scm.Provider, options NdApplyOptions) error {
 	}
 
 	// Walk chain and validate, find child of activeBranch.
+	baseBranch := scm.BaseBranchName(devBranch, scm.CanonicalBranch())
 	currentBranch := devBranch
 	childBranch := ""
-	for currentBranch != ("base/" + devBranch) {
+	for currentBranch != baseBranch {
 		currentTrackingBranch, err := scmProvider.GetBranchTracking(currentBranch)
 		if err != nil {
 			return seederr.Wrap(err)
 		}
-		if !strings.HasPrefix(currentTrackingBranch, "change/") && currentTrackingBranch != ("base/"+devBranch) {
+		if !scm.IsBranchType(currentTrackingBranch, "change") && currentTrackingBranch != baseBranch {
 			return seederr.WrapErrorf("tracking chain is broken for %v (points to %v)", currentBranch, currentTrackingBranch)
 		}
 		if currentTrackingBranch == activeBranch {
@@ -153,7 +154,10 @@ func NdApply(scmProvider scm.Provider, options NdApplyOptions) error {
 		return seederr.WrapErrorf("branch %v is not in the tracking chain of %v", activeBranch, devBranch)
 	}
 
-	changeBranch := "change/" + options.FeatureName
+	changeBranch, err := scm.ChangeBranchName(devBranch, options.FeatureName, scm.CanonicalBranch())
+	if err != nil {
+		return seederr.Wrap(err)
+	}
 	_, err = scmProvider.GetBranch(changeBranch)
 	if err != nil && !errors.Is(err, scm.ErrBranchNotFound) {
 		return seederr.Wrap(err)

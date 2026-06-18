@@ -40,7 +40,10 @@ func NdCut(scmProvider scm.Provider, options NdCutOptions) error {
 		return seederr.WrapErrorf("feature name %v must not contain /", options.FeatureName)
 	}
 
-	changeBranch := "change/" + options.FeatureName
+	changeBranch, err := scm.ChangeBranchName(devBranch, options.FeatureName, scm.CanonicalBranch())
+	if err != nil {
+		return seederr.Wrap(err)
+	}
 	_, err = scmProvider.GetBranch(changeBranch)
 	if err != nil && !errors.Is(err, scm.ErrBranchNotFound) {
 		return seederr.Wrap(err)
@@ -62,12 +65,13 @@ func NdCut(scmProvider scm.Provider, options NdCutOptions) error {
 	}
 	currentBranch := devBranch
 	trackingBranch := ""
-	for !strings.HasPrefix(currentBranch, "base/") {
+	for !scm.IsBranchType(currentBranch, "base") {
 		currentTrackingBranch, err := scmProvider.GetBranchTracking(currentBranch)
 		if err != nil {
 			return seederr.Wrap(err)
 		}
-		if !strings.HasPrefix(currentTrackingBranch, "change/") && !strings.HasPrefix(currentTrackingBranch, "base/") {
+		if !scm.IsBranchType(currentTrackingBranch, "change") &&
+			!scm.IsBranchType(currentTrackingBranch, "base") {
 			return seederr.WrapErrorf("tracking chain is broken for %v (point to %v)", currentBranch, currentTrackingBranch)
 		}
 		branchCommits, err := scmProvider.ListCommitIds(currentTrackingBranch, currentBranch)
