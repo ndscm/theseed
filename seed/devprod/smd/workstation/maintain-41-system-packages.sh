@@ -7,32 +7,32 @@ printf "\e[34mChecking system packages...\e[0m\n"
 
 if [[ "${oslike}" == "debian" ]]; then
   if [[ "${run_sudo}" == "true" ]]; then
-    sudo apt install -y build-essential
-    sudo apt install -y clang
-    sudo apt install -y clang-format
-    sudo apt install -y curl
-    sudo apt install -y davfs2
-    sudo apt install -y default-jdk
-    sudo apt install -y direnv
-    sudo apt install -y g++
-    sudo apt install -y gcc
-    sudo apt install -y git
-    sudo apt install -y gitg
-    sudo apt install -y gnupg2
-    sudo apt install -y iputils-ping
-    sudo apt install -y jq
-    sudo apt install -y libcap2-bin
-    sudo apt install -y libxcb-cursor0
-    sudo apt install -y lsb-release
-    sudo apt install -y netcat-openbsd
-    sudo apt install -y p7zip-full
-    sudo apt install -y p7zip-rar
-    sudo apt install -y python3
-    sudo apt install -y python3-pip
-    sudo apt install -y rsync
-    sudo apt install -y ssh
-    sudo apt install -y vim
-    sudo apt install -y zsh
+    sudo -E apt install -y build-essential
+    sudo -E apt install -y clang
+    sudo -E apt install -y clang-format
+    sudo -E apt install -y curl
+    sudo -E apt install -y davfs2
+    sudo -E apt install -y default-jdk
+    sudo -E apt install -y direnv
+    sudo -E apt install -y g++
+    sudo -E apt install -y gcc
+    sudo -E apt install -y git
+    sudo -E apt install -y gitg
+    sudo -E apt install -y gnupg2
+    sudo -E apt install -y iputils-ping
+    sudo -E apt install -y jq
+    sudo -E apt install -y libcap2-bin
+    sudo -E apt install -y libxcb-cursor0
+    sudo -E apt install -y lsb-release
+    sudo -E apt install -y netcat-openbsd
+    sudo -E apt install -y p7zip-full
+    sudo -E apt install -y p7zip-rar
+    sudo -E apt install -y python3
+    sudo -E apt install -y python3-pip
+    sudo -E apt install -y rsync
+    sudo -E apt install -y ssh
+    sudo -E apt install -y vim
+    sudo -E apt install -y zsh
   else
     printf "\e[31mSkipping system package installation\e[0m\n"
   fi
