@@ -14,7 +14,6 @@ go_library(
         "//seed/newtype/kurisu:__subpackages__",
     ],
     deps = [
-        "//seed/infra/auth/go/clientopenid",
         "//seed/infra/auth/go/openid",
         "//seed/infra/error/go/seederr",
         "@org_golang_x_oauth2//:oauth2",
