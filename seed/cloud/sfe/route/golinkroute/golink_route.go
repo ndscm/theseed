@@ -8,7 +8,6 @@ import (
 	"strings"
 
 	"github.com/ndscm/theseed/seed/infra/auth/go/authfe"
-	"github.com/ndscm/theseed/seed/infra/auth/go/loginopenid"
 	"github.com/ndscm/theseed/seed/infra/auth/go/openid"
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
 	"github.com/ndscm/theseed/seed/infra/flag/go/seedflag"
@@ -47,7 +46,7 @@ func CreateGolinkRoute(transport http.RoundTripper) (*GolinkRoute, error) {
 		}
 		clientSecret = strings.TrimSpace(string(clientSecretBytes))
 	}
-	provider := loginopenid.NewUserOpenidProvider(
+	provider := openid.NewOpenidProvider(
 		openid.NewOpenidClient(discoveryUrl, clientId, clientSecret), "golink_")
 	authHandler := authfe.NewAuthHandler(provider)
 	serverUrl, err := url.Parse(flagGolinkServiceServer.Get())
