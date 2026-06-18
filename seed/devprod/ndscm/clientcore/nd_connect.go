@@ -26,16 +26,17 @@ func NdConnect(scmProvider scm.Provider, options NdConnectOptions) error {
 	if err != nil {
 		// Ignore error
 	}
-	if monorepoHome == "" {
-		reposHome, err := scm.ReposHome()
-		if err != nil {
-			return seederr.Wrap(err)
-		}
-		if reposHome == "" {
-			return seederr.WrapErrorf("repos home must be set for nd connect")
-		}
-		monorepoHome = filepath.Join(reposHome, options.RepoIdentifier)
+	if monorepoHome != "" {
+		seedlog.Warnf("Monorepo home is ignored for new monorepo connections.")
 	}
+	reposHome, err := scm.ReposHome()
+	if err != nil {
+		return seederr.Wrap(err)
+	}
+	if reposHome == "" {
+		return seederr.WrapErrorf("repos home must be set for nd connect")
+	}
+	monorepoHome = filepath.Join(reposHome, options.RepoIdentifier)
 	err = os.Mkdir(monorepoHome, 0755)
 	if err != nil {
 		if os.IsExist(err) {
