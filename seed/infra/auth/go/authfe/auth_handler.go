@@ -7,7 +7,7 @@ import (
 	"net/url"
 	"strings"
 
-	"github.com/ndscm/theseed/seed/infra/auth/go/loginopenid"
+	"github.com/ndscm/theseed/seed/infra/auth/go/openid"
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
 	"github.com/ndscm/theseed/seed/infra/http/go/seedsession"
 	"github.com/ndscm/theseed/seed/infra/log/go/seedlog"
@@ -34,7 +34,7 @@ func generateState() (string, error) {
 }
 
 type AuthHandler struct {
-	provider *loginopenid.UserOpenidProvider
+	provider *openid.OpenidProvider
 }
 
 func (h *AuthHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -148,6 +148,6 @@ func (h *AuthHandler) handleCallback(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, returnUrl, http.StatusFound)
 }
 
-func NewAuthHandler(provider *loginopenid.UserOpenidProvider) *AuthHandler {
+func NewAuthHandler(provider *openid.OpenidProvider) *AuthHandler {
 	return &AuthHandler{provider: provider}
 }

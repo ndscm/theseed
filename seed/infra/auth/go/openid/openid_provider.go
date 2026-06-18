@@ -1,4 +1,4 @@
-package loginopenid
+package openid
 
 import (
 	"context"
@@ -6,7 +6,6 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/ndscm/theseed/seed/infra/auth/go/openid"
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
 	"golang.org/x/oauth2"
 )
@@ -62,12 +61,12 @@ func (s *externalTokenSource) Token() (*oauth2.Token, error) {
 	return newToken, nil
 }
 
-type UserOpenidProvider struct {
-	openid.OpenidClient
+type OpenidProvider struct {
+	OpenidClient
 	prefix string
 }
 
-func (provider *UserOpenidProvider) PasswordGrant(
+func (provider *OpenidProvider) PasswordGrant(
 	ctx context.Context,
 	storage ExternalTokenStorage,
 	username string,
@@ -94,7 +93,7 @@ func (provider *UserOpenidProvider) PasswordGrant(
 	return nil
 }
 
-func (provider *UserOpenidProvider) Exchange(
+func (provider *OpenidProvider) Exchange(
 	ctx context.Context,
 	storage ExternalTokenStorage,
 	origin string,
@@ -119,7 +118,7 @@ func (provider *UserOpenidProvider) Exchange(
 	return nil
 }
 
-func (provider *UserOpenidProvider) AccessToken(
+func (provider *OpenidProvider) AccessToken(
 	ctx context.Context,
 	storage ExternalTokenStorage,
 ) (string, error) {
@@ -156,7 +155,7 @@ func (provider *UserOpenidProvider) AccessToken(
 	return token.AccessToken, nil
 }
 
-func (provider *UserOpenidProvider) Authorization(
+func (provider *OpenidProvider) Authorization(
 	ctx context.Context,
 	storage ExternalTokenStorage,
 ) string {
@@ -167,7 +166,7 @@ func (provider *UserOpenidProvider) Authorization(
 	return "Bearer " + accessToken
 }
 
-func (provider *UserOpenidProvider) Client(
+func (provider *OpenidProvider) Client(
 	ctx context.Context,
 	storage ExternalTokenStorage,
 	origin string,
@@ -205,11 +204,11 @@ func (provider *UserOpenidProvider) Client(
 	return client, nil
 }
 
-func (provider *UserOpenidProvider) FetchUserInfo(
+func (provider *OpenidProvider) FetchUserInfo(
 	ctx context.Context,
 	storage ExternalTokenStorage,
 	origin string,
-) (*openid.OpenidUserInfo, error) {
+) (*OpenidUserInfo, error) {
 	configuration, err := provider.GetOpenidConfiguration(ctx)
 	if err != nil {
 		return nil, seederr.Wrap(err)
@@ -231,15 +230,15 @@ func (provider *UserOpenidProvider) FetchUserInfo(
 		return nil, seederr.WrapErrorf("failed to fetch user info: status %d, body: %s",
 			response.StatusCode, string(responseBodyBytes))
 	}
-	openidUserInfo, err := openid.DecodeOpenidUserInfo(responseBodyBytes)
+	openidUserInfo, err := DecodeOpenidUserInfo(responseBodyBytes)
 	if err != nil {
 		return nil, seederr.Wrap(err)
 	}
 	return openidUserInfo, nil
 }
 
-func NewUserOpenidProvider(base *openid.OpenidClient, prefix string) *UserOpenidProvider {
-	return &UserOpenidProvider{
+func NewOpenidProvider(base *OpenidClient, prefix string) *OpenidProvider {
+	return &OpenidProvider{
 		OpenidClient: *base,
 		prefix:       prefix,
 	}
