@@ -40,7 +40,8 @@ func NdSync(scmProvider scm.Provider, _ NdSyncOptions) error {
 	if err != nil {
 		return seederr.Wrap(err)
 	}
-	if !scmProvider.IsDevBranch(worktreeName, scm.CanonicalBranch()) && !scmProvider.IsMeltBranch(worktreeName) {
+	if !scmProvider.IsDevBranch(worktreeName, scm.CanonicalBranch()) &&
+		!scmProvider.IsMeltBranch(worktreeName, scm.CanonicalBranch()) {
 		return seederr.WrapErrorf("workspace is not a ndscm managed worktree: %v", worktreeName)
 	}
 	// # Iterate changes tree

@@ -6,6 +6,7 @@ import (
 
 	"github.com/ndscm/theseed/seed/devprod/ndscm/configloader"
 	"github.com/ndscm/theseed/seed/devprod/ndscm/scm"
+	"github.com/ndscm/theseed/seed/devprod/ndscm/user"
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
 	"github.com/ndscm/theseed/seed/infra/log/go/seedlog"
 	"github.com/ndscm/theseed/seed/infra/shell/go/seedshell"
@@ -21,6 +22,10 @@ type NdMeltOptions struct {
 func NdMelt(scmProvider scm.Provider, options NdMeltOptions) error {
 	if !seedshell.ShellEval() {
 		seedlog.Warnf("It's recommended to run nd-melt with --shell-eval")
+	}
+	currentUserHandle, err := user.CurrentUserHandle()
+	if err != nil {
+		return seederr.Wrap(err)
 	}
 	monorepoHome, err := scm.MonorepoHome()
 	if err != nil {
@@ -63,7 +68,9 @@ func NdMelt(scmProvider scm.Provider, options NdMeltOptions) error {
 	if err != nil {
 		return seederr.Wrap(err)
 	}
-	worktreePath := scmProvider.GetMeltWorktree(monorepoHome, upstreamName)
+	_, worktreePath, _ := scmProvider.GetMeltWorktree(
+		monorepoHome, currentUserHandle, upstreamName, scm.CanonicalBranch(),
+	)
 	worktreeStat, err := os.Stat(worktreePath)
 	if err != nil && !os.IsNotExist(err) {
 		return seederr.WrapErrorf("failed to stat worktree %v: %v", worktreePath, err)
@@ -75,7 +82,9 @@ func NdMelt(scmProvider scm.Provider, options NdMeltOptions) error {
 		if os.IsNotExist(err) {
 			return seederr.WrapErrorf("melt worktree %v does not exist", worktreePath)
 		}
-		newCwd, err := scmProvider.RemoveMeltWorktree(monorepoHome, upstreamName)
+		newCwd, err := scmProvider.RemoveMeltWorktree(
+			monorepoHome, currentUserHandle, upstreamName, scm.CanonicalBranch(),
+		)
 		if err != nil {
 			return seederr.Wrap(err)
 		}
@@ -104,7 +113,10 @@ func NdMelt(scmProvider scm.Provider, options NdMeltOptions) error {
 		seedlog.Infof("Found tracking fork point: %v", trackingForkPoint)
 		seedlog.Infof("Found upstream fork point: %v", upstreamForkPoint)
 		newWorktreePath, err := scmProvider.CreateMeltWorktree(
-			monorepoHome, upstreamName, upstreamForkPoint, "upstream/"+upstreamName, tracking, trackingForkPoint)
+			monorepoHome, currentUserHandle,
+			upstreamName, upstreamForkPoint, "upstream/"+upstreamName, tracking, trackingForkPoint,
+			scm.CanonicalBranch(),
+		)
 		if err != nil {
 			return seederr.Wrap(err)
 		}
