@@ -14,6 +14,8 @@ type NdSubmitOptions struct {
 	Force  bool
 	Remote string
 
+	Owner string
+
 	FeatureName string
 	CutPoint    string
 }
@@ -46,7 +48,21 @@ func NdSubmit(scmProvider scm.Provider, options NdSubmitOptions) error {
 		}
 	}
 	submitBranch := "submit/" + options.FeatureName
-	changeBranch := "change/" + options.FeatureName
+	if scm.CanonicalBranch() {
+		if options.Owner != "" {
+			submitBranch = options.Owner + "/" + submitBranch
+		} else {
+			submitBranch = currentUserHandle + "/" + submitBranch
+		}
+	}
+	devBranch, err := scmProvider.GetWorktreeBranch("")
+	if err != nil {
+		return seederr.Wrap(err)
+	}
+	changeBranch, err := scm.ChangeBranchName(devBranch, options.FeatureName, scm.CanonicalBranch())
+	if err != nil {
+		return seederr.Wrap(err)
+	}
 	worktreePath := scmProvider.GetBranchWorktree(monorepoHome, submitBranch)
 	_, err = os.Stat(worktreePath)
 	if err != nil && !os.IsNotExist(err) {
@@ -91,7 +107,11 @@ func NdSubmit(scmProvider scm.Provider, options NdSubmitOptions) error {
 	if err != nil {
 		return seederr.Wrap(err)
 	}
-	err = scmProvider.PushBranch(submitBranch, options.Remote, currentUserHandle+"/"+options.FeatureName)
+	remoteSubmitBranch := submitBranch
+	if !scm.CanonicalBranch() {
+		remoteSubmitBranch = currentUserHandle + "/" + submitBranch
+	}
+	err = scmProvider.PushBranch(submitBranch, options.Remote, remoteSubmitBranch)
 	if err != nil {
 		return seederr.Wrap(err)
 	}
