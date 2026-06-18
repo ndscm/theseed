@@ -8,7 +8,6 @@ import (
 	"connectrpc.com/connect"
 	"github.com/ndscm/theseed/seed/cloud/keycloak/client/go/keycloak"
 	"github.com/ndscm/theseed/seed/cloud/login/go/login"
-	"github.com/ndscm/theseed/seed/infra/auth/go/clientopenid"
 	"github.com/ndscm/theseed/seed/infra/auth/go/loginopenid"
 	"github.com/ndscm/theseed/seed/infra/auth/go/openid"
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
@@ -74,7 +73,7 @@ func (svc *KurisuService) CreateSiliconJwt(
 
 func CreateKurisuService() (*KurisuService, error) {
 	siliconOpenidProvider := loginopenid.NewUserOpenidProvider(
-		clientopenid.NewOpenidProvider(openid.OpenidDiscoveryUrlFlag(), "silicon-prod", ""),
+		openid.NewOpenidClient(openid.OpenidDiscoveryUrlFlag(), "silicon-prod", ""),
 		"",
 	)
 
