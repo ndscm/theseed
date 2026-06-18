@@ -1,4 +1,4 @@
-package clientopenid
+package openid
 
 import (
 	"context"
@@ -6,46 +6,45 @@ import (
 	"net/http"
 	"net/url"
 
-	"github.com/ndscm/theseed/seed/infra/auth/go/openid"
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
 	"github.com/ndscm/theseed/seed/infra/log/go/seedlog"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/clientcredentials"
 )
 
-type OpenidProvider struct {
+type OpenidClient struct {
 	discoveryUrl string
 	clientId     string
 	clientSecret string
 
-	cachedConfiguration *openid.OpenidConfiguration
+	cachedConfiguration *OpenidConfiguration
 	cachedOrigin        string
 
 	tokenSource oauth2.TokenSource
 }
 
-func (provider *OpenidProvider) ClientId() string {
-	return provider.clientId
+func (oc *OpenidClient) ClientId() string {
+	return oc.clientId
 }
 
-func (provider *OpenidProvider) Origin() (string, error) {
-	if provider.cachedOrigin != "" {
-		return provider.cachedOrigin, nil
+func (oc *OpenidClient) Origin() (string, error) {
+	if oc.cachedOrigin != "" {
+		return oc.cachedOrigin, nil
 	}
-	parsedUrl, err := url.Parse(provider.discoveryUrl)
+	parsedUrl, err := url.Parse(oc.discoveryUrl)
 	if err != nil {
 		return "", seederr.Wrap(err)
 	}
-	provider.cachedOrigin = parsedUrl.Scheme + "://" + parsedUrl.Host
-	return provider.cachedOrigin, nil
+	oc.cachedOrigin = parsedUrl.Scheme + "://" + parsedUrl.Host
+	return oc.cachedOrigin, nil
 }
 
-func (provider *OpenidProvider) GetOpenidConfiguration(ctx context.Context) (*openid.OpenidConfiguration, error) {
-	if provider.cachedConfiguration != nil {
-		return provider.cachedConfiguration, nil
+func (oc *OpenidClient) GetOpenidConfiguration(ctx context.Context) (*OpenidConfiguration, error) {
+	if oc.cachedConfiguration != nil {
+		return oc.cachedConfiguration, nil
 	}
-	seedlog.Infof("Fetching openid configuration from %s", provider.discoveryUrl)
-	request, err := http.NewRequestWithContext(ctx, http.MethodGet, provider.discoveryUrl, nil)
+	seedlog.Infof("Fetching openid configuration from %s", oc.discoveryUrl)
+	request, err := http.NewRequestWithContext(ctx, http.MethodGet, oc.discoveryUrl, nil)
 	if err != nil {
 		return nil, seederr.Wrap(err)
 	}
@@ -62,17 +61,17 @@ func (provider *OpenidProvider) GetOpenidConfiguration(ctx context.Context) (*op
 		return nil, seederr.WrapErrorf("failed to fetch openid configuration: status %d, body: %s",
 			response.StatusCode, string(responseBodyBytes))
 	}
-	provider.cachedConfiguration, err = openid.DecodeOpenidConfiguration(responseBodyBytes)
+	oc.cachedConfiguration, err = DecodeOpenidConfiguration(responseBodyBytes)
 	if err != nil {
 		return nil, seederr.Wrap(err)
 	}
-	return provider.cachedConfiguration, nil
+	return oc.cachedConfiguration, nil
 }
 
-func (provider *OpenidProvider) GetOauth2Config(
+func (oc *OpenidClient) GetOauth2Config(
 	ctx context.Context, origin string, scopes []string,
 ) (*oauth2.Config, error) {
-	configuration, err := provider.GetOpenidConfiguration(ctx)
+	configuration, err := oc.GetOpenidConfiguration(ctx)
 	if err != nil {
 		return nil, seederr.Wrap(err)
 	}
@@ -88,7 +87,7 @@ func (provider *OpenidProvider) GetOauth2Config(
 	}
 
 	authStyle := oauth2.AuthStyleAutoDetect
-	if provider.clientSecret == "" {
+	if oc.clientSecret == "" {
 		authStyle = oauth2.AuthStyleInParams
 	}
 
@@ -97,8 +96,8 @@ func (provider *OpenidProvider) GetOauth2Config(
 	}
 
 	oauth2Config := &oauth2.Config{
-		ClientID:     provider.clientId,
-		ClientSecret: provider.clientSecret,
+		ClientID:     oc.clientId,
+		ClientSecret: oc.clientSecret,
 		Scopes:       scopes,
 		RedirectURL:  redirectUrl,
 		Endpoint: oauth2.Endpoint{
@@ -111,63 +110,63 @@ func (provider *OpenidProvider) GetOauth2Config(
 	return oauth2Config, nil
 }
 
-func (provider *OpenidProvider) GetClientCredentialsConfig(ctx context.Context) (*clientcredentials.Config, error) {
-	configuration, err := provider.GetOpenidConfiguration(ctx)
+func (oc *OpenidClient) GetClientCredentialsConfig(ctx context.Context) (*clientcredentials.Config, error) {
+	configuration, err := oc.GetOpenidConfiguration(ctx)
 	if err != nil {
 		return nil, seederr.Wrap(err)
 	}
 	oauth2Config := &clientcredentials.Config{
-		ClientID:     provider.clientId,
-		ClientSecret: provider.clientSecret,
+		ClientID:     oc.clientId,
+		ClientSecret: oc.clientSecret,
 		TokenURL:     configuration.TokenEndpoint,
 		Scopes:       configuration.ScopesSupported,
 	}
 	return oauth2Config, nil
 }
 
-func (provider *OpenidProvider) AccessToken(
+func (oc *OpenidClient) AccessToken(
 	ctx context.Context,
 ) (string, error) {
-	if provider.tokenSource == nil {
-		oauth2Config, err := provider.GetClientCredentialsConfig(ctx)
+	if oc.tokenSource == nil {
+		oauth2Config, err := oc.GetClientCredentialsConfig(ctx)
 		if err != nil {
 			return "", seederr.Wrap(err)
 		}
-		provider.tokenSource = oauth2Config.TokenSource(context.Background())
+		oc.tokenSource = oauth2Config.TokenSource(context.Background())
 	}
-	token, err := provider.tokenSource.Token()
+	token, err := oc.tokenSource.Token()
 	if err != nil {
 		return "", seederr.Wrap(err)
 	}
 	return token.AccessToken, nil
 }
 
-func (provider *OpenidProvider) Authorization(
+func (oc *OpenidClient) Authorization(
 	ctx context.Context,
 ) string {
-	accessToken, err := provider.AccessToken(ctx)
+	accessToken, err := oc.AccessToken(ctx)
 	if err != nil {
 		return ""
 	}
 	return "Bearer " + accessToken
 }
 
-func (provider *OpenidProvider) Client(
+func (oc *OpenidClient) Client(
 	ctx context.Context,
 ) (*http.Client, error) {
-	if provider.tokenSource == nil {
-		oauth2Config, err := provider.GetClientCredentialsConfig(ctx)
+	if oc.tokenSource == nil {
+		oauth2Config, err := oc.GetClientCredentialsConfig(ctx)
 		if err != nil {
 			return nil, seederr.Wrap(err)
 		}
-		provider.tokenSource = oauth2Config.TokenSource(context.Background())
+		oc.tokenSource = oauth2Config.TokenSource(context.Background())
 	}
-	client := oauth2.NewClient(ctx, provider.tokenSource)
+	client := oauth2.NewClient(ctx, oc.tokenSource)
 	return client, nil
 }
 
-func NewOpenidProvider(discoveryUrl string, clientId string, clientSecret string) *OpenidProvider {
-	return &OpenidProvider{
+func NewOpenidClient(discoveryUrl string, clientId string, clientSecret string) *OpenidClient {
+	return &OpenidClient{
 		discoveryUrl: discoveryUrl,
 		clientId:     clientId,
 		clientSecret: clientSecret,

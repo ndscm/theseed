@@ -6,7 +6,6 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/ndscm/theseed/seed/infra/auth/go/clientopenid"
 	"github.com/ndscm/theseed/seed/infra/auth/go/openid"
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
 	"golang.org/x/oauth2"
@@ -64,7 +63,7 @@ func (s *externalTokenSource) Token() (*oauth2.Token, error) {
 }
 
 type UserOpenidProvider struct {
-	clientopenid.OpenidProvider
+	openid.OpenidClient
 	prefix string
 }
 
@@ -239,9 +238,9 @@ func (provider *UserOpenidProvider) FetchUserInfo(
 	return openidUserInfo, nil
 }
 
-func NewUserOpenidProvider(base *clientopenid.OpenidProvider, prefix string) *UserOpenidProvider {
+func NewUserOpenidProvider(base *openid.OpenidClient, prefix string) *UserOpenidProvider {
 	return &UserOpenidProvider{
-		OpenidProvider: *base,
-		prefix:         prefix,
+		OpenidClient: *base,
+		prefix:       prefix,
 	}
 }
