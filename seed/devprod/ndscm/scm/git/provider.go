@@ -4,6 +4,8 @@ import (
 	"errors"
 	"os"
 	"path/filepath"
+	"slices"
+	"strconv"
 	"strings"
 
 	"github.com/ndscm/theseed/seed/devprod/ndscm/scm"
@@ -20,7 +22,9 @@ func (g *GitProvider) Initialize() error {
 
 // # connect
 
-func (g *GitProvider) Connect(repoIdentifier string, monorepoHome string, repoEndpoint string) (string, string, error) {
+func (g *GitProvider) Connect(
+	repoIdentifier string, monorepoHome string, repoEndpoint string, canonicalBranch bool,
+) (string, string, error) {
 	repoEnvLines := []string{}
 	repoEnvLines = append(repoEnvLines, `ND_MONOREPO_HOME="`+monorepoHome+`"`)
 
@@ -41,6 +45,8 @@ func (g *GitProvider) Connect(repoIdentifier string, monorepoHome string, repoEn
 	repoEnvLines = append(repoEnvLines, `ND_USER_DISPLAY_NAME="`+userDisplayName+`"`)
 
 	repoEnvLines = append(repoEnvLines, `ND_SCM="git"`)
+
+	repoEnvLines = append(repoEnvLines, `ND_CANONICAL_BRANCH=`+strconv.FormatBool(canonicalBranch))
 
 	gitDir := guessMonorepoGitDir(monorepoHome)
 
@@ -117,12 +123,26 @@ func (g *GitProvider) GetMergeBaseCommitId(base string, target string) (string, 
 	return GetMergeBaseHash("", base, target)
 }
 
-func (g *GitProvider) IsDevBranch(branchName string) bool {
-	if branchName == "dev" {
-		return true
-	}
-	if strings.HasPrefix(branchName, "dev-") && !strings.Contains(branchName, "/") {
-		return true
+func (g *GitProvider) IsDevBranch(branchName string, canonicalBranch bool) bool {
+	if canonicalBranch {
+		ownerHandle, branchType, _, err := scm.ParseCanonicalBranch(branchName)
+		if err != nil {
+			return false
+		}
+		reservedHandles := []string{"base", "change", "main", "melt", "review", "submit"}
+		if slices.Contains(reservedHandles, ownerHandle) {
+			return false
+		}
+		if branchType == "dev" {
+			return true
+		}
+	} else {
+		if branchName == "dev" {
+			return true
+		}
+		if strings.HasPrefix(branchName, "dev-") && !strings.Contains(branchName, "/") {
+			return true
+		}
 	}
 	return false
 }
@@ -272,17 +292,49 @@ func (g *GitProvider) RemoveWorktree(monorepoHome string, worktreePath string) e
 	return RemoveWorktree(monorepoGitDir, worktreePath)
 }
 
-func (g *GitProvider) CreateDevWorktree(monorepoHome string, focus string, tracking string) (string, error) {
-	branchName := "dev"
-	if focus != "" {
-		branchName = "dev-" + focus
+func (g *GitProvider) GetDevWorktree(
+	monorepoHome string, ownerHandle string, focus string, canonicalBranch bool,
+) (string, string, bool) {
+	worktreeName := ""
+	if canonicalBranch {
+		if focus == "" {
+			focus = "main"
+		}
+		worktreeName = ownerHandle + "/dev/" + focus
+	} else {
+		branchName := "dev"
+		if focus != "" {
+			branchName += "-" + focus
+		}
+		worktreeName = branchName
 	}
+
+	worktreePath := GetBranchWorktreePath(monorepoHome, worktreeName)
+
+	exists := false
+	worktreeStat, err := os.Stat(worktreePath)
+	if err == nil && worktreeStat.IsDir() {
+		exists = true
+	}
+
+	return worktreeName, worktreePath, exists
+}
+
+func (g *GitProvider) CreateDevWorktree(
+	monorepoHome string, ownerHandle string, focus string, tracking string, canonicalBranch bool,
+) (string, error) {
 	monorepoGitDir := guessMonorepoGitDir(monorepoHome)
-	err := CreateBranch(monorepoGitDir, "base/"+branchName, tracking, tracking)
-	if err != nil {
-		return "", seederr.WrapErrorf("failed to create base branch %v: %v", "base/"+branchName, err)
+	worktreeName, worktreePath, exists := g.GetDevWorktree(monorepoHome, ownerHandle, focus, canonicalBranch)
+	if exists {
+		return "", seederr.WrapErrorf("worktree path already exists. path=%v", worktreePath)
 	}
-	err = CreateBranch(monorepoGitDir, branchName, "base/"+branchName, "base/"+branchName)
+	branchName := worktreeName
+	baseBranchName := scm.BaseBranchName(branchName, canonicalBranch)
+	err := CreateBranch(monorepoGitDir, baseBranchName, tracking, tracking)
+	if err != nil {
+		return "", seederr.WrapErrorf("failed to create base branch %v: %v", baseBranchName, err)
+	}
+	err = CreateBranch(monorepoGitDir, branchName, baseBranchName, baseBranchName)
 	if err != nil {
 		return "", seederr.WrapErrorf("failed to create worktree branch %v: %v", branchName, err)
 	}
@@ -293,21 +345,13 @@ func (g *GitProvider) CreateDevWorktree(monorepoHome string, focus string, track
 	return newWorktreePath, nil
 }
 
-func (g *GitProvider) GetDevWorktree(monorepoHome string, focus string) string {
-	branchName := "dev"
-	if focus != "" {
-		branchName = "dev-" + focus
-	}
-	return GetBranchWorktreePath(monorepoHome, branchName)
-}
-
-func (g *GitProvider) RemoveDevWorktree(monorepoHome string, focus string) (string, error) {
+func (g *GitProvider) RemoveDevWorktree(
+	monorepoHome string, ownerHandle string, focus string, canonicalBranch bool,
+) (string, error) {
 	monorepoGitDir := guessMonorepoGitDir(monorepoHome)
-	branchName := "dev"
-	if focus != "" {
-		branchName = "dev-" + focus
-	}
-	worktreePath := GetBranchWorktreePath(monorepoHome, branchName)
+	worktreeName, worktreePath, _ := g.GetDevWorktree(monorepoHome, ownerHandle, focus, canonicalBranch)
+	branchName := worktreeName
+	baseBranchName := scm.BaseBranchName(branchName, canonicalBranch)
 	currentWorktreePath, err := GetCurrentWorktreePath()
 	if err != nil {
 		return "", seederr.Wrap(err)
@@ -324,28 +368,28 @@ func (g *GitProvider) RemoveDevWorktree(monorepoHome string, focus string) (stri
 	if err != nil {
 		return "", seederr.Wrap(err)
 	}
-	if devTracking != "base/"+branchName {
+	if devTracking != baseBranchName {
 		seedlog.Warnf("Dev branch %v is tracking %v instead of its base branch, please cleanup dev worktree (with nd sync) before removing", branchName, devTracking)
 		return "", seederr.WrapErrorf("dev branch %v is not tracking its base branch", branchName)
 	}
-	baseTracking, err := GetBranchTracking(monorepoGitDir, "base/"+branchName)
+	baseTracking, err := GetBranchTracking(monorepoGitDir, baseBranchName)
 	if err != nil {
 		return "", seederr.Wrap(err)
 	}
-	baseCommits, err := ListCommitHash(monorepoGitDir, baseTracking, "base/"+branchName)
+	baseCommits, err := ListCommitHash(monorepoGitDir, baseTracking, baseBranchName)
 	if err != nil {
 		return "", seederr.Wrap(err)
 	}
 	if len(baseCommits) > 0 {
-		seedlog.Warnf("Base branch %v is not fully merged to its tracking upstream %v, please drop the commits: %v", "base/"+branchName, baseTracking, baseCommits)
-		return "", seederr.WrapErrorf("base branch %v contains changes", "base/"+branchName)
+		seedlog.Warnf("Base branch %v is not fully merged to its tracking upstream %v, please drop the commits: %v", baseBranchName, baseTracking, baseCommits)
+		return "", seederr.WrapErrorf("base branch %v contains changes", baseBranchName)
 	}
-	devCommits, err := ListCommitHash(monorepoGitDir, "base/"+branchName, branchName)
+	devCommits, err := ListCommitHash(monorepoGitDir, baseBranchName, branchName)
 	if err != nil {
 		return "", seederr.Wrap(err)
 	}
 	if len(devCommits) > 0 {
-		seedlog.Warnf("Dev branch %v is not fully merged to its base branch %v, please drop the commits: %v", branchName, "base/"+branchName, devCommits)
+		seedlog.Warnf("Dev branch %v is not fully merged to its base branch %v, please drop the commits: %v", branchName, baseBranchName, devCommits)
 		return "", seederr.WrapErrorf("dev branch %v contains changes", branchName)
 	}
 	newCwd := ""
@@ -364,7 +408,7 @@ func (g *GitProvider) RemoveDevWorktree(monorepoHome string, focus string) (stri
 	if err != nil {
 		return "", seederr.Wrap(err)
 	}
-	err = DeleteBranch(monorepoGitDir, "base/"+branchName)
+	err = DeleteBranch(monorepoGitDir, baseBranchName)
 	if err != nil {
 		return "", seederr.Wrap(err)
 	}
