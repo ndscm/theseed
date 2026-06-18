@@ -9,7 +9,7 @@ printf "\e[34mChecking zsh shell...\e[0m\n"
 
 if [[ "${oslike}" == "debian" ]]; then
   if [[ "${run_sudo}" == "true" ]]; then
-    sudo apt install -y zsh
+    sudo -E apt install -y zsh
   else
     printf "\e[31mSkipping system zsh installation\e[0m\n"
   fi

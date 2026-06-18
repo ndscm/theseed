@@ -7,7 +7,7 @@ printf "\e[34mChecking golang tools...\e[0m\n"
 
 if [[ "${oslike}" == "debian" ]]; then
   if [[ "${run_sudo}" == "true" ]]; then
-    sudo snap install --classic go
+    sudo -E snap install --classic go
   else
     printf "\e[31mSkipping snap go installation\e[0m\n"
   fi
