@@ -7,7 +7,6 @@ go_library(
     visibility = ["//visibility:public"],
     deps = [
         "//seed/infra/auth/go/authfe",
-        "//seed/infra/auth/go/loginopenid",
         "//seed/infra/auth/go/openid",
         "//seed/infra/error/go/seederr",
         "//seed/infra/flag/go/seedflag",
