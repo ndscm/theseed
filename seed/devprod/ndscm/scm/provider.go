@@ -164,7 +164,7 @@ type Provider interface {
 	GetBranchWorktreeBranch(monorepoHome string, worktreePath string) (string, error)
 
 	// RemoveWorktree deletes the worktree at worktreePath.
-	RemoveWorktree(worktreePath string) error
+	RemoveWorktree(monorepoHome string, worktreePath string) error
 
 	// CreateDevWorktree creates a dev worktree under monorepoHome. It sets
 	// up a base tracking branch (base/dev or base/dev-<focus>) at
