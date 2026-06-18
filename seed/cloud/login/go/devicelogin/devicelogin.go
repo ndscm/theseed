@@ -8,7 +8,6 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/ndscm/theseed/seed/infra/auth/go/clientopenid"
 	"github.com/ndscm/theseed/seed/infra/auth/go/loginopenid"
 	"github.com/ndscm/theseed/seed/infra/auth/go/openid"
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
@@ -83,7 +82,7 @@ func DeviceLogin(ctx context.Context, service string) (context.Context, error) {
 	storagePath := filepath.Join(userHome, ".seed", "login", serviceTier+".json")
 	tokenStorage := &FileTokenStorage{storagePath: storagePath}
 
-	base := clientopenid.NewOpenidProvider(discoveryUrl, serviceTier, "")
+	base := openid.NewOpenidClient(discoveryUrl, serviceTier, "")
 	provider := loginopenid.NewUserOpenidProvider(base, "")
 
 	accessToken, err := provider.AccessToken(ctx, tokenStorage)

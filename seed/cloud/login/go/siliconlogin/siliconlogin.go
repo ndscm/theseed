@@ -5,7 +5,6 @@ import (
 	"os"
 	"sync"
 
-	"github.com/ndscm/theseed/seed/infra/auth/go/clientopenid"
 	"github.com/ndscm/theseed/seed/infra/auth/go/loginopenid"
 	"github.com/ndscm/theseed/seed/infra/auth/go/openid"
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
@@ -39,7 +38,7 @@ func SiliconLogin(ctx context.Context) (context.Context, error) {
 			)
 
 			discoveryUrl := openid.OpenidDiscoveryUrlFlag()
-			base := clientopenid.NewOpenidProvider(discoveryUrl, "silicon-prod", "")
+			base := openid.NewOpenidClient(discoveryUrl, "silicon-prod", "")
 			session.provider = loginopenid.NewUserOpenidProvider(base, "")
 		}
 	}
