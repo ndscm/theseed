@@ -267,8 +267,7 @@ func (g *GitProvider) GetBranchWorktreeBranch(monorepoHome string, worktreePath 
 	return GetBranchWorktreeBranch(monorepoHome, worktreePath)
 }
 
-func (g *GitProvider) RemoveWorktree(worktreePath string) error {
-	monorepoHome := filepath.Dir(worktreePath)
+func (g *GitProvider) RemoveWorktree(monorepoHome string, worktreePath string) error {
 	monorepoGitDir := guessMonorepoGitDir(monorepoHome)
 	return RemoveWorktree(monorepoGitDir, worktreePath)
 }
