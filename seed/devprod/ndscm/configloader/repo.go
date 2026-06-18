@@ -13,6 +13,9 @@ type RepoUpstreamConfig struct {
 }
 
 type RepoConfig struct {
-	Ndscm    RepoNdscmConfig               `json:"ndscm"`
+	Ndscm RepoNdscmConfig `json:"ndscm"`
+
+	Canonical bool `json:"canonical,omitempty"`
+
 	Upstream map[string]RepoUpstreamConfig `json:"upstream,omitempty"`
 }
