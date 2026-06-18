@@ -8,9 +8,7 @@ import (
 	"github.com/ndscm/theseed/seed/infra/log/go/seedlog"
 )
 
-// The default SCM provider is "ndscm", which is used to force the user to set git explicitly.
-// User can also provide empty value to use the default provider if there is only one provider registered.
-var flagScm = seedflag.DefineString("scm", "ndscm", "The SCM provider to use (e.g. git)")
+var flagScm = seedflag.DefineString("scm", "", "The SCM provider to use (e.g. git)")
 
 type ProviderEntry struct {
 	provider Provider
