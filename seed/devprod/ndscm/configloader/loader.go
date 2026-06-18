@@ -24,13 +24,13 @@ func LoadDirConfig(dirConfigPath string) (*DirConfig, error) {
 	return dirConfig, nil
 }
 
-func LoadDirConfigs(worktree string, scmFilePaths []string) (map[string]*DirConfig, error) {
+func LoadDirConfigs(worktreePath string, scmFilePaths []string) (map[string]*DirConfig, error) {
 	result := map[string]*DirConfig{}
 	for _, scmFilePath := range scmFilePaths {
 		if filepath.Base(scmFilePath) != "DIR.ndscm.ts" {
 			continue
 		}
-		dirConfig, err := LoadDirConfig(filepath.Join(worktree, scmFilePath))
+		dirConfig, err := LoadDirConfig(filepath.Join(worktreePath, scmFilePath))
 		if err != nil {
 			return nil, seederr.Wrap(err)
 		}
