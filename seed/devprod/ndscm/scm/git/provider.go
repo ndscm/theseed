@@ -466,3 +466,5 @@ func (g *GitProvider) RemoveMeltWorktree(monorepoHome string, upstreamName strin
 	}
 	return newCwd, nil
 }
+
+var _ scm.Provider = (*GitProvider)(nil)
