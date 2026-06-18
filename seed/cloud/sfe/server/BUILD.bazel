@@ -18,7 +18,6 @@ go_library(
         "//seed/cloud/sfe/route/stuffroute",
         "//seed/cloud/sfe/route/workflowroute",
         "//seed/cloud/sqlsession",
-        "//seed/infra/auth/go/clientopenid",
         "//seed/infra/auth/go/openid",
         "//seed/infra/error/go/seederr",
         "//seed/infra/flag/go/seedflag",

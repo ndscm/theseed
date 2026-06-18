@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"github.com/ndscm/theseed/seed/cloud/sfe/certificate/client/go/certificateclient"
-	"github.com/ndscm/theseed/seed/infra/auth/go/clientopenid"
+	"github.com/ndscm/theseed/seed/infra/auth/go/openid"
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
 	"github.com/ndscm/theseed/seed/infra/http/go/seedbearer"
 	"github.com/ndscm/theseed/seed/infra/log/go/seedlog"
@@ -28,7 +28,7 @@ func checkCertificateLife(tlsCertificate *tls.Certificate) (bool, bool, error) {
 }
 
 type SfeCertStore struct {
-	serviceOpenid *clientopenid.OpenidProvider
+	serviceOpenid *openid.OpenidClient
 
 	certificateCache sync.Map
 }
@@ -89,7 +89,7 @@ func (s *SfeCertStore) GetCertificate(hello *tls.ClientHelloInfo) (*tls.Certific
 	return newCert, nil
 }
 
-func NewSfeCertStore(serviceOpenid *clientopenid.OpenidProvider) *SfeCertStore {
+func NewSfeCertStore(serviceOpenid *openid.OpenidClient) *SfeCertStore {
 	return &SfeCertStore{
 		serviceOpenid: serviceOpenid,
 	}

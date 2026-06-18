@@ -8,8 +8,8 @@ import (
 	"strings"
 
 	"github.com/ndscm/theseed/seed/infra/auth/go/authfe"
-	"github.com/ndscm/theseed/seed/infra/auth/go/clientopenid"
 	"github.com/ndscm/theseed/seed/infra/auth/go/loginopenid"
+	"github.com/ndscm/theseed/seed/infra/auth/go/openid"
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
 	"github.com/ndscm/theseed/seed/infra/flag/go/seedflag"
 )
@@ -48,7 +48,7 @@ func CreateKurisuRoute(transport http.RoundTripper) (*KurisuRoute, error) {
 		clientSecret = strings.TrimSpace(string(clientSecretBytes))
 	}
 	provider := loginopenid.NewUserOpenidProvider(
-		clientopenid.NewOpenidProvider(discoveryUrl, clientId, clientSecret), "kurisu_")
+		openid.NewOpenidClient(discoveryUrl, clientId, clientSecret), "kurisu_")
 	authHandler := authfe.NewAuthHandler(provider)
 	serverUrl, err := url.Parse(flagKurisuServiceServer.Get())
 	if err != nil {
