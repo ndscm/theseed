@@ -8,7 +8,6 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/ndscm/theseed/seed/infra/auth/go/loginopenid"
 	"github.com/ndscm/theseed/seed/infra/auth/go/openid"
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
 	"github.com/ndscm/theseed/seed/infra/flag/go/seedflag"
@@ -70,7 +69,7 @@ func (s *FileTokenStorage) Update(ctx context.Context, change map[string]string)
 	return nil
 }
 
-var _ loginopenid.ExternalTokenStorage = &FileTokenStorage{}
+var _ openid.ExternalTokenStorage = &FileTokenStorage{}
 
 func DeviceLogin(ctx context.Context, service string) (context.Context, error) {
 	userHome, err := os.UserHomeDir()
@@ -83,7 +82,7 @@ func DeviceLogin(ctx context.Context, service string) (context.Context, error) {
 	tokenStorage := &FileTokenStorage{storagePath: storagePath}
 
 	base := openid.NewOpenidClient(discoveryUrl, serviceTier, "")
-	provider := loginopenid.NewUserOpenidProvider(base, "")
+	provider := openid.NewOpenidProvider(base, "")
 
 	accessToken, err := provider.AccessToken(ctx, tokenStorage)
 	if err == nil && accessToken != "" {

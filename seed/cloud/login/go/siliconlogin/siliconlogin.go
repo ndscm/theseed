@@ -5,7 +5,6 @@ import (
 	"os"
 	"sync"
 
-	"github.com/ndscm/theseed/seed/infra/auth/go/loginopenid"
 	"github.com/ndscm/theseed/seed/infra/auth/go/openid"
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
 	"github.com/ndscm/theseed/seed/infra/flag/go/seedflag"
@@ -16,8 +15,8 @@ var flagSiliconRefreshTokenFile = seedflag.DefineString("silicon_refresh_token_f
 
 type SiliconSession struct {
 	mutex    sync.Mutex
-	token    *loginopenid.MemoryTokenStorage
-	provider *loginopenid.UserOpenidProvider
+	token    *openid.MemoryTokenStorage
+	provider *openid.OpenidProvider
 }
 
 var session = SiliconSession{}
@@ -33,13 +32,13 @@ func SiliconLogin(ctx context.Context) (context.Context, error) {
 			if err != nil {
 				return ctx, seederr.Wrap(err)
 			}
-			session.token = loginopenid.NewMemoryTokenStorage(
+			session.token = openid.NewMemoryTokenStorage(
 				map[string]string{"refresh_token": string(refreshToken)},
 			)
 
 			discoveryUrl := openid.OpenidDiscoveryUrlFlag()
 			base := openid.NewOpenidClient(discoveryUrl, "silicon-prod", "")
-			session.provider = loginopenid.NewUserOpenidProvider(base, "")
+			session.provider = openid.NewOpenidProvider(base, "")
 		}
 	}
 
