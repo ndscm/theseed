@@ -8,8 +8,8 @@ import (
 	"strings"
 
 	"github.com/ndscm/theseed/seed/infra/auth/go/authfe"
-	"github.com/ndscm/theseed/seed/infra/auth/go/clientopenid"
 	"github.com/ndscm/theseed/seed/infra/auth/go/loginopenid"
+	"github.com/ndscm/theseed/seed/infra/auth/go/openid"
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
 	"github.com/ndscm/theseed/seed/infra/flag/go/seedflag"
 )
@@ -48,7 +48,7 @@ func CreateStuffRoute(transport http.RoundTripper) (*StuffRoute, error) {
 		clientSecret = strings.TrimSpace(string(clientSecretBytes))
 	}
 	provider := loginopenid.NewUserOpenidProvider(
-		clientopenid.NewOpenidProvider(discoveryUrl, clientId, clientSecret), "stuff_")
+		openid.NewOpenidClient(discoveryUrl, clientId, clientSecret), "stuff_")
 	authHandler := authfe.NewAuthHandler(provider)
 	serverUrl, err := url.Parse(flagStuffServiceServer.Get())
 	if err != nil {
