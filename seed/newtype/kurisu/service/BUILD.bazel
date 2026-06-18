@@ -9,7 +9,6 @@ go_library(
     deps = [
         "//seed/cloud/keycloak/client/go/keycloak",
         "//seed/cloud/login/go/login",
-        "//seed/infra/auth/go/clientopenid",
         "//seed/infra/auth/go/loginopenid",
         "//seed/infra/auth/go/openid",
         "//seed/infra/error/go/seederr",
