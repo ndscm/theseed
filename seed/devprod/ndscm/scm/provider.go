@@ -65,9 +65,11 @@ type Provider interface {
 	// "dev-<focus>" (no slashes allowed).
 	IsDevBranch(branchName string, canonicalBranch bool) bool
 
-	// IsMeltBranch reports whether branchName is a melt branch — either "melt"
-	// itself or a focused variant "melt-<focus>" (no slashes allowed).
-	IsMeltBranch(branchName string) bool
+	// IsMeltBranch reports whether branchName is a melt branch. In canonical
+	// mode that means an "<owner>/melt/<upstream>" branch whose owner is not a
+	// reserved handle; otherwise it means "melt" itself or a focused variant
+	// "melt-<upstream>" (no slashes allowed).
+	IsMeltBranch(branchName string, canonicalBranch bool) bool
 
 	// # commit
 
@@ -196,25 +198,35 @@ type Provider interface {
 		monorepoHome string, ownerHandle string, focus string, canonicalBranch bool,
 	) (string, error)
 
-	// CreateMeltWorktree creates a worktree for melting upstream changes.
-	// It creates a base branch (base/melt-<upstreamName>) at fromPoint
-	// tracking the given tracking ref, a working branch
-	// (melt-<upstreamName>) at toPoint tracking the base branch, and
-	// materializes the worktree. After creation, the base branch is
-	// updated to forkPoint so that a subsequent rebase replays only the
-	// commits between forkPoint and toPoint.
-	CreateMeltWorktree(
-		monorepoHome string, upstreamName string, fromPoint string, toPoint string, tracking string, forkPoint string,
-	) (string, error)
+	// GetMeltWorktree returns the melt branch name and its conventional
+	// worktree path under monorepoHome for ownerHandle and upstreamName,
+	// along with whether that worktree currently exists. The branch is
+	// "<owner>/melt/<upstreamName>" in canonical mode (upstreamName
+	// defaults to "default") or "melt"/"melt-<upstreamName>" otherwise.
+	GetMeltWorktree(
+		monorepoHome string, ownerHandle string, upstreamName string, canonicalBranch bool,
+	) (string, string, bool)
 
-	// GetMeltWorktree returns the conventional worktree path for the
-	// melt branch (or melt-<upstreamName>) under monorepoHome. It does
-	// not check whether the worktree exists.
-	GetMeltWorktree(monorepoHome string, upstreamName string) string
+	// CreateMeltWorktree creates a worktree for melting upstream changes.
+	// It creates a base branch at fromPoint tracking the given tracking
+	// ref, a working branch at toPoint tracking the base branch, and
+	// materializes the worktree. The working branch is
+	// "<owner>/melt/<upstreamName>" in canonical mode or
+	// "melt-<upstreamName>" otherwise, and the base branch is its matching
+	// base branch. After creation, the base branch is updated to forkPoint
+	// so that a subsequent rebase replays only the commits between
+	// forkPoint and toPoint.
+	CreateMeltWorktree(
+		monorepoHome string, ownerHandle string,
+		upstreamName string, fromPoint string, toPoint string, tracking string, forkPoint string,
+		canonicalBranch bool,
+	) (string, error)
 
 	// RemoveMeltWorktree removes the melt worktree, its working branch,
 	// and its base branch under monorepoHome. It fails if the worktree
 	// has dirty files. It returns the new working directory if the
 	// caller was inside the removed worktree, or "" otherwise.
-	RemoveMeltWorktree(monorepoHome string, upstreamName string) (string, error)
+	RemoveMeltWorktree(
+		monorepoHome string, ownerHandle string, upstreamName string, canonicalBranch bool,
+	) (string, error)
 }
