@@ -3,7 +3,7 @@ package authfe
 import (
 	"net/http"
 
-	"github.com/ndscm/theseed/seed/infra/auth/go/loginopenid"
+	"github.com/ndscm/theseed/seed/infra/auth/go/openid"
 	"github.com/ndscm/theseed/seed/infra/http/go/seedsession"
 	"github.com/ndscm/theseed/seed/infra/log/go/seedlog"
 )
@@ -11,7 +11,7 @@ import (
 type SessionAuthorizationMiddleware struct {
 	next http.Handler
 
-	provider *loginopenid.UserOpenidProvider
+	provider *openid.OpenidProvider
 }
 
 func (m SessionAuthorizationMiddleware) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -29,6 +29,6 @@ func (m SessionAuthorizationMiddleware) ServeHTTP(w http.ResponseWriter, r *http
 	m.next.ServeHTTP(w, r.WithContext(ctx))
 }
 
-func InterceptSessionAuthorizationMiddleware(next http.Handler, provider *loginopenid.UserOpenidProvider) http.Handler {
+func InterceptSessionAuthorizationMiddleware(next http.Handler, provider *openid.OpenidProvider) http.Handler {
 	return &SessionAuthorizationMiddleware{next: next, provider: provider}
 }

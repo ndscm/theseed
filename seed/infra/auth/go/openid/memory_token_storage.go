@@ -1,4 +1,4 @@
-package loginopenid
+package openid
 
 import (
 	"context"
