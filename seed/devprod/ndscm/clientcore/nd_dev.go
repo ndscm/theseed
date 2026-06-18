@@ -3,8 +3,10 @@ package clientcore
 import (
 	"fmt"
 	"os"
+	"regexp"
 
 	"github.com/ndscm/theseed/seed/devprod/ndscm/scm"
+	"github.com/ndscm/theseed/seed/devprod/ndscm/user"
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
 	"github.com/ndscm/theseed/seed/infra/log/go/seedlog"
 	"github.com/ndscm/theseed/seed/infra/shell/go/seedshell"
@@ -17,9 +19,15 @@ type NdDevOptions struct {
 	Focus string
 }
 
+var focusRegex = regexp.MustCompile(`^[a-zA-Z0-9_-]*$`)
+
 func NdDev(scmProvider scm.Provider, options NdDevOptions) error {
 	if !seedshell.ShellEval() {
 		seedlog.Warnf("It's recommended to run nd-dev with --shell-eval")
+	}
+	currentUserHandle, err := user.CurrentUserHandle()
+	if err != nil {
+		return seederr.Wrap(err)
 	}
 	monorepoHome, err := scm.MonorepoHome()
 	if err != nil {
@@ -31,7 +39,10 @@ func NdDev(scmProvider scm.Provider, options NdDevOptions) error {
 	}
 	track := options.Track
 	focus := options.Focus
-	worktreePath := scmProvider.GetDevWorktree(monorepoHome, focus)
+	if !focusRegex.MatchString(focus) {
+		return seederr.WrapErrorf("only letters, digits, - and _ are allowed for focus")
+	}
+	_, worktreePath, _ := scmProvider.GetDevWorktree(monorepoHome, currentUserHandle, focus, scm.CanonicalBranch())
 	worktreeStat, err := os.Stat(worktreePath)
 	if err != nil && !os.IsNotExist(err) {
 		return seederr.WrapErrorf("failed to stat worktree %v: %v", worktreePath, err)
@@ -46,7 +57,9 @@ func NdDev(scmProvider scm.Provider, options NdDevOptions) error {
 		if os.IsNotExist(err) {
 			return seederr.WrapErrorf("dev worktree %v does not exist", worktreePath)
 		}
-		newCwd, err := scmProvider.RemoveDevWorktree(monorepoHome, focus)
+		newCwd, err := scmProvider.RemoveDevWorktree(
+			monorepoHome, currentUserHandle, focus, scm.CanonicalBranch(),
+		)
 		if err != nil {
 			return seederr.Wrap(err)
 		}
@@ -68,7 +81,9 @@ func NdDev(scmProvider scm.Provider, options NdDevOptions) error {
 		if tracking == "" {
 			tracking = "origin/main"
 		}
-		newWorktreePath, err := scmProvider.CreateDevWorktree(monorepoHome, focus, tracking)
+		newWorktreePath, err := scmProvider.CreateDevWorktree(
+			monorepoHome, currentUserHandle, focus, tracking, scm.CanonicalBranch(),
+		)
 		if err != nil {
 			return seederr.Wrap(err)
 		}
