@@ -52,16 +52,19 @@ func (svc *KurisuService) CreateSiliconJwt(
 		}
 	}()
 
-	tokenStorage := openid.NewMemoryTokenStorage(nil)
-
-	err = svc.siliconOpenidProvider.PasswordGrant(
-		ctx, tokenStorage, personId, password)
+	tokenSource, err := svc.siliconOpenidProvider.PasswordGrant(
+		ctx, personId, password, []string{"openid", "basic", "profile", "email", "offline_access"}, nil,
+	)
 	if err != nil {
 		return nil, seederr.Wrap(err)
 	}
-	refreshToken, err := tokenStorage.Get(ctx, "refresh_token")
+	token, err := tokenSource.Token()
 	if err != nil {
 		return nil, seederr.Wrap(err)
+	}
+	refreshToken := token.RefreshToken
+	if refreshToken == "" {
+		return nil, seederr.WrapErrorf("refresh token is empty")
 	}
 
 	jwt := &kurisupb.SiliconJwt{
