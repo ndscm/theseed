@@ -43,31 +43,32 @@ func (provider *OpenidProvider) CodeGrant(
 	return userTokenSource, nil
 }
 
+// See: https://datatracker.ietf.org/doc/html/rfc6749#section-4.3
 func (provider *OpenidProvider) PasswordGrant(
 	ctx context.Context,
-	storage ExternalTokenStorage,
 	username string,
 	password string,
-) error {
-	oauth2Config, err := provider.GetOauth2Config(
-		ctx, "", []string{"openid", "basic", "profile", "email", "offline_access"},
-	)
+	scopes []string,
+	storage ExternalTokenStorage,
+) (oauth2.TokenSource, error) {
+	oauth2Config, err := provider.GetOauth2Config(ctx, "", scopes)
 	if err != nil {
-		return seederr.Wrap(err)
+		return nil, seederr.Wrap(err)
 	}
 	token, err := oauth2Config.PasswordCredentialsToken(ctx, username, password)
 	if err != nil {
-		return seederr.Wrap(err)
+		return nil, seederr.Wrap(err)
 	}
-	err = storage.Update(ctx, map[string]string{
-		provider.prefix + "access_token":  token.AccessToken,
-		provider.prefix + "refresh_token": token.RefreshToken,
-		provider.prefix + "expiry":        token.Expiry.Format(time.RFC3339Nano),
-	})
+	if storage == nil {
+		return oauth2Config.TokenSource(context.Background(), token), nil
+	}
+	userTokenSource, err := createExternalTokenStorageTokenSource(
+		context.Background(), provider.prefix, oauth2Config, storage, token,
+	)
 	if err != nil {
-		return seederr.Wrap(err)
+		return nil, seederr.Wrap(err)
 	}
-	return nil
+	return userTokenSource, nil
 }
 
 func (provider *OpenidProvider) AccessToken(
