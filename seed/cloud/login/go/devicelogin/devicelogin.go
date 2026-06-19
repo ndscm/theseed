@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-	"time"
 
 	"github.com/ndscm/theseed/seed/infra/auth/go/openid"
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
@@ -81,15 +80,19 @@ func DeviceLogin(ctx context.Context, service string) (context.Context, error) {
 	storagePath := filepath.Join(userHome, ".seed", "login", serviceTier+".json")
 	tokenStorage := &FileTokenStorage{storagePath: storagePath}
 
-	base := openid.NewOpenidClient(discoveryUrl, serviceTier, "")
-	provider := openid.NewOpenidProvider(base, "")
-
-	accessToken, err := provider.AccessToken(ctx, tokenStorage)
-	if err == nil && accessToken != "" {
-		return seedbearer.WithBearer(ctx, accessToken), nil
+	openidClient := openid.NewOpenidClient(discoveryUrl, serviceTier, "")
+	provider := openid.NewOpenidProvider(openidClient, "")
+	tokenSource, err := provider.WrapExternalTokenStorage(ctx, nil, tokenStorage, nil)
+	if err != nil {
+		return ctx, seederr.Wrap(err)
 	}
 
-	oauth2Config, err := base.GetOauth2Config(ctx, "", nil)
+	oldToken, err := tokenSource.Token()
+	if err == nil && oldToken.AccessToken != "" {
+		return seedbearer.WithBearer(ctx, oldToken.AccessToken), nil
+	}
+
+	oauth2Config, err := provider.GetOauth2Config(ctx, "", nil)
 	if err != nil {
 		return ctx, seederr.Wrap(err)
 	}
@@ -112,13 +115,13 @@ func DeviceLogin(ctx context.Context, service string) (context.Context, error) {
 		return ctx, seederr.Wrap(err)
 	}
 
-	err = tokenStorage.Update(ctx, map[string]string{
-		"access_token":  token.AccessToken,
-		"refresh_token": token.RefreshToken,
-		"expiry":        token.Expiry.Format(time.RFC3339Nano),
-	})
+	tokenSource, err = provider.WrapExternalTokenStorage(ctx, nil, tokenStorage, token)
 	if err != nil {
 		return ctx, seederr.Wrap(err)
 	}
-	return seedbearer.WithBearer(ctx, token.AccessToken), nil
+	newToken, err := tokenSource.Token()
+	if err != nil {
+		return ctx, seederr.Wrap(err)
+	}
+	return seedbearer.WithBearer(ctx, newToken.AccessToken), nil
 }
