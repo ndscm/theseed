@@ -68,48 +68,6 @@ func (oc *OpenidClient) GetOpenidConfiguration(ctx context.Context) (*OpenidConf
 	return oc.cachedConfiguration, nil
 }
 
-func (oc *OpenidClient) GetOauth2Config(
-	ctx context.Context, origin string, scopes []string,
-) (*oauth2.Config, error) {
-	configuration, err := oc.GetOpenidConfiguration(ctx)
-	if err != nil {
-		return nil, seederr.Wrap(err)
-	}
-
-	redirectUrl := ""
-	if origin != "" {
-		redirectUri, err := url.Parse(origin)
-		if err != nil {
-			return nil, seederr.WrapErrorf("invalid origin: %v", err)
-		}
-		redirectUri.Path = "/auth/callback"
-		redirectUrl = redirectUri.String()
-	}
-
-	authStyle := oauth2.AuthStyleAutoDetect
-	if oc.clientSecret == "" {
-		authStyle = oauth2.AuthStyleInParams
-	}
-
-	if len(scopes) == 0 {
-		scopes = configuration.ScopesSupported
-	}
-
-	oauth2Config := &oauth2.Config{
-		ClientID:     oc.clientId,
-		ClientSecret: oc.clientSecret,
-		Scopes:       scopes,
-		RedirectURL:  redirectUrl,
-		Endpoint: oauth2.Endpoint{
-			AuthURL:       configuration.AuthorizationEndpoint,
-			DeviceAuthURL: configuration.DeviceAuthorizationEndpoint,
-			TokenURL:      configuration.TokenEndpoint,
-			AuthStyle:     authStyle,
-		},
-	}
-	return oauth2Config, nil
-}
-
 func (oc *OpenidClient) GetClientCredentialsConfig(ctx context.Context) (*clientcredentials.Config, error) {
 	configuration, err := oc.GetOpenidConfiguration(ctx)
 	if err != nil {

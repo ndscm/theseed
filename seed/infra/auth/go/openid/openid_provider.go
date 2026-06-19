@@ -4,6 +4,7 @@ import (
 	"context"
 	"io"
 	"net/http"
+	"net/url"
 
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
 	"golang.org/x/oauth2"
@@ -12,6 +13,48 @@ import (
 type OpenidProvider struct {
 	*OpenidClient
 	prefix string
+}
+
+func (provider *OpenidProvider) GetOauth2Config(
+	ctx context.Context, origin string, scopes []string,
+) (*oauth2.Config, error) {
+	configuration, err := provider.GetOpenidConfiguration(ctx)
+	if err != nil {
+		return nil, seederr.Wrap(err)
+	}
+
+	redirectUrl := ""
+	if origin != "" {
+		redirectUri, err := url.Parse(origin)
+		if err != nil {
+			return nil, seederr.WrapErrorf("invalid origin: %v", err)
+		}
+		redirectUri.Path = "/auth/callback"
+		redirectUrl = redirectUri.String()
+	}
+
+	authStyle := oauth2.AuthStyleAutoDetect
+	if provider.clientSecret == "" {
+		authStyle = oauth2.AuthStyleInParams
+	}
+
+	if len(scopes) == 0 {
+		scopes = configuration.ScopesSupported
+	}
+
+	oauth2Config := &oauth2.Config{
+		ClientID:     provider.clientId,
+		ClientSecret: provider.clientSecret,
+		Scopes:       scopes,
+		RedirectURL:  redirectUrl,
+		Endpoint: oauth2.Endpoint{
+			AuthURL:       configuration.AuthorizationEndpoint,
+			DeviceAuthURL: configuration.DeviceAuthorizationEndpoint,
+			TokenURL:      configuration.TokenEndpoint,
+			AuthStyle:     authStyle,
+		},
+	}
+	return oauth2Config, nil
 }
 
 // See: https://datatracker.ietf.org/doc/html/rfc6749#section-4.1
