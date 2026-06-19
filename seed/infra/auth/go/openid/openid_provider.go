@@ -71,6 +71,28 @@ func (provider *OpenidProvider) PasswordGrant(
 	return userTokenSource, nil
 }
 
+func (provider *OpenidProvider) WrapExternalTokenStorage(
+	ctx context.Context,
+	scopes []string,
+	storage ExternalTokenStorage,
+	initial *oauth2.Token,
+) (oauth2.TokenSource, error) {
+	oauth2Config, err := provider.GetOauth2Config(ctx, "", scopes)
+	if err != nil {
+		return nil, seederr.Wrap(err)
+	}
+	if storage == nil {
+		return oauth2Config.TokenSource(context.Background(), initial), nil
+	}
+	userTokenSource, err := createExternalTokenStorageTokenSource(
+		context.Background(), provider.prefix, oauth2Config, storage, initial,
+	)
+	if err != nil {
+		return nil, seederr.Wrap(err)
+	}
+	return userTokenSource, nil
+}
+
 func (provider *OpenidProvider) AccessToken(
 	ctx context.Context,
 	storage ExternalTokenStorage,
