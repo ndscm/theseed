@@ -141,16 +141,6 @@ func (oc *OpenidClient) AccessToken(
 	return token.AccessToken, nil
 }
 
-func (oc *OpenidClient) Authorization(
-	ctx context.Context,
-) string {
-	accessToken, err := oc.AccessToken(ctx)
-	if err != nil {
-		return ""
-	}
-	return "Bearer " + accessToken
-}
-
 func (oc *OpenidClient) Client(
 	ctx context.Context,
 ) (*http.Client, error) {
