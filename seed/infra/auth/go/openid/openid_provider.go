@@ -15,6 +15,34 @@ type OpenidProvider struct {
 	prefix string
 }
 
+// See: https://datatracker.ietf.org/doc/html/rfc6749#section-4.1
+func (provider *OpenidProvider) CodeGrant(
+	ctx context.Context,
+	origin string,
+	code string,
+	scopes []string,
+	storage ExternalTokenStorage,
+) (oauth2.TokenSource, error) {
+	oauth2Config, err := provider.GetOauth2Config(ctx, origin, scopes)
+	if err != nil {
+		return nil, seederr.Wrap(err)
+	}
+	token, err := oauth2Config.Exchange(ctx, code)
+	if err != nil {
+		return nil, seederr.Wrap(err)
+	}
+	if storage == nil {
+		return oauth2Config.TokenSource(context.Background(), token), nil
+	}
+	userTokenSource, err := createExternalTokenStorageTokenSource(
+		context.Background(), provider.prefix, oauth2Config, storage, token,
+	)
+	if err != nil {
+		return nil, seederr.Wrap(err)
+	}
+	return userTokenSource, nil
+}
+
 func (provider *OpenidProvider) PasswordGrant(
 	ctx context.Context,
 	storage ExternalTokenStorage,
@@ -28,31 +56,6 @@ func (provider *OpenidProvider) PasswordGrant(
 		return seederr.Wrap(err)
 	}
 	token, err := oauth2Config.PasswordCredentialsToken(ctx, username, password)
-	if err != nil {
-		return seederr.Wrap(err)
-	}
-	err = storage.Update(ctx, map[string]string{
-		provider.prefix + "access_token":  token.AccessToken,
-		provider.prefix + "refresh_token": token.RefreshToken,
-		provider.prefix + "expiry":        token.Expiry.Format(time.RFC3339Nano),
-	})
-	if err != nil {
-		return seederr.Wrap(err)
-	}
-	return nil
-}
-
-func (provider *OpenidProvider) Exchange(
-	ctx context.Context,
-	storage ExternalTokenStorage,
-	origin string,
-	code string,
-) error {
-	oauth2Config, err := provider.GetOauth2Config(ctx, origin, nil)
-	if err != nil {
-		return seederr.Wrap(err)
-	}
-	token, err := oauth2Config.Exchange(ctx, code)
 	if err != nil {
 		return seederr.Wrap(err)
 	}

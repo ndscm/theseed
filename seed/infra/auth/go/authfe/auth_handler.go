@@ -121,7 +121,7 @@ func (h *AuthHandler) handleCallback(w http.ResponseWriter, r *http.Request) {
 	}
 
 	origin := "https://" + r.Host
-	err = h.provider.Exchange(ctx, session, origin, code)
+	_, err = h.provider.CodeGrant(ctx, origin, code, nil, session)
 	if err != nil {
 		seedlog.Errorf("Failed to exchange code: %v", err)
 		http.Error(w, "Failed to exchange authorization code", http.StatusInternalServerError)
