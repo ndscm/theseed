@@ -10,57 +10,6 @@ import (
 	"golang.org/x/oauth2"
 )
 
-type ExternalTokenStorage interface {
-	Get(ctx context.Context, key string) (string, error)
-	Update(ctx context.Context, change map[string]string) error
-}
-
-type externalTokenSource struct {
-	ctx     context.Context
-	prefix  string
-	next    oauth2.TokenSource
-	storage ExternalTokenStorage
-	last    *oauth2.Token
-}
-
-func newExternalTokenSource(
-	ctx context.Context,
-	prefix string,
-	oauth2Config *oauth2.Config,
-	storage ExternalTokenStorage,
-	initial *oauth2.Token,
-) *externalTokenSource {
-	return &externalTokenSource{
-		ctx:     ctx,
-		prefix:  prefix,
-		next:    oauth2Config.TokenSource(ctx, initial),
-		storage: storage,
-		last:    initial,
-	}
-}
-
-func (s *externalTokenSource) Token() (*oauth2.Token, error) {
-	newToken, err := s.next.Token()
-	if err != nil {
-		return nil, err
-	}
-	if s.last == nil || s.last.AccessToken != newToken.AccessToken {
-		if s.storage == nil {
-			return nil, seederr.WrapErrorf("storage is nil")
-		}
-		err := s.storage.Update(s.ctx, map[string]string{
-			s.prefix + "access_token":  newToken.AccessToken,
-			s.prefix + "refresh_token": newToken.RefreshToken,
-			s.prefix + "expiry":        newToken.Expiry.Format(time.RFC3339Nano),
-		})
-		if err != nil {
-			return nil, seederr.Wrap(err)
-		}
-		s.last = newToken
-	}
-	return newToken, nil
-}
-
 type OpenidProvider struct {
 	*OpenidClient
 	prefix string
@@ -147,7 +96,12 @@ func (provider *OpenidProvider) AccessToken(
 		RefreshToken: refreshToken,
 		Expiry:       expiry,
 	}
-	tokenSource := newExternalTokenSource(ctx, provider.prefix, oauth2Config, storage, initialToken)
+	tokenSource, err := createExternalTokenStorageTokenSource(
+		ctx, provider.prefix, oauth2Config, storage, initialToken,
+	)
+	if err != nil {
+		return "", seederr.Wrap(err)
+	}
 	token, err := tokenSource.Token()
 	if err != nil {
 		return "", seederr.Wrap(err)
@@ -175,31 +129,19 @@ func (provider *OpenidProvider) Client(
 	if err != nil {
 		return nil, seederr.Wrap(err)
 	}
-	accessToken, err := storage.Get(ctx, provider.prefix+"access_token")
+	tokenSource, err := createExternalTokenStorageTokenSource(
+		ctx, provider.prefix, oauth2Config, storage, nil,
+	)
 	if err != nil {
 		return nil, seederr.Wrap(err)
 	}
-	refreshToken, err := storage.Get(ctx, provider.prefix+"refresh_token")
+	token, err := tokenSource.Token()
 	if err != nil {
 		return nil, seederr.Wrap(err)
 	}
-	expiryString, err := storage.Get(ctx, provider.prefix+"expiry")
-	if err != nil {
-		return nil, seederr.Wrap(err)
+	if !token.Valid() {
+		return nil, seederr.WrapErrorf("invalid token")
 	}
-	if accessToken == "" || refreshToken == "" || expiryString == "" {
-		return nil, &oauth2.RetrieveError{ErrorCode: "invalid_grant"}
-	}
-	expiry, err := time.Parse(time.RFC3339Nano, expiryString)
-	if err != nil {
-		expiry = time.Now().Add(-time.Minute)
-	}
-	initialToken := &oauth2.Token{
-		AccessToken:  accessToken,
-		RefreshToken: refreshToken,
-		Expiry:       expiry,
-	}
-	tokenSource := newExternalTokenSource(ctx, provider.prefix, oauth2Config, storage, initialToken)
 	client := oauth2.NewClient(ctx, tokenSource)
 	return client, nil
 }

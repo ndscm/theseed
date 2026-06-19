@@ -5,6 +5,7 @@ go_library(
     srcs = [
         "configuration.go",
         "discovery.go",
+        "external_token_storage.go",
         "jwks.go",
         "memory_token_storage.go",
         "openid_client.go",
