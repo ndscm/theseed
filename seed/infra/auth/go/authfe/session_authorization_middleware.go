@@ -22,10 +22,17 @@ func (m SessionAuthorizationMiddleware) ServeHTTP(w http.ResponseWriter, r *http
 		m.next.ServeHTTP(w, r.WithContext(ctx))
 		return
 	}
-	authorization := m.provider.Authorization(ctx, session)
-	if authorization != "" {
-		r.Header.Set("Authorization", authorization)
+	tokenSource, err := m.provider.WrapExternalTokenStorage(ctx, nil, session, nil)
+	if err != nil {
+		m.next.ServeHTTP(w, r.WithContext(ctx))
+		return
 	}
+	token, err := tokenSource.Token()
+	if err != nil || !token.Valid() {
+		m.next.ServeHTTP(w, r.WithContext(ctx))
+		return
+	}
+	r.Header.Set("Authorization", "Bearer "+token.AccessToken)
 	m.next.ServeHTTP(w, r.WithContext(ctx))
 }
 
