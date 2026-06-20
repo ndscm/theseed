@@ -62,7 +62,7 @@ func (s *externalTokenSource) Token() (*oauth2.Token, error) {
 }
 
 type OpenidProvider struct {
-	OpenidClient
+	*OpenidClient
 	prefix string
 }
 
@@ -237,9 +237,9 @@ func (provider *OpenidProvider) FetchUserInfo(
 	return openidUserInfo, nil
 }
 
-func NewOpenidProvider(base *OpenidClient, prefix string) *OpenidProvider {
+func NewOpenidProvider(openidClient *OpenidClient, prefix string) *OpenidProvider {
 	return &OpenidProvider{
-		OpenidClient: *base,
+		OpenidClient: openidClient,
 		prefix:       prefix,
 	}
 }
