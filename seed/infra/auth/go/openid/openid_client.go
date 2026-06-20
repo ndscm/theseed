@@ -18,7 +18,6 @@ type OpenidClient struct {
 	clientSecret string
 
 	cachedConfiguration *OpenidConfiguration
-	cachedOrigin        string
 
 	tokenSource oauth2.TokenSource
 }
@@ -28,15 +27,12 @@ func (oc *OpenidClient) ClientId() string {
 }
 
 func (oc *OpenidClient) Origin() (string, error) {
-	if oc.cachedOrigin != "" {
-		return oc.cachedOrigin, nil
-	}
 	parsedUrl, err := url.Parse(oc.discoveryUrl)
 	if err != nil {
 		return "", seederr.Wrap(err)
 	}
-	oc.cachedOrigin = parsedUrl.Scheme + "://" + parsedUrl.Host
-	return oc.cachedOrigin, nil
+	origin := parsedUrl.Scheme + "://" + parsedUrl.Host
+	return origin, nil
 }
 
 func (oc *OpenidClient) GetOpenidConfiguration(ctx context.Context) (*OpenidConfiguration, error) {
