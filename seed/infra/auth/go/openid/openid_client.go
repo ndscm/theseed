@@ -5,6 +5,7 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+	"sync"
 
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
 	"github.com/ndscm/theseed/seed/infra/log/go/seedlog"
@@ -17,9 +18,11 @@ type OpenidClient struct {
 	clientId     string
 	clientSecret string
 
-	cachedConfiguration *OpenidConfiguration
+	configurationMutex sync.RWMutex
+	configuration      *OpenidConfiguration
 
-	tokenSource oauth2.TokenSource
+	tokenSourceMutex sync.RWMutex
+	tokenSource      oauth2.TokenSource
 }
 
 func (oc *OpenidClient) ClientId() string {
@@ -36,8 +39,13 @@ func (oc *OpenidClient) Origin() (string, error) {
 }
 
 func (oc *OpenidClient) GetOpenidConfiguration(ctx context.Context) (*OpenidConfiguration, error) {
-	if oc.cachedConfiguration != nil {
-		return oc.cachedConfiguration, nil
+	cached := func() *OpenidConfiguration {
+		oc.configurationMutex.RLock()
+		defer oc.configurationMutex.RUnlock()
+		return oc.configuration
+	}()
+	if cached != nil {
+		return cached, nil
 	}
 	seedlog.Infof("Fetching openid configuration from %s", oc.discoveryUrl)
 	request, err := http.NewRequestWithContext(ctx, http.MethodGet, oc.discoveryUrl, nil)
@@ -57,11 +65,16 @@ func (oc *OpenidClient) GetOpenidConfiguration(ctx context.Context) (*OpenidConf
 		return nil, seederr.WrapErrorf("failed to fetch openid configuration: status %d, body: %s",
 			response.StatusCode, string(responseBodyBytes))
 	}
-	oc.cachedConfiguration, err = DecodeOpenidConfiguration(responseBodyBytes)
+	configuration, err := DecodeOpenidConfiguration(responseBodyBytes)
 	if err != nil {
 		return nil, seederr.Wrap(err)
 	}
-	return oc.cachedConfiguration, nil
+	func() {
+		oc.configurationMutex.Lock()
+		defer oc.configurationMutex.Unlock()
+		oc.configuration = configuration
+	}()
+	return configuration, nil
 }
 
 func (oc *OpenidClient) GetClientCredentialsConfig(ctx context.Context) (*clientcredentials.Config, error) {
@@ -78,17 +91,36 @@ func (oc *OpenidClient) GetClientCredentialsConfig(ctx context.Context) (*client
 	return oauth2Config, nil
 }
 
+func (oc *OpenidClient) GetTokenSource(ctx context.Context) (oauth2.TokenSource, error) {
+	cached := func() oauth2.TokenSource {
+		oc.tokenSourceMutex.RLock()
+		defer oc.tokenSourceMutex.RUnlock()
+		return oc.tokenSource
+	}()
+	if cached != nil {
+		return cached, nil
+	}
+	oauth2Config, err := oc.GetClientCredentialsConfig(ctx)
+	if err != nil {
+		return nil, seederr.Wrap(err)
+	}
+	tokenSource := oauth2Config.TokenSource(context.Background())
+	func() {
+		oc.tokenSourceMutex.Lock()
+		defer oc.tokenSourceMutex.Unlock()
+		oc.tokenSource = tokenSource
+	}()
+	return tokenSource, nil
+}
+
 func (oc *OpenidClient) AccessToken(
 	ctx context.Context,
 ) (string, error) {
-	if oc.tokenSource == nil {
-		oauth2Config, err := oc.GetClientCredentialsConfig(ctx)
-		if err != nil {
-			return "", seederr.Wrap(err)
-		}
-		oc.tokenSource = oauth2Config.TokenSource(context.Background())
+	tokenSource, err := oc.GetTokenSource(ctx)
+	if err != nil {
+		return "", seederr.Wrap(err)
 	}
-	token, err := oc.tokenSource.Token()
+	token, err := tokenSource.Token()
 	if err != nil {
 		return "", seederr.Wrap(err)
 	}
@@ -98,14 +130,11 @@ func (oc *OpenidClient) AccessToken(
 func (oc *OpenidClient) Client(
 	ctx context.Context,
 ) (*http.Client, error) {
-	if oc.tokenSource == nil {
-		oauth2Config, err := oc.GetClientCredentialsConfig(ctx)
-		if err != nil {
-			return nil, seederr.Wrap(err)
-		}
-		oc.tokenSource = oauth2Config.TokenSource(context.Background())
+	tokenSource, err := oc.GetTokenSource(ctx)
+	if err != nil {
+		return nil, seederr.Wrap(err)
 	}
-	client := oauth2.NewClient(ctx, oc.tokenSource)
+	client := oauth2.NewClient(ctx, tokenSource)
 	return client, nil
 }
 
