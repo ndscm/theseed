@@ -31,11 +31,7 @@ func NdSync(scmProvider scm.Provider, _ NdSyncOptions) error {
 	if len(dirtyFiles) > 0 {
 		return seederr.WrapErrorf("workspace is dirty:\n%v", dirtyFiles)
 	}
-	worktreePath, err := scmProvider.GetCurrentWorktree()
-	if err != nil {
-		return seederr.Wrap(err)
-	}
-	worktreeName, err := scmProvider.GetBranchWorktreeBranch(monorepoHome, worktreePath)
+	worktreeName, _, err := scmProvider.GetCurrentWorktree(monorepoHome)
 	if err != nil {
 		return seederr.Wrap(err)
 	}
