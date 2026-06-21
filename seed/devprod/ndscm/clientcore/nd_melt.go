@@ -40,7 +40,7 @@ func NdMelt(scmProvider scm.Provider, options NdMeltOptions) error {
 	if upstreamName == "" {
 		return seederr.WrapErrorf("upstream name is required")
 	}
-	devWorktreePath, err := scmProvider.GetCurrentWorktree()
+	_, devWorktreePath, err := scmProvider.GetCurrentWorktree(monorepoHome)
 	if err != nil {
 		return seederr.Wrap(err)
 	}

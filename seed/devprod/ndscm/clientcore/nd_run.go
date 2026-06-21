@@ -15,7 +15,11 @@ type NdRunOptions struct {
 }
 
 func NdRun(scmProvider scm.Provider, options NdRunOptions) error {
-	worktreePath, err := scmProvider.GetCurrentWorktree()
+	monorepoHome, err := scm.MonorepoHome()
+	if err != nil {
+		return seederr.Wrap(err)
+	}
+	_, worktreePath, err := scmProvider.GetCurrentWorktree(monorepoHome)
 	if err != nil {
 		return seederr.Wrap(err)
 	}

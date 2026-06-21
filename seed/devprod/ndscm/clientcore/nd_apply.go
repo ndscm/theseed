@@ -57,16 +57,12 @@ func NdApply(scmProvider scm.Provider, options NdApplyOptions) error {
 	if err != nil {
 		return seederr.Wrap(err)
 	}
-	worktreePath, err := scmProvider.GetCurrentWorktree()
+	devWorktreeName, _, err := scmProvider.GetCurrentWorktree(monorepoHome)
 	if err != nil {
 		return seederr.Wrap(err)
 	}
-	devBranch, err := scmProvider.GetBranchWorktreeBranch(monorepoHome, worktreePath)
-	if err != nil {
-		return seederr.Wrap(err)
-	}
-	if !scmProvider.IsDevBranch(devBranch) {
-		return seederr.WrapErrorf("workspace is not a dev worktree: %v", devBranch)
+	if !scmProvider.IsDevBranch(devWorktreeName) {
+		return seederr.WrapErrorf("current worktree is not a dev worktree: %v", devWorktreeName)
 	}
 	dirtyFiles, err := scmProvider.ListDirtyFiles("")
 	if err != nil {
@@ -119,7 +115,7 @@ func NdApply(scmProvider scm.Provider, options NdApplyOptions) error {
 	if err != nil {
 		return seederr.Wrap(err)
 	}
-	if activeBranch == devBranch {
+	if activeBranch == devWorktreeName {
 		// Must not apply on the tail of dev branch, apply to the top of dev branch instead.
 		devTrackingBranch, err := scmProvider.GetBranchTracking(activeBranch)
 		if err != nil {
@@ -134,8 +130,8 @@ func NdApply(scmProvider scm.Provider, options NdApplyOptions) error {
 	}
 
 	// Walk chain and validate, find child of activeBranch.
-	baseBranch := scm.BaseBranchName(devBranch)
-	currentBranch := devBranch
+	baseBranch := scm.BaseBranchName(devWorktreeName)
+	currentBranch := devWorktreeName
 	childBranch := ""
 	for currentBranch != baseBranch {
 		currentTrackingBranch, err := scmProvider.GetBranchTracking(currentBranch)
@@ -151,10 +147,10 @@ func NdApply(scmProvider scm.Provider, options NdApplyOptions) error {
 		currentBranch = currentTrackingBranch
 	}
 	if childBranch == "" {
-		return seederr.WrapErrorf("branch %v is not in the tracking chain of %v", activeBranch, devBranch)
+		return seederr.WrapErrorf("branch %v is not in the tracking chain of %v", activeBranch, devWorktreeName)
 	}
 
-	changeBranch, err := scm.ChangeBranchName(devBranch, options.FeatureName)
+	changeBranch, err := scm.ChangeBranchName(devWorktreeName, options.FeatureName)
 	if err != nil {
 		return seederr.Wrap(err)
 	}
