@@ -1,3 +1,7 @@
+function _nd_list_changes {
+  git branch --list '*/change/*/*' 2>/dev/null | sed 's,[^/]*/[^/]*/[^/]*/,,'
+}
+
 function _nd_completions {
   local cur
   local prev
@@ -21,11 +25,11 @@ function _nd_completions {
   # We keep each command separate to allow for more specific completions in the future
   case "${words[1]}" in
   "change")
-    local branches=$(git branch --list 'change/*' 2>/dev/null | sed 's/^[* ]*//' | sed 's|^change/||')
+    local branches=$(_nd_list_changes)
     COMPREPLY=($(compgen -W "$branches" -- "$cur"))
     ;;
   "submit")
-    local branches=$(git branch --list 'change/*' 2>/dev/null | sed 's/^[* ]*//' | sed 's|^change/||')
+    local branches=$(_nd_list_changes)
     COMPREPLY=($(compgen -W "$branches" -- "$cur"))
     ;;
   esac
