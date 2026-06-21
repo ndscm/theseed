@@ -259,8 +259,16 @@ func (g *GitProvider) GetWorktreeOperation(worktreePath string) (string, error) 
 
 // # worktree
 
-func (g *GitProvider) GetCurrentWorktree() (string, error) {
-	return GetCurrentWorktreePath()
+func (g *GitProvider) GetCurrentWorktree(monorepoHome string) (string, string, error) {
+	worktreePath, err := GetCurrentWorktreePath()
+	if err != nil {
+		return "", "", seederr.Wrap(err)
+	}
+	worktreeName, err := GetBranchWorktreeBranch(monorepoHome, worktreePath)
+	if err != nil {
+		return "", "", seederr.Wrap(err)
+	}
+	return worktreeName, worktreePath, nil
 }
 
 func (g *GitProvider) Checkout(worktreePath string, branchName string) error {
