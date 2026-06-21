@@ -5,7 +5,6 @@ import (
 	"os"
 	"path/filepath"
 	"slices"
-	"strconv"
 	"strings"
 
 	"github.com/ndscm/theseed/seed/devprod/ndscm/scm"
@@ -23,7 +22,7 @@ func (g *GitProvider) Initialize() error {
 // # connect
 
 func (g *GitProvider) Connect(
-	repoIdentifier string, monorepoHome string, repoEndpoint string, canonicalBranch bool,
+	repoIdentifier string, monorepoHome string, repoEndpoint string,
 ) (string, string, error) {
 	repoEnvLines := []string{}
 	repoEnvLines = append(repoEnvLines, `ND_MONOREPO_HOME="`+monorepoHome+`"`)
@@ -45,8 +44,6 @@ func (g *GitProvider) Connect(
 	repoEnvLines = append(repoEnvLines, `ND_USER_DISPLAY_NAME="`+userDisplayName+`"`)
 
 	repoEnvLines = append(repoEnvLines, `ND_SCM="git"`)
-
-	repoEnvLines = append(repoEnvLines, `ND_CANONICAL_BRANCH=`+strconv.FormatBool(canonicalBranch))
 
 	gitDir := guessMonorepoGitDir(monorepoHome)
 
@@ -123,50 +120,32 @@ func (g *GitProvider) GetMergeBaseCommitId(base string, target string) (string, 
 	return GetMergeBaseHash("", base, target)
 }
 
-func (g *GitProvider) IsDevBranch(branchName string, canonicalBranch bool) bool {
-	if canonicalBranch {
-		ownerHandle, branchType, _, err := scm.ParseCanonicalBranch(branchName)
-		if err != nil {
-			return false
-		}
-		reservedHandles := []string{"base", "change", "main", "melt", "review", "submit"}
-		if slices.Contains(reservedHandles, ownerHandle) {
-			return false
-		}
-		if branchType == "dev" {
-			return true
-		}
-	} else {
-		if branchName == "dev" {
-			return true
-		}
-		if strings.HasPrefix(branchName, "dev-") && !strings.Contains(branchName, "/") {
-			return true
-		}
+func (g *GitProvider) IsDevBranch(branchName string) bool {
+	ownerHandle, branchType, _, err := scm.ParseCanonicalBranch(branchName)
+	if err != nil {
+		return false
+	}
+	reservedHandles := []string{"base", "change", "main", "melt", "review", "submit"}
+	if slices.Contains(reservedHandles, ownerHandle) {
+		return false
+	}
+	if branchType == "dev" {
+		return true
 	}
 	return false
 }
 
-func (g *GitProvider) IsMeltBranch(branchName string, canonicalBranch bool) bool {
-	if canonicalBranch {
-		ownerHandle, branchType, _, err := scm.ParseCanonicalBranch(branchName)
-		if err != nil {
-			return false
-		}
-		reservedHandles := []string{"base", "change", "main", "melt", "review", "submit"}
-		if slices.Contains(reservedHandles, ownerHandle) {
-			return false
-		}
-		if branchType == "melt" {
-			return true
-		}
-	} else {
-		if branchName == "melt" {
-			return true
-		}
-		if strings.HasPrefix(branchName, "melt-") && !strings.Contains(branchName, "/") {
-			return true
-		}
+func (g *GitProvider) IsMeltBranch(branchName string) bool {
+	ownerHandle, branchType, _, err := scm.ParseCanonicalBranch(branchName)
+	if err != nil {
+		return false
+	}
+	reservedHandles := []string{"base", "change", "main", "melt", "review", "submit"}
+	if slices.Contains(reservedHandles, ownerHandle) {
+		return false
+	}
+	if branchType == "melt" {
+		return true
 	}
 	return false
 }
@@ -307,21 +286,13 @@ func (g *GitProvider) RemoveWorktree(monorepoHome string, worktreePath string) e
 }
 
 func (g *GitProvider) GetDevWorktree(
-	monorepoHome string, ownerHandle string, focus string, canonicalBranch bool,
+	monorepoHome string, ownerHandle string, focus string,
 ) (string, string, bool) {
 	worktreeName := ""
-	if canonicalBranch {
-		if focus == "" {
-			focus = "main"
-		}
-		worktreeName = ownerHandle + "/dev/" + focus
-	} else {
-		branchName := "dev"
-		if focus != "" {
-			branchName += "-" + focus
-		}
-		worktreeName = branchName
+	if focus == "" {
+		focus = "main"
 	}
+	worktreeName = ownerHandle + "/dev/" + focus
 
 	worktreePath := GetBranchWorktreePath(monorepoHome, worktreeName)
 
@@ -335,15 +306,15 @@ func (g *GitProvider) GetDevWorktree(
 }
 
 func (g *GitProvider) CreateDevWorktree(
-	monorepoHome string, ownerHandle string, focus string, tracking string, canonicalBranch bool,
+	monorepoHome string, ownerHandle string, focus string, tracking string,
 ) (string, error) {
 	monorepoGitDir := guessMonorepoGitDir(monorepoHome)
-	worktreeName, worktreePath, exists := g.GetDevWorktree(monorepoHome, ownerHandle, focus, canonicalBranch)
+	worktreeName, worktreePath, exists := g.GetDevWorktree(monorepoHome, ownerHandle, focus)
 	if exists {
 		return "", seederr.WrapErrorf("worktree path already exists. path=%v", worktreePath)
 	}
 	branchName := worktreeName
-	baseBranchName := scm.BaseBranchName(branchName, canonicalBranch)
+	baseBranchName := scm.BaseBranchName(branchName)
 	err := CreateBranch(monorepoGitDir, baseBranchName, tracking, tracking)
 	if err != nil {
 		return "", seederr.WrapErrorf("failed to create base branch %v: %v", baseBranchName, err)
@@ -360,12 +331,12 @@ func (g *GitProvider) CreateDevWorktree(
 }
 
 func (g *GitProvider) RemoveDevWorktree(
-	monorepoHome string, ownerHandle string, focus string, canonicalBranch bool,
+	monorepoHome string, ownerHandle string, focus string,
 ) (string, error) {
 	monorepoGitDir := guessMonorepoGitDir(monorepoHome)
-	worktreeName, worktreePath, _ := g.GetDevWorktree(monorepoHome, ownerHandle, focus, canonicalBranch)
+	worktreeName, worktreePath, _ := g.GetDevWorktree(monorepoHome, ownerHandle, focus)
 	branchName := worktreeName
-	baseBranchName := scm.BaseBranchName(branchName, canonicalBranch)
+	baseBranchName := scm.BaseBranchName(branchName)
 	currentWorktreePath, err := GetCurrentWorktreePath()
 	if err != nil {
 		return "", seederr.Wrap(err)
@@ -430,20 +401,13 @@ func (g *GitProvider) RemoveDevWorktree(
 }
 
 func (g *GitProvider) GetMeltWorktree(
-	monorepoHome string, ownerHandle string, upstreamName string, canonicalBranch bool,
+	monorepoHome string, ownerHandle string, upstreamName string,
 ) (string, string, bool) {
 	worktreeName := ""
-	if canonicalBranch {
-		if upstreamName == "" {
-			upstreamName = "default"
-		}
-		worktreeName = ownerHandle + "/melt/" + upstreamName
-	} else {
-		worktreeName = "melt"
-		if upstreamName != "" {
-			worktreeName += "-" + upstreamName
-		}
+	if upstreamName == "" {
+		upstreamName = "default"
 	}
+	worktreeName = ownerHandle + "/melt/" + upstreamName
 
 	worktreePath := GetBranchWorktreePath(monorepoHome, worktreeName)
 
@@ -459,17 +423,16 @@ func (g *GitProvider) GetMeltWorktree(
 func (g *GitProvider) CreateMeltWorktree(
 	monorepoHome string, ownerHandle string,
 	upstreamName string, fromPoint string, toPoint string, tracking string, forkPoint string,
-	canonicalBranch bool,
 ) (string, error) {
 	if upstreamName == "" {
 		return "", seederr.WrapErrorf("upstream name is required for melt worktree")
 	}
-	worktreeName, worktreePath, exists := g.GetMeltWorktree(monorepoHome, ownerHandle, upstreamName, canonicalBranch)
+	worktreeName, worktreePath, exists := g.GetMeltWorktree(monorepoHome, ownerHandle, upstreamName)
 	if exists {
 		return "", seederr.WrapErrorf("worktree path already exists. path=%v", worktreePath)
 	}
 	branchName := worktreeName
-	baseBranchName := scm.BaseBranchName(branchName, canonicalBranch)
+	baseBranchName := scm.BaseBranchName(branchName)
 	monorepoGitDir := guessMonorepoGitDir(monorepoHome)
 	err := CreateBranch(monorepoGitDir, baseBranchName, fromPoint, tracking)
 	if err != nil {
@@ -493,15 +456,15 @@ func (g *GitProvider) CreateMeltWorktree(
 }
 
 func (g *GitProvider) RemoveMeltWorktree(
-	monorepoHome string, ownerHandle string, upstreamName string, canonicalBranch bool,
+	monorepoHome string, ownerHandle string, upstreamName string,
 ) (string, error) {
 	monorepoGitDir := guessMonorepoGitDir(monorepoHome)
 	if upstreamName == "" {
 		return "", seederr.WrapErrorf("upstream name is required for melt worktree")
 	}
-	worktreeName, worktreePath, _ := g.GetMeltWorktree(monorepoHome, ownerHandle, upstreamName, canonicalBranch)
+	worktreeName, worktreePath, _ := g.GetMeltWorktree(monorepoHome, ownerHandle, upstreamName)
 	branchName := worktreeName
-	baseBranchName := scm.BaseBranchName(branchName, canonicalBranch)
+	baseBranchName := scm.BaseBranchName(branchName)
 	currentWorktreePath, err := GetCurrentWorktreePath()
 	if err != nil {
 		return "", seederr.Wrap(err)
