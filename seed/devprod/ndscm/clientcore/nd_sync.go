@@ -83,9 +83,7 @@ func NdSync(scmProvider scm.Provider, _ NdSyncOptions) error {
 		return seederr.Wrap(err)
 	}
 	incomingCommits = append(incomingCommits, baseCommitId)
-	for i := len(incomingCommits) - 1; i >= 0; i-- {
-		// Reverse iteration
-		incomingCommitId := incomingCommits[i]
+	for _, incomingCommitId := range incomingCommits {
 		seedlog.Infof("\x1b[34mRebasing to: %v\x1b[0m", incomingCommitId)
 		err := scmProvider.Checkout("", baseBranch)
 		if err != nil {
