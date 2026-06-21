@@ -13,10 +13,29 @@ import (
 	"github.com/ndscm/theseed/seed/infra/log/go/seedlog"
 )
 
+func sanitizeTrailerKey(key string) (string, error) {
+	key = strings.ToLower(strings.TrimSpace(key))
+	if !trailerKeyRegex.MatchString(key) {
+		return "", seederr.WrapErrorf("invalid trailer key")
+	}
+	key = strings.ToUpper(key[:1]) + key[1:]
+	return key, nil
+}
+
 type GitProvider struct{}
 
 func (g *GitProvider) Initialize() error {
 	return nil
+}
+
+// # amend
+
+func (g *GitProvider) AmendAppendExtendedMetadata(key string, value string) error {
+	trailerKey, err := sanitizeTrailerKey(key)
+	if err != nil {
+		return seederr.Wrap(err)
+	}
+	return AmendAppendTrailer("", trailerKey, value)
 }
 
 // # connect
@@ -165,18 +184,6 @@ func (g *GitProvider) ListCommitIds(from string, to string) ([]string, error) {
 		return nil, seederr.WrapErrorf("current segment (%v..%v) is not pure and contains merge commit:\n%v", from, to, mergeCommits)
 	}
 	return ListCommitHash("", from, to)
-}
-
-func (g *GitProvider) GetCommitChangeUuid(commit string) (string, error) {
-	metadata, err := GetCommitMetadata("", commit)
-	if err != nil {
-		return "", seederr.Wrap(err)
-	}
-	changeUuid, err := metadata.GetChangeUuid()
-	if err != nil {
-		return "", seederr.Wrap(err)
-	}
-	return changeUuid, nil
 }
 
 func (g *GitProvider) GetCommitMetadata(commit string) (*scm.CommitMetadata, error) {
