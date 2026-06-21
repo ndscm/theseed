@@ -24,7 +24,7 @@ type Provider interface {
 	// branch, and creates a worktree for it. It returns the remote default
 	// branch (e.g. "origin/main") and the worktree path.
 	Connect(
-		repoIdentifier string, monorepoHome string, repoEndpoint string, canonicalBranch bool,
+		repoIdentifier string, monorepoHome string, repoEndpoint string,
 	) (remoteDefaultBranch string, worktreePath string, err error)
 
 	// # verify
@@ -59,17 +59,13 @@ type Provider interface {
 	// ancestor of base and target.
 	GetMergeBaseCommitId(base string, target string) (string, error)
 
-	// IsDevBranch reports whether branchName is a dev branch. In canonical
-	// mode that means an "<owner>/dev/<focus>" branch whose owner is not a
-	// reserved handle; otherwise it means "dev" itself or a focused variant
-	// "dev-<focus>" (no slashes allowed).
-	IsDevBranch(branchName string, canonicalBranch bool) bool
+	// IsDevBranch reports whether branchName is a dev branch, meaning an
+	// "<owner>/dev/<focus>" branch whose owner is not a reserved handle.
+	IsDevBranch(branchName string) bool
 
-	// IsMeltBranch reports whether branchName is a melt branch. In canonical
-	// mode that means an "<owner>/melt/<upstream>" branch whose owner is not a
-	// reserved handle; otherwise it means "melt" itself or a focused variant
-	// "melt-<upstream>" (no slashes allowed).
-	IsMeltBranch(branchName string, canonicalBranch bool) bool
+	// IsMeltBranch reports whether branchName is a melt branch, meaning an
+	// "<owner>/melt/<upstream>" branch whose owner is not a reserved handle.
+	IsMeltBranch(branchName string) bool
 
 	// # commit
 
@@ -175,51 +171,47 @@ type Provider interface {
 	// GetDevWorktree returns the dev branch name and its conventional
 	// worktree path under monorepoHome for ownerHandle and focus, along
 	// with whether that worktree currently exists. The branch is
-	// "<owner>/dev/<focus>" in canonical mode (focus defaults to "main") or
-	// "dev"/"dev-<focus>" otherwise.
+	// "<owner>/dev/<focus>" (focus defaults to "main").
 	GetDevWorktree(
-		monorepoHome string, ownerHandle string, focus string, canonicalBranch bool,
+		monorepoHome string, ownerHandle string, focus string,
 	) (string, string, bool)
 
 	// CreateDevWorktree creates a dev worktree under monorepoHome. It sets
 	// up a base tracking branch at tracking, creates the working branch on
 	// top of it, and materializes the worktree. The working branch is
-	// "<owner>/dev/<focus>" in canonical mode (focus defaults to "main") or
-	// "dev"/"dev-<focus>" otherwise, and the base branch is its matching
-	// base branch. Pass "" for focus to get the default dev branch.
+	// "<owner>/dev/<focus>" (focus defaults to "main"), and the base branch
+	// is its matching base branch. Pass "" for focus to get the default dev
+	// branch.
 	CreateDevWorktree(
-		monorepoHome string, ownerHandle string, focus string, tracking string, canonicalBranch bool,
+		monorepoHome string, ownerHandle string, focus string, tracking string,
 	) (string, error)
 
 	// RemoveDevWorktree removes the dev worktree, its dev branch, and
 	// its base branch under monorepoHome. It returns the new working
 	// directory if it changed, or "" if it did not.
 	RemoveDevWorktree(
-		monorepoHome string, ownerHandle string, focus string, canonicalBranch bool,
+		monorepoHome string, ownerHandle string, focus string,
 	) (string, error)
 
 	// GetMeltWorktree returns the melt branch name and its conventional
 	// worktree path under monorepoHome for ownerHandle and upstreamName,
 	// along with whether that worktree currently exists. The branch is
-	// "<owner>/melt/<upstreamName>" in canonical mode (upstreamName
-	// defaults to "default") or "melt"/"melt-<upstreamName>" otherwise.
+	// "<owner>/melt/<upstreamName>" (upstreamName defaults to "default").
 	GetMeltWorktree(
-		monorepoHome string, ownerHandle string, upstreamName string, canonicalBranch bool,
+		monorepoHome string, ownerHandle string, upstreamName string,
 	) (string, string, bool)
 
 	// CreateMeltWorktree creates a worktree for melting upstream changes.
 	// It creates a base branch at fromPoint tracking the given tracking
 	// ref, a working branch at toPoint tracking the base branch, and
 	// materializes the worktree. The working branch is
-	// "<owner>/melt/<upstreamName>" in canonical mode or
-	// "melt-<upstreamName>" otherwise, and the base branch is its matching
+	// "<owner>/melt/<upstreamName>", and the base branch is its matching
 	// base branch. After creation, the base branch is updated to forkPoint
 	// so that a subsequent rebase replays only the commits between
 	// forkPoint and toPoint.
 	CreateMeltWorktree(
 		monorepoHome string, ownerHandle string,
 		upstreamName string, fromPoint string, toPoint string, tracking string, forkPoint string,
-		canonicalBranch bool,
 	) (string, error)
 
 	// RemoveMeltWorktree removes the melt worktree, its working branch,
@@ -227,6 +219,6 @@ type Provider interface {
 	// has dirty files. It returns the new working directory if the
 	// caller was inside the removed worktree, or "" otherwise.
 	RemoveMeltWorktree(
-		monorepoHome string, ownerHandle string, upstreamName string, canonicalBranch bool,
+		monorepoHome string, ownerHandle string, upstreamName string,
 	) (string, error)
 }
