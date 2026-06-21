@@ -1,8 +1,11 @@
 package git
 
 import (
+	"strings"
+
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
 	"github.com/ndscm/theseed/seed/infra/log/go/seedlog"
+	"github.com/ndscm/theseed/seed/infra/shell/go/seedshell"
 )
 
 type SeenEntry struct {
@@ -97,4 +100,38 @@ func SearchForkPoint(gitDir string, ourTipPoint string, theirTipPoint string) (s
 		return "", "", seederr.WrapErrorf("unexpected error: fork point not found in seen map")
 	}
 	return ourForkPoint, theirForkPoint, nil
+}
+
+func SearchTrailer(gitDir string, tipPoint string, trailerKey string, text string) (string, error) {
+	gitArgs := []string{}
+	if gitDir != "" {
+		gitArgs = append(gitArgs, "--git-dir", gitDir)
+	}
+	gitArgs = append(gitArgs, "log", "--format=%H%x00%(trailers:key="+trailerKey+",valueonly,separator=%x01)", tipPoint)
+	output, err := seedshell.PureOutput("git", gitArgs...)
+	if err != nil {
+		return "", seederr.WrapErrorf("failed to search trailer %v: %w", trailerKey, err)
+	}
+	for _, line := range strings.Split(strings.TrimSpace(string(output)), "\n") {
+		if line == "" {
+			continue
+		}
+		hash, trailerValues, found := strings.Cut(line, "\x00")
+		if !found {
+			continue
+		}
+		trailerValues = strings.TrimSpace(trailerValues)
+		if trailerValues == "" {
+			continue
+		}
+		if text == "" {
+			return hash, nil
+		}
+		for _, val := range strings.Split(trailerValues, "\x01") {
+			if strings.TrimSpace(val) == text {
+				return hash, nil
+			}
+		}
+	}
+	return "", seederr.WrapErrorf("no commit found with trailer %v: %v", trailerKey, text)
 }
