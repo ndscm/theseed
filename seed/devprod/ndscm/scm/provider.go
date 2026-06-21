@@ -145,9 +145,11 @@ type Provider interface {
 
 	// # worktree
 
-	// GetCurrentWorktree returns the path of the worktree containing the
-	// current working directory.
-	GetCurrentWorktree() (string, error)
+	// GetCurrentWorktree returns the worktree containing the current working
+	// directory, as both its name (the worktree path relative to
+	// monorepoHome) and its absolute path. It fails if the current worktree
+	// is not under monorepoHome.
+	GetCurrentWorktree(monorepoHome string) (worktreeName string, worktreePath string, err error)
 
 	// Checkout switches worktreePath to branchName.
 	Checkout(worktreePath string, branchName string) error
