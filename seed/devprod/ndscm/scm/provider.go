@@ -1,11 +1,36 @@
 package scm
 
+import (
+	"time"
+)
+
 // FileStatus describes a single modified or untracked path in a worktree.
 type FileStatus struct {
 	// TODO(nagi): add staging status
 	Status string
 	To     string
 	From   string
+}
+
+type KeyValue struct {
+	Key   string
+	Value string
+}
+
+type CommitMetadata struct {
+	CommitId       string
+	ChangeUuid     string
+	Author         string
+	AuthorEmail    string
+	AuthorTime     time.Time
+	Committer      string
+	CommitterEmail string
+	CommitterTime  time.Time
+	Subject        string
+	Body           string
+
+	// Ordered list of other trailers, which may contain duplicates.
+	Extended []KeyValue
 }
 
 // Provider is the abstraction over a Source Code Management backend (e.g.
@@ -76,6 +101,8 @@ type Provider interface {
 	// ListCommitIds returns the commit ids in the linear range (from, to].
 	// It fails if the segment is not pure (e.g. contains a merge commit).
 	ListCommitIds(from string, to string) ([]string, error)
+
+	GetCommitMetadata(commit string) (*CommitMetadata, error)
 
 	// # filetree
 
