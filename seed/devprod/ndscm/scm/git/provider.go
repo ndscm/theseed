@@ -280,6 +280,14 @@ func (g *GitProvider) SearchForkPoint(ourTipPoint string, theirTipPoint string) 
 	return SearchForkPoint("", ourTipPoint, theirTipPoint)
 }
 
+func (g *GitProvider) SearchExtendedMetadata(tipPoint string, key string, value string) (string, error) {
+	trailerKey, err := sanitizeTrailerKey(key)
+	if err != nil {
+		return "", seederr.Wrap(err)
+	}
+	return SearchTrailer("", tipPoint, trailerKey, value)
+}
+
 // # status
 
 func (g *GitProvider) ListDirtyFiles(worktreePath string) ([]scm.FileStatus, error) {
