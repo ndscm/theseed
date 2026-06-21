@@ -42,7 +42,7 @@ func NdDev(scmProvider scm.Provider, options NdDevOptions) error {
 	if !focusRegex.MatchString(focus) {
 		return seederr.WrapErrorf("only letters, digits, - and _ are allowed for focus")
 	}
-	_, worktreePath, _ := scmProvider.GetDevWorktree(monorepoHome, currentUserHandle, focus, scm.CanonicalBranch())
+	_, worktreePath, _ := scmProvider.GetDevWorktree(monorepoHome, currentUserHandle, focus)
 	worktreeStat, err := os.Stat(worktreePath)
 	if err != nil && !os.IsNotExist(err) {
 		return seederr.WrapErrorf("failed to stat worktree %v: %v", worktreePath, err)
@@ -58,7 +58,7 @@ func NdDev(scmProvider scm.Provider, options NdDevOptions) error {
 			return seederr.WrapErrorf("dev worktree %v does not exist", worktreePath)
 		}
 		newCwd, err := scmProvider.RemoveDevWorktree(
-			monorepoHome, currentUserHandle, focus, scm.CanonicalBranch(),
+			monorepoHome, currentUserHandle, focus,
 		)
 		if err != nil {
 			return seederr.Wrap(err)
@@ -82,7 +82,7 @@ func NdDev(scmProvider scm.Provider, options NdDevOptions) error {
 			tracking = "origin/main"
 		}
 		newWorktreePath, err := scmProvider.CreateDevWorktree(
-			monorepoHome, currentUserHandle, focus, tracking, scm.CanonicalBranch(),
+			monorepoHome, currentUserHandle, focus, tracking,
 		)
 		if err != nil {
 			return seederr.Wrap(err)

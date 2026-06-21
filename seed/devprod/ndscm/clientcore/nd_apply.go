@@ -65,7 +65,7 @@ func NdApply(scmProvider scm.Provider, options NdApplyOptions) error {
 	if err != nil {
 		return seederr.Wrap(err)
 	}
-	if !scmProvider.IsDevBranch(devBranch, scm.CanonicalBranch()) {
+	if !scmProvider.IsDevBranch(devBranch) {
 		return seederr.WrapErrorf("workspace is not a dev worktree: %v", devBranch)
 	}
 	dirtyFiles, err := scmProvider.ListDirtyFiles("")
@@ -134,7 +134,7 @@ func NdApply(scmProvider scm.Provider, options NdApplyOptions) error {
 	}
 
 	// Walk chain and validate, find child of activeBranch.
-	baseBranch := scm.BaseBranchName(devBranch, scm.CanonicalBranch())
+	baseBranch := scm.BaseBranchName(devBranch)
 	currentBranch := devBranch
 	childBranch := ""
 	for currentBranch != baseBranch {
@@ -154,7 +154,7 @@ func NdApply(scmProvider scm.Provider, options NdApplyOptions) error {
 		return seederr.WrapErrorf("branch %v is not in the tracking chain of %v", activeBranch, devBranch)
 	}
 
-	changeBranch, err := scm.ChangeBranchName(devBranch, options.FeatureName, scm.CanonicalBranch())
+	changeBranch, err := scm.ChangeBranchName(devBranch, options.FeatureName)
 	if err != nil {
 		return seederr.Wrap(err)
 	}
