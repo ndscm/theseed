@@ -48,18 +48,16 @@ func NdSubmit(scmProvider scm.Provider, options NdSubmitOptions) error {
 		}
 	}
 	submitBranch := "submit/" + options.FeatureName
-	if scm.CanonicalBranch() {
-		if options.Owner != "" {
-			submitBranch = options.Owner + "/" + submitBranch
-		} else {
-			submitBranch = currentUserHandle + "/" + submitBranch
-		}
+	if options.Owner != "" {
+		submitBranch = options.Owner + "/" + submitBranch
+	} else {
+		submitBranch = currentUserHandle + "/" + submitBranch
 	}
 	devBranch, err := scmProvider.GetWorktreeBranch("")
 	if err != nil {
 		return seederr.Wrap(err)
 	}
-	changeBranch, err := scm.ChangeBranchName(devBranch, options.FeatureName, scm.CanonicalBranch())
+	changeBranch, err := scm.ChangeBranchName(devBranch, options.FeatureName)
 	if err != nil {
 		return seederr.Wrap(err)
 	}
@@ -107,11 +105,7 @@ func NdSubmit(scmProvider scm.Provider, options NdSubmitOptions) error {
 	if err != nil {
 		return seederr.Wrap(err)
 	}
-	remoteSubmitBranch := submitBranch
-	if !scm.CanonicalBranch() {
-		remoteSubmitBranch = currentUserHandle + "/" + submitBranch
-	}
-	err = scmProvider.PushBranch(submitBranch, options.Remote, remoteSubmitBranch)
+	err = scmProvider.PushBranch(submitBranch, options.Remote, submitBranch)
 	if err != nil {
 		return seederr.Wrap(err)
 	}
