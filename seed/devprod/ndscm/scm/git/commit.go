@@ -69,12 +69,16 @@ func ListCommitHash(gitDir string, from string, to string) ([]string, error) {
 	if err != nil {
 		return nil, seederr.WrapErrorf("failed to get commit hash for range %v..%v: %w", from, to, err)
 	}
-	trimmed := strings.TrimSpace(string(listOutput))
-	if trimmed == "" {
-		return nil, nil
+	// The raw output is from newest to oldest, we reverse it to make it follow the parameter order.
+	commits := strings.Split(string(listOutput), "\n")
+	results := []string{}
+	for i := len(commits) - 1; i >= 0; i-- {
+		commitHash := strings.TrimSpace(commits[i])
+		if commitHash != "" {
+			results = append(results, commitHash)
+		}
 	}
-	commits := strings.Split(trimmed, "\n")
-	return commits, nil
+	return results, nil
 }
 
 func ListMergeCommitHash(gitDir string, from string, to string) ([]string, error) {
@@ -86,12 +90,16 @@ func ListMergeCommitHash(gitDir string, from string, to string) ([]string, error
 	if err != nil {
 		return nil, seederr.WrapErrorf("failed to get merge commit hash for range %v..%v: %w", from, to, err)
 	}
-	trimmed := strings.TrimSpace(string(listOutput))
-	if trimmed == "" {
-		return nil, nil
+	// The raw output is from newest to oldest, we reverse it to make it follow the parameter order.
+	commits := strings.Split(string(listOutput), "\n")
+	results := []string{}
+	for i := len(commits) - 1; i >= 0; i-- {
+		commitHash := strings.TrimSpace(commits[i])
+		if commitHash != "" {
+			results = append(results, commitHash)
+		}
 	}
-	commits := strings.Split(trimmed, "\n")
-	return commits, nil
+	return results, nil
 }
 
 func GetCommitMetadata(gitDir string, commit string) (*CommitMetadata, error) {
