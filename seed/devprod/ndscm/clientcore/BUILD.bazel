@@ -5,6 +5,7 @@ go_library(
     srcs = [
         "check_testable.go",
         "client_core.go",
+        "nd_amend.go",
         "nd_apply.go",
         "nd_change.go",
         "nd_connect.go",

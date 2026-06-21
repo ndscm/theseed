@@ -22,6 +22,10 @@ func (cc *ClientCore) CheckTestable(commit string) (bool, error) {
 	return CheckTestable(cc.scmProvider, commit)
 }
 
+func (cc *ClientCore) NdAmend(options NdAmendOptions) error {
+	return NdAmend(cc.scmProvider, options)
+}
+
 func (cc *ClientCore) NdApply(options NdApplyOptions) error {
 	return NdApply(cc.scmProvider, options)
 }
