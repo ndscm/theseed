@@ -26,10 +26,10 @@ func NdUncut(scmProvider scm.Provider, options NdUncutOptions) error {
 	if err != nil {
 		return seederr.Wrap(err)
 	}
-	if !scmProvider.IsDevBranch(devBranch, scm.CanonicalBranch()) {
+	if !scmProvider.IsDevBranch(devBranch) {
 		return seederr.WrapErrorf("workspace branch is not a dev branch: %v", devBranch)
 	}
-	changeBranch, err := scm.ChangeBranchName(devBranch, options.FeatureName, scm.CanonicalBranch())
+	changeBranch, err := scm.ChangeBranchName(devBranch, options.FeatureName)
 	if err != nil {
 		return seederr.Wrap(err)
 	}

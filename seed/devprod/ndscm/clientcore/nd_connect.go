@@ -50,7 +50,7 @@ func NdConnect(scmProvider scm.Provider, options NdConnectOptions) error {
 		return seederr.WrapErrorf("failed to create new monorepo home %v: %w", monorepoHome, err)
 	}
 	remoteMainBranch, mainWorktree, err := scmProvider.Connect(
-		options.RepoIdentifier, monorepoHome, options.RepoEndpoint, scm.CanonicalBranch(),
+		options.RepoIdentifier, monorepoHome, options.RepoEndpoint,
 	)
 	if err != nil {
 		removeErr := os.RemoveAll(monorepoHome)
@@ -62,7 +62,7 @@ func NdConnect(scmProvider scm.Provider, options NdConnectOptions) error {
 	worktreePath := mainWorktree
 	if !options.NoDev {
 		devWorktree, err := scmProvider.CreateDevWorktree(
-			monorepoHome, currentUserHandle, "", remoteMainBranch, scm.CanonicalBranch(),
+			monorepoHome, currentUserHandle, "", remoteMainBranch,
 		)
 		if err != nil {
 			return seederr.Wrap(err)

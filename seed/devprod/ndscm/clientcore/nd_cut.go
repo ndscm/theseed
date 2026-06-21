@@ -32,7 +32,7 @@ func NdCut(scmProvider scm.Provider, options NdCutOptions) error {
 	if err != nil {
 		return seederr.Wrap(err)
 	}
-	if !scmProvider.IsDevBranch(devBranch, scm.CanonicalBranch()) {
+	if !scmProvider.IsDevBranch(devBranch) {
 		return seederr.WrapErrorf("workspace branch is not a dev branch: %v", devBranch)
 	}
 
@@ -40,7 +40,7 @@ func NdCut(scmProvider scm.Provider, options NdCutOptions) error {
 		return seederr.WrapErrorf("feature name %v must not contain /", options.FeatureName)
 	}
 
-	changeBranch, err := scm.ChangeBranchName(devBranch, options.FeatureName, scm.CanonicalBranch())
+	changeBranch, err := scm.ChangeBranchName(devBranch, options.FeatureName)
 	if err != nil {
 		return seederr.Wrap(err)
 	}

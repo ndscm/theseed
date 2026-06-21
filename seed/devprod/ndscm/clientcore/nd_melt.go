@@ -69,7 +69,7 @@ func NdMelt(scmProvider scm.Provider, options NdMeltOptions) error {
 		return seederr.Wrap(err)
 	}
 	_, worktreePath, _ := scmProvider.GetMeltWorktree(
-		monorepoHome, currentUserHandle, upstreamName, scm.CanonicalBranch(),
+		monorepoHome, currentUserHandle, upstreamName,
 	)
 	worktreeStat, err := os.Stat(worktreePath)
 	if err != nil && !os.IsNotExist(err) {
@@ -83,7 +83,7 @@ func NdMelt(scmProvider scm.Provider, options NdMeltOptions) error {
 			return seederr.WrapErrorf("melt worktree %v does not exist", worktreePath)
 		}
 		newCwd, err := scmProvider.RemoveMeltWorktree(
-			monorepoHome, currentUserHandle, upstreamName, scm.CanonicalBranch(),
+			monorepoHome, currentUserHandle, upstreamName,
 		)
 		if err != nil {
 			return seederr.Wrap(err)
@@ -115,7 +115,6 @@ func NdMelt(scmProvider scm.Provider, options NdMeltOptions) error {
 		newWorktreePath, err := scmProvider.CreateMeltWorktree(
 			monorepoHome, currentUserHandle,
 			upstreamName, upstreamForkPoint, "upstream/"+upstreamName, tracking, trackingForkPoint,
-			scm.CanonicalBranch(),
 		)
 		if err != nil {
 			return seederr.Wrap(err)

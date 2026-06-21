@@ -39,11 +39,11 @@ func NdSync(scmProvider scm.Provider, _ NdSyncOptions) error {
 	if err != nil {
 		return seederr.Wrap(err)
 	}
-	if !scmProvider.IsDevBranch(worktreeName, scm.CanonicalBranch()) &&
-		!scmProvider.IsMeltBranch(worktreeName, scm.CanonicalBranch()) {
+	if !scmProvider.IsDevBranch(worktreeName) &&
+		!scmProvider.IsMeltBranch(worktreeName) {
 		return seederr.WrapErrorf("workspace is not a ndscm managed worktree: %v", worktreeName)
 	}
-	baseBranch := scm.BaseBranchName(worktreeName, scm.CanonicalBranch())
+	baseBranch := scm.BaseBranchName(worktreeName)
 	// # Iterate changes tree
 	chain := []string{worktreeName}
 	for iter := worktreeName; iter != baseBranch; {
