@@ -18,6 +18,10 @@ func (cc *ClientCore) Initialize() error {
 	return nil
 }
 
+func (cc *ClientCore) CheckTestable(commit string) (bool, error) {
+	return CheckTestable(cc.scmProvider, commit)
+}
+
 func (cc *ClientCore) NdApply(options NdApplyOptions) error {
 	return NdApply(cc.scmProvider, options)
 }
