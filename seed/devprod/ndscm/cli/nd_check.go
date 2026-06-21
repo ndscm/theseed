@@ -6,6 +6,7 @@ import (
 	"github.com/ndscm/theseed/seed/devprod/ndscm/clientcore"
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
 	"github.com/ndscm/theseed/seed/infra/flag/go/seedflag"
+	"github.com/ndscm/theseed/seed/infra/log/go/seedlog"
 )
 
 type ndCheckFlags struct {
@@ -51,6 +52,14 @@ func ndCheck(args []string) error {
 		return seederr.Wrap(err)
 	}
 
+	testable, err := cc.CheckTestable("")
+	if err != nil {
+		return seederr.Wrap(err)
+	}
+	if !testable {
+		seedlog.Warnf("Commit is not testable, skip further checks.")
+		return nil
+	}
 	err = cc.NdRun(clientcore.NdRunOptions{
 		Workers: runtime.NumCPU(),
 		All:     cmdFlags.all.Get(),
