@@ -31,5 +31,6 @@ go_library(
         "//seed/infra/flag/go/seedflag",
         "//seed/infra/log/go/seedlog",
         "//seed/infra/shell/go/seedshell",
+        "@com_github_google_uuid//:uuid",
     ],
 )
