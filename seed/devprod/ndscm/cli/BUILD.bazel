@@ -31,6 +31,7 @@ go_library(
         "nd_submit.go",
         "nd_sync.go",
         "nd_t.go",
+        "nd_testable.go",
         "nd_tidy.go",
         "nd_uncut.go",
         "nd_vendor.go",
