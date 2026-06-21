@@ -167,6 +167,52 @@ func (g *GitProvider) ListCommitIds(from string, to string) ([]string, error) {
 	return ListCommitHash("", from, to)
 }
 
+func (g *GitProvider) GetCommitChangeUuid(commit string) (string, error) {
+	metadata, err := GetCommitMetadata("", commit)
+	if err != nil {
+		return "", seederr.Wrap(err)
+	}
+	changeUuid, err := metadata.GetChangeUuid()
+	if err != nil {
+		return "", seederr.Wrap(err)
+	}
+	return changeUuid, nil
+}
+
+func (g *GitProvider) GetCommitMetadata(commit string) (*scm.CommitMetadata, error) {
+	metadata, err := GetCommitMetadata("", commit)
+	if err != nil {
+		return nil, seederr.Wrap(err)
+	}
+	result := &scm.CommitMetadata{
+		CommitId:       metadata.Hash,
+		Author:         metadata.Author,
+		AuthorEmail:    metadata.AuthorEmail,
+		AuthorTime:     metadata.AuthorTime,
+		Committer:      metadata.Committer,
+		CommitterEmail: metadata.CommitterEmail,
+		CommitterTime:  metadata.CommitterTime,
+		Subject:        metadata.Subject,
+		Body:           metadata.Body,
+	}
+	for _, trailer := range metadata.Trailers {
+		trailerKey := strings.ToLower(trailer.Key)
+		switch trailerKey {
+		case "change-uuid":
+			if result.ChangeUuid != "" {
+				return nil, seederr.WrapErrorf("multiple change-uuid found. commit=%v", metadata.Hash)
+			}
+			result.ChangeUuid = trailer.Value
+		default:
+			result.Extended = append(result.Extended, scm.KeyValue{
+				Key:   trailerKey,
+				Value: trailer.Value,
+			})
+		}
+	}
+	return result, nil
+}
+
 // # filetree
 
 func (g *GitProvider) ListCommitFiles(commit string) ([]scm.FileStatus, error) {
