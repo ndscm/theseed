@@ -31,12 +31,18 @@ func ndMelt(args []string) error {
 	if err != nil {
 		return seederr.Wrap(err)
 	}
+
 	upstream := ""
+	commit := ""
 	if len(cmdArgs) == 1 {
 		upstream = cmdArgs[0]
+	} else if len(cmdArgs) == 2 {
+		upstream = cmdArgs[0]
+		commit = cmdArgs[1]
 	} else {
 		return seederr.WrapErrorf("nd-melt usage: nd melt <upstream>")
 	}
+
 	cc := &clientcore.ClientCore{}
 	err = cc.Initialize()
 	if err != nil {
@@ -46,6 +52,7 @@ func ndMelt(args []string) error {
 		Remove:   cmdFlags.remove.Get(),
 		Track:    cmdFlags.track.Get(),
 		Upstream: upstream,
+		Commit:   commit,
 	})
 	if err != nil {
 		return seederr.Wrap(err)

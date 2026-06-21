@@ -17,6 +17,7 @@ type NdMeltOptions struct {
 	Track  string
 
 	Upstream string
+	Commit   string
 }
 
 func NdMelt(scmProvider scm.Provider, options NdMeltOptions) error {
@@ -106,7 +107,12 @@ func NdMelt(scmProvider scm.Provider, options NdMeltOptions) error {
 		if tracking == "" {
 			tracking = "origin/main"
 		}
-		trackingForkPoint, upstreamForkPoint, err := scmProvider.SearchForkPoint(tracking, "upstream/"+upstreamName)
+		trackingTipPoint := tracking
+		upstreamTipPoint := options.Commit
+		if upstreamTipPoint == "" {
+			upstreamTipPoint = "upstream/" + upstreamName
+		}
+		trackingForkPoint, upstreamForkPoint, err := scmProvider.SearchForkPoint(trackingTipPoint, upstreamTipPoint)
 		if err != nil {
 			return seederr.Wrap(err)
 		}
@@ -114,7 +120,7 @@ func NdMelt(scmProvider scm.Provider, options NdMeltOptions) error {
 		seedlog.Infof("Found upstream fork point: %v", upstreamForkPoint)
 		newWorktreePath, err := scmProvider.CreateMeltWorktree(
 			monorepoHome, currentUserHandle,
-			upstreamName, upstreamForkPoint, "upstream/"+upstreamName, tracking, trackingForkPoint,
+			upstreamName, upstreamForkPoint, upstreamTipPoint, tracking, trackingForkPoint,
 		)
 		if err != nil {
 			return seederr.Wrap(err)
