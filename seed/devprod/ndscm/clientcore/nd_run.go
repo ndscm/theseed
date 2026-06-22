@@ -4,6 +4,7 @@ import (
 	"github.com/ndscm/theseed/seed/devprod/ndscm/runner"
 	"github.com/ndscm/theseed/seed/devprod/ndscm/scm"
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
+	"github.com/ndscm/theseed/seed/infra/log/go/seedlog"
 )
 
 type NdRunOptions struct {
@@ -17,7 +18,7 @@ type NdRunOptions struct {
 func NdRun(scmProvider scm.Provider, options NdRunOptions) error {
 	monorepoHome, err := scm.MonorepoHome()
 	if err != nil {
-		return seederr.Wrap(err)
+		seedlog.Warnf("Current worktree is not connected by ndscm")
 	}
 	_, worktreePath, err := scmProvider.GetCurrentWorktree(monorepoHome)
 	if err != nil {
