@@ -253,7 +253,7 @@ type Provider interface {
 	// forkPoint and toPoint.
 	CreateMeltWorktree(
 		monorepoHome string, ownerHandle string,
-		upstreamName string, fromPoint string, toPoint string, tracking string, forkPoint string,
+		upstreamName string, fromPoint string, tracking string, forkPoint string,
 	) (string, error)
 
 	// RemoveMeltWorktree removes the melt worktree, its working branch,
