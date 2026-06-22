@@ -220,6 +220,10 @@ func (g *GitProvider) GetCommitMetadata(commit string) (*scm.CommitMetadata, err
 	return result, nil
 }
 
+func (g *GitProvider) GetCommitFormatPatch(commit string) (string, error) {
+	return GetFormatPatch("", commit)
+}
+
 // # filetree
 
 func (g *GitProvider) ListCommitFiles(commit string) ([]scm.FileStatus, error) {
@@ -239,6 +243,10 @@ func (g *GitProvider) ListCommitFiles(commit string) ([]scm.FileStatus, error) {
 }
 
 // # rebase
+
+func (g *GitProvider) ApplyFormatPatch(worktreePath string, formatPatch string) error {
+	return ApplyFormatPatch(worktreePath, formatPatch)
+}
 
 func (g *GitProvider) Rebase(worktreePath string, upstream string) error {
 	return Rebase(worktreePath, upstream)

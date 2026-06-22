@@ -172,3 +172,20 @@ func GetCommitMetadata(gitDir string, commit string) (*CommitMetadata, error) {
 	seedlog.Debugf("Commit %v: %#v", result.Hash, result)
 	return result, nil
 }
+
+// GetFormatPatch renders commit as a single git format-patch, suitable for
+// parsing and rewriting with the scalpel package and re-applying via
+// ApplyFormatPatch. --no-stat and --no-signature trim the output down to the
+// rfc2822 header, commit message, and diffs.
+func GetFormatPatch(gitDir string, commit string) (string, error) {
+	gitArgs := []string{}
+	if gitDir != "" {
+		gitArgs = append(gitArgs, "--git-dir", gitDir)
+	}
+	gitArgs = append(gitArgs, "format-patch", "-1", "--stdout", "--no-stat", "--no-signature", commit)
+	output, err := seedshell.PureOutput("git", gitArgs...)
+	if err != nil {
+		return "", seederr.WrapErrorf("failed to format patch for commit %v: %w", commit, err)
+	}
+	return string(output), nil
+}

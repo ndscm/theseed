@@ -1,9 +1,32 @@
 package git
 
 import (
+	"os/exec"
+	"strings"
+
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
 	"github.com/ndscm/theseed/seed/infra/shell/go/seedshell"
 )
+
+// ApplyFormatPatch applies a format-patch (as produced by GetFormatPatch and
+// possibly rewritten) on top of the worktree's current branch with git am,
+// feeding the patch in over stdin. --empty=keep preserves commits whose diffs
+// were entirely stripped out, keeping their message and trailers intact.
+func ApplyFormatPatch(worktreePath string, patch string) error {
+	gitArgs := []string{}
+	if worktreePath != "" {
+		gitArgs = append(gitArgs, "-C", worktreePath)
+	}
+	gitArgs = append(gitArgs, "am", "--empty=keep")
+	stdinOption := func(cmd *exec.Cmd) {
+		cmd.Stdin = strings.NewReader(patch)
+	}
+	err := seedshell.ImpureOptionsRun([]seedshell.RunOption{stdinOption}, "git", gitArgs...)
+	if err != nil {
+		return seederr.WrapErrorf("failed to apply commit patch: %w", err)
+	}
+	return nil
+}
 
 func Rebase(worktreePath string, upstream string) error {
 	gitArgs := []string{}
