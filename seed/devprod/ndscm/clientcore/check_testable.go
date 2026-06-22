@@ -36,20 +36,17 @@ func CheckTestable(scmProvider scm.Provider, commit string) (bool, error) {
 		if err != nil {
 			return false, seederr.Wrap(err)
 		}
-		devWorktreeName, _, err := scmProvider.GetCurrentWorktree(monorepoHome)
+		worktreeName, _, err := scmProvider.GetCurrentWorktree(monorepoHome)
 		if err != nil {
 			return false, seederr.Wrap(err)
 		}
-		if !scmProvider.IsDevBranch(devWorktreeName) {
-			return false, seederr.WrapErrorf("current worktree is not a dev worktree. worktree=%v", devWorktreeName)
-		}
 
-		currentBranch := devWorktreeName
+		currentBranch := worktreeName
 		found := false
 		for {
 			currentTrackingBranch, err := scmProvider.GetBranchTracking(currentBranch)
 			if err != nil {
-				return false, seederr.Wrap(err)
+				break
 			}
 			branchCommitIds, err := scmProvider.ListCommitIds(currentTrackingBranch, currentBranch)
 			if err != nil {
@@ -73,7 +70,7 @@ func CheckTestable(scmProvider scm.Provider, commit string) (bool, error) {
 			currentBranch = currentTrackingBranch
 		}
 		if !found {
-			return false, seederr.WrapErrorf("target is not found on dev branch. target=%v, uid=%v, dev=%v", targetCommit, targetCommitId, devWorktreeName)
+			seedlog.Warnf("Target is not found on worktree branch, guess on the trunk. target=%v, commit=%v, worktree=%v", targetCommit, targetCommitId, worktreeName)
 		}
 		belong = currentBranch
 	}
@@ -81,7 +78,7 @@ func CheckTestable(scmProvider scm.Provider, commit string) (bool, error) {
 
 	belongTrackingBranch, err := scmProvider.GetBranchTracking(belong)
 	if err != nil {
-		return false, seederr.Wrap(err)
+		belongTrackingBranch = ""
 	}
 	belongBranchCommitIds, err := scmProvider.ListCommitIds(belongTrackingBranch, belong)
 	if err != nil {
