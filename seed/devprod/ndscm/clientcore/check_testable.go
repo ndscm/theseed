@@ -26,6 +26,10 @@ func CheckTestable(scmProvider scm.Provider, commit string) (bool, error) {
 	if err != nil {
 		return false, seederr.Wrap(err)
 	}
+	targetCommitMetadata, err := scmProvider.GetCommitMetadata(targetCommitId)
+	if err != nil {
+		return false, seederr.Wrap(err)
+	}
 
 	if belong == "auto" {
 		monorepoHome, err := scm.MonorepoHome()
@@ -52,7 +56,13 @@ func CheckTestable(scmProvider scm.Provider, commit string) (bool, error) {
 				return false, seederr.Wrap(err)
 			}
 			for _, commitId := range branchCommitIds {
-				if targetCommitId == commitId {
+				commitMetadata, err := scmProvider.GetCommitMetadata(commitId)
+				if err != nil {
+					return false, seederr.Wrap(err)
+				}
+				if targetCommitId == commitId ||
+					(targetCommitMetadata.ChangeUuid != "" &&
+						targetCommitMetadata.ChangeUuid == commitMetadata.ChangeUuid) {
 					found = true
 					break
 				}
@@ -82,14 +92,18 @@ func CheckTestable(scmProvider scm.Provider, commit string) (bool, error) {
 	untestableRange := map[string]string{}
 	for i := len(belongBranchCommitIds) - 1; i >= 0; i-- {
 		commitId := belongBranchCommitIds[i]
-		seedlog.Debugf("Checked untestable status. commit=%v untestable=%v", commitId, untestableRange)
-		if targetCommitId == commitId {
-			found = true
-			break
-		}
 		commitMetadata, err := scmProvider.GetCommitMetadata(commitId)
 		if err != nil {
 			return false, seederr.Wrap(err)
+		}
+		seedlog.Debugf("Checked untestable status. commit=%v change=%v untestable=%v",
+			commitId, commitMetadata.ChangeUuid, untestableRange,
+		)
+		if targetCommitId == commitId ||
+			(targetCommitMetadata.ChangeUuid != "" &&
+				targetCommitMetadata.ChangeUuid == commitMetadata.ChangeUuid) {
+			found = true
+			break
 		}
 		for _, extended := range commitMetadata.Extended {
 			if extended.Key == "side-effect-of-change-uuid" {
