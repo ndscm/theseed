@@ -111,12 +111,20 @@ type Provider interface {
 
 	GetCommitMetadata(commit string) (*CommitMetadata, error)
 
+	// GetCommitFormatPatch renders commit as a single format-patch (header,
+	// message, and per-file diffs).
+	GetCommitFormatPatch(commit string) (string, error)
+
 	// # filetree
 
 	// ListCommitFiles lists every committed files in single commit.
 	ListCommitFiles(commit string) ([]FileStatus, error)
 
 	// # rebase
+
+	// ApplyFormatPatch applies patch as a new commit on top of the worktree's
+	// current branch, preserving the original commit message and trailers.
+	ApplyFormatPatch(worktreePath string, formatPatch string) error
 
 	// Rebase replays the commits of the worktree's current branch on top of
 	// upstream.
