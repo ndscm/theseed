@@ -491,7 +491,7 @@ func (g *GitProvider) GetMeltWorktree(
 
 func (g *GitProvider) CreateMeltWorktree(
 	monorepoHome string, ownerHandle string,
-	upstreamName string, fromPoint string, toPoint string, tracking string, forkPoint string,
+	upstreamName string, fromPoint string, tracking string, forkPoint string,
 ) (string, error) {
 	if upstreamName == "" {
 		return "", seederr.WrapErrorf("upstream name is required for melt worktree")
@@ -507,7 +507,7 @@ func (g *GitProvider) CreateMeltWorktree(
 	if err != nil {
 		return "", seederr.WrapErrorf("failed to create base branch %v: %v", baseBranchName, err)
 	}
-	err = CreateBranch(monorepoGitDir, branchName, toPoint, baseBranchName)
+	err = CreateBranch(monorepoGitDir, branchName, fromPoint, baseBranchName)
 	if err != nil {
 		return "", seederr.WrapErrorf("failed to create worktree branch %v: %v", branchName, err)
 	}
