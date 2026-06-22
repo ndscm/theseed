@@ -27,6 +27,7 @@ go_library(
         "//seed/devprod/ndscm/runner",
         "//seed/devprod/ndscm/scm",
         "//seed/devprod/ndscm/user",
+        "//seed/devprod/scalpel/go/scalpel",
         "//seed/infra/error/go/seederr",
         "//seed/infra/flag/go/seedflag",
         "//seed/infra/log/go/seedlog",

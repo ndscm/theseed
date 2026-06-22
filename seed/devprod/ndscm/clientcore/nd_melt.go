@@ -3,10 +3,13 @@ package clientcore
 import (
 	"fmt"
 	"os"
+	"regexp"
 
 	"github.com/ndscm/theseed/seed/devprod/ndscm/configloader"
+	"github.com/ndscm/theseed/seed/devprod/ndscm/runner"
 	"github.com/ndscm/theseed/seed/devprod/ndscm/scm"
 	"github.com/ndscm/theseed/seed/devprod/ndscm/user"
+	"github.com/ndscm/theseed/seed/devprod/scalpel/go/scalpel"
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
 	"github.com/ndscm/theseed/seed/infra/log/go/seedlog"
 	"github.com/ndscm/theseed/seed/infra/shell/go/seedshell"
@@ -15,6 +18,8 @@ import (
 type NdMeltOptions struct {
 	Remove bool
 	Track  string
+
+	Lock string
 
 	Upstream string
 	Commit   string
@@ -79,8 +84,10 @@ func NdMelt(scmProvider scm.Provider, options NdMeltOptions) error {
 	if err == nil && !worktreeStat.IsDir() {
 		return seederr.WrapErrorf("worktree %v exists and is not a dir", worktreePath)
 	}
+	worktreeExists := err == nil
+
 	if options.Remove {
-		if os.IsNotExist(err) {
+		if !worktreeExists {
 			return seederr.WrapErrorf("melt worktree %v does not exist", worktreePath)
 		}
 		newCwd, err := scmProvider.RemoveMeltWorktree(
@@ -102,7 +109,8 @@ func NdMelt(scmProvider scm.Provider, options NdMeltOptions) error {
 		}
 		return nil
 	}
-	if os.IsNotExist(err) {
+
+	if !worktreeExists {
 		tracking := track
 		if tracking == "" {
 			tracking = "origin/main"
@@ -128,10 +136,55 @@ func NdMelt(scmProvider scm.Provider, options NdMeltOptions) error {
 		if newWorktreePath != worktreePath {
 			return seederr.WrapErrorf("unexpected new worktree path: %v (expected: %v)", newWorktreePath, worktreePath)
 		}
-		err = scmProvider.ApplyCommitRange(newWorktreePath, upstreamForkPoint, upstreamTipPoint)
+
+		dropLocks := [][]*regexp.Regexp{}
+		switch options.Lock {
+		case "drop":
+			scmFilePaths, err := scmProvider.ListFiles(worktreePath)
+			if err != nil {
+				return seederr.Wrap(err)
+			}
+			repoAnalysis, err := runner.AnalyseRepo(worktreePath, []string{"lock"}, scmFilePaths, runner.BuildSystems())
+			if err != nil {
+				return seederr.Wrap(err)
+			}
+			lockPhase := repoAnalysis.Phases["lock"]
+			for _, watcher := range lockPhase.Watchers {
+				lockGroup := []*regexp.Regexp{}
+				for _, lockFile := range watcher.Targets {
+					lockGroup = append(lockGroup, regexp.MustCompile(`^`+regexp.QuoteMeta(lockFile)+`$`))
+				}
+				dropLocks = append(dropLocks, lockGroup)
+			}
+		case "keep":
+			// pass
+		default:
+			return seederr.WrapErrorf("unknown lock strategy %q, want one of: drop, keep", options.Lock)
+		}
+
+		upstreamCommitIds, err := scmProvider.ListCommitIds(upstreamForkPoint, upstreamTipPoint)
 		if err != nil {
 			return seederr.Wrap(err)
 		}
+		for _, commitId := range upstreamCommitIds {
+			commitPatch, err := scmProvider.GetCommitFormatPatch(commitId)
+			if err != nil {
+				return seederr.Wrap(err)
+			}
+			patch, err := scalpel.ParseFormatPatch(commitId, commitPatch)
+			if err != nil {
+				return seederr.Wrap(err)
+			}
+			for _, lockGroup := range dropLocks {
+				patch.DropDiff(lockGroup, lockGroup)
+			}
+			newCommitPatch := patch.Render()
+			err = scmProvider.ApplyFormatPatch(newWorktreePath, newCommitPatch)
+			if err != nil {
+				return seederr.Wrap(err)
+			}
+		}
+
 	}
 	shellEval := fmt.Sprintf("\ncd \"%v\"\n", worktreePath)
 	if seedshell.Dry() {

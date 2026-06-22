@@ -9,6 +9,8 @@ import (
 type ndMeltFlags struct {
 	remove *seedflag.BoolFlag
 	track  *seedflag.StringFlag
+
+	lock *seedflag.StringFlag
 }
 
 func parseNdMeltFlags(args []string) (ndMeltFlags, []string, error) {
@@ -16,6 +18,7 @@ func parseNdMeltFlags(args []string) (ndMeltFlags, []string, error) {
 	cmdFlags := ndMeltFlags{}
 	cmdFlags.remove = cf.DefineBool("remove", false, "Remove the melt worktree")
 	cmdFlags.track = cf.DefineString("track", "", "Local tracking branch for fork point search (default: origin/main)")
+	cmdFlags.lock = cf.DefineString("lock", "drop", "Lock file for the melt worktree")
 	cmdArgs, err := cf.Parse(args,
 		seedflag.WithAnywhereFlag(true),
 	)
@@ -51,6 +54,7 @@ func ndMelt(args []string) error {
 	err = cc.NdMelt(clientcore.NdMeltOptions{
 		Remove:   cmdFlags.remove.Get(),
 		Track:    cmdFlags.track.Get(),
+		Lock:     cmdFlags.lock.Get(),
 		Upstream: upstream,
 		Commit:   commit,
 	})
