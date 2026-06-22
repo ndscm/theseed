@@ -1,4 +1,4 @@
-load("@rules_go//go:def.bzl", "go_library")
+load("@rules_go//go:def.bzl", "go_library", "go_test")
 
 package(default_visibility = [
     "//seed/devprod/scalpel:__subpackages__",
@@ -15,4 +15,10 @@ go_library(
         "//seed/infra/error/go/seederr",
         "//seed/infra/log/go/seedlog",
     ],
+)
+
+go_test(
+    name = "scalpel_test",
+    srcs = ["format_patch_test.go"],
+    embed = [":scalpel"],
 )
