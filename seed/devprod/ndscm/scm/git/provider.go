@@ -333,10 +333,17 @@ func (g *GitProvider) GetCurrentWorktree(monorepoHome string) (string, string, e
 	if err != nil {
 		return "", "", seederr.Wrap(err)
 	}
-	worktreeName, err := GetBranchWorktreeBranch(monorepoHome, worktreePath)
-	if err != nil {
-		return "", "", seederr.Wrap(err)
+
+	// current worktree may not be connected with ndscm (e.g. ci environment)
+	worktreeName := ""
+	if monorepoHome != "" {
+		branchWorktreeName, err := GetBranchWorktreeBranch(monorepoHome, worktreePath)
+		if err != nil {
+			return "", "", seederr.Wrap(err)
+		}
+		worktreeName = branchWorktreeName
 	}
+
 	return worktreeName, worktreePath, nil
 }
 
