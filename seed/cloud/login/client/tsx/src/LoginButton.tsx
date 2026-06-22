@@ -9,23 +9,21 @@ const LoginButton: React.FC<
   } & React.ButtonHTMLAttributes<HTMLButtonElement>
 > = ({ anonymous, loading, disabled, children, onClick, ...props }) => {
   const loginService = useLoginService()
-  const [redirecting, setRedirecting] = React.useState(false)
 
   const onLoginClick = async () => {
-    if (redirecting) {
+    if (!loginService) {
       return
     }
-    setRedirecting(true)
-    window.location.href = `${window.location.origin}/auth/login?return=${encodeURIComponent(window.location.href)}`
+    await loginService.login()
   }
 
   return (
     <button
-      disabled={loginService?.loading || redirecting || disabled}
+      disabled={loginService?.loading || disabled}
       onClick={loginService?.current?.userUuid ? onClick : onLoginClick}
       {...props}
     >
-      {loginService?.loading || redirecting
+      {loginService?.loading
         ? loading
         : loginService?.current?.userUuid
           ? children
