@@ -1,0 +1,277 @@
+def githubStatus(String context, String state, String description) {
+    withCredentials([usernamePassword(credentialsId: 'ndscm', usernameVariable: 'GH_USER', passwordVariable: 'GH_TOKEN')]) {
+    sh """#!/usr/bin/env bash
+gh api --method POST /repos/ndscm/theseed/statuses/"\$commit_hash" \\
+  -f context=${context} \\
+  -f state=${state} \\
+  -f description='${description}' \\
+  -f target_url='${env.BUILD_URL}'
+"""
+  }
+}
+pipeline {
+  agent any
+  parameters {
+    // repository_url is kept for compatibility with callers that pass it through;
+    // the Validate stage rejects anything other than the default.
+    string name: 'repository_url', defaultValue: 'https://github.com/ndscm/theseed'
+    string name: 'branch', defaultValue: ''
+    string name: 'commit_hash'
+  }
+  stages {
+    stage('Validate') {
+      steps {
+        echo "Repository URL: ${env.repository_url}"
+        echo "Branch: ${env.branch}"
+        echo "Commit hash: ${env.commit_hash}"
+        echo "Build URL: ${env.BUILD_URL}"
+        script {
+          if (env.repository_url != 'https://github.com/ndscm/theseed') {
+            error "Unexpected repository_url: ${env.repository_url}"
+          }
+        }
+        githubStatus('ndscm/check', 'pending', 'Running check workflow')
+      }
+    }
+    stage('Checkout') {
+      steps {
+        checkout scmGit(
+          branches: [[name: "${env.branch}"]],
+          extensions: [
+            cleanBeforeCheckout(),
+            cleanAfterCheckout(),
+          ],
+          userRemoteConfigs: [[url: "${env.repository_url}.git", credentialsId: 'ndscm']],
+        )
+        sh '''#!/usr/bin/env bash
+set -euo pipefail
+git checkout -d "${commit_hash}"
+direnv allow
+'''
+        script {
+          env.TESTABLE = sh(
+            returnStdout: true,
+            script: '''#!/usr/bin/env bash
+set -euo pipefail
+eval "$(direnv export bash)"
+ndscm testable --belong "refs/remotes/origin/${branch}"
+'''
+          ).trim()
+        }
+      }
+    }
+    stage('Format') {
+      steps {
+        githubStatus('ndscm/format', 'pending', 'Running format')
+        sh '''#!/usr/bin/env bash
+set -euo pipefail
+eval "$(direnv export bash)"
+
+ndscm format
+
+if [[ -n "$(git status --porcelain)" ]]; then
+  echo "Worktree is dirty after format:"
+  git diff
+  exit 1
+fi
+'''
+      }
+      post {
+        success {
+          githubStatus('ndscm/format', 'success', 'Format passed')
+        }
+        failure {
+          githubStatus('ndscm/format', 'failure', 'Format failed')
+        }
+      }
+    }
+    stage('Bootstrap') {
+      steps {
+        githubStatus('ndscm/bootstrap', 'pending', 'Running bootstrap')
+        sh '''#!/usr/bin/env bash
+set -euo pipefail
+eval "$(direnv export bash)"
+
+if [[ "${TESTABLE}" == "true" ]]; then
+  ndscm bootstrap
+else
+  echo "Not testable commit, skipping bootstrap phase."
+fi
+
+if [[ -n "$(git status --porcelain)" ]]; then
+  echo "Worktree is dirty after bootstrap:"
+  git diff
+  exit 1
+fi
+'''
+      }
+      post {
+        success {
+          script {
+            if (env.TESTABLE == 'true') {
+              githubStatus('ndscm/bootstrap', 'success', 'Bootstrap passed')
+            }
+            else {
+              githubStatus('ndscm/bootstrap', 'success', 'Bootstrap skipped')
+            }
+          }
+        }
+        failure {
+          githubStatus('ndscm/bootstrap', 'failure', 'Bootstrap failed')
+        }
+      }
+    }
+    stage('Tidy') {
+      steps {
+        githubStatus('ndscm/tidy', 'pending', 'Running tidy')
+        sh '''#!/usr/bin/env bash
+set -euo pipefail
+eval "$(direnv export bash)"
+
+if [[ "${TESTABLE}" == "true" ]]; then
+  ndscm tidy
+else
+  echo "Not testable commit, skipping tidy phase."
+fi
+
+if [[ -n "$(git status --porcelain)" ]]; then
+  echo "Worktree is dirty after tidy:"
+  git diff
+  exit 1
+fi
+'''
+      }
+      post {
+        success {
+          script {
+            if (env.TESTABLE == 'true') {
+              githubStatus('ndscm/tidy', 'success', 'Tidy passed')
+            }
+            else {
+              githubStatus('ndscm/tidy', 'success', 'Tidy skipped')
+            }
+          }
+        }
+        failure {
+          githubStatus('ndscm/tidy', 'failure', 'Tidy failed')
+        }
+      }
+    }
+    stage('Lock') {
+      steps {
+        githubStatus('ndscm/lock', 'pending', 'Running lock')
+        sh '''#!/usr/bin/env bash
+set -euo pipefail
+eval "$(direnv export bash)"
+
+if [[ "${TESTABLE}" == "true" ]]; then
+  ndscm lock
+else
+  echo "Not testable commit, skipping lock phase."
+fi
+
+if [[ -n "$(git status --porcelain)" ]]; then
+  echo "Worktree is dirty after lock:"
+  git diff
+  exit 1
+fi
+'''
+      }
+      post {
+        success {
+          script {
+            if (env.TESTABLE == 'true') {
+              githubStatus('ndscm/lock', 'success', 'Lock passed')
+            }
+            else {
+              githubStatus('ndscm/lock', 'success', 'Lock skipped')
+            }
+          }
+        }
+        failure {
+          githubStatus('ndscm/lock', 'failure', 'Lock failed')
+        }
+      }
+    }
+    stage('Build') {
+      steps {
+        githubStatus('ndscm/build', 'pending', 'Running build')
+        sh '''#!/usr/bin/env bash
+set -euo pipefail
+eval "$(direnv export bash)"
+
+if [[ "${TESTABLE}" == "true" ]]; then
+  ndscm build
+else
+  echo "Not testable commit, skipping build phase."
+fi
+
+if [[ -n "$(git status --porcelain)" ]]; then
+  echo "Worktree is dirty after build:"
+  git diff
+  exit 1
+fi
+'''
+      }
+      post {
+        success {
+          script {
+            if (env.TESTABLE == 'true') {
+              githubStatus('ndscm/build', 'success', 'Build passed')
+            }
+            else {
+              githubStatus('ndscm/build', 'success', 'Build skipped')
+            }
+          }
+        }
+        failure {
+          githubStatus('ndscm/build', 'failure', 'Build failed')
+        }
+      }
+    }
+    stage('Test') {
+      steps {
+        githubStatus('ndscm/test', 'pending', 'Running tests')
+        sh '''#!/usr/bin/env bash
+set -euo pipefail
+eval "$(direnv export bash)"
+
+if [[ "${TESTABLE}" == "true" ]]; then
+  ndscm test
+else
+  echo "Not testable commit, skipping test phase."
+fi
+
+if [[ -n "$(git status --porcelain)" ]]; then
+  echo "Worktree is dirty after test:"
+  git diff
+  exit 1
+fi
+'''
+      }
+      post {
+        success {
+          script {
+            if (env.TESTABLE == 'true') {
+              githubStatus('ndscm/test', 'success', 'Test passed')
+            }
+            else {
+              githubStatus('ndscm/test', 'success', 'Test skipped')
+            }
+          }
+        }
+        failure {
+          githubStatus('ndscm/test', 'failure', 'Test failed')
+        }
+      }
+    }
+  }
+  post {
+    success {
+      githubStatus('ndscm/check', 'success', 'Check workflow passed')
+    }
+    failure {
+      githubStatus('ndscm/check', 'failure', 'Check workflow failed')
+    }
+  }
+}
