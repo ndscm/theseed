@@ -1,0 +1,18 @@
+load("@rules_go//go:def.bzl", "go_library")
+
+package(default_visibility = [
+    "//seed/devprod/scalpel:__subpackages__",
+])
+
+go_library(
+    name = "scalpel",
+    srcs = ["format_patch.go"],
+    importpath = "github.com/ndscm/theseed/seed/devprod/scalpel/go/scalpel",
+    visibility = [
+        "//seed/devprod/ndscm:__subpackages__",
+    ],
+    deps = [
+        "//seed/infra/error/go/seederr",
+        "//seed/infra/log/go/seedlog",
+    ],
+)
