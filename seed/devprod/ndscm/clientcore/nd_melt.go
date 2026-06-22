@@ -120,13 +120,17 @@ func NdMelt(scmProvider scm.Provider, options NdMeltOptions) error {
 		seedlog.Infof("Found upstream fork point: %v", upstreamForkPoint)
 		newWorktreePath, err := scmProvider.CreateMeltWorktree(
 			monorepoHome, currentUserHandle,
-			upstreamName, upstreamForkPoint, upstreamTipPoint, tracking, trackingForkPoint,
+			upstreamName, upstreamForkPoint, tracking, trackingForkPoint,
 		)
 		if err != nil {
 			return seederr.Wrap(err)
 		}
 		if newWorktreePath != worktreePath {
 			return seederr.WrapErrorf("unexpected new worktree path: %v (expected: %v)", newWorktreePath, worktreePath)
+		}
+		err = scmProvider.ApplyCommitRange(newWorktreePath, upstreamForkPoint, upstreamTipPoint)
+		if err != nil {
+			return seederr.Wrap(err)
 		}
 	}
 	shellEval := fmt.Sprintf("\ncd \"%v\"\n", worktreePath)
