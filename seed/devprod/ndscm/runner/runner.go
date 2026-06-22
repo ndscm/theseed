@@ -19,6 +19,11 @@ import (
 
 var flagBuildSystem = seedflag.DefineString("build_system", "bazel", "The monorepo build systems, separated by comma.")
 
+func BuildSystems() []string {
+	buildSystems := strings.Split(flagBuildSystem.Get(), ",")
+	return buildSystems
+}
+
 var bashEscapeReplacer = strings.NewReplacer(
 	`\`, `\\`,
 	`"`, `\"`,
@@ -231,8 +236,7 @@ func (r *Runner) Run(phases []string, careRepoPaths []string) error {
 		return nil
 	}
 
-	buildSystems := strings.Split(flagBuildSystem.Get(), ",")
-	repoAnalysis, err := AnalyseRepo(r.worktreePath, phases, r.scmFilePaths, buildSystems)
+	repoAnalysis, err := AnalyseRepo(r.worktreePath, phases, r.scmFilePaths, BuildSystems())
 	if err != nil {
 		return seederr.Wrap(err)
 	}
