@@ -1,6 +1,8 @@
 package main
 
 import (
+	"fmt"
+
 	"github.com/ndscm/theseed/seed/devprod/ndscm/clientcore"
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
 	"github.com/ndscm/theseed/seed/infra/flag/go/seedflag"
@@ -26,8 +28,6 @@ func ndTestable(args []string) error {
 	if err != nil {
 		return seederr.Wrap(err)
 	}
-	if !testable {
-		return seederr.WrapErrorf("commit is not testable.")
-	}
+	fmt.Printf("%v\n", testable)
 	return nil
 }
