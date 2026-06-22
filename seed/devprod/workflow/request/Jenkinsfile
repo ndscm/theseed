@@ -19,6 +19,7 @@ pipeline {
         echo "Request commit hash: ${env.request_commit_hash}"
         echo "Base branch: ${env.base_branch}"
         echo "Base commit hash: ${env.base_commit_hash}"
+        echo "Build URL: ${env.BUILD_URL}"
         script {
           if (env.repository_url != 'https://github.com/ndscm/theseed') {
             error "Unexpected repository_url: ${env.repository_url}"
@@ -63,9 +64,10 @@ gh api /repos/ndscm/theseed/pulls/"$request_number" --jq '.base.sha'
             }
             sh '''#!/usr/bin/env bash
 gh api --method POST /repos/ndscm/theseed/statuses/"$request_commit_hash" \
-  -f state=pending \
   -f context=theseed/request \
-  -f description='Triggering per-commit workflows'
+  -f state=pending \
+  -f description='Triggering per-commit workflows' \
+  -f target_url="$BUILD_URL"
 '''
           }
         }
@@ -96,34 +98,15 @@ git rev-list "$base_commit_hash".."$request_commit_hash"
               withEnv(["COMMIT_HASH=${commit_hash}"]) {
                 sh '''#!/usr/bin/env bash
 gh api --method POST /repos/ndscm/theseed/statuses/"$COMMIT_HASH" \
+  -f context=ndscm/check \
   -f state=pending \
-  -f context=theseed/format \
-  -f description='Scheduling format check'
-'''
-                sh '''#!/usr/bin/env bash
-gh api --method POST /repos/ndscm/theseed/statuses/"$COMMIT_HASH" \
-  -f state=pending \
-  -f context=theseed/tidy \
-  -f description='Scheduling tidy check'
-'''
-                sh '''#!/usr/bin/env bash
-gh api --method POST /repos/ndscm/theseed/statuses/"$COMMIT_HASH" \
-  -f state=pending \
-  -f context=theseed/unittest \
-  -f description='Scheduling unittest check'
+  -f description='Scheduling check workflow'
 '''
               }
             }
-            build job: 'theseed-format', wait: false, parameters: [
+            build job: 'ndscm-check', wait: false, parameters: [
               string(name: 'repository_url', value: env.repository_url),
-              string(name: 'commit_hash', value: commit_hash),
-            ]
-            build job: 'theseed-tidy', wait: false, parameters: [
-              string(name: 'repository_url', value: env.repository_url),
-              string(name: 'commit_hash', value: commit_hash),
-            ]
-            build job: 'theseed-unittest', wait: false, parameters: [
-              string(name: 'repository_url', value: env.repository_url),
+              string(name: 'branch', value: env.request_branch),
               string(name: 'commit_hash', value: commit_hash),
             ]
           }
@@ -136,9 +119,10 @@ gh api --method POST /repos/ndscm/theseed/statuses/"$COMMIT_HASH" \
       withCredentials([usernamePassword(credentialsId: 'ndscm', usernameVariable: 'GH_USER', passwordVariable: 'GH_TOKEN')]) {
         sh '''#!/usr/bin/env bash
 gh api --method POST /repos/ndscm/theseed/statuses/"$request_commit_hash" \
-  -f state=success \
   -f context=theseed/request \
-  -f description='Triggered per-commit workflows'
+  -f state=success \
+  -f description='Triggered per-commit workflows' \
+  -f target_url="$BUILD_URL"
 '''
       }
     }
@@ -148,9 +132,10 @@ gh api --method POST /repos/ndscm/theseed/statuses/"$request_commit_hash" \
           withCredentials([usernamePassword(credentialsId: 'ndscm', usernameVariable: 'GH_USER', passwordVariable: 'GH_TOKEN')]) {
             sh '''#!/usr/bin/env bash
 gh api --method POST /repos/ndscm/theseed/statuses/"$request_commit_hash" \
-  -f state=failure \
   -f context=theseed/request \
-  -f description='Request pipeline failed'
+  -f state=failure \
+  -f description='Request pipeline failed' \
+  -f target_url="$BUILD_URL"
 '''
           }
         }
