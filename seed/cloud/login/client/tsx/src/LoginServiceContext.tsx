@@ -18,6 +18,7 @@ interface LoginServiceInterface {
   loading: boolean
   GetLoginStatus: () => Promise<LoginStatus>
   reload: () => Promise<void>
+  login: () => Promise<void>
 }
 
 export const LoginServiceContext =
@@ -69,6 +70,14 @@ export const LoginServiceProvider: React.FC<{
     }
   }, [clientGrpcWeb, GetLoginStatus])
 
+  const login = useCallback(async (): Promise<void> => {
+    if (loading) {
+      return
+    }
+    setLoading(true)
+    window.location.href = `${window.location.origin}/auth/login?return=${encodeURIComponent(window.location.href)}`
+  }, [loading])
+
   useEffect(() => {
     reload()
   }, [reload])
@@ -82,6 +91,7 @@ export const LoginServiceProvider: React.FC<{
       loading,
       GetLoginStatus,
       reload,
+      login,
     }
   }, [clientGrpcWeb, current, loading, GetLoginStatus, reload])
 
