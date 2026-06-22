@@ -76,13 +76,15 @@ func createExternalTokenStorageTokenSource(
 		if err != nil {
 			return nil, seederr.Wrap(err)
 		}
-		expiry := time.Time{}
+		// Default to an already-expired time so a missing or corrupt stored
+		// expiry forces a refresh. A zero time.Time would make oauth2 treat the
+		// token as non-expiring and never refresh it.
+		expiry := time.Now().Add(-time.Minute)
 		if expiryString != "" {
 			parsedExpiry, err := time.Parse(time.RFC3339Nano, expiryString)
 			if err != nil {
 				seedlog.Warnf("Invalid token expiry. expiry=%v", expiryString)
-			}
-			if err == nil {
+			} else {
 				expiry = parsedExpiry
 			}
 		}
