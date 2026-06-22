@@ -61,11 +61,19 @@ func GetCommitHash(gitDir string, commit string) (string, error) {
 }
 
 func ListCommitHash(gitDir string, from string, to string) ([]string, error) {
+	if to == "" {
+		to = "HEAD"
+	}
 	gitArgs := []string{}
 	if gitDir != "" {
 		gitArgs = append(gitArgs, "--git-dir", gitDir)
 	}
-	listOutput, err := seedshell.PureOutput("git", append(gitArgs, "rev-list", "--ancestry-path", from+".."+to)...)
+	if from == "" {
+		gitArgs = append(gitArgs, "rev-list", to)
+	} else {
+		gitArgs = append(gitArgs, "rev-list", "--ancestry-path", from+".."+to)
+	}
+	listOutput, err := seedshell.PureOutput("git", gitArgs...)
 	if err != nil {
 		return nil, seederr.WrapErrorf("failed to get commit hash for range %v..%v: %w", from, to, err)
 	}
@@ -82,11 +90,19 @@ func ListCommitHash(gitDir string, from string, to string) ([]string, error) {
 }
 
 func ListMergeCommitHash(gitDir string, from string, to string) ([]string, error) {
+	if to == "" {
+		to = "HEAD"
+	}
 	gitArgs := []string{}
 	if gitDir != "" {
 		gitArgs = append(gitArgs, "--git-dir", gitDir)
 	}
-	listOutput, err := seedshell.PureOutput("git", append(gitArgs, "rev-list", "--merges", "--ancestry-path", from+".."+to)...)
+	if from == "" {
+		gitArgs = append(gitArgs, "rev-list", "--merges", to)
+	} else {
+		gitArgs = append(gitArgs, "rev-list", "--merges", "--ancestry-path", from+".."+to)
+	}
+	listOutput, err := seedshell.PureOutput("git", gitArgs...)
 	if err != nil {
 		return nil, seederr.WrapErrorf("failed to get merge commit hash for range %v..%v: %w", from, to, err)
 	}
