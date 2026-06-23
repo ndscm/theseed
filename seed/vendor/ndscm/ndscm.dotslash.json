@@ -1,0 +1,13 @@
+{
+  "name": "ndscm",
+  "platforms": {
+    "linux-x86_64": {
+      "path": "ndscm",
+      "providers": [
+        {
+          "url": "https://github.com/ndscm/ndscm/releases/download/{{TAG}}/ndscm-linux-x86_64.tar.gz"
+        }
+      ]
+    }
+  }
+}
