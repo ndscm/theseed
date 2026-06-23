@@ -68,7 +68,7 @@ async def export(
             cwd=main_worktree,
         )
         author_match = re.search(
-            r"^author (.*) [<](.*)[>] ([0-9]* [+][0-9]{4})$",
+            r"^author (.*) [<](.*)[>] ([0-9]* [+-][0-9]{4})$",
             target_commit_file,
             re.MULTILINE,
         )
@@ -76,7 +76,7 @@ async def export(
             raise RuntimeError("no author match")
         author_name, author_email, author_time = author_match.groups()
         committer_match = re.search(
-            r"^committer (.*) [<](.*)[>] ([0-9]* [+][0-9]{4})$",
+            r"^committer (.*) [<](.*)[>] ([0-9]* [+-][0-9]{4})$",
             target_commit_file,
             re.MULTILINE,
         )
