@@ -8,7 +8,7 @@ container_engine=${CONTAINER_ENGINE:-"podman"}
 export CONTAINER_ENGINE="${container_engine}"
 ./seed/devprod/container/ubuntu/build.sh
 
-bazel build //seed/newtype/kurisu/server:kurisu-server_tar_gz
+bazel build --stamp //seed/newtype/kurisu/server:kurisu-server_tar_gz
 cp -f ./bazel-bin/seed/newtype/kurisu/server/kurisu-server.tar.gz ./seed/newtype/kurisu/container/kurisu-server.tar.gz
 
 cd ./seed/newtype/kurisu/container/
