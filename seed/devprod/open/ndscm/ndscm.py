@@ -28,23 +28,34 @@ async def build(**kwargs) -> None:
             re.compile(r"^.bazeliskrc$"),
             re.compile(r"^.bazelrc$"),
             re.compile(r"^.gitignore$"),
+            re.compile(r"^go.mod$"),
             re.compile(r"^MODULE.bazel$"),
             re.compile(r"^WORKSPACE.bazel$"),
-            re.compile(r"^go.mod$"),
-            re.compile(r"^go.sum$"),
         ]
         + [
+            re.compile(r"^seed/BUILD.bazel$"),
             re.compile(r"^seed/devprod/buildinfo/generate-workspace-status.sh$"),
             re.compile(r"^seed/devprod/ndscm/.*$"),
+            re.compile(r"^seed/devprod/open/ndscm/.*external.*$"),
+            re.compile(r"^seed/devprod/rbe/bes/.*$"),
+            re.compile(r"^seed/devprod/scalpel/go/.*$"),
+            re.compile(r"^seed/devprod/starlark/inbazel/go/.*$"),
+            re.compile(r"^seed/infra/buildinfo/go/.*$"),
+            re.compile(r"^seed/infra/context/go/.*$"),
+            re.compile(r"^seed/infra/dotenv/go/.*$"),
+            re.compile(r"^seed/infra/error/go/.*$"),
+            re.compile(r"^seed/infra/flag/go/.*$"),
+            re.compile(r"^seed/infra/http/go/.*$"),
             re.compile(r"^seed/infra/init/go/.*$"),
             re.compile(r"^seed/infra/log/go/.*$"),
-            re.compile(r"^seed/infra/error/go/.*$"),
-            re.compile(r"^seed/infra/dotenv/go/.*$"),
             re.compile(r"^seed/infra/shell/go/.*$"),
-            re.compile(r"^seed/infra/flag/go/.*$"),
+            re.compile(r"^seed/infra/tson/go/.*$"),
+            re.compile(r"^seed/vendor/bazel/.*$"),
+            re.compile(r"^seed/vendor/proto/.*$"),
         ],
         **kwargs,
     )
+
     await diffedit.replace_hunk_lines(
         [re.compile(r"^MODULE.bazel$")],
         [
@@ -88,10 +99,38 @@ async def build(**kwargs) -> None:
             re.compile(r"^.*rules_ts.*$"),
             re.compile(r"^.*single_version_override.*$"),
             re.compile(r"^.*slim.*$"),
+            re.compile(r"^.*vendor/abseil.*$"),
+            re.compile(r"^.*vendor/cc.*$"),
+            re.compile(r"^.*vendor/keycloak.*$"),
+            re.compile(r"^.*vendor/llvm.*$"),
+            re.compile(r"^.*vendor/rust.*$"),
+            re.compile(r"^.*vendor/shell.*$"),
+            re.compile(r"^.*vendor/ts.*$"),
+            re.compile(r"^# Java$"),
+            re.compile(r"^# LLVM$"),
+            re.compile(r"^# Rust$"),
+            re.compile(r"^# Shell$"),
+            re.compile(r"^## Abseil$"),
+            re.compile(r"^## Hedronvision.*$"),
+            re.compile(r"^## Keycloak$"),
         ],
         "",
         **kwargs,
     )
+
+    async def walk_external(n, p: patch.Patch, m) -> tuple[patch.Patch, None]:
+        del n, m
+        p.move_file(
+            re.compile(r"^seed/devprod/open/ndscm/README.external.md$"),
+            r"README.md",
+        )
+        p.move_file(
+            re.compile(r"^seed/devprod/open/ndscm/release.external.sh$"),
+            r"release.sh",
+        )
+        return p, None
+
+    await walk.walk(walk_external, **kwargs)
 
     async def walk_module_bazel(n, p: patch.Patch, m) -> tuple[patch.Patch, None]:
         del n, m
@@ -136,9 +175,9 @@ async def run(**kwargs) -> None:
 
     await clean.clean_empty(**kwargs)
 
-    # Stops the rebuild at commit index 580 (2026-04-18), update the script
+    # Stops the rebuild at commit index 1629 (2026-06-22), update the script
     # and check results before rebuilding more commits.
-    await rebuild.rebuild("10000580", fresh=True, **kwargs)
+    await rebuild.rebuild("10001629", fresh=True, **kwargs)
     subprocess.run(
         ["git", "tag", "initial"],
         check=True,
