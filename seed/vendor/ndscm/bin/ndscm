@@ -1,0 +1,19 @@
+#!/usr/bin/env dotslash
+
+{
+  "name": "ndscm",
+  "platforms": {
+    "linux-x86_64": {
+      "path": "ndscm",
+      "size": 2583269,
+      "hash": "blake3",
+      "digest": "1d088fe8abbd164eed6d926cb6cca2f514a17497d37af24c98ee44f26eda2883",
+      "format": "tar.gz",
+      "providers": [
+        {
+          "url": "https://github.com/ndscm/ndscm/releases/download/v26.6.23/ndscm-linux-x86_64.tar.gz"
+        }
+      ]
+    }
+  }
+}
