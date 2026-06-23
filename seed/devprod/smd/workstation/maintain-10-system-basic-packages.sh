@@ -3,11 +3,10 @@ set -eux
 set -o pipefail
 cd "$(dirname "${BASH_SOURCE[0]}")/../../../.."
 
-printf "\e[34mChecking basic packages...\e[0m\n"
+if [[ ",${maintain_scopes}," == *",system,"* ]]; then
+  printf "\e[34m[system] Checking basic packages...\e[0m\n"
 
-if [[ "${oslike}" == "debian" ]]; then
-  mkdir -p "${HOME}/.local/bin"
-  if [[ "${run_sudo}" == "true" ]]; then
+  if [[ "${oslike}" == "debian" ]]; then
     sudo -E apt update
     sudo -E apt upgrade -y
     sudo -E apt install -y curl
@@ -16,16 +15,9 @@ if [[ "${oslike}" == "debian" ]]; then
     sudo -E apt install -y netcat-openbsd
     sudo -E apt install -y ssh
     sudo -E apt install -y tar
-  else
-    printf "\e[31mSkipping system package installation\e[0m\n"
   fi
 
-  curl -fsSL "https://github.com/facebook/dotslash/releases/latest/download/dotslash-ubuntu-22.04.$(uname -m).tar.gz" | tar fxz - -C "${HOME}/.local/bin"
-fi
-
-if [[ "${oslike}" == "darwin" ]]; then
-  mkdir -p "${HOME}/.local/bin"
-  if [[ "${run_sudo}" == "true" ]]; then
+  if [[ "${oslike}" == "darwin" ]]; then
     if brew --version; then
       printf "\e[33mFound brew, skip install homebrew.\e[0m\n"
     else
@@ -38,11 +30,7 @@ if [[ "${oslike}" == "darwin" ]]; then
 
     brew install direnv
     brew install socat
-  else
-    printf "\e[31mSkipping homebrew and package installation\e[0m\n"
   fi
 
-  curl -fsSL https://github.com/facebook/dotslash/releases/latest/download/dotslash-macos.tar.gz | tar fxz - -C "${HOME}/.local/bin"
+  printf "\e[32m[system] Check basic packages done.\e[0m\n"
 fi
-
-printf "\e[32mCheck basic packages done.\e[0m\n"
