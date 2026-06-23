@@ -19,4 +19,4 @@ build --tool_java_runtime_version=remotejdk_21
 build --features=-parse_headers
 build --host_features=-parse_headers
 
-build --workspace_status_command=./seed/devprod/buildinfo/generate-workspace-status.sh
+build --workspace_status_command=./seed/infra/buildinfo/bazel/generate-workspace-status.sh

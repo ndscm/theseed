@@ -6,7 +6,7 @@ set -euo pipefail
 if [[ $(git rev-parse --is-inside-work-tree) ]]; then
   dirty=$(git status --porcelain | wc -l)
   branch=$(git branch --show-current)
-  tag=$(git describe --tags)
+  tag=$(git describe --tags --always --abbrev=16 --dirty --broken)
 
   brief=${tag}
   if [ "$branch" != "main" ]; then
