@@ -3,10 +3,10 @@ set -eux
 set -o pipefail
 cd "$(dirname "${BASH_SOURCE[0]}")/../../../.."
 
-printf "\e[34mChecking system packages...\e[0m\n"
+if [[ ",${maintain_scopes}," == *",system,"* ]]; then
+  printf "\e[34m[system] Checking system packages...\e[0m\n"
 
-if [[ "${oslike}" == "debian" ]]; then
-  if [[ "${run_sudo}" == "true" ]]; then
+  if [[ "${oslike}" == "debian" ]]; then
     sudo -E apt install -y build-essential
     sudo -E apt install -y clang
     sudo -E apt install -y clang-format
@@ -33,11 +33,11 @@ if [[ "${oslike}" == "debian" ]]; then
     sudo -E apt install -y ssh
     sudo -E apt install -y vim
     sudo -E apt install -y zsh
-  else
-    printf "\e[31mSkipping system package installation\e[0m\n"
+
+    sudo -E snap install --classic go
   fi
-elif [[ "${oslike}" == "darwin" ]]; then
-  if [[ "${run_sudo}" == "true" ]]; then
+
+  if [[ "${oslike}" == "darwin" ]]; then
     brew install clang-format
     brew install gitg
     brew install go
@@ -46,9 +46,7 @@ elif [[ "${oslike}" == "darwin" ]]; then
     brew install --cask visual-studio-code
     brew install --cask --no-quarantine chromium
     defaults write NSGlobalDomain ApplePressAndHoldEnabled -bool false
-  else
-    printf "\e[31mSkipping system package installation\e[0m\n"
   fi
-fi
 
-printf "\e[32mCheck system packages done.\e[0m\n"
+  printf "\e[32m[system] Check system packages done.\e[0m\n"
+fi
