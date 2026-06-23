@@ -12,8 +12,11 @@ fi
 export CONTAINER_ENGINE="${container_engine}"
 ./seed/devprod/container/debian/build.sh
 
-bazel build //seed/devprod/ndscm/cli
-cp -f ./bazel-bin/seed/devprod/ndscm/cli/ndscm_/ndscm ./seed/devprod/jenkins/node/container/ndscm
+mkdir -p ./seed/devprod/jenkins/node/container/bin/
+
+cp -f ./seed/vendor/docker/bin/docker ./seed/devprod/jenkins/node/container/bin/docker
+cp -f ./seed/vendor/github/bin/gh ./seed/devprod/jenkins/node/container/bin/gh
+cp -f ./seed/vendor/ndscm/bin/ndscm ./seed/devprod/jenkins/node/container/bin/ndscm
 
 cd ./seed/devprod/jenkins/node/container/
 
