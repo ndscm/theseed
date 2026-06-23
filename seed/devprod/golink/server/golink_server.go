@@ -11,14 +11,12 @@ import (
 	golinkservice "github.com/ndscm/theseed/seed/devprod/golink/service"
 	"github.com/ndscm/theseed/seed/devprod/reactrouter/go/reactrouter"
 	"github.com/ndscm/theseed/seed/infra/auth/go/openidjwt"
-	"github.com/ndscm/theseed/seed/infra/buildinfo/go/buildinfo"
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
 	"github.com/ndscm/theseed/seed/infra/flag/go/seedflag"
 	"github.com/ndscm/theseed/seed/infra/grpc/go/seedgrpc"
 	"github.com/ndscm/theseed/seed/infra/http/go/cachecontrol"
 	"github.com/ndscm/theseed/seed/infra/init/go/seedinit"
 	"github.com/ndscm/theseed/seed/infra/log/go/seedlog"
-	"github.com/ndscm/theseed/seed/infra/spa/go/seedspa"
 )
 
 //go:embed all:webapp
@@ -63,11 +61,7 @@ func run() error {
 	if err != nil {
 		return seederr.Wrap(err)
 	}
-	buildinfoInjection, err := buildinfo.GenerateWebappHeadInjection()
-	if err != nil {
-		return seederr.Wrap(err)
-	}
-	spaServer, extraLanguages, err := reactrouter.I18nSpaServer(webapp, seedspa.WithHeadInjection(buildinfoInjection))
+	spaServer, extraLanguages, err := reactrouter.I18nSpaServer(webapp)
 	if err != nil {
 		return seederr.Wrap(err)
 	}
