@@ -2,14 +2,10 @@ package buildinfo
 
 import (
 	_ "embed"
-	"encoding/json"
-	"fmt"
 	"strconv"
 	"strings"
 	"sync"
 	"time"
-
-	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
 )
 
 //go:embed stable-status.txt
@@ -94,20 +90,4 @@ func GetBuildInfo() BuildInfo {
 	singletonBuildInfo.mutex.RLock()
 	defer singletonBuildInfo.mutex.RUnlock()
 	return *singletonBuildInfo.buildInfo
-}
-
-var webappHeadInjectionTemplate = `
-<script>
-window.__SEED_BUILD_INFO__ =%s;
-</script>
-`
-
-func GenerateWebappHeadInjection() (string, error) {
-	buildInfo := GetBuildInfo()
-	jsonBuildInfo, err := json.Marshal(buildInfo)
-	if err != nil {
-		return "", seederr.Wrap(err)
-	}
-	headInjection := fmt.Sprintf(webappHeadInjectionTemplate, jsonBuildInfo)
-	return headInjection, nil
 }
