@@ -10,9 +10,28 @@ package(default_visibility = [
 
 npm_link_all_packages()
 
+genrule(
+    name = "src_stable-status_ts",
+    outs = ["src/stable-status.ts"],
+    cmd_bash = "$(location :txt-to-ts.sh) bazel-out/stable-status.txt $@",
+    stamp = -1,
+    tools = [":txt-to-ts.sh"],
+)
+
+genrule(
+    name = "src_volatile-status_ts",
+    outs = ["src/volatile-status.ts"],
+    cmd_bash = "$(location :txt-to-ts.sh) bazel-out/volatile-status.txt $@",
+    stamp = -1,
+    tools = [":txt-to-ts.sh"],
+)
+
 ts_project(
     name = "ts_project",
-    srcs = glob(["src/**/*.ts"]),
+    srcs = glob(["src/**/*.ts"]) + [
+        ":src_stable-status_ts",
+        ":src_volatile-status_ts",
+    ],
     declaration = True,
     declaration_map = True,
     out_dir = "dist",
@@ -28,7 +47,8 @@ ts_project(
 js_library(
     name = "ts",
     srcs = [
-        "buildinfo/index.ts",
+        "buildinfo/index.d.ts",
+        "buildinfo/index.js",
         ":package.json",
     ],
     visibility = ["//visibility:public"],
