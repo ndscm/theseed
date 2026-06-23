@@ -8,7 +8,7 @@ container_engine=${CONTAINER_ENGINE:-"podman"}
 export CONTAINER_ENGINE="${container_engine}"
 ./seed/devprod/container/ubuntu/build.sh
 
-bazel build //seed/office/stuff/server:stuff-server_tar_gz
+bazel build --stamp //seed/office/stuff/server:stuff-server_tar_gz
 cp -f ./bazel-bin/seed/office/stuff/server/stuff-server.tar.gz ./seed/office/stuff/container/stuff-server.tar.gz
 
 cd ./seed/office/stuff/container/
