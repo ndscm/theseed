@@ -8,7 +8,7 @@ container_engine=${CONTAINER_ENGINE:-"podman"}
 export CONTAINER_ENGINE="${container_engine}"
 ./seed/devprod/container/ubuntu/build.sh
 
-bazel build //seed/devprod/golink/server:golink-server_tar_gz
+bazel build --stamp //seed/devprod/golink/server:golink-server_tar_gz
 cp -f ./bazel-bin/seed/devprod/golink/server/golink-server.tar.gz ./seed/devprod/golink/container/golink-server.tar.gz
 
 cd ./seed/devprod/golink/container/
