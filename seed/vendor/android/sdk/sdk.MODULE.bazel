@@ -5,7 +5,7 @@ android_sdk_extension.configure(
     packages = [
         "build-tools;35.0.1",
         "cmake;4.1.2",
-        "cmdline-tools;latest",
+        "cmdline-tools;21.0",
         "ndk;30.0.14904198",
         "platform-tools",
         "platforms;android-35",
