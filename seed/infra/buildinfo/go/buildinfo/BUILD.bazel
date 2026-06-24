@@ -29,7 +29,6 @@ go_library(
     ],  # keep: prevent gazelle from expanding the status files
     importpath = "github.com/ndscm/theseed/seed/infra/buildinfo/go/buildinfo",
     visibility = ["//visibility:public"],
-    deps = ["//seed/infra/error/go/seederr"],
 )
 
 nd_bootstrap(
