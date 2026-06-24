@@ -11,7 +11,10 @@ if [[ ",${maintain_scopes}," == *",user,"* ]]; then
 
 ## Snap
 
-export PATH="/snap/bin:\${PATH}"
+case ":\${PATH}:" in
+*:/snap/bin:*) ;;
+*) export PATH="/snap/bin:\${PATH}" ;;
+esac
 EOF
     fi
 
