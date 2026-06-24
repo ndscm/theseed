@@ -19,7 +19,7 @@ export maintain_scopes
 . seed/devprod/smd/workstation/maintain-32-user-managed-proxy.sh
 . seed/devprod/smd/workstation/maintain-40-system-packages.sh
 . seed/devprod/smd/workstation/maintain-41-user-dotslash.sh
-. seed/devprod/smd/workstation/maintain-42-user-snap.sh
+. seed/devprod/smd/workstation/maintain-42-user-shell-hook.sh
 . seed/devprod/smd/workstation/maintain-43-user-scm.sh
 . seed/devprod/smd/workstation/maintain-44-user-go.sh
 . seed/devprod/smd/workstation/maintain-45-user-node.sh
