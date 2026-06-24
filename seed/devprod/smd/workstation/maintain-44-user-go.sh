@@ -11,7 +11,10 @@ if [[ ",${maintain_scopes}," == *",user,"* ]]; then
 
 ## Golang
 
-export PATH="\${HOME}/go/bin:\${PATH}"
+case ":\${PATH}:" in
+*:\${HOME}/go/bin:*) ;;
+*) export PATH="\${HOME}/go/bin:\${PATH}" ;;
+esac
 EOF
 
         if command -v go >/dev/null 2>&1; then

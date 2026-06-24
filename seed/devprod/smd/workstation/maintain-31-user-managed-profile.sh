@@ -25,7 +25,20 @@ export ND_USER_DISPLAY_NAME="${ND_USER_DISPLAY_NAME}"
 
 ## Path
 
-export PATH="\${HOME}/bin:\${HOME}/.local/bin:/usr/local/bin:\${PATH}"
+case ":\${PATH}:" in
+*:/usr/local/bin:*) ;;
+*) export PATH="/usr/local/bin:\${PATH}" ;;
+esac
+
+case ":\${PATH}:" in
+*:\${HOME}/.local/bin:*) ;;
+*) export PATH="\${HOME}/.local/bin:\${PATH}" ;;
+esac
+
+case ":\${PATH}:" in
+*:\${HOME}/bin:*) ;;
+*) export PATH="\${HOME}/bin:\${PATH}" ;;
+esac
 
 ## Editor
 
