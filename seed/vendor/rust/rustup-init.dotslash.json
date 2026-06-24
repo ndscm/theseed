@@ -1,0 +1,53 @@
+{
+  "name": "rustup",
+  "platforms": {
+    "linux-aarch64": {
+      "path": "rustup-init",
+      "providers": [
+        {
+          "url": "https://static.rust-lang.org/rustup/dist/aarch64-unknown-linux-gnu/rustup-init"
+        }
+      ]
+    },
+    "linux-x86_64": {
+      "path": "rustup-init",
+      "providers": [
+        {
+          "url": "https://static.rust-lang.org/rustup/dist/x86_64-unknown-linux-gnu/rustup-init"
+        }
+      ]
+    },
+    "macos-aarch64": {
+      "path": "rustup-init",
+      "providers": [
+        {
+          "url": "https://static.rust-lang.org/rustup/dist/aarch64-apple-darwin/rustup-init"
+        }
+      ]
+    },
+    "macos-x86_64": {
+      "path": "rustup-init",
+      "providers": [
+        {
+          "url": "https://static.rust-lang.org/rustup/dist/x86_64-apple-darwin/rustup-init"
+        }
+      ]
+    },
+    "windows-aarch64": {
+      "path": "rustup-init.exe",
+      "providers": [
+        {
+          "url": "https://static.rust-lang.org/rustup/dist/aarch64-pc-windows-msvc/rustup-init.exe"
+        }
+      ]
+    },
+    "windows-x86_64": {
+      "path": "rustup-init.exe",
+      "providers": [
+        {
+          "url": "https://static.rust-lang.org/rustup/dist/x86_64-pc-windows-msvc/rustup-init.exe"
+        }
+      ]
+    }
+  }
+}
