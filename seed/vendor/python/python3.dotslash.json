@@ -1,0 +1,53 @@
+{
+  "name": "python3",
+  "platforms": {
+    "linux-aarch64": {
+      "path": "python/bin/python3",
+      "providers": [
+        {
+          "url": "https://github.com/astral-sh/python-build-standalone/releases/download/20260623/cpython-{{TAG}}+20260623-aarch64-unknown-linux-gnu-install_only_stripped.tar.gz"
+        }
+      ]
+    },
+    "linux-x86_64": {
+      "path": "python/bin/python3",
+      "providers": [
+        {
+          "url": "https://github.com/astral-sh/python-build-standalone/releases/download/20260623/cpython-{{TAG}}+20260623-x86_64-unknown-linux-gnu-install_only_stripped.tar.gz"
+        }
+      ]
+    },
+    "macos-aarch64": {
+      "path": "python/bin/python3",
+      "providers": [
+        {
+          "url": "https://github.com/astral-sh/python-build-standalone/releases/download/20260623/cpython-{{TAG}}+20260623-aarch64-apple-darwin-install_only_stripped.tar.gz"
+        }
+      ]
+    },
+    "macos-x86_64": {
+      "path": "python/bin/python3",
+      "providers": [
+        {
+          "url": "https://github.com/astral-sh/python-build-standalone/releases/download/20260623/cpython-{{TAG}}+20260623-x86_64-apple-darwin-install_only_stripped.tar.gz"
+        }
+      ]
+    },
+    "windows-aarch64": {
+      "path": "python/python.exe",
+      "providers": [
+        {
+          "url": "https://github.com/astral-sh/python-build-standalone/releases/download/20260623/cpython-{{TAG}}+20260623-aarch64-pc-windows-msvc-install_only_stripped.tar.gz"
+        }
+      ]
+    },
+    "windows-x86_64": {
+      "path": "python/python.exe",
+      "providers": [
+        {
+          "url": "https://github.com/astral-sh/python-build-standalone/releases/download/20260623/cpython-{{TAG}}+20260623-x86_64-pc-windows-msvc-install_only_stripped.tar.gz"
+        }
+      ]
+    }
+  }
+}
