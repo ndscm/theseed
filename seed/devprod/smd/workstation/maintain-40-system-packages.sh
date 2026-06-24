@@ -40,7 +40,6 @@ if [[ ",${maintain_scopes}," == *",system,"* ]]; then
   if [[ "${oslike}" == "darwin" ]]; then
     brew install clang-format
     brew install gitg
-    brew install go
     brew install --cask iterm2
     brew install --cask p4v
     brew install --cask visual-studio-code

@@ -7,18 +7,15 @@ if [[ ",${maintain_scopes}," == *",user,"* ]]; then
   printf "\e[34m[user] Checking node tools...\e[0m\n"
 
   if [[ "${oslike}" == "debian" || "${oslike}" == "darwin" ]]; then
-    set +eux
-    bash -c "$(curl -fsSL https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.0/install.sh)"
-    # Manually load NVM
-    export NVM_DIR="$HOME/.nvm"
-    . "$NVM_DIR/nvm.sh"
-    nvm install --lts
-    nvm use --lts
-    set -eux
-    corepack enable
-  fi
+    # Install global packages under ~/npm, mirroring how Go handles global packages
+    npm config set prefix "~/npm"
+    cat <<EOF >>"${HOME}/.managed_profile.tmp"
 
-  if [[ "${oslike}" == "debian" || "${oslike}" == "darwin" ]]; then
+## NPM
+
+export PATH="\${HOME}/npm/bin:\${PATH}"
+EOF
+
     npm list --global prettier || npm install --global prettier
     npm list --global typescript || npm install --global typescript
   fi
