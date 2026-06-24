@@ -13,7 +13,10 @@ if [[ ",${maintain_scopes}," == *",user,"* ]]; then
 
 ## NPM
 
-export PATH="\${HOME}/npm/bin:\${PATH}"
+case ":\${PATH}:" in
+*:\${HOME}/npm/bin:*) ;;
+*) export PATH="\${HOME}/npm/bin:\${PATH}" ;;
+esac
 EOF
 
     npm list --global prettier || npm install --global prettier
