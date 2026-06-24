@@ -9,12 +9,12 @@ if [[ ",${maintain_scopes}," == *",user,"* ]]; then
 
 ## Shortcuts
 
-function main { cd "\${ND_MONOREPO_HOME}/main"; }
-function dev { cd "\${ND_MONOREPO_HOME}/dev"; }
+function main { cd "\${ND_REPOS_HOME}/theseed/main"; }
+function dev { cd "\${ND_REPOS_HOME}/theseed"; nd dev; }
 EOF
     fi
 
     if [[ "${oslike}" == "debian" || "${oslike}" == "darwin" ]]; then
-        ln -s -f -n "${ND_MONOREPO_HOME}/main/seed/devprod/setproxy.sh" "${HOME}/.local/bin/setproxy"
+        ln -s -f -n "${ND_REPOS_HOME}/theseed/main/seed/devprod/setproxy.sh" "${HOME}/.local/bin/setproxy"
     fi
 fi
