@@ -4,15 +4,10 @@ export default {
   bootstrap: {
     dist: {
       target: "dist",
-      watchRepo: [
-        // sort
-        "node_modules",
-        "seed/infra/auth/ts/dist",
-      ],
       watch: "^src/",
       bazel: {
-        build: "@pnpm//:pnpm",
-        run: 'BAZEL_BINDIR="$(dirname "{{BAZEL_EXECUTABLE}}")" {{BAZEL_RUN}} --dir "$(pwd)" build',
+        build: ":bootstrap",
+        run: "{{BAZEL_RUN}}",
       },
     },
   },
