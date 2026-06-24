@@ -40,10 +40,6 @@ if [[ ",${maintain_scopes}," == *",system,"* ]]; then
   if [[ "${oslike}" == "darwin" ]]; then
     brew install clang-format
     brew install gitg
-    brew install --cask iterm2
-    brew install --cask p4v
-    brew install --cask visual-studio-code
-    brew install --cask --no-quarantine chromium
     defaults write NSGlobalDomain ApplePressAndHoldEnabled -bool false
   fi
 
