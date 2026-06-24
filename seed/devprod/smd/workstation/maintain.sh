@@ -27,4 +27,5 @@ export maintain_scopes
 . seed/devprod/smd/workstation/maintain-48-user-container.sh
 . seed/devprod/smd/workstation/maintain-51-user-monorepo.sh
 . seed/devprod/smd/workstation/maintain-61-user-shortcut.sh
+. seed/devprod/smd/workstation/maintain-71-gui-packages.sh
 . seed/devprod/smd/workstation/maintain-99-user-finalize.sh
