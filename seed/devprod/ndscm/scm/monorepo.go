@@ -9,7 +9,7 @@ import (
 	"github.com/ndscm/theseed/seed/infra/flag/go/seedflag"
 )
 
-var flagReposHome = seedflag.DefineString("repos_home", "", "Repos home directory")
+var flagReposHome = seedflag.DefineString("repos_home", "~/ndscm", "Repos home directory")
 var flagMonorepoHome = seedflag.DefineString("monorepo_home", "", "the monorepo home directory")
 
 func ReposHome() (string, error) {
