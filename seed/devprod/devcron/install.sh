@@ -1,19 +1,21 @@
 #!/bin/bash
 set -eux
 set -o pipefail
-cd $(dirname "${BASH_SOURCE[0]}")/../../..
+cd "$(dirname "${BASH_SOURCE[0]}")/../../.."
 
-command=${1}
-branch=${2}
-nd_user_handle=${ND_USER_HANDLE}
+command="${1}"
+focus="${2:-"main"}"
+
+user_handle="$(git config user.email | cut -d'@' -f1)"
+monorepo_home="$(dirname "$(git rev-parse --git-common-dir)")"
 
 if [[ "${command}" == "push" ]]; then
-  cat <<EOF | sudo tee /etc/cron.d/devcron-${command}-${branch}
-10 * * * * ${USER} ${HOME}/theseed/main/seed/devprod/devcron/push.sh ${branch} ${nd_user_handle} >/tmp/devcron-${command}-${branch}.log 2>&1
+  cat <<EOF | sudo tee /etc/cron.d/devcron-${command}-${focus}
+10 * * * * ${USER} ${monorepo_home}/main/seed/devprod/devcron/push.sh "${monorepo_home}" "${user_handle}" "${focus}" >/tmp/devcron-${command}-${focus}.log 2>&1
 EOF
 elif [[ "${command}" == "commit" ]]; then
-  cat <<EOF | sudo tee /etc/cron.d/devcron-${command}-${branch}
-*/5 * * * * ${USER} ${HOME}/theseed/main/seed/devprod/devcron/commit.sh ${branch} ${nd_user_handle} >/tmp/devcron-${command}-${branch}.log 2>&1
+  cat <<EOF | sudo tee /etc/cron.d/devcron-${command}-${focus}
+*/5 * * * * ${USER} ${monorepo_home}/main/seed/devprod/devcron/commit.sh "${monorepo_home}" "${user_handle}" "${focus}" >/tmp/devcron-${command}-${focus}.log 2>&1
 EOF
 else
   echo "Unknown command: ${command}"
