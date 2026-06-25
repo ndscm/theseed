@@ -36,7 +36,7 @@ type SfeCertStore struct {
 func (s *SfeCertStore) fetchCertificate(hello *tls.ClientHelloInfo, domain string) (*tls.Certificate, error) {
 	ctx := hello.Context()
 	client := certificateclient.NewSfeCertificateClient("")
-	accessToken, err := s.serviceOpenid.AccessToken(ctx)
+	accessToken, err := s.serviceOpenid.AccessToken(ctx, nil)
 	if err != nil {
 		return nil, seederr.Wrap(err)
 	}
