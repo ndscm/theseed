@@ -80,7 +80,7 @@ func (h *SfeRouteHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "https://www.ndscm.com", http.StatusTemporaryRedirect)
 }
 
-func CreateSfeRouteHandler() (*SfeRouteHandler, error) {
+func CreateSfeRouteHandler(sfeOpenidClient *openid.OpenidClient) (*SfeRouteHandler, error) {
 	sessionInitializer := seedsession.MemorySessionInitializer
 	switch flagSessionProvider.Get() {
 	case "sql":
@@ -92,7 +92,7 @@ func CreateSfeRouteHandler() (*SfeRouteHandler, error) {
 	default:
 		seedlog.Warnf("Using in-memory session store, which can not scale for production.")
 	}
-	golinkRoute, err := golinkroute.CreateGolinkRoute(optimizedTransport)
+	golinkRoute, err := golinkroute.CreateGolinkRoute(sfeOpenidClient)
 	if err != nil {
 		return nil, seederr.Wrap(err)
 	}
@@ -139,12 +139,12 @@ func run() error {
 		}
 		clientSecret = string(secretBytes)
 	}
-	serviceOpenid := openid.NewOpenidClient(
+	sfeOpenidClient := openid.NewOpenidClient(
 		openid.OpenidDiscoveryUrlFlag(), clientId, clientSecret,
 	)
 
 	// Create routes
-	sfeRouteHandler, err := CreateSfeRouteHandler()
+	sfeRouteHandler, err := CreateSfeRouteHandler(sfeOpenidClient)
 	if err != nil {
 		return seederr.Wrap(err)
 	}
@@ -167,7 +167,7 @@ func run() error {
 	}
 
 	// Configure HTTPS server
-	sfeCertStore := certstore.NewSfeCertStore(serviceOpenid)
+	sfeCertStore := certstore.NewSfeCertStore(sfeOpenidClient)
 	httpsServer := &http.Server{
 		Addr: ":" + flagHttpsPort.Get(),
 		TLSConfig: &tls.Config{
