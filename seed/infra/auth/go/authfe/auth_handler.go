@@ -33,6 +33,17 @@ func generateState() (string, error) {
 	return fmt.Sprintf("%x", b), nil
 }
 
+func guessOrigin(r *http.Request) string {
+	scheme := "http"
+	proto := r.Header.Get("X-Forwarded-Proto")
+	if proto != "" {
+		scheme = proto
+	} else if r.TLS != nil {
+		scheme = "https"
+	}
+	return scheme + "://" + r.Host
+}
+
 type AuthHandler struct {
 	provider *openid.OpenidProvider
 }
@@ -77,7 +88,7 @@ func (h *AuthHandler) handleLogin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	origin := "https://" + r.Host
+	origin := guessOrigin(r)
 	oauth2Config, err := h.provider.GetOauth2Config(ctx, origin, nil)
 	if err != nil {
 		seedlog.Errorf("Failed to get oauth2 config: %v", err)
@@ -120,7 +131,7 @@ func (h *AuthHandler) handleCallback(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	origin := "https://" + r.Host
+	origin := guessOrigin(r)
 	_, err = h.provider.CodeGrant(ctx, origin, code, nil, session)
 	if err != nil {
 		seedlog.Errorf("Failed to exchange code: %v", err)
