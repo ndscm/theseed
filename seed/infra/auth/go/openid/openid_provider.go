@@ -69,15 +69,17 @@ func (provider *OpenidProvider) CodeGrant(
 	if err != nil {
 		return nil, seederr.Wrap(err)
 	}
+	ctx = provider.WithClientAssertion(ctx)
 	token, err := oauth2Config.Exchange(ctx, code)
 	if err != nil {
 		return nil, seederr.Wrap(err)
 	}
+	refreshCtx := provider.WithClientAssertion(context.Background())
 	if storage == nil {
-		return oauth2Config.TokenSource(context.Background(), token), nil
+		return oauth2Config.TokenSource(refreshCtx, token), nil
 	}
 	userTokenSource, err := createExternalTokenStorageTokenSource(
-		context.Background(), provider.prefix, oauth2Config, storage, token,
+		refreshCtx, provider.prefix, oauth2Config, storage, token,
 	)
 	if err != nil {
 		return nil, seederr.Wrap(err)
@@ -97,15 +99,17 @@ func (provider *OpenidProvider) PasswordGrant(
 	if err != nil {
 		return nil, seederr.Wrap(err)
 	}
+	ctx = provider.WithClientAssertion(ctx)
 	token, err := oauth2Config.PasswordCredentialsToken(ctx, username, password)
 	if err != nil {
 		return nil, seederr.Wrap(err)
 	}
+	refreshCtx := provider.WithClientAssertion(context.Background())
 	if storage == nil {
-		return oauth2Config.TokenSource(context.Background(), token), nil
+		return oauth2Config.TokenSource(refreshCtx, token), nil
 	}
 	userTokenSource, err := createExternalTokenStorageTokenSource(
-		context.Background(), provider.prefix, oauth2Config, storage, token,
+		refreshCtx, provider.prefix, oauth2Config, storage, token,
 	)
 	if err != nil {
 		return nil, seederr.Wrap(err)
@@ -123,11 +127,12 @@ func (provider *OpenidProvider) WrapExternalTokenStorage(
 	if err != nil {
 		return nil, seederr.Wrap(err)
 	}
+	refreshCtx := provider.WithClientAssertion(context.Background())
 	if storage == nil {
-		return oauth2Config.TokenSource(context.Background(), initial), nil
+		return oauth2Config.TokenSource(refreshCtx, initial), nil
 	}
 	userTokenSource, err := createExternalTokenStorageTokenSource(
-		context.Background(), provider.prefix, oauth2Config, storage, initial,
+		refreshCtx, provider.prefix, oauth2Config, storage, initial,
 	)
 	if err != nil {
 		return nil, seederr.Wrap(err)
@@ -144,8 +149,9 @@ func (provider *OpenidProvider) Client(
 	if err != nil {
 		return nil, seederr.Wrap(err)
 	}
+	refreshCtx := provider.WithClientAssertion(context.Background())
 	tokenSource, err := createExternalTokenStorageTokenSource(
-		ctx, provider.prefix, oauth2Config, storage, nil,
+		refreshCtx, provider.prefix, oauth2Config, storage, nil,
 	)
 	if err != nil {
 		return nil, seederr.Wrap(err)

@@ -5,6 +5,7 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+	"strings"
 	"sync"
 
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
@@ -13,10 +14,69 @@ import (
 	"golang.org/x/oauth2/clientcredentials"
 )
 
+// clientAssertionTransport authenticates the OpenID client to the token
+// endpoint using a JWT client assertion (RFC 7523) instead of a client secret.
+// The assertion is the access token fetched from tokenSource (e.g. SFE's own
+// access token), injected into form-encoded token requests so it covers both
+// the initial code exchange and subsequent refreshes.
+type clientAssertionTransport struct {
+	next http.RoundTripper
+
+	clientAssertion oauth2.TokenSource
+}
+
+func (t *clientAssertionTransport) RoundTrip(request *http.Request) (*http.Response, error) {
+	if request.Method != http.MethodPost ||
+		request.Header.Get("Content-Type") != "application/x-www-form-urlencoded" ||
+		request.Body == nil {
+		return t.next.RoundTrip(request)
+	}
+
+	token, err := t.clientAssertion.Token()
+	if err != nil {
+		return nil, seederr.Wrap(err)
+	}
+
+	bodyBytes, err := io.ReadAll(request.Body)
+	if err != nil {
+		return nil, seederr.Wrap(err)
+	}
+	err = request.Body.Close()
+	if err != nil {
+		return nil, seederr.Wrap(err)
+	}
+	form, err := url.ParseQuery(string(bodyBytes))
+	if err != nil {
+		return nil, seederr.Wrap(err)
+	}
+
+	// The client is identified entirely by the assertion (iss/sub), so drop any
+	// client_id/client_secret that oauth2 auto-appends. Keycloak skips its
+	// client_id consistency check when client_id is absent.
+	form.Del("client_id")
+	form.Del("client_secret")
+
+	form.Set("client_assertion_type", "urn:ietf:params:oauth:client-assertion-type:jwt-bearer")
+	form.Set("client_assertion", token.AccessToken)
+
+	encodedForm := form.Encode()
+	clonedRequest := request.Clone(request.Context())
+	clonedRequest.Body = io.NopCloser(strings.NewReader(encodedForm))
+	clonedRequest.GetBody = func() (io.ReadCloser, error) {
+		return io.NopCloser(strings.NewReader(encodedForm)), nil
+	}
+	clonedRequest.ContentLength = int64(len(encodedForm))
+	return t.next.RoundTrip(clonedRequest)
+}
+
+var _ http.RoundTripper = (*clientAssertionTransport)(nil)
+
 type OpenidClient struct {
 	discoveryUrl string
 	clientId     string
 	clientSecret string
+
+	clientAssertion oauth2.TokenSource
 
 	configurationMutex sync.RWMutex
 	configuration      *OpenidConfiguration
@@ -86,9 +146,28 @@ func (oc *OpenidClient) GetClientCredentialsConfig(ctx context.Context) (*client
 		ClientID:     oc.clientId,
 		ClientSecret: oc.clientSecret,
 		TokenURL:     configuration.TokenEndpoint,
-		Scopes:       configuration.ScopesSupported,
+		Scopes:       []string{"openid"},
 	}
 	return oauth2Config, nil
+}
+
+func (oc *OpenidClient) WithClientAssertion(ctx context.Context) context.Context {
+	if oc.clientAssertion == nil {
+		return ctx
+	}
+	next := http.DefaultTransport
+	originalClient, ok := ctx.Value(oauth2.HTTPClient).(*http.Client)
+	if ok && originalClient != nil && originalClient.Transport != nil {
+		next = originalClient.Transport
+	}
+	newClient := &http.Client{
+		Transport: &clientAssertionTransport{
+			next: next,
+
+			clientAssertion: oc.clientAssertion,
+		},
+	}
+	return context.WithValue(ctx, oauth2.HTTPClient, newClient)
 }
 
 func (oc *OpenidClient) GetTokenSource(ctx context.Context) (oauth2.TokenSource, error) {
@@ -104,7 +183,8 @@ func (oc *OpenidClient) GetTokenSource(ctx context.Context) (oauth2.TokenSource,
 	if err != nil {
 		return nil, seederr.Wrap(err)
 	}
-	tokenSource := oauth2Config.TokenSource(context.Background())
+	refreshCtx := oc.WithClientAssertion(context.Background())
+	tokenSource := oauth2Config.TokenSource(refreshCtx)
 	func() {
 		oc.tokenSourceMutex.Lock()
 		defer oc.tokenSourceMutex.Unlock()
@@ -143,5 +223,13 @@ func NewOpenidClient(discoveryUrl string, clientId string, clientSecret string) 
 		discoveryUrl: discoveryUrl,
 		clientId:     clientId,
 		clientSecret: clientSecret,
+	}
+}
+
+func NewOpenidClientWithAssertion(discoveryUrl string, clientId string, tokenSource oauth2.TokenSource) *OpenidClient {
+	return &OpenidClient{
+		discoveryUrl:    discoveryUrl,
+		clientId:        clientId,
+		clientAssertion: tokenSource,
 	}
 }
