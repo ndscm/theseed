@@ -5,6 +5,7 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+	"slices"
 	"strings"
 	"sync"
 
@@ -13,6 +14,12 @@ import (
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/clientcredentials"
 )
+
+func scopesKey(scopes []string) string {
+	sorted := slices.Clone(scopes)
+	slices.Sort(sorted)
+	return strings.Join(sorted, " ")
+}
 
 // clientAssertionTransport authenticates the OpenID client to the token
 // endpoint using a JWT client assertion (RFC 7523) instead of a client secret.
@@ -81,8 +88,8 @@ type OpenidClient struct {
 	configurationMutex sync.RWMutex
 	configuration      *OpenidConfiguration
 
-	tokenSourceMutex sync.RWMutex
-	tokenSource      oauth2.TokenSource
+	tokenSourcesMutex sync.RWMutex
+	tokenSources      map[string]oauth2.TokenSource
 }
 
 func (oc *OpenidClient) ClientId() string {
@@ -137,16 +144,21 @@ func (oc *OpenidClient) GetOpenidConfiguration(ctx context.Context) (*OpenidConf
 	return configuration, nil
 }
 
-func (oc *OpenidClient) GetClientCredentialsConfig(ctx context.Context) (*clientcredentials.Config, error) {
+func (oc *OpenidClient) GetClientCredentialsConfig(
+	ctx context.Context, scopes []string,
+) (*clientcredentials.Config, error) {
 	configuration, err := oc.GetOpenidConfiguration(ctx)
 	if err != nil {
 		return nil, seederr.Wrap(err)
+	}
+	if scopes == nil {
+		scopes = configuration.ScopesSupported
 	}
 	oauth2Config := &clientcredentials.Config{
 		ClientID:     oc.clientId,
 		ClientSecret: oc.clientSecret,
 		TokenURL:     configuration.TokenEndpoint,
-		Scopes:       []string{"openid"},
+		Scopes:       scopes,
 	}
 	return oauth2Config, nil
 }
@@ -170,33 +182,39 @@ func (oc *OpenidClient) WithClientAssertion(ctx context.Context) context.Context
 	return context.WithValue(ctx, oauth2.HTTPClient, newClient)
 }
 
-func (oc *OpenidClient) GetTokenSource(ctx context.Context) (oauth2.TokenSource, error) {
+func (oc *OpenidClient) GetTokenSource(
+	ctx context.Context, scopes []string,
+) (oauth2.TokenSource, error) {
+	key := scopesKey(scopes)
 	cached := func() oauth2.TokenSource {
-		oc.tokenSourceMutex.RLock()
-		defer oc.tokenSourceMutex.RUnlock()
-		return oc.tokenSource
+		oc.tokenSourcesMutex.RLock()
+		defer oc.tokenSourcesMutex.RUnlock()
+		return oc.tokenSources[key]
 	}()
 	if cached != nil {
 		return cached, nil
 	}
-	oauth2Config, err := oc.GetClientCredentialsConfig(ctx)
+	oauth2Config, err := oc.GetClientCredentialsConfig(ctx, scopes)
 	if err != nil {
 		return nil, seederr.Wrap(err)
 	}
 	refreshCtx := oc.WithClientAssertion(context.Background())
 	tokenSource := oauth2Config.TokenSource(refreshCtx)
 	func() {
-		oc.tokenSourceMutex.Lock()
-		defer oc.tokenSourceMutex.Unlock()
-		oc.tokenSource = tokenSource
+		oc.tokenSourcesMutex.Lock()
+		defer oc.tokenSourcesMutex.Unlock()
+		if oc.tokenSources == nil {
+			oc.tokenSources = make(map[string]oauth2.TokenSource)
+		}
+		oc.tokenSources[key] = tokenSource
 	}()
 	return tokenSource, nil
 }
 
 func (oc *OpenidClient) AccessToken(
-	ctx context.Context,
+	ctx context.Context, scopes []string,
 ) (string, error) {
-	tokenSource, err := oc.GetTokenSource(ctx)
+	tokenSource, err := oc.GetTokenSource(ctx, scopes)
 	if err != nil {
 		return "", seederr.Wrap(err)
 	}
@@ -208,9 +226,9 @@ func (oc *OpenidClient) AccessToken(
 }
 
 func (oc *OpenidClient) Client(
-	ctx context.Context,
+	ctx context.Context, scopes []string,
 ) (*http.Client, error) {
-	tokenSource, err := oc.GetTokenSource(ctx)
+	tokenSource, err := oc.GetTokenSource(ctx, scopes)
 	if err != nil {
 		return nil, seederr.Wrap(err)
 	}
