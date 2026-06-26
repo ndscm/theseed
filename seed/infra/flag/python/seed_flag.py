@@ -8,7 +8,7 @@ import typing
 logger = logging.getLogger(__name__)
 
 
-class ConfigHolder(abc.ABC):
+class FlagHolder(abc.ABC):
     """Base class for configuration items."""
 
     _parsed: bool
@@ -47,7 +47,7 @@ _bool_map = {
 }
 
 
-class BoolConfigHolder(ConfigHolder):
+class BoolFlagHolder(FlagHolder):
     value: bool
     default: bool
 
@@ -70,7 +70,7 @@ class BoolConfigHolder(ConfigHolder):
         raise ValueError(f"expected a boolean value")
 
 
-class StringConfigHolder(ConfigHolder):
+class StringFlagHolder(FlagHolder):
     value: str
 
     def __init__(self, default: str = ""):
@@ -88,7 +88,7 @@ class StringConfigHolder(ConfigHolder):
         raise ValueError(f"expected a string value")
 
 
-class StringListConfigHolder(ConfigHolder):
+class StringListFlagHolder(FlagHolder):
     value: list[str]
 
     def __init__(self, default: list[str] | None = None):
@@ -109,9 +109,9 @@ class StringListConfigHolder(ConfigHolder):
         raise ValueError(f"expected a list of strings")
 
 
-class ConfigStore:
+class FlagStore:
     _parser: argparse.ArgumentParser
-    _configs: dict[str, ConfigHolder]
+    _configs: dict[str, FlagHolder]
 
     def __init__(self):
         self._parser = argparse.ArgumentParser()
@@ -120,7 +120,7 @@ class ConfigStore:
     def define(
         self,
         name: str,
-        holder: ConfigHolder,
+        holder: FlagHolder,
         *args,
         default: typing.Any = None,
         **kwargs,
@@ -146,11 +146,11 @@ class ConfigStore:
         return self
 
 
-_store = ConfigStore()
+_store = FlagStore()
 
 
-def define_bool(name: str, default: bool = False, help: str = "") -> BoolConfigHolder:
-    holder = BoolConfigHolder(
+def define_bool(name: str, default: bool = False, help: str = "") -> BoolFlagHolder:
+    holder = BoolFlagHolder(
         default=default,
     )
     _store.define(
@@ -164,8 +164,8 @@ def define_bool(name: str, default: bool = False, help: str = "") -> BoolConfigH
     return holder
 
 
-def define_string(name: str, default: str = "", help: str = "") -> StringConfigHolder:
-    holder = StringConfigHolder(
+def define_string(name: str, default: str = "", help: str = "") -> StringFlagHolder:
+    holder = StringFlagHolder(
         default=default,
     )
     _store.define(
@@ -180,8 +180,8 @@ def define_string(name: str, default: str = "", help: str = "") -> StringConfigH
 
 def define_list(
     name: str, default: list[str] | None = None, help: str = ""
-) -> StringListConfigHolder:
-    holder = StringListConfigHolder(
+) -> StringListFlagHolder:
+    holder = StringListFlagHolder(
         default=default,
     )
     _store.define(
@@ -195,10 +195,8 @@ def define_list(
     return holder
 
 
-def define_positional(
-    name: str, default: str = "", help: str = ""
-) -> StringConfigHolder:
-    holder = StringConfigHolder(
+def define_positional(name: str, default: str = "", help: str = "") -> StringFlagHolder:
+    holder = StringFlagHolder(
         default=default,
     )
     _store.define(
@@ -214,8 +212,8 @@ def define_positional(
 
 def define_positional_list(
     name: str, default: list[str] | None = None, help: str = ""
-) -> StringListConfigHolder:
-    holder = StringListConfigHolder(
+) -> StringListFlagHolder:
+    holder = StringListFlagHolder(
         default=default,
     )
     _store.define(
@@ -229,5 +227,5 @@ def define_positional_list(
     return holder
 
 
-def parse() -> ConfigStore:
+def parse() -> FlagStore:
     return _store.parse()
