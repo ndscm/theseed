@@ -13,7 +13,7 @@ if [[ ",${maintain_scopes}," == *",user,"* ]]; then
       printf "\e[33mFound existing theseed monorepo, skip connect.\e[0m\n"
     else
       ndscm connect \
-        --repos-home "${HOME}/ndscm" \
+        --repos_home "${HOME}/ndscm" \
         theseed "git@github.com:ndscm/theseed.git"
     fi
 
