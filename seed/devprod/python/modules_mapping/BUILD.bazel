@@ -22,7 +22,7 @@ py_binary(
     srcs = ["merge.py"],
     visibility = ["//visibility:public"],
     deps = [
-        "//seed/infra/python:seed_flag",
+        "//seed/infra/flag/python:seed_flag",
         "//seed/infra/python:seed_init",
     ],
 )
