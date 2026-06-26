@@ -13,7 +13,7 @@ import seed.devprod.openfork.prepare as prepare
 import seed.devprod.openfork.rebuild as rebuild
 import seed.devprod.openfork.walk as walk
 import seed.devprod.openfork.worktree as worktree
-import seed.infra.python.seed_flag as seed_flag
+import seed.infra.flag.python.seed_flag as seed_flag
 import seed.infra.python.seed_init as seed_init
 
 logger = logging.getLogger(__name__)
