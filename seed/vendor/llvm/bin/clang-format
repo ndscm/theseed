@@ -4,38 +4,38 @@
   "name": "clang-format",
   "platforms": {
     "linux-aarch64": {
-      "path": "LLVM-21.1.8-Linux-ARM64/bin/clang-format",
-      "size": 1873847788,
+      "path": "LLVM-22.1.7-Linux-ARM64/bin/clang-format",
+      "size": 1770309908,
       "hash": "blake3",
-      "digest": "794a076afbe6ef5549826efddf9d04ba6f1178789b435e2c5df97bb4189e6ecd",
+      "digest": "29a61939985c2090e39c4b6fc5378fb1dbae835a4451cda948d6a6dea40bc0c7",
       "format": "tar.xz",
       "providers": [
         {
-          "url": "https://github.com/llvm/llvm-project/releases/download/llvmorg-21.1.8/LLVM-21.1.8-Linux-ARM64.tar.xz"
+          "url": "https://github.com/llvm/llvm-project/releases/download/llvmorg-22.1.7/LLVM-22.1.7-Linux-ARM64.tar.xz"
         }
       ]
     },
     "linux-x86_64": {
-      "path": "LLVM-21.1.8-Linux-X64/bin/clang-format",
-      "size": 2019005384,
+      "path": "LLVM-22.1.7-Linux-X64/bin/clang-format",
+      "size": 1938496864,
       "hash": "blake3",
-      "digest": "9090af1fac7fba35008f09baaf3a8373c63127df759fe1675ea9f56bdbafb01e",
+      "digest": "deac87e2b447f0ee136616bb9ba25cce5967bfa440d2a4ea1f0a9d323f803d3f",
       "format": "tar.xz",
       "providers": [
         {
-          "url": "https://github.com/llvm/llvm-project/releases/download/llvmorg-21.1.8/LLVM-21.1.8-Linux-X64.tar.xz"
+          "url": "https://github.com/llvm/llvm-project/releases/download/llvmorg-22.1.7/LLVM-22.1.7-Linux-X64.tar.xz"
         }
       ]
     },
     "macos-aarch64": {
-      "path": "LLVM-21.1.8-macOS-ARM64/bin/clang-format",
-      "size": 1503047352,
+      "path": "LLVM-22.1.7-macOS-ARM64/bin/clang-format",
+      "size": 1479825388,
       "hash": "blake3",
-      "digest": "677ea000ca74dd3e9935421d346317fdb1c5bf707ac3d362f29afdcccdf9fb35",
+      "digest": "76402b59df9787323999834b1c34130b2a750b1aaf427aa1365cc237428e90e2",
       "format": "tar.xz",
       "providers": [
         {
-          "url": "https://github.com/llvm/llvm-project/releases/download/llvmorg-21.1.8/LLVM-21.1.8-macOS-ARM64.tar.xz"
+          "url": "https://github.com/llvm/llvm-project/releases/download/llvmorg-22.1.7/LLVM-22.1.7-macOS-ARM64.tar.xz"
         }
       ]
     }
