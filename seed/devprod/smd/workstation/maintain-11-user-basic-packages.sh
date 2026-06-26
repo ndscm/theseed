@@ -9,7 +9,8 @@ if [[ ",${maintain_scopes}," == *",user,"* ]]; then
   if [[ "${oslike}" == "debian" || "${oslike}" == "darwin" ]]; then
     mkdir -p "${HOME}/.local/bin"
     export PATH="${HOME}/.local/bin:${PATH}"
-    cp -f ./seed/vendor/ndscm/bin/ndscm "${HOME}/.local/bin/ndscm"
+    curl -fsSL "https://github.com/ndscm/ndscm/releases/latest/download/ndscm.dotslash" >"${HOME}/.local/bin/ndscm"
+    chmod +x "${HOME}/.local/bin/ndscm"
   fi
 
   if [[ "${oslike}" == "debian" ]]; then
