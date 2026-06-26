@@ -13,7 +13,7 @@ py_binary(
     deps = [
         "//seed/devprod/starlark/inbazel/python:inbazel",
         "//seed/infra/flag/python:seed_flag",
-        "//seed/infra/python:seed_init",
+        "//seed/infra/init/python:seed_init",
     ],
 )
 
@@ -24,7 +24,7 @@ py_binary(
     deps = [
         "//seed/devprod/starlark/inbazel/python:inbazel",
         "//seed/infra/flag/python:seed_flag",
-        "//seed/infra/python:seed_init",
+        "//seed/infra/init/python:seed_init",
     ],
 )
 
@@ -34,6 +34,6 @@ py_binary(
     visibility = ["//visibility:public"],
     deps = [
         "//seed/infra/flag/python:seed_flag",
-        "//seed/infra/python:seed_init",
+        "//seed/infra/init/python:seed_init",
     ],
 )
