@@ -3,7 +3,7 @@ import logging
 import os
 import shutil
 
-import seed.infra.python.seed_flag as seed_flag
+import seed.infra.flag.python.seed_flag as seed_flag
 import seed.infra.python.seed_init as seed_init
 
 logger = logging.getLogger(__name__)
