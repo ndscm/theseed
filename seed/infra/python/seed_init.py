@@ -3,7 +3,7 @@ import os
 import sys
 from typing import Callable
 
-import seed.infra.python.seed_flag as seed_flag
+import seed.infra.flag.python.seed_flag as seed_flag
 import seed.infra.python.seed_log as seed_log
 
 logger = logging.getLogger(__name__)
@@ -33,7 +33,7 @@ def register_module_init(module_init: Callable[[], None]) -> None:
     _initializer.register_module_init(module_init)
 
 
-def initialize() -> seed_flag.ConfigStore:
+def initialize() -> seed_flag.FlagStore:
     def _excepthook(exc_type, exc_value, exc_traceback):
         sys.__excepthook__(exc_type, exc_value, exc_traceback)
         logger.critical(exc_value)
