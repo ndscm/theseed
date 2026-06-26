@@ -1,0 +1,10 @@
+load("@rules_python//python:py_library.bzl", "py_library")
+
+py_library(
+    name = "seed_log",
+    srcs = ["seed_log.py"],
+    visibility = ["//visibility:public"],
+    deps = [
+        "//seed/infra/flag/python:seed_flag",
+    ],
+)
