@@ -14,7 +14,7 @@ py_binary(
     data = [
         ":local_modules_mapping_json",
     ],
-    deps = ["//seed/infra/python:seed_init"],
+    deps = ["//seed/infra/init/python:seed_init"],
 )
 
 py_binary(
@@ -23,6 +23,6 @@ py_binary(
     visibility = ["//visibility:public"],
     deps = [
         "//seed/infra/flag/python:seed_flag",
-        "//seed/infra/python:seed_init",
+        "//seed/infra/init/python:seed_init",
     ],
 )

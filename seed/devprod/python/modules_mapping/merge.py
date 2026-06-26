@@ -2,7 +2,7 @@ import asyncio
 import json
 
 import seed.infra.flag.python.seed_flag as seed_flag
-import seed.infra.python.seed_init as seed_init
+import seed.infra.init.python.seed_init as seed_init
 
 arg_srcs = seed_flag.define_positional_list("srcs", [])
 
