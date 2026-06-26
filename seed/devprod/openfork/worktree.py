@@ -4,7 +4,7 @@ import logging
 import os
 
 import seed.devprod.openfork.asyncx as asyncx
-import seed.infra.python.seed_flag as seed_flag
+import seed.infra.flag.python.seed_flag as seed_flag
 
 logger = logging.getLogger(__name__)
 

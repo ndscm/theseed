@@ -104,6 +104,6 @@ py_library(
     srcs = ["worktree.py"],
     deps = [
         ":asyncx",
-        "//seed/infra/python:seed_flag",
+        "//seed/infra/flag/python:seed_flag",
     ],
 )
