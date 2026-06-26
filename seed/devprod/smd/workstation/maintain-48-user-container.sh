@@ -4,7 +4,7 @@ set -o pipefail
 cd "$(dirname "${BASH_SOURCE[0]}")/../../../.."
 
 if [[ ",${maintain_scopes}," == *",user,"* ]]; then
-    cat <<EOF >>"${HOME}/.managed_profile.tmp"
+  cat <<EOF >>"${HOME}/.managed_profile.tmp"
 
 ## Docker
 
