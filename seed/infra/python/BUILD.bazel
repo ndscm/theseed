@@ -6,15 +6,7 @@ py_library(
     name = "seed_init",
     srcs = ["seed_init.py"],
     deps = [
-        ":seed_log",
         "//seed/infra/flag/python:seed_flag",
-    ],
-)
-
-py_library(
-    name = "seed_log",
-    srcs = ["seed_log.py"],
-    deps = [
-        "//seed/infra/flag/python:seed_flag",
+        "//seed/infra/log/python:seed_log",
     ],
 )

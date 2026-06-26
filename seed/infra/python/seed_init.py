@@ -4,7 +4,7 @@ import sys
 from typing import Callable
 
 import seed.infra.flag.python.seed_flag as seed_flag
-import seed.infra.python.seed_log as seed_log
+import seed.infra.log.python.seed_log as seed_log
 
 logger = logging.getLogger(__name__)
 
