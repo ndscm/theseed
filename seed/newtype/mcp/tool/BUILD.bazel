@@ -7,7 +7,7 @@ py_binary(
     srcs = ["list_tools.py"],
     deps = [
         "//seed/infra/flag/python:seed_flag",
-        "//seed/infra/python:seed_init",
+        "//seed/infra/init/python:seed_init",
         "@pypi//fastmcp",
     ],
 )
