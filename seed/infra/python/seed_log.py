@@ -2,7 +2,7 @@ import json
 import logging
 import typing
 
-import seed.infra.python.seed_flag as seed_flag
+import seed.infra.flag.python.seed_flag as seed_flag
 
 flag_verbose = seed_flag.define_bool("verbose", False)
 flag_debug = seed_flag.define_list(
