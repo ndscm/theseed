@@ -4,10 +4,10 @@ set -o pipefail
 cd "$(dirname "${BASH_SOURCE[0]}")/../../../.."
 
 if [[ ",${maintain_scopes}," == *",user,"* ]]; then
-    printf "\e[34m[user] Checking shell hooks...\e[0m\n"
+  printf "\e[34m[user] Checking shell hooks...\e[0m\n"
 
-    if [[ "${oslike}" == "debian" ]]; then
-        cat <<EOF >>"${HOME}/.managed_profile.tmp"
+  if [[ "${oslike}" == "debian" ]]; then
+    cat <<EOF >>"${HOME}/.managed_profile.tmp"
 
 ## Snap
 
@@ -16,10 +16,10 @@ case ":\${PATH}:" in
 *) export PATH="/snap/bin:\${PATH}" ;;
 esac
 EOF
-    fi
+  fi
 
-    if [[ "${oslike}" == "debian" || "${oslike}" == "darwin" ]]; then
-        cat <<EOF >>"${HOME}/.managed_shrc.tmp"
+  if [[ "${oslike}" == "debian" || "${oslike}" == "darwin" ]]; then
+    cat <<EOF >>"${HOME}/.managed_shrc.tmp"
 
 ## Direnv
 
@@ -37,7 +37,7 @@ if command -v ndscm >/dev/null 2>&1; then
   eval "\$(ndscm --shell-eval shell)"
 fi
 EOF
-    fi
+  fi
 
-    printf "\e[32m[user] Check shell hooks done.\e[0m\n"
+  printf "\e[32m[user] Check shell hooks done.\e[0m\n"
 fi
