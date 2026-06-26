@@ -3,7 +3,7 @@ import json
 import os
 import platform
 
-import seed.infra.python.seed_init as seed_init
+import seed.infra.init.python.seed_init as seed_init
 
 
 async def main():
