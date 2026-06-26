@@ -1,7 +1,7 @@
 import seed.infra.billing.python.llm_bill as llm_bill
 import seed.infra.python.seed_flag as seed_flag
 import seed.infra.python.seed_init as seed_init
-import seed.infra.python.seed_typing as seed_typing
+import seed.infra.typing.python.seed_typing as seed_typing
 import seed.infra.vlm.client.python.vlm_client as vlm_client
 
 VlmClient = vlm_client.VlmClient
@@ -11,9 +11,7 @@ flag_vlm_server = seed_flag.define_string(
 )
 flag_vlm_model = seed_flag.define_string("vlm_model", "doubao-1.5-vision-pro-250328")
 flag_vlm_prompt_price = seed_flag.define_string("vlm_prompt_price", "0.000003")
-flag_vlm_completion_price = seed_flag.define_string(
-    "vlm_completion_price", "0.000009"
-)
+flag_vlm_completion_price = seed_flag.define_string("vlm_completion_price", "0.000009")
 flag_vlm_api_key_file = seed_flag.define_string(
     "vlm_api_key_file", "${ND_USER_SECRET_HOME}/volcengine/ARK_API_KEY"
 )
