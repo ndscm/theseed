@@ -16,7 +16,7 @@ py_binary(
         "//seed/devprod/openfork:rebuild",
         "//seed/devprod/openfork:walk",
         "//seed/devprod/openfork:worktree",
-        "//seed/infra/python:seed_flag",
+        "//seed/infra/flag/python:seed_flag",
         "//seed/infra/python:seed_init",
     ],
 )
