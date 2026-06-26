@@ -39,6 +39,9 @@ mkdir -p ./seed/newtype/amadeus/container/amadeus/
 bazel build --stamp //seed/newtype/amadeus/server
 cp -f ./bazel-bin/seed/newtype/amadeus/server/amadeus-server_/amadeus-server ./seed/newtype/amadeus/container/amadeus/amadeus-server
 
+mkdir -p ./seed/newtype/amadeus/container/smd/workstation/
+cp -f ./seed/devprod/smd/workstation/setup.sh ./seed/newtype/amadeus/container/smd/workstation/setup.sh
+
 cd ./seed/newtype/amadeus/container/
 
 build_compat=()
