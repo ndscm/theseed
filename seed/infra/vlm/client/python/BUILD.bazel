@@ -21,7 +21,7 @@ py_library(
     srcs = ["vlm_client.py"],
     deps = [
         "//seed/infra/billing/python:llm_bill",
-        "//seed/infra/python:seed_log",
+        "//seed/infra/log/python:seed_log",
         "@pypi//openai",
         "@pypi//pydantic",
     ],
