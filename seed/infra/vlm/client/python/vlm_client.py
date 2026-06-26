@@ -10,7 +10,7 @@ import openai.types.shared_params.response_format_json_schema as json_schema
 import pydantic
 
 import seed.infra.billing.python.llm_bill as llm_bill
-import seed.infra.python.seed_log as seed_log
+import seed.infra.log.python.seed_log as seed_log
 
 logger = logging.getLogger(__name__)
 
