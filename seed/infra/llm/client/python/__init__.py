@@ -1,7 +1,7 @@
 import seed.infra.billing.python.llm_bill as llm_bill
 import seed.infra.flag.python.seed_flag as seed_flag
+import seed.infra.init.python.seed_init as seed_init
 import seed.infra.llm.client.python.llm_client as llm_client
-import seed.infra.python.seed_init as seed_init
 import seed.infra.typing.python.seed_typing as seed_typing
 
 LlmClient = llm_client.LlmClient
