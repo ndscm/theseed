@@ -1,7 +1,7 @@
 import asyncio
 
+import seed.infra.flag.python.seed_flag as seed_flag
 import seed.infra.llm.client.python as llm_client
-import seed.infra.python.seed_flag as seed_flag
 import seed.infra.python.seed_init as seed_init
 
 flag_prompt = seed_flag.define_string("prompt", "")
