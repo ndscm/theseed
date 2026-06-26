@@ -1,10 +1,9 @@
 load("@rules_python//python:py_library.bzl", "py_library")
 
-package(default_visibility = ["//visibility:public"])
-
 py_library(
     name = "seed_init",
     srcs = ["seed_init.py"],
+    visibility = ["//visibility:public"],
     deps = [
         "//seed/infra/flag/python:seed_flag",
         "//seed/infra/log/python:seed_log",
