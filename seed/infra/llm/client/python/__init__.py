@@ -2,7 +2,7 @@ import seed.infra.billing.python.llm_bill as llm_bill
 import seed.infra.llm.client.python.llm_client as llm_client
 import seed.infra.python.seed_flag as seed_flag
 import seed.infra.python.seed_init as seed_init
-import seed.infra.python.seed_typing as seed_typing
+import seed.infra.typing.python.seed_typing as seed_typing
 
 LlmClient = llm_client.LlmClient
 
@@ -11,9 +11,7 @@ flag_llm_server = seed_flag.define_string(
 )
 flag_llm_model = seed_flag.define_string("llm_model", "deepseek-v3-250324")
 flag_llm_prompt_price = seed_flag.define_string("llm_prompt_price", "0.000002")
-flag_llm_completion_price = seed_flag.define_string(
-    "llm_completion_price", "0.000008"
-)
+flag_llm_completion_price = seed_flag.define_string("llm_completion_price", "0.000008")
 flag_llm_api_key_file = seed_flag.define_string(
     "llm_api_key_file", "${ND_USER_SECRET_HOME}/volcengine/ARK_API_KEY"
 )
