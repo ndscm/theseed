@@ -9,10 +9,6 @@ export CONTAINER_ENGINE="${container_engine}"
 ./seed/devprod/container/ubuntu/build.sh
 
 mkdir -p ./seed/newtype/amadeus/container/bin/
-
-bazel build //seed/devprod/ndscm/cli
-cp -f ./bazel-bin/seed/devprod/ndscm/cli/ndscm_/ndscm ./seed/newtype/amadeus/container/bin/ndscm
-
 cp -f ./seed/vendor/bazel/bin/bazel ./seed/newtype/amadeus/container/bin/bazel
 cp -f ./seed/vendor/bazel/bin/bazelisk ./seed/newtype/amadeus/container/bin/bazelisk
 cp -f ./seed/vendor/buck/bin/buck2 ./seed/newtype/amadeus/container/bin/buck2
@@ -26,6 +22,7 @@ cp -f ./seed/vendor/lego/bin/lego ./seed/newtype/amadeus/container/bin/lego
 cp -f ./seed/vendor/llvm/bin/clang ./seed/newtype/amadeus/container/bin/clang
 cp -f ./seed/vendor/llvm/bin/clang-format ./seed/newtype/amadeus/container/bin/clang-format
 cp -f ./seed/vendor/llvm/bin/clangd ./seed/newtype/amadeus/container/bin/clangd
+cp -f ./seed/vendor/ndscm/bin/ndscm ./seed/newtype/amadeus/container/bin/ndscm
 cp -f ./seed/vendor/node/bin/corepack ./seed/newtype/amadeus/container/bin/corepack
 cp -f ./seed/vendor/node/bin/node ./seed/newtype/amadeus/container/bin/node
 cp -f ./seed/vendor/node/bin/npm ./seed/newtype/amadeus/container/bin/npm
