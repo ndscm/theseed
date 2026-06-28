@@ -19,7 +19,7 @@ RUN curl --fail --silent --show-error --location "https://github.com/facebook/do
 
 COPY ./bin/. /usr/local/bin/.
 
-COPY ./amadeus-server /opt/amadeus/amadeus-server
+COPY ./amadeus /opt/amadeus
 
 COPY --chmod=0755 ./entrypoint.sh /opt/amadeus/entrypoint.sh
 
