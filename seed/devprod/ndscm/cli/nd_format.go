@@ -33,9 +33,8 @@ func ndFormat(args []string) error {
 	if err != nil {
 		return seederr.Wrap(err)
 	}
-	if len(cmdArgs) != 0 {
-		return seederr.WrapErrorf("nd-format usage: ndscm format")
-	}
+	filePaths := cmdArgs
+	skipScan := len(filePaths) > 0
 	cc := &clientcore.ClientCore{}
 	err = cc.Initialize()
 	if err != nil {
@@ -45,6 +44,9 @@ func ndFormat(args []string) error {
 		Workers: runtime.NumCPU(),
 		All:     cmdFlags.all.Get(),
 		Changed: cmdFlags.changed.Get(),
+
+		SkipScmScan: skipScan,
+		CarePaths:   filePaths,
 
 		Phases: []string{"format"},
 	})
