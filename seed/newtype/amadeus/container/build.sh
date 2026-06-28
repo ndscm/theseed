@@ -35,8 +35,9 @@ cp -f ./seed/vendor/podman/bin/podman-remote ./seed/newtype/amadeus/container/bi
 cp -f ./seed/vendor/uv/bin/uv ./seed/newtype/amadeus/container/bin/uv
 cp -f ./seed/vendor/uv/bin/uvx ./seed/newtype/amadeus/container/bin/uvx
 
-bazel build //seed/newtype/amadeus/server
-cp -f ./bazel-bin/seed/newtype/amadeus/server/amadeus-server_/amadeus-server ./seed/newtype/amadeus/container/amadeus-server
+mkdir -p ./seed/newtype/amadeus/container/amadeus/
+bazel build --stamp //seed/newtype/amadeus/server
+cp -f ./bazel-bin/seed/newtype/amadeus/server/amadeus-server_/amadeus-server ./seed/newtype/amadeus/container/amadeus/amadeus-server
 
 cd ./seed/newtype/amadeus/container/
 
