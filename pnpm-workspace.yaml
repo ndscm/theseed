@@ -3,7 +3,9 @@ packages:
 allowBuilds:
   "@ariga/atlas": true
   "@swc/core": true
+  "@vscode/vsce-sign": true
   "esbuild": true
+  "keytar": true
   "protobufjs": true
 catalog:
   "@ariga/atlas": "^1.2.0"
@@ -41,6 +43,7 @@ catalog:
   "@univerjs/sheets-numfmt-ui": "^0.21.1"
   "@univerjs/sheets-ui": "^0.21.1"
   "@univerjs/ui": "^0.21.1"
+  "@vscode/vsce": "^3.9.2"
   "babel-plugin-react-compiler": "^1.0.0"
   "daisyui": "^5.5.20"
   "debug": "^4.4.3"
@@ -103,6 +106,7 @@ overrides:
   "@univerjs/sheets-ui@catalog:": "0.21.1"
   "@univerjs/sheets@catalog:": "0.21.1"
   "@univerjs/ui@catalog:": "0.21.1"
+  "@vscode/vsce@catalog:": "3.9.2"
   "babel-plugin-react-compiler@catalog:": "1.0.0"
   "daisyui@catalog:": "5.5.20"
   "debug@catalog:": "4.4.3"
