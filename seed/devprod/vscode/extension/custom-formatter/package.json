@@ -1,0 +1,41 @@
+{
+  "name": "vscode-custom-formatter",
+  "displayName": "Custom Formatter",
+  "description": "Run custom format script in VS Code for any file type.",
+  "version": "0.0.0",
+  "publisher": "ndscm",
+  "repository": "https://github.com/ndscm/theseed/seed/devprod/vscode/extension/custom-formatter",
+  "engines": {
+    "vscode": "^1.100.0"
+  },
+  "categories": [
+    "Formatters"
+  ],
+  "license": "MIT",
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "files": [
+    "dist",
+    "LICENSE"
+  ],
+  "main": "./dist/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "customFormatter.format",
+        "title": "Custom Formatter: Format"
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "pnpm run build",
+    "build": "tsc"
+  },
+  "devDependencies": {
+    "@types/node": "catalog:",
+    "@types/vscode": "^1.100.0",
+    "@vscode/vsce": "catalog:",
+    "typescript": "catalog:"
+  }
+}
