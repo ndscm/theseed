@@ -3,6 +3,12 @@
   "clang-format.language.c.style": "Google",
   "clang-format.language.java.style": "Google",
   "clang-format.style": "Google",
+  "customFormatter.languages": [
+    // sort
+    "dockerfile",
+    "groovy",
+    "shellscript"
+  ],
   "diffEditor.ignoreTrimWhitespace": false,
   "editor.formatOnSave": true,
   "editor.renderWhitespace": "all",
@@ -51,7 +57,12 @@
     "editor.defaultFormatter": "xaver.clang-format"
   },
   "[dockerfile]": {
-    "editor.defaultFormatter": "ms-azuretools.vscode-containers"
+    "editor.defaultFormatter": "ndscm.vscode-custom-formatter",
+    "customFormatter.runAfterSave": "ndscm format {{FILE}}"
+  },
+  "[groovy]": {
+    "editor.defaultFormatter": "ndscm.vscode-custom-formatter",
+    "customFormatter.runAfterSave": "ndscm format {{FILE}}"
   },
   "[html]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
@@ -78,7 +89,8 @@
     }
   },
   "[shellscript]": {
-    "editor.defaultFormatter": "foxundermoon.shell-format"
+    "editor.defaultFormatter": "ndscm.vscode-custom-formatter",
+    "customFormatter.runAfterSave": "ndscm format {{FILE}}"
   },
   "[typescript]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
