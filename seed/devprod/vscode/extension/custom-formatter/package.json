@@ -21,12 +21,31 @@
   ],
   "main": "./dist/extension.js",
   "contributes": {
-    "commands": [
-      {
-        "command": "customFormatter.format",
-        "title": "Custom Formatter: Format"
+    "configuration": {
+      "title": "Custom Formatter",
+      "properties": {
+        "customFormatter.run": {
+          "type": "string",
+          "default": "",
+          "scope": "language-overridable",
+          "markdownDescription": "Shell command to run as a standard formatter on **Format Document** / **Format on Save**. The document text is piped to the command's stdin and the formatted result is read from its stdout. The command runs through the shell with the workspace folder as its working directory. Leave empty to disable. Can be set per language via `[languageId]` overrides."
+        },
+        "customFormatter.runAfterSave": {
+          "type": "string",
+          "default": "",
+          "scope": "language-overridable",
+          "markdownDescription": "Shell command to run after a document in a registered language is saved. The `{{FILE}}` placeholder is replaced with the saved file's path; the command is expected to format that file in place. Only its exit code is trusted (a non-zero code surfaces an error); on success the editor is reverted to reload the formatted file from disk. The command runs through the shell with the workspace folder as its working directory. Leave empty to disable. Can be set per language via `[languageId]` overrides."
+        },
+        "customFormatter.languages": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [],
+          "markdownDescription": "Language identifiers the extension applies to. Both `run` and `runAfterSave` only act on the languages listed here; when empty, the extension does nothing."
+        }
       }
-    ]
+    }
   },
   "scripts": {
     "vscode:prepublish": "pnpm run build",
