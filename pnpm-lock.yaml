@@ -40,6 +40,7 @@ overrides:
   '@univerjs/sheets-ui@catalog:': 0.21.1
   '@univerjs/sheets@catalog:': 0.21.1
   '@univerjs/ui@catalog:': 0.21.1
+  '@vscode/vsce@catalog:': 3.9.2
   'babel-plugin-react-compiler@catalog:': 1.0.0
   'daisyui@catalog:': 5.5.20
   'debug@catalog:': 4.4.3
