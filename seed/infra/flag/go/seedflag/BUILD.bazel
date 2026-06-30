@@ -9,6 +9,7 @@ go_library(
         "file_flag.go",
         "flag.go",
         "flag_item.go",
+        "secret_flag.go",
         "string_flag.go",
     ],
     importpath = "github.com/ndscm/theseed/seed/infra/flag/go/seedflag",
