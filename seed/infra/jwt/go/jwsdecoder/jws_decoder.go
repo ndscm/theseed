@@ -1,4 +1,4 @@
-package seedjwt
+package jwsdecoder
 
 import (
 	"crypto"
@@ -19,24 +19,16 @@ import (
 var flagSkipJwtVerification = seedflag.DefineBool("skip_jwt_verification", false, "Skip JWT verification and trust all JWT (for testing only)")
 var flagJwtAudience = seedflag.DefineString("jwt_audience", "", "expected JWT audience (aud claim)")
 
-// JwtDecoder verifies OpenID Connect JWTs using statically configured kid-to-certificate mappings.
-type JwtDecoder struct {
+// JwsDecoder verifies OpenID Connect JWTs using statically configured kid-to-certificate mappings.
+type JwsDecoder struct {
 	audience string
 
 	jwksStore jwtcore.JwksStore
 }
 
-func CreateJwtDecoder(jwksStore jwtcore.JwksStore) (*JwtDecoder, error) {
-	v := &JwtDecoder{
-		audience:  flagJwtAudience.Get(),
-		jwksStore: jwksStore,
-	}
-	return v, nil
-}
-
 // resolveSigningKey returns the public key for JWT verification by looking up
 // the kid from the pre-loaded trust map.
-func (v *JwtDecoder) resolveSigningKey(issuer string, header jwtcore.JwsHeader) (crypto.PublicKey, error) {
+func (v *JwsDecoder) resolveSigningKey(issuer string, header jwtcore.JwsHeader) (crypto.PublicKey, error) {
 	if header.Kid == "" {
 		return nil, seederr.WrapErrorf("JWT header has no kid")
 	}
@@ -48,7 +40,7 @@ func (v *JwtDecoder) resolveSigningKey(issuer string, header jwtcore.JwsHeader) 
 	return pubKey, nil
 }
 
-func (v *JwtDecoder) verifyJwtSignature(issuer string, headerB64 string, payloadB64 string, signatureB64 string) error {
+func (v *JwsDecoder) verifyJwtSignature(issuer string, headerB64 string, payloadB64 string, signatureB64 string) error {
 	headerBytes, err := base64.RawURLEncoding.DecodeString(headerB64)
 	if err != nil {
 		return seederr.WrapErrorf("failed to decode JWT header: %v", err)
@@ -102,8 +94,8 @@ func (v *JwtDecoder) verifyJwtSignature(issuer string, headerB64 string, payload
 	return nil
 }
 
-func (v *JwtDecoder) Decode(accessToken string) ([]byte, error) {
-	parts := strings.Split(accessToken, ".")
+func (v *JwsDecoder) Decode(jwsB64 string) ([]byte, error) {
+	parts := strings.Split(jwsB64, ".")
 	if len(parts) != 3 {
 		return nil, seederr.WrapErrorf("invalid JWT: expected 3 parts, got %d", len(parts))
 	}
@@ -134,4 +126,12 @@ func (v *JwtDecoder) Decode(accessToken string) ([]byte, error) {
 		return nil, seederr.WrapErrorf("JWT audience does not contain expected %q", v.audience)
 	}
 	return payloadBytes, nil
+}
+
+func CreateJwsDecoder(jwksStore jwtcore.JwksStore) (*JwsDecoder, error) {
+	v := &JwsDecoder{
+		audience:  flagJwtAudience.Get(),
+		jwksStore: jwksStore,
+	}
+	return v, nil
 }
