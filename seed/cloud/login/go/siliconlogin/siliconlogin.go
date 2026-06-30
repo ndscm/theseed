@@ -2,7 +2,6 @@ package siliconlogin
 
 import (
 	"context"
-	"os"
 	"sync"
 
 	"github.com/ndscm/theseed/seed/infra/auth/go/openid"
@@ -12,7 +11,10 @@ import (
 	"golang.org/x/oauth2"
 )
 
-var flagSiliconRefreshTokenFile = seedflag.DefineString("silicon_refresh_token_file", "", "Path to file containing refresh token for Silicon login.")
+var flagSiliconRefreshToken = seedflag.DefineSecret(
+	"silicon_refresh_token",
+	"Silicon login refresh token",
+)
 
 type SiliconSession struct {
 	mutex       sync.Mutex
@@ -27,14 +29,13 @@ func SiliconLogin(ctx context.Context) (context.Context, error) {
 	defer session.mutex.Unlock()
 
 	if session.tokenSource == nil || session.provider == nil {
-		siliconRefreshTokenFile := flagSiliconRefreshTokenFile.Get()
-		if siliconRefreshTokenFile != "" {
-			refreshToken, err := os.ReadFile(siliconRefreshTokenFile)
-			if err != nil {
-				return ctx, seederr.Wrap(err)
-			}
+		siliconRefreshToken, err := flagSiliconRefreshToken.LoadString()
+		if err != nil {
+			return ctx, seederr.Wrap(err)
+		}
+		if siliconRefreshToken != "" {
 			initial := &oauth2.Token{
-				RefreshToken: string(refreshToken),
+				RefreshToken: siliconRefreshToken,
 			}
 
 			discoveryUrl := openid.OpenidDiscoveryUrlFlag()
