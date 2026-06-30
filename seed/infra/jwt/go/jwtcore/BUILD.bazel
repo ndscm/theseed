@@ -1,0 +1,13 @@
+load("@rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "jwtcore",
+    srcs = [
+        "jwks_store.go",
+        "jws_header.go",
+        "jwt_payload.go",
+    ],
+    importpath = "github.com/ndscm/theseed/seed/infra/jwt/go/jwtcore",
+    visibility = ["//visibility:public"],
+    deps = ["//seed/infra/error/go/seederr"],
+)
