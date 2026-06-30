@@ -1,0 +1,53 @@
+{
+  "name": "kubectl",
+  "platforms": {
+    "linux-aarch64": {
+      "path": "kubectl",
+      "providers": [
+        {
+          "url": "https://dl.k8s.io/release/{{TAG}}/bin/linux/arm64/kubectl"
+        }
+      ]
+    },
+    "linux-x86_64": {
+      "path": "kubectl",
+      "providers": [
+        {
+          "url": "https://dl.k8s.io/release/{{TAG}}/bin/linux/amd64/kubectl"
+        }
+      ]
+    },
+    "macos-aarch64": {
+      "path": "kubectl",
+      "providers": [
+        {
+          "url": "https://dl.k8s.io/release/{{TAG}}/bin/darwin/arm64/kubectl"
+        }
+      ]
+    },
+    "macos-x86_64": {
+      "path": "kubectl",
+      "providers": [
+        {
+          "url": "https://dl.k8s.io/release/{{TAG}}/bin/darwin/amd64/kubectl"
+        }
+      ]
+    },
+    "windows-aarch64": {
+      "path": "kubectl.exe",
+      "providers": [
+        {
+          "url": "https://dl.k8s.io/release/{{TAG}}/bin/windows/arm64/kubectl.exe"
+        }
+      ]
+    },
+    "windows-x86_64": {
+      "path": "kubectl.exe",
+      "providers": [
+        {
+          "url": "https://dl.k8s.io/release/{{TAG}}/bin/windows/amd64/kubectl.exe"
+        }
+      ]
+    }
+  }
+}
