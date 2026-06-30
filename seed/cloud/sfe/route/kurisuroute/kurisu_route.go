@@ -4,7 +4,6 @@ import (
 	"net/http"
 	"net/http/httputil"
 	"net/url"
-	"os"
 	"strings"
 
 	"github.com/ndscm/theseed/seed/infra/auth/go/authfe"
@@ -16,7 +15,10 @@ import (
 var flagKurisuServiceServer = seedflag.DefineString("kurisu_service_server", "", "URL of Kurisu service server")
 var flagKurisuOpenidDiscoveryUrl = seedflag.DefineString("kurisu_openid_discovery_url", "http://127.0.0.1:8080/realms/ndscm/.well-known/openid-configuration", "Discovery URL of Kurisu OpenID provider")
 var flagKurisuOpenidClientId = seedflag.DefineString("kurisu_openid_client_id", "", "Client ID for Kurisu OpenID provider")
-var flagKurisuOpenidClientSecretFile = seedflag.DefineString("kurisu_openid_client_secret_file", "", "Client secret file for Kurisu OpenID provider")
+var flagKurisuOpenidClientSecret = seedflag.DefineSecret(
+	"kurisu_openid_client_secret",
+	"Client secret for Kurisu OpenID provider",
+)
 
 type KurisuRoute struct {
 	authHandler *authfe.AuthHandler
@@ -37,14 +39,9 @@ var _ http.Handler = (*KurisuRoute)(nil)
 func CreateKurisuRoute(transport http.RoundTripper) (*KurisuRoute, error) {
 	discoveryUrl := flagKurisuOpenidDiscoveryUrl.Get()
 	clientId := flagKurisuOpenidClientId.Get()
-	clientSecretFile := flagKurisuOpenidClientSecretFile.Get()
-	clientSecret := ""
-	if clientSecretFile != "" {
-		clientSecretBytes, err := os.ReadFile(clientSecretFile)
-		if err != nil {
-			return nil, seederr.Wrap(err)
-		}
-		clientSecret = strings.TrimSpace(string(clientSecretBytes))
+	clientSecret, err := flagKurisuOpenidClientSecret.LoadString()
+	if err != nil {
+		return nil, seederr.Wrap(err)
 	}
 	provider := openid.NewOpenidProvider(
 		openid.NewOpenidClient(discoveryUrl, clientId, clientSecret), "kurisu_")
