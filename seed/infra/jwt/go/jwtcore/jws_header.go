@@ -9,8 +9,13 @@ import (
 // See RFC 7515 for JWS structure
 // https://datatracker.ietf.org/doc/html/rfc7515
 type JwsHeader struct {
+	// RFC 7515 4.1.1 Algorithm
 	Alg string `json:"alg"`
-	Kid string `json:"kid"`
+
+	// RFC 7515 4.1.4 Key ID
+	Kid string `json:"kid,omitempty"`
+
+	// RFC 7515 4.1.9 Type
 	Typ string `json:"typ"`
 }
 
