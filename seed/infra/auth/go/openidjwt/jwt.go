@@ -11,12 +11,12 @@ import (
 	"github.com/ndscm/theseed/seed/infra/auth/go/openid"
 	"github.com/ndscm/theseed/seed/infra/context/go/seedctx"
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
-	"github.com/ndscm/theseed/seed/infra/jwt/go/seedjwt"
+	"github.com/ndscm/theseed/seed/infra/jwt/go/jwsdecoder"
 	"github.com/ndscm/theseed/seed/infra/log/go/seedlog"
 )
 
-func decodeJwt(jwtDecoder *seedjwt.JwtDecoder, accessToken string) (*openid.OpenidUserInfo, error) {
-	payload, err := jwtDecoder.Decode(accessToken)
+func decodeJwt(jwsDecoder *jwsdecoder.JwsDecoder, accessToken string) (*openid.OpenidUserInfo, error) {
+	payload, err := jwsDecoder.Decode(accessToken)
 	if err != nil {
 		return nil, err
 	}
@@ -49,7 +49,7 @@ func withOpenidJwtUser(parent context.Context, userInfo *openid.OpenidUserInfo) 
 type openidJwtMiddleware struct {
 	next http.Handler
 
-	jwtDecoder *seedjwt.JwtDecoder
+	jwtDecoder *jwsdecoder.JwsDecoder
 }
 
 func (m *openidJwtMiddleware) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -68,7 +68,7 @@ func (m *openidJwtMiddleware) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 }
 
 type OpenidJwtInterceptor struct {
-	jwtDecoder *seedjwt.JwtDecoder
+	jwsDecoder *jwsdecoder.JwsDecoder
 }
 
 func CreateOpenidJwtInterceptor() (*OpenidJwtInterceptor, error) {
@@ -77,14 +77,14 @@ func CreateOpenidJwtInterceptor() (*OpenidJwtInterceptor, error) {
 	if err != nil {
 		return nil, seederr.Wrap(err)
 	}
-	jwtDecoder, err := seedjwt.CreateJwtDecoder(jwksStore)
+	jwsDecoder, err := jwsdecoder.CreateJwsDecoder(jwksStore)
 	if err != nil {
 		return nil, seederr.Wrap(err)
 	}
-	i.jwtDecoder = jwtDecoder
+	i.jwsDecoder = jwsDecoder
 	return i, nil
 }
 
 func (i *OpenidJwtInterceptor) Intercept(next http.Handler) http.Handler {
-	return &openidJwtMiddleware{next: next, jwtDecoder: i.jwtDecoder}
+	return &openidJwtMiddleware{next: next, jwtDecoder: i.jwsDecoder}
 }
