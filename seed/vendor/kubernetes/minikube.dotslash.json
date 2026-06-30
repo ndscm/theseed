@@ -1,0 +1,45 @@
+{
+  "name": "minikube",
+  "platforms": {
+    "linux-aarch64": {
+      "path": "minikube",
+      "providers": [
+        {
+          "url": "https://github.com/kubernetes/minikube/releases/download/{{TAG}}/minikube-linux-arm64"
+        }
+      ]
+    },
+    "linux-x86_64": {
+      "path": "minikube",
+      "providers": [
+        {
+          "url": "https://github.com/kubernetes/minikube/releases/download/{{TAG}}/minikube-linux-amd64"
+        }
+      ]
+    },
+    "macos-aarch64": {
+      "path": "minikube",
+      "providers": [
+        {
+          "url": "https://github.com/kubernetes/minikube/releases/download/{{TAG}}/minikube-darwin-arm64"
+        }
+      ]
+    },
+    "macos-x86_64": {
+      "path": "minikube",
+      "providers": [
+        {
+          "url": "https://github.com/kubernetes/minikube/releases/download/{{TAG}}/minikube-darwin-amd64"
+        }
+      ]
+    },
+    "windows-x86_64": {
+      "path": "minikube.exe",
+      "providers": [
+        {
+          "url": "https://github.com/kubernetes/minikube/releases/download/{{TAG}}/minikube-windows-amd64.exe"
+        }
+      ]
+    }
+  }
+}
