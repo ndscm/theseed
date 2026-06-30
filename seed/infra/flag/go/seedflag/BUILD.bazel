@@ -5,6 +5,7 @@ package(default_visibility = ["//visibility:public"])
 go_library(
     name = "seedflag",
     srcs = [
+        "bool_flag.go",
         "flag.go",
         "flag_item.go",
         "string_flag.go",

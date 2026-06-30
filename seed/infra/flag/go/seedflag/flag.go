@@ -5,38 +5,11 @@ import (
 	"flag"
 	"io"
 	"os"
-	"strconv"
 	"strings"
 
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
 	"github.com/ndscm/theseed/seed/infra/log/go/seedlog"
 )
-
-type BoolFlag struct {
-	FlagItem
-	value bool
-}
-
-func (f *BoolFlag) Set(s string) error {
-	v, err := strconv.ParseBool(s)
-	if err != nil {
-		return seederr.Wrap(err)
-	}
-	f.value = v
-	return nil
-}
-
-func (f *BoolFlag) Get() bool {
-	return f.value
-}
-
-func (f *BoolFlag) String() string {
-	return strconv.FormatBool(f.value)
-}
-
-func (f *BoolFlag) IsBoolFlag() bool {
-	return true
-}
 
 // IsUnknownFlag reports whether err is the stdlib "flag provided but not
 // defined" error. There's no exported sentinel, so we match on the message.
@@ -107,12 +80,7 @@ type CommandFlags struct {
 }
 
 func (cf *CommandFlags) DefineBool(name string, defaultValue bool, usage string) *BoolFlag {
-	item := &BoolFlag{
-		FlagItem: FlagItem{
-			usage: usage,
-		},
-		value: defaultValue,
-	}
+	item := newBoolFlag(defaultValue, usage)
 	cf.flags[name] = item
 	return item
 }
