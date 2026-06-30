@@ -3,9 +3,9 @@ http_archive = use_repo_rule("@bazel_tools//tools/build_defs/repo:http.bzl", "ht
 http_archive(
     name = "keycloak_release",
     build_file = "//seed/devprod/bazel/external:files.BUILD.bazel",
-    integrity = "sha256-MCJNKzoPE1YssB+SIHM4r7W62dbxSV7BwYL4ty2CNC4=",
-    strip_prefix = "keycloak-26.6.1",
-    url = "https://github.com/keycloak/keycloak/releases/download/26.6.1/keycloak-26.6.1.zip",
+    integrity = "sha256-sA15yjr9lL9DHSw6+ypa9pXagTAXxDTeckB5DeZJB3k=",
+    strip_prefix = "keycloak-26.6.4",
+    url = "https://github.com/keycloak/keycloak/releases/download/26.6.4/keycloak-26.6.4.zip",
 )
 
 keycloak_maven = use_extension("@rules_jvm_external//:extensions.bzl", "maven", isolate = True)
