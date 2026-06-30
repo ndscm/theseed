@@ -96,6 +96,10 @@ func (oc *OpenidClient) ClientId() string {
 	return oc.clientId
 }
 
+func (oc *OpenidClient) SetClientAssertion(tokenSource oauth2.TokenSource) {
+	oc.clientAssertion = tokenSource
+}
+
 func (oc *OpenidClient) Origin() (string, error) {
 	parsedUrl, err := url.Parse(oc.discoveryUrl)
 	if err != nil {
@@ -241,13 +245,5 @@ func NewOpenidClient(discoveryUrl string, clientId string, clientSecret string) 
 		discoveryUrl: discoveryUrl,
 		clientId:     clientId,
 		clientSecret: clientSecret,
-	}
-}
-
-func NewOpenidClientWithAssertion(discoveryUrl string, clientId string, tokenSource oauth2.TokenSource) *OpenidClient {
-	return &OpenidClient{
-		discoveryUrl:    discoveryUrl,
-		clientId:        clientId,
-		clientAssertion: tokenSource,
 	}
 }
