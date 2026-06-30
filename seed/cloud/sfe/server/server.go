@@ -33,7 +33,10 @@ var flagHttpsPort = seedflag.DefineString("https_port", "9443", "Port for HTTPS 
 var flagSessionProvider = seedflag.DefineString("session_provider", "", "Specify the session provider (e.g., 'sql' for SQL-based sessions)")
 
 var flagSfeOpenidClientId = seedflag.DefineString("sfe_openid_client_id", "", "Client ID for OpenID Connect")
-var flagSfeOpenidClientSecretFile = seedflag.DefineString("sfe_openid_client_secret_file", "", "Client Secret for OpenID Connect")
+var flagSfeOpenidClientSecret = seedflag.DefineSecret(
+	"sfe_openid_client_secret",
+	"Client Secret for OpenID Connect",
+)
 
 var optimizedTransport = &http.Transport{
 	Proxy:               nil,
@@ -130,14 +133,9 @@ func run() error {
 
 	// Service login
 	clientId := flagSfeOpenidClientId.Get()
-	clientSecret := ""
-	clientSecretFile := flagSfeOpenidClientSecretFile.Get()
-	if clientSecretFile != "" {
-		secretBytes, err := os.ReadFile(clientSecretFile)
-		if err != nil {
-			return seederr.Wrap(err)
-		}
-		clientSecret = string(secretBytes)
+	clientSecret, err := flagSfeOpenidClientSecret.LoadString()
+	if err != nil {
+		return seederr.Wrap(err)
 	}
 	sfeOpenidClient := openid.NewOpenidClient(
 		openid.OpenidDiscoveryUrlFlag(), clientId, clientSecret,
