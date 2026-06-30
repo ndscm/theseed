@@ -4,9 +4,6 @@ import (
 	"context"
 	"database/sql"
 	"net/url"
-	"os"
-	"path/filepath"
-	"strings"
 	"time"
 
 	"entgo.io/ent/dialect"
@@ -22,7 +19,10 @@ import (
 var flagGolinkDatabase = seedflag.DefineString("golink_database", "postgres://127.0.0.1:5432/golink", "Database connection URL")
 var flagGolinkDatabaseDebug = seedflag.DefineBool("golink_database_debug", false, "Enable debug mode for database")
 var flagGolinkDatabaseLogin = seedflag.DefineString("golink_database_login", "golink", "Database login user")
-var flagGolinkDatabaseSecretFile = seedflag.DefineString("golink_database_secret_file", "user-secret://golink/GOLINK_DATABASE_SECRET/latest", "Path to database password file")
+var flagGolinkDatabaseSecret = seedflag.DefineSecret(
+	"golink_database_secret",
+	"Golink database password",
+)
 
 const (
 	dbMaxOpenConns    = 25
@@ -37,20 +37,12 @@ func Open(ctx context.Context) (*ent.Client, error) {
 		return nil, seederr.Code(golinkerrorpb.Code_INTERNAL_INVALID_DATABASE_URL, err)
 	}
 	seedlog.Debugf("Connecting to database: %s", connectUrl.Host+connectUrl.Path)
-	databaseSecretPath := flagGolinkDatabaseSecretFile.Get()
-	if strings.HasPrefix(databaseSecretPath, "~/") {
-		homeDir, err := os.UserHomeDir()
-		if err != nil {
-			return nil, seederr.Code(golinkerrorpb.Code_INTERNAL_INVALID_USER_HOME, err)
-		}
-		databaseSecretPath = filepath.Join(homeDir, databaseSecretPath[2:])
-	}
-	databaseSecret, err := os.ReadFile(databaseSecretPath)
+	databaseLogin := flagGolinkDatabaseLogin.Get()
+	databaseSecret, err := flagGolinkDatabaseSecret.LoadString()
 	if err != nil {
 		return nil, seederr.Code(golinkerrorpb.Code_INTERNAL_INVALID_DATABASE_SECRET_FILE, err)
 	}
-	databaseSecret = []byte(strings.TrimSpace(string(databaseSecret)))
-	connectUrl.User = url.UserPassword(flagGolinkDatabaseLogin.Get(), string(databaseSecret))
+	connectUrl.User = url.UserPassword(databaseLogin, databaseSecret)
 	db, err := sql.Open("pgx", connectUrl.String())
 	if err != nil {
 		return nil, seederr.Code(golinkerrorpb.Code_INTERNAL_OPEN_DATABASE_FAILED, err)
