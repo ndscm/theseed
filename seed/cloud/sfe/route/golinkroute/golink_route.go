@@ -5,7 +5,6 @@ import (
 	"net/http"
 	"net/http/httputil"
 	"net/url"
-	"os"
 	"strings"
 	"time"
 
@@ -27,9 +26,9 @@ var flagGolinkOpenidClientId = seedflag.DefineString(
 	"golink_openid_client_id", "",
 	"Client ID for Golink OpenID provider",
 )
-var flagGolinkOpenidClientSecretFile = seedflag.DefineString(
-	"golink_openid_client_secret_file", "",
-	"Client secret file for Golink OpenID provider. If not specified, will use SFE OpenID client with signed assertion",
+var flagGolinkOpenidClientSecret = seedflag.DefineSecret(
+	"golink_openid_client_secret",
+	"Client secret for Golink OpenID provider. If not specified, will use SFE OpenID client with signed assertion",
 )
 
 type GolinkRoute struct {
@@ -55,14 +54,9 @@ func CreateGolinkRoute(sfeOpenidClient *openid.OpenidClient) (*GolinkRoute, erro
 		discoveryUrl = openid.OpenidDiscoveryUrlFlag()
 	}
 	clientId := flagGolinkOpenidClientId.Get()
-	clientSecretFile := flagGolinkOpenidClientSecretFile.Get()
-	clientSecret := ""
-	if clientSecretFile != "" {
-		clientSecretBytes, err := os.ReadFile(clientSecretFile)
-		if err != nil {
-			return nil, seederr.Wrap(err)
-		}
-		clientSecret = strings.TrimSpace(string(clientSecretBytes))
+	clientSecret, err := flagGolinkOpenidClientSecret.LoadString()
+	if err != nil {
+		return nil, seederr.Wrap(err)
 	}
 	golinkOpenidClient := openid.NewOpenidClient(
 		discoveryUrl, clientId, clientSecret,
