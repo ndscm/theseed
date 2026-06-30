@@ -4,7 +4,6 @@ import (
 	"net/http"
 	"net/http/httputil"
 	"net/url"
-	"os"
 	"strings"
 
 	"github.com/ndscm/theseed/seed/infra/auth/go/authfe"
@@ -16,7 +15,10 @@ import (
 var flagStuffServiceServer = seedflag.DefineString("stuff_service_server", "", "URL of Stuff service server")
 var flagStuffOpenidDiscoveryUrl = seedflag.DefineString("stuff_openid_discovery_url", "http://127.0.0.1:8080/realms/ndscm/.well-known/openid-configuration", "Discovery URL of Stuff OpenID provider")
 var flagStuffOpenidClientId = seedflag.DefineString("stuff_openid_client_id", "", "Client ID for Stuff OpenID provider")
-var flagStuffOpenidClientSecretFile = seedflag.DefineString("stuff_openid_client_secret_file", "", "Client secret file for Stuff OpenID provider")
+var flagStuffOpenidClientSecret = seedflag.DefineSecret(
+	"stuff_openid_client_secret",
+	"Client secret for Stuff OpenID provider",
+)
 
 type StuffRoute struct {
 	authHandler *authfe.AuthHandler
@@ -37,14 +39,9 @@ var _ http.Handler = (*StuffRoute)(nil)
 func CreateStuffRoute(transport http.RoundTripper) (*StuffRoute, error) {
 	discoveryUrl := flagStuffOpenidDiscoveryUrl.Get()
 	clientId := flagStuffOpenidClientId.Get()
-	clientSecretFile := flagStuffOpenidClientSecretFile.Get()
-	clientSecret := ""
-	if clientSecretFile != "" {
-		clientSecretBytes, err := os.ReadFile(clientSecretFile)
-		if err != nil {
-			return nil, seederr.Wrap(err)
-		}
-		clientSecret = strings.TrimSpace(string(clientSecretBytes))
+	clientSecret, err := flagStuffOpenidClientSecret.LoadString()
+	if err != nil {
+		return nil, seederr.Wrap(err)
 	}
 	provider := openid.NewOpenidProvider(
 		openid.NewOpenidClient(discoveryUrl, clientId, clientSecret), "stuff_")
