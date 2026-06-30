@@ -8,6 +8,7 @@ go_library(
     deps = [
         "//seed/infra/error/go/seederr",
         "//seed/infra/flag/go/seedflag",
+        "//seed/infra/jwt/go/jwtcore",
         "//seed/infra/log/go/seedlog",
     ],
 )
