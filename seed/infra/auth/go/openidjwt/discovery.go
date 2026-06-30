@@ -12,7 +12,6 @@ import (
 	"io"
 	"math/big"
 	"net/http"
-	"os"
 	"sync"
 	"time"
 
@@ -22,7 +21,7 @@ import (
 	"github.com/ndscm/theseed/seed/infra/log/go/seedlog"
 )
 
-var flagTrustOpenidIssuersFile = seedflag.DefineString(
+var flagTrustOpenidIssuersFile = seedflag.DefineFile(
 	"trust_openid_issuers_file", "",
 	`OpenID issuer configurations file (in JSON format). If specified, the --openid_discovery_url flag will be ignored.`,
 )
@@ -284,13 +283,12 @@ func (s *OpenidJwksStore) GetByKid(issuer string, kid string) (crypto.PublicKey,
 }
 
 func CreateOpenidJwksStore() (*OpenidJwksStore, error) {
-	trustIssuersPath := flagTrustOpenidIssuersFile.Get()
+	issuersBytes, err := flagTrustOpenidIssuersFile.Load()
+	if err != nil {
+		return nil, seederr.Wrap(err)
+	}
 	issuers := OpenidIssuers{}
-	if trustIssuersPath != "" {
-		issuersBytes, err := os.ReadFile(trustIssuersPath)
-		if err != nil {
-			return nil, seederr.Wrap(err)
-		}
+	if len(issuersBytes) > 0 {
 		err = json.Unmarshal(issuersBytes, &issuers)
 		if err != nil {
 			return nil, seederr.Wrap(err)
@@ -305,7 +303,7 @@ func CreateOpenidJwksStore() (*OpenidJwksStore, error) {
 		issuers: issuers,
 		jwks:    map[string]*OpenidIssuerJwks{},
 	}
-	err := store.refreshIssuers()
+	err = store.refreshIssuers()
 	if err != nil {
 		return nil, seederr.Wrap(err)
 	}
