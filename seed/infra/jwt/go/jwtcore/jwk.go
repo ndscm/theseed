@@ -1,4 +1,4 @@
-package openid
+package jwtcore
 
 import (
 	"encoding/json"
@@ -6,9 +6,9 @@ import (
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
 )
 
-// OpenidJwk represents a single key in a JWK Set (RFC 7517).
+// Jwk represents a single key in a JWK Set (RFC 7517).
 // Only common fields for RSA, EC, and X.509 certificate chain keys are modeled.
-type OpenidJwk struct {
+type Jwk struct {
 	// RFC 7517 4.1
 	Kty string `json:"kty"`
 
@@ -34,14 +34,14 @@ type OpenidJwk struct {
 	E string `json:"e"`
 }
 
-type OpenidJwks struct {
-	Keys []OpenidJwk `json:"keys"`
+type Jwks struct {
+	Keys []Jwk `json:"keys"`
 
 	Raw map[string]any `json:"-"`
 }
 
-func DecodeOpenidJwks(bytes []byte) (*OpenidJwks, error) {
-	jwks := &OpenidJwks{}
+func DecodeJwks(bytes []byte) (*Jwks, error) {
+	jwks := &Jwks{}
 	err := json.Unmarshal(bytes, jwks)
 	if err != nil {
 		return nil, seederr.Wrap(err)
