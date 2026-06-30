@@ -3,7 +3,6 @@ package cloudflarednschallenge
 import (
 	"context"
 	"net/url"
-	"os"
 	"strings"
 	"time"
 
@@ -18,7 +17,10 @@ import (
 	"github.com/ndscm/theseed/seed/infra/flag/go/seedflag"
 )
 
-var flagCloudflareDnsApiTokenFile = seedflag.DefineString("cloudflare_dns_api_token_file", "user-secret://sfe-certificate/CLOUDFLARE_DNS_API_TOKEN/latest", "Cloudflare dns api token file path")
+var flagCloudflareDnsApiToken = seedflag.DefineSecret(
+	"cloudflare_dns_api_token",
+	"Cloudflare dns api token",
+)
 
 type CloudflareDnsChallenge struct {
 }
@@ -32,12 +34,12 @@ func (c *CloudflareDnsChallenge) ObtainCertificate(
 	if err != nil {
 		return nil, seederr.Wrap(err)
 	}
-	tokenBytes, err := os.ReadFile(flagCloudflareDnsApiTokenFile.Get())
+	cloudflareToken, err := flagCloudflareDnsApiToken.LoadString()
 	if err != nil {
 		return nil, seederr.Wrap(err)
 	}
 	cloudflareConfig := cloudflare.NewDefaultConfig()
-	cloudflareConfig.AuthToken = strings.TrimSpace(string(tokenBytes))
+	cloudflareConfig.AuthToken = strings.TrimSpace(cloudflareToken)
 	cloudflareDnsProvider, err := cloudflare.NewDNSProviderConfig(cloudflareConfig)
 	if err != nil {
 		return nil, seederr.Wrap(err)
