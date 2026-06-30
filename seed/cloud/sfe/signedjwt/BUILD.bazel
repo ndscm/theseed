@@ -1,0 +1,13 @@
+load("@rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "signedjwt",
+    srcs = ["wrap_rsa_token_source.go"],
+    importpath = "github.com/ndscm/theseed/seed/cloud/sfe/signedjwt",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//seed/infra/auth/go/openid",
+        "//seed/infra/error/go/seederr",
+        "//seed/infra/flag/go/seedflag",
+    ],
+)
