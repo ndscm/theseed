@@ -97,6 +97,13 @@ func (cf *CommandFlags) DefineFile(name string, defaultValue string, usage strin
 	return item
 }
 
+func (cf *CommandFlags) DefineSecret(name string, usage string) *SecretFlag {
+	item := newSecretFlag(usage)
+	// TODO(nagi): support susceptible secret flag for loading secret from cli or env.
+	cf.flags[name+"_file"] = item.fileFlag
+	return item
+}
+
 func (cf *CommandFlags) newFlagSet(output io.Writer) *flag.FlagSet {
 	s := flag.NewFlagSet(cf.command, flag.ContinueOnError)
 	s.SetOutput(output)
@@ -208,6 +215,10 @@ func DefineString(name string, defaultValue string, usage string) *StringFlag {
 
 func DefineFile(name string, defaultValue string, usage string) *FileFlag {
 	return globalFlags.DefineFile(name, defaultValue, usage)
+}
+
+func DefineSecret(name string, usage string) *SecretFlag {
+	return globalFlags.DefineSecret(name, usage)
 }
 
 type withEnvPrefix struct {
