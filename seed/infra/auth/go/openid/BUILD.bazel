@@ -9,6 +9,7 @@ go_library(
         "memory_token_storage.go",
         "openid_client.go",
         "openid_provider.go",
+        "rsa_token_source.go",
         "user.go",
     ],
     importpath = "github.com/ndscm/theseed/seed/infra/auth/go/openid",
@@ -16,6 +17,8 @@ go_library(
     deps = [
         "//seed/infra/error/go/seederr",
         "//seed/infra/flag/go/seedflag",
+        "//seed/infra/jwt/go/jwsencoder",
+        "//seed/infra/jwt/go/jwtcore",
         "//seed/infra/log/go/seedlog",
         "@org_golang_x_oauth2//:oauth2",
         "@org_golang_x_oauth2//clientcredentials",
