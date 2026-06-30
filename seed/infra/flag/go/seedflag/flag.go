@@ -12,19 +12,6 @@ import (
 	"github.com/ndscm/theseed/seed/infra/log/go/seedlog"
 )
 
-type FlagDefinition interface {
-	Usage() string
-	flag.Value
-}
-
-type FlagItem struct {
-	usage string
-}
-
-func (f *FlagItem) Usage() string {
-	return f.usage
-}
-
 type BoolFlag struct {
 	FlagItem
 	value bool
