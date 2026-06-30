@@ -4,9 +4,6 @@ import (
 	"context"
 	"database/sql"
 	"net/url"
-	"os"
-	"path/filepath"
-	"strings"
 	"time"
 
 	"entgo.io/ent/dialect"
@@ -21,7 +18,10 @@ import (
 var flagSqlSessionDatabase = seedflag.DefineString("sqlsession_database", "postgres://127.0.0.1:5432/session", "Session database connection URL")
 var flagSqlSessionDatabaseDebug = seedflag.DefineBool("sqlsession_database_debug", false, "Enable debug mode for session database")
 var flagSqlSessionDatabaseLogin = seedflag.DefineString("sqlsession_database_login", "session", "Session database login user")
-var flagSqlSessionDatabaseSecretFile = seedflag.DefineString("sqlsession_database_secret_file", "", "Path to session database password file")
+var flagSqlSessionDatabaseSecret = seedflag.DefineSecret(
+	"sqlsession_database_secret",
+	"Session database password",
+)
 
 const (
 	dbMaxOpenConns    = 25
@@ -36,20 +36,12 @@ func Open(ctx context.Context) (*ent.Client, error) {
 		return nil, seederr.Wrap(err)
 	}
 	seedlog.Debugf("Connecting to database: %s", connectUrl.Host+connectUrl.Path)
-	databaseSecretPath := flagSqlSessionDatabaseSecretFile.Get()
-	if strings.HasPrefix(databaseSecretPath, "~/") {
-		homeDir, err := os.UserHomeDir()
-		if err != nil {
-			return nil, seederr.Wrap(err)
-		}
-		databaseSecretPath = filepath.Join(homeDir, databaseSecretPath[2:])
-	}
-	databaseSecret, err := os.ReadFile(databaseSecretPath)
+	databaseLogin := flagSqlSessionDatabaseLogin.Get()
+	databaseSecret, err := flagSqlSessionDatabaseSecret.LoadString()
 	if err != nil {
 		return nil, seederr.Wrap(err)
 	}
-	databaseSecret = []byte(strings.TrimSpace(string(databaseSecret)))
-	connectUrl.User = url.UserPassword(flagSqlSessionDatabaseLogin.Get(), string(databaseSecret))
+	connectUrl.User = url.UserPassword(databaseLogin, databaseSecret)
 	db, err := sql.Open("pgx", connectUrl.String())
 	if err != nil {
 		return nil, seederr.Wrap(err)
