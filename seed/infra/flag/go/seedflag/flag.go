@@ -38,24 +38,6 @@ func (f *BoolFlag) IsBoolFlag() bool {
 	return true
 }
 
-type StringFlag struct {
-	FlagItem
-	value string
-}
-
-func (f *StringFlag) Set(s string) error {
-	f.value = s
-	return nil
-}
-
-func (f *StringFlag) Get() string {
-	return f.value
-}
-
-func (f *StringFlag) String() string {
-	return f.value
-}
-
 // IsUnknownFlag reports whether err is the stdlib "flag provided but not
 // defined" error. There's no exported sentinel, so we match on the message.
 func IsUnknownFlag(err error) bool {
@@ -136,12 +118,7 @@ func (cf *CommandFlags) DefineBool(name string, defaultValue bool, usage string)
 }
 
 func (cf *CommandFlags) DefineString(name string, defaultValue string, usage string) *StringFlag {
-	item := &StringFlag{
-		FlagItem: FlagItem{
-			usage: usage,
-		},
-		value: defaultValue,
-	}
+	item := newStringFlag(defaultValue, usage)
 	cf.flags[name] = item
 	return item
 }
