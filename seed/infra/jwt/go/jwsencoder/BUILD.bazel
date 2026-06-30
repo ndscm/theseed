@@ -1,0 +1,12 @@
+load("@rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "jwsencoder",
+    srcs = ["jws_encoder.go"],
+    importpath = "github.com/ndscm/theseed/seed/infra/jwt/go/jwsencoder",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//seed/infra/error/go/seederr",
+        "//seed/infra/jwt/go/jwtcore",
+    ],
+)
