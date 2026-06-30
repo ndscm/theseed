@@ -91,6 +91,12 @@ func (cf *CommandFlags) DefineString(name string, defaultValue string, usage str
 	return item
 }
 
+func (cf *CommandFlags) DefineFile(name string, defaultValue string, usage string) *FileFlag {
+	item := newFileFlag(defaultValue, usage)
+	cf.flags[name] = item
+	return item
+}
+
 func (cf *CommandFlags) newFlagSet(output io.Writer) *flag.FlagSet {
 	s := flag.NewFlagSet(cf.command, flag.ContinueOnError)
 	s.SetOutput(output)
@@ -198,6 +204,10 @@ func DefineBool(name string, defaultValue bool, usage string) *BoolFlag {
 
 func DefineString(name string, defaultValue string, usage string) *StringFlag {
 	return globalFlags.DefineString(name, defaultValue, usage)
+}
+
+func DefineFile(name string, defaultValue string, usage string) *FileFlag {
+	return globalFlags.DefineFile(name, defaultValue, usage)
 }
 
 type withEnvPrefix struct {
