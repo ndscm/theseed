@@ -67,9 +67,7 @@ func CreateGolinkRoute(sfeOpenidClient *openid.OpenidClient) (*GolinkRoute, erro
 		if err != nil {
 			return nil, seederr.Wrap(err)
 		}
-		golinkOpenidClient = openid.NewOpenidClientWithAssertion(
-			discoveryUrl, clientId, sfeTokenSource,
-		)
+		golinkOpenidClient.SetClientAssertion(sfeTokenSource)
 	}
 	provider := openid.NewOpenidProvider(golinkOpenidClient, "golink_")
 	authHandler := authfe.NewAuthHandler(provider)
