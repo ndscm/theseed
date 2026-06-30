@@ -1,9 +1,9 @@
 load("@rules_go//go:def.bzl", "go_library")
 
 go_library(
-    name = "seedjwt",
-    srcs = ["seedjwt.go"],
-    importpath = "github.com/ndscm/theseed/seed/infra/jwt/go/seedjwt",
+    name = "jwsdecoder",
+    srcs = ["jws_decoder.go"],
+    importpath = "github.com/ndscm/theseed/seed/infra/jwt/go/jwsdecoder",
     visibility = ["//visibility:public"],
     deps = [
         "//seed/infra/error/go/seederr",
