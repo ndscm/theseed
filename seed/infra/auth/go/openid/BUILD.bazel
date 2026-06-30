@@ -6,7 +6,6 @@ go_library(
         "configuration.go",
         "discovery.go",
         "external_token_storage.go",
-        "jwks.go",
         "memory_token_storage.go",
         "openid_client.go",
         "openid_provider.go",

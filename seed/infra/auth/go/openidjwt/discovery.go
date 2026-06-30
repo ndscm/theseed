@@ -18,6 +18,7 @@ import (
 	"github.com/ndscm/theseed/seed/infra/auth/go/openid"
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
 	"github.com/ndscm/theseed/seed/infra/flag/go/seedflag"
+	"github.com/ndscm/theseed/seed/infra/jwt/go/jwtcore"
 	"github.com/ndscm/theseed/seed/infra/log/go/seedlog"
 )
 
@@ -28,7 +29,7 @@ var flagTrustOpenidIssuersFile = seedflag.DefineFile(
 
 const refreshCooldown = 10 * time.Minute
 
-func loadPublicKey(jwk *openid.OpenidJwk) (crypto.PublicKey, error) {
+func loadPublicKey(jwk *jwtcore.Jwk) (crypto.PublicKey, error) {
 	switch jwk.Kty {
 	case "RSA":
 		if jwk.N == "" || jwk.E == "" {
@@ -141,7 +142,7 @@ func fetchOpenidIssuerJwks(ctx context.Context, discoveryUrl string) (string, *O
 	if err != nil {
 		return "", nil, seederr.Wrap(err)
 	}
-	jwks, err := openid.DecodeOpenidJwks(jwksBytes)
+	jwks, err := jwtcore.DecodeJwks(jwksBytes)
 	if err != nil {
 		return "", nil, seederr.Wrap(err)
 	}
