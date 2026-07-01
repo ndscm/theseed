@@ -10,6 +10,7 @@ CMD [ \
   "--openid_discovery_url", "https://account.ndscm.com/realms/ndscm/.well-known/openid-configuration", \
   "--sfe_openid_client_id", "sfe-prod", \
   "--sfe_openid_client_secret_file", "/run/secrets/SFE_OPENID_CLIENT_SECRET/latest", \
+  "--sfe_openid_client_private_key_file", "/run/secrets/SFE_OPENID_CLIENT_PRIVATE_KEY/latest.pem", \
   "--golink_openid_client_id", "golink-sfe-prod", \
   "--golink_service_server", "https://seed-devprod-golink-prod-58770640413.us-west1.run.app", \
   "--kurisu_openid_discovery_url", "https://account.ndscm.com/realms/ndscm/.well-known/openid-configuration", \
