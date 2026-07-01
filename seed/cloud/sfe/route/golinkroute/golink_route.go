@@ -1,13 +1,13 @@
 package golinkroute
 
 import (
-	"context"
 	"net/http"
 	"net/http/httputil"
 	"net/url"
 	"strings"
 	"time"
 
+	"github.com/ndscm/theseed/seed/cloud/sfe/signedjwt"
 	"github.com/ndscm/theseed/seed/infra/auth/go/authfe"
 	"github.com/ndscm/theseed/seed/infra/auth/go/openid"
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
@@ -16,19 +16,19 @@ import (
 
 var flagGolinkServiceServer = seedflag.DefineString(
 	"golink_service_server", "http://127.0.0.1:4656",
-	"URL of Golink service server",
+	"URL of the Golink service server.",
 )
 var flagGolinkOpenidDiscoveryUrl = seedflag.DefineString(
 	"golink_openid_discovery_url", "",
-	"Discovery URL of Golink OpenID provider. If not specified, will use default OpenID Discovery URL",
+	"Discovery URL for the Golink OpenID provider, used only when a client ID is set. Defaults to the standard OpenID discovery URL when left empty.",
 )
 var flagGolinkOpenidClientId = seedflag.DefineString(
 	"golink_openid_client_id", "",
-	"Client ID for Golink OpenID provider",
+	"Client ID for the Golink OpenID provider. Falls back to the SFE OpenID client when left empty.",
 )
 var flagGolinkOpenidClientSecret = seedflag.DefineSecret(
 	"golink_openid_client_secret",
-	"Client secret for Golink OpenID provider. If not specified, will use SFE OpenID client with signed assertion",
+	"Client secret for the Golink OpenID provider. When left empty, a signed assertion is attempted instead.",
 )
 
 type GolinkRoute struct {
@@ -58,18 +58,13 @@ func CreateGolinkRoute(sfeOpenidClient *openid.OpenidClient) (*GolinkRoute, erro
 	if err != nil {
 		return nil, seederr.Wrap(err)
 	}
-	golinkOpenidClient := openid.NewOpenidClient(
-		discoveryUrl, clientId, clientSecret,
+	client, err := signedjwt.WrapOpenidClient(
+		discoveryUrl, clientId, clientSecret, sfeOpenidClient,
 	)
-	if clientSecret == "" && sfeOpenidClient != nil {
-		refreshCtx := context.Background()
-		sfeTokenSource, err := sfeOpenidClient.GetTokenSource(refreshCtx, []string{"openid"})
-		if err != nil {
-			return nil, seederr.Wrap(err)
-		}
-		golinkOpenidClient.SetClientAssertion(sfeTokenSource)
+	if err != nil {
+		return nil, seederr.Wrap(err)
 	}
-	provider := openid.NewOpenidProvider(golinkOpenidClient, "golink_")
+	provider := openid.NewOpenidProvider(client, "golink_")
 	authHandler := authfe.NewAuthHandler(provider)
 
 	// Create Reverse Proxy
