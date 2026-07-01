@@ -100,7 +100,7 @@ func CreateSfeRouteHandler(sfeOpenidClient *openid.OpenidClient) (*SfeRouteHandl
 	if err != nil {
 		return nil, seederr.Wrap(err)
 	}
-	kurisuRoute, err := kurisuroute.CreateKurisuRoute(optimizedTransport)
+	kurisuRoute, err := kurisuroute.CreateKurisuRoute(sfeOpenidClient)
 	if err != nil {
 		return nil, seederr.Wrap(err)
 	}
