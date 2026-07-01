@@ -12,7 +12,7 @@ import (
 )
 
 var flagSfeOpenidClientPrivateKey = seedflag.DefineSecret(
-	"sfe_openid_client_private_key",
+	"openid_client_private_key",
 	"Client PEM Key for OpenID Connect Private Key JWT",
 )
 
