@@ -139,6 +139,12 @@ if [[ ",${maintain_scopes}," == *",user,"* ]]; then
       tar fxz - -C "${HOME}/.local/bin"
   fi
 
+  if [[ "${oslike}" == "debian" || "${oslike}" == "darwin" ]]; then
+    curl -fsSL "https://raw.githubusercontent.com/ndscm/theseed/refs/heads/main/seed/vendor/direnv/bin/direnv" \
+      >"${HOME}/.local/bin/direnv"
+    chmod +x "${HOME}/.local/bin/direnv"
+  fi
+
   printf "\e[32m[user] Check basic packages done.\e[0m\n"
 fi
 
