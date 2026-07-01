@@ -6,6 +6,7 @@ go_library(
     importpath = "github.com/ndscm/theseed/seed/cloud/sfe/route/kurisuroute",
     visibility = ["//visibility:public"],
     deps = [
+        "//seed/cloud/sfe/signedjwt",
         "//seed/infra/auth/go/authfe",
         "//seed/infra/auth/go/openid",
         "//seed/infra/error/go/seederr",
