@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
+	"github.com/ndscm/theseed/seed/infra/log/go/seedlog"
 	"github.com/ndscm/theseed/seed/infra/shell/go/seedshell"
 )
 
@@ -25,6 +26,50 @@ func Checkout(worktreePath string, branchName string) error {
 	err := seedshell.ImpureRun("git", append(gitArgs, "checkout", branchName)...)
 	if err != nil {
 		return seederr.WrapErrorf("failed to checkout branch %v: %w", branchName, err)
+	}
+	return nil
+}
+
+func CreateCommit(worktreePath string, message string) error {
+	gitArgs := []string{}
+	if worktreePath != "" {
+		gitArgs = append(gitArgs, "-C", worktreePath)
+	}
+	statuses, err := GetStatus(worktreePath)
+	if err != nil {
+		return seederr.Wrap(err)
+	}
+	if len(statuses) == 0 {
+		return seederr.WrapErrorf("no changes to commit")
+	}
+	// In git's porcelain status the first character is the staging-area (index)
+	// state and the second is the worktree state; "??" marks an untracked file.
+	staged := 0
+	unstaged := 0
+	for _, s := range statuses {
+		if s.Status == "??" {
+			unstaged++
+			continue
+		}
+		if s.Status[0] != ' ' {
+			staged++
+		}
+		if s.Status[1] != ' ' {
+			unstaged++
+		}
+	}
+	if staged == 0 {
+		seedlog.Warnf("Staging all change(s) first. count=%v", unstaged)
+		err = seedshell.ImpureRun("git", append(gitArgs, "add", "--all")...)
+		if err != nil {
+			return seederr.WrapErrorf("failed to stage all changes: %w", err)
+		}
+	} else if unstaged > 0 {
+		seedlog.Warnf("Unstaged change(s) exist. count=%v", unstaged)
+	}
+	err = seedshell.ImpureRun("git", append(gitArgs, "commit", "-m", message)...)
+	if err != nil {
+		return seederr.WrapErrorf("failed to commit: %w", err)
 	}
 	return nil
 }

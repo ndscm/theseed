@@ -351,6 +351,10 @@ func (g *GitProvider) Checkout(worktreePath string, branchName string) error {
 	return Checkout(worktreePath, branchName)
 }
 
+func (g *GitProvider) CreateCommit(worktreePath string, message string) error {
+	return CreateCommit(worktreePath, message)
+}
+
 func (g *GitProvider) CreateBranchWorktree(monorepoHome string, branchName string) (string, error) {
 	monorepoGitDir := guessMonorepoGitDir(monorepoHome)
 	return CreateBranchWorktree(monorepoGitDir, monorepoHome, branchName)
