@@ -15,6 +15,7 @@ import (
 	"github.com/ndscm/theseed/seed/cloud/sfe/route/kurisuroute"
 	"github.com/ndscm/theseed/seed/cloud/sfe/route/stuffroute"
 	"github.com/ndscm/theseed/seed/cloud/sfe/route/workflowroute"
+	"github.com/ndscm/theseed/seed/cloud/sfe/signedjwt"
 	"github.com/ndscm/theseed/seed/cloud/sqlsession"
 	"github.com/ndscm/theseed/seed/infra/auth/go/openid"
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
@@ -132,14 +133,18 @@ func run() error {
 	}
 
 	// Service login
+	discoveryUrl := openid.OpenidDiscoveryUrlFlag()
 	clientId := flagSfeOpenidClientId.Get()
 	clientSecret, err := flagSfeOpenidClientSecret.LoadString()
 	if err != nil {
 		return seederr.Wrap(err)
 	}
-	sfeOpenidClient := openid.NewOpenidClient(
-		openid.OpenidDiscoveryUrlFlag(), clientId, clientSecret,
+	sfeOpenidClient, err := signedjwt.WrapOpenidClient(
+		discoveryUrl, clientId, clientSecret, nil,
 	)
+	if err != nil {
+		return seederr.Wrap(err)
+	}
 
 	// Create routes
 	sfeRouteHandler, err := CreateSfeRouteHandler(sfeOpenidClient)

@@ -17,6 +17,7 @@ go_library(
         "//seed/cloud/sfe/route/kurisuroute",
         "//seed/cloud/sfe/route/stuffroute",
         "//seed/cloud/sfe/route/workflowroute",
+        "//seed/cloud/sfe/signedjwt",
         "//seed/cloud/sqlsession",
         "//seed/infra/auth/go/openid",
         "//seed/infra/error/go/seederr",
