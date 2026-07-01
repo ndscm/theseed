@@ -104,7 +104,7 @@ func CreateSfeRouteHandler(sfeOpenidClient *openid.OpenidClient) (*SfeRouteHandl
 	if err != nil {
 		return nil, seederr.Wrap(err)
 	}
-	stuffRoute, err := stuffroute.CreateStuffRoute(optimizedTransport)
+	stuffRoute, err := stuffroute.CreateStuffRoute(sfeOpenidClient)
 	if err != nil {
 		return nil, seederr.Wrap(err)
 	}
