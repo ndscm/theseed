@@ -202,6 +202,13 @@ type Provider interface {
 	// Checkout switches worktreePath to branchName.
 	Checkout(worktreePath string, branchName string) error
 
+	// CreateCommit records the staged changes in worktreePath as a new commit
+	// with the given message. When nothing is staged it first stages every
+	// change, including untracked files; when a subset is already staged it
+	// commits only that subset and leaves the rest unstaged. It fails if there
+	// are no changes to commit.
+	CreateCommit(worktreePath string, message string) error
+
 	// CreateBranchWorktree materializes branchName as a worktree at the
 	// conventional path under monorepoHome and returns that path.
 	CreateBranchWorktree(monorepoHome string, branchName string) (string, error)
