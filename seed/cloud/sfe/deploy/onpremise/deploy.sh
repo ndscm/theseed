@@ -99,3 +99,5 @@ rm -f ~/install-sfe.sh
 printf "Use this command to access the container:\n"
 printf "    \x1b[1;33mssh -t ${server} sudo machinectl shell ${service_user}@ /bin/bash\x1b[0m\n"
 printf "    \x1b[1;33mssh -t ${server} sudo machinectl shell ${service_user}@ /usr/bin/podman exec --interactive --tty --user sfe sfe /bin/bash\x1b[0m\n"
+
+ssh -t "${server}" sudo machinectl shell "${service_user}@" /usr/bin/podman logs --follow sfe
