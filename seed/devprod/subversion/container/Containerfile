@@ -1,0 +1,56 @@
+FROM ghcr.io/ndscm/ubuntu:latest AS seed-devprod-subversion-container
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+RUN apt update
+RUN apt install -y apache2
+RUN apt install -y apache2-utils
+RUN apt install -y libapache2-mod-svn
+RUN apt install -y subversion
+RUN apt install -y openssl
+
+# Serve repositories over HTTP(S) via mod_dav_svn and path-based
+# authorization via mod_authz_svn. mod_ssl is always loaded; the vhost
+# only turns SSLEngine on when the SVN_HTTPS define is set (see
+# entrypoint.sh), so it is inert for plain-HTTP deployments.
+RUN a2enmod dav
+RUN a2enmod dav_svn
+RUN a2enmod authz_svn
+RUN a2enmod ssl
+
+# Runtime configuration. These are expanded by Apache from the process
+# environment at startup (${VAR} syntax), so they can be overridden by
+# the container environment (e.g. the quadlet EnvironmentFile).
+ENV SVN_HTTPS=true
+ENV SVN_HTTPD_PORT=7863
+ENV SVN_SERVER_NAME=localhost
+ENV SVN_PARENT_PATH=/var/svn/repos
+ENV SVN_CONF_PATH=/var/svn/conf
+ENV SVN_AUTH_USER_FILE=/var/svn/conf/htpasswd
+ENV SVN_AUTHZ_FILE=/var/svn/conf/authz
+# Self-signed TLS material, generated on first start when SVN_HTTPS=true
+# and kept on the persistent volume so it survives restarts.
+ENV SVN_SSL_CERT_FILE=/var/svn/conf/server.crt
+ENV SVN_SSL_KEY_FILE=/var/svn/conf/server.key
+
+# Silence the global "could not reliably determine the server's fully
+# qualified domain name" warning; the vhost sets the real ServerName.
+RUN echo 'ServerName localhost' >>/etc/apache2/apache2.conf
+
+# Apache expands ${SVN_HTTPD_PORT} from the environment at startup. The
+# single quotes keep it literal so it is resolved at runtime, not build.
+RUN printf 'Listen %s\n' '${SVN_HTTPD_PORT}' >/etc/apache2/ports.conf
+
+COPY svn.conf /etc/apache2/sites-available/svn.conf
+RUN a2dissite 000-default
+RUN a2ensite svn
+
+COPY entrypoint.sh /usr/local/bin/entrypoint.sh
+
+# Repository data and auth configuration live on this volume so they
+# persist across container restarts and image updates.
+VOLUME /var/svn
+
+EXPOSE 7863
+
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
