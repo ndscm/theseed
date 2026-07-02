@@ -14,6 +14,7 @@ if [[ ",${maintain_scopes}," == *",system,"* ]]; then
     sudo -E apt install -y davfs2
     sudo -E apt install -y default-jdk
     sudo -E apt install -y direnv
+    sudo -E apt install -y fuse3
     sudo -E apt install -y g++
     sudo -E apt install -y gcc
     sudo -E apt install -y git
@@ -29,6 +30,7 @@ if [[ ",${maintain_scopes}," == *",system,"* ]]; then
     sudo -E apt install -y p7zip-rar
     sudo -E apt install -y python3
     sudo -E apt install -y python3-pip
+    sudo -E apt install -y rclone
     sudo -E apt install -y rsync
     sudo -E apt install -y ssh
     sudo -E apt install -y vim
