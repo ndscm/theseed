@@ -66,6 +66,10 @@ func (cc *ClientCore) NdShell(options NdShellOptions) error {
 	return NdShell(options)
 }
 
+func (cc *ClientCore) NdSplit(options NdSplitOptions) error {
+	return NdSplit(cc.scmProvider, options)
+}
+
 func (cc *ClientCore) NdSubmit(options NdSubmitOptions) error {
 	return NdSubmit(cc.scmProvider, options)
 }
