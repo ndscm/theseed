@@ -30,6 +30,24 @@ func Checkout(worktreePath string, branchName string) error {
 	return nil
 }
 
+func RestoreWorktree(worktreePath string, source string, staging bool) error {
+	gitArgs := []string{}
+	if worktreePath != "" {
+		gitArgs = append(gitArgs, "-C", worktreePath)
+	}
+	gitArgs = append(gitArgs, "restore", "--source="+source, "--worktree")
+	if staging {
+		gitArgs = append(gitArgs, "--staged")
+	}
+	// ":/" is git's magic pathspec for the repository root, so every tracked
+	// file is restored regardless of the current working directory.
+	err := seedshell.ImpureRun("git", append(gitArgs, "--", ":/")...)
+	if err != nil {
+		return seederr.WrapErrorf("failed to restore from %v: %w", source, err)
+	}
+	return nil
+}
+
 func CreateCommit(worktreePath string, message string) error {
 	gitArgs := []string{}
 	if worktreePath != "" {
