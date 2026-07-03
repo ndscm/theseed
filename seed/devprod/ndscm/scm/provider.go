@@ -214,33 +214,4 @@ type Provider interface {
 	// RemoveWorktree deletes the worktree for worktreeName under
 	// monorepoHome. The branch of the same name is left intact.
 	RemoveWorktree(monorepoHome string, worktreeName string) error
-
-	// GetMeltWorktree returns the melt branch name and its conventional
-	// worktree path under monorepoHome for ownerHandle and upstreamName,
-	// along with whether that worktree currently exists. The branch is
-	// "<owner>/melt/<upstreamName>" (upstreamName defaults to "default").
-	GetMeltWorktree(
-		monorepoHome string, ownerHandle string, upstreamName string,
-	) (string, string, bool)
-
-	// CreateMeltWorktree creates a worktree for melting upstream changes.
-	// It creates a base branch at fromPoint tracking the given tracking
-	// ref, a working branch at toPoint tracking the base branch, and
-	// materializes the worktree. The working branch is
-	// "<owner>/melt/<upstreamName>", and the base branch is its matching
-	// base branch. After creation, the base branch is updated to forkPoint
-	// so that a subsequent rebase replays only the commits between
-	// forkPoint and toPoint.
-	CreateMeltWorktree(
-		monorepoHome string, ownerHandle string,
-		upstreamName string, fromPoint string, tracking string, forkPoint string,
-	) (string, error)
-
-	// RemoveMeltWorktree removes the melt worktree, its working branch,
-	// and its base branch under monorepoHome. It fails if the worktree
-	// has dirty files. It returns the new working directory if the
-	// caller was inside the removed worktree, or "" otherwise.
-	RemoveMeltWorktree(
-		monorepoHome string, ownerHandle string, upstreamName string,
-	) (string, error)
 }
