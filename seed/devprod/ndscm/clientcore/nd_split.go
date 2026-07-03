@@ -37,6 +37,14 @@ func NdSplit(scmProvider scm.Provider, options NdSplitOptions) error {
 		return seederr.WrapErrorf("current worktree is not a dev worktree: %v", devWorktreeName)
 	}
 
+	wipStatus, err := scmProvider.LoadWipStatus("")
+	if err != nil {
+		return seederr.Wrap(err)
+	}
+	if wipStatus != nil {
+		return seederr.WrapErrorf("wip status already exists")
+	}
+
 	wipBranchName, err := scm.GetWipBranchName(devWorktreeName)
 	if err != nil {
 		return seederr.Wrap(err)
@@ -97,6 +105,16 @@ func NdSplit(scmProvider scm.Provider, options NdSplitOptions) error {
 		return seederr.Wrap(err)
 	}
 	err = scmProvider.Checkout("", wipBranchName)
+	if err != nil {
+		return seederr.Wrap(err)
+	}
+	err = scmProvider.SaveWipStatus("", &scm.WipStatus{
+		Operation: "split",
+		Split: &scm.WipSplitStatus{
+			Belong:   currentBranch,
+			CommitId: targetCommitId,
+		},
+	})
 	if err != nil {
 		return seederr.Wrap(err)
 	}
