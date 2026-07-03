@@ -57,7 +57,7 @@ func NdSubmit(scmProvider scm.Provider, options NdSubmitOptions) error {
 	if err != nil {
 		return seederr.Wrap(err)
 	}
-	changeBranch, err := scm.ChangeBranchName(devBranch, options.FeatureName)
+	changeBranch, err := scm.GetChangeBranchName(devBranch, options.FeatureName)
 	if err != nil {
 		return seederr.Wrap(err)
 	}

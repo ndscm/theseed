@@ -28,7 +28,7 @@ func NdChange(scmProvider scm.Provider, options NdChangeOptions) error {
 		return seederr.WrapErrorf("current worktree is not a dev worktree: %v", devWorktreeName)
 	}
 
-	changeBranch, err := scm.ChangeBranchName(devWorktreeName, options.FeatureName)
+	changeBranch, err := scm.GetChangeBranchName(devWorktreeName, options.FeatureName)
 	if err != nil {
 		return seederr.Wrap(err)
 	}

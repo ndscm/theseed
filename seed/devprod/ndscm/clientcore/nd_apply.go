@@ -152,7 +152,7 @@ func NdApply(scmProvider scm.Provider, options NdApplyOptions) error {
 		return seederr.WrapErrorf("branch %v is not in the tracking chain of %v", activeBranch, devWorktreeName)
 	}
 
-	changeBranch, err := scm.ChangeBranchName(devWorktreeName, options.FeatureName)
+	changeBranch, err := scm.GetChangeBranchName(devWorktreeName, options.FeatureName)
 	if err != nil {
 		return seederr.Wrap(err)
 	}
