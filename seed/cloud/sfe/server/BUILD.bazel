@@ -25,6 +25,7 @@ go_library(
         "//seed/infra/http/go/seedsession",
         "//seed/infra/init/go/seedinit",
         "//seed/infra/log/go/seedlog",
+        "//seed/infra/tier/go/servicetier",
         "@org_golang_x_sync//errgroup",
     ],
 )
