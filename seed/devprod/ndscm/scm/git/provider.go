@@ -4,7 +4,6 @@ import (
 	"errors"
 	"os"
 	"path/filepath"
-	"slices"
 	"strings"
 
 	"github.com/ndscm/theseed/seed/devprod/ndscm/scm"
@@ -137,36 +136,6 @@ func (g *GitProvider) SetBranchTracking(branchName string, tracking string) erro
 
 func (g *GitProvider) GetMergeBaseCommitId(base string, target string) (string, error) {
 	return GetMergeBaseHash("", base, target)
-}
-
-func (g *GitProvider) IsDevBranch(branchName string) bool {
-	ownerHandle, branchType, _, err := scm.ParseCanonicalBranch(branchName)
-	if err != nil {
-		return false
-	}
-	reservedHandles := []string{"base", "change", "main", "melt", "review", "submit"}
-	if slices.Contains(reservedHandles, ownerHandle) {
-		return false
-	}
-	if branchType == "dev" {
-		return true
-	}
-	return false
-}
-
-func (g *GitProvider) IsMeltBranch(branchName string) bool {
-	ownerHandle, branchType, _, err := scm.ParseCanonicalBranch(branchName)
-	if err != nil {
-		return false
-	}
-	reservedHandles := []string{"base", "change", "main", "melt", "review", "submit"}
-	if slices.Contains(reservedHandles, ownerHandle) {
-		return false
-	}
-	if branchType == "melt" {
-		return true
-	}
-	return false
 }
 
 // # commit
