@@ -15,18 +15,24 @@ func NdChange(scmProvider scm.Provider, options NdChangeOptions) error {
 	if seedshell.ShellEval() {
 		return seederr.WrapErrorf("nd-change should not run with --shell-eval")
 	}
-	devBranch, err := scmProvider.GetWorktreeBranch("")
+
+	monorepoHome, err := scm.MonorepoHome()
 	if err != nil {
 		return seederr.Wrap(err)
 	}
-	if !scmProvider.IsDevBranch(devBranch) {
-		return seederr.WrapErrorf("workspace branch is not a dev branch: %v", devBranch)
-	}
-	changeBranch, err := scm.ChangeBranchName(devBranch, options.FeatureName)
+	devWorktreeName, _, err := scmProvider.GetCurrentWorktree(monorepoHome)
 	if err != nil {
 		return seederr.Wrap(err)
 	}
-	currentBranch := devBranch
+	if !scm.IsBranchType(devWorktreeName, "dev") {
+		return seederr.WrapErrorf("current worktree is not a dev worktree: %v", devWorktreeName)
+	}
+
+	changeBranch, err := scm.ChangeBranchName(devWorktreeName, options.FeatureName)
+	if err != nil {
+		return seederr.Wrap(err)
+	}
+	currentBranch := devWorktreeName
 	for !scm.IsBranchType(currentBranch, "base") {
 		trackingBranch, err := scmProvider.GetBranchTracking(currentBranch)
 		if err != nil {
@@ -53,5 +59,5 @@ func NdChange(scmProvider scm.Provider, options NdChangeOptions) error {
 		}
 		currentBranch = trackingBranch
 	}
-	return seederr.WrapErrorf("change branch %v not found in tracking chain of %v", changeBranch, devBranch)
+	return seederr.WrapErrorf("change branch %v not found in tracking chain of %v", changeBranch, devWorktreeName)
 }

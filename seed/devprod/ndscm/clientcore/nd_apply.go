@@ -49,6 +49,7 @@ func NdApply(scmProvider scm.Provider, options NdApplyOptions) error {
 	if seedshell.ShellEval() {
 		return seederr.WrapErrorf("nd-apply should not run with --shell-eval")
 	}
+
 	monorepoHome, err := scm.MonorepoHome()
 	if err != nil {
 		return seederr.Wrap(err)
@@ -61,9 +62,10 @@ func NdApply(scmProvider scm.Provider, options NdApplyOptions) error {
 	if err != nil {
 		return seederr.Wrap(err)
 	}
-	if !scmProvider.IsDevBranch(devWorktreeName) {
+	if !scm.IsBranchType(devWorktreeName, "dev") {
 		return seederr.WrapErrorf("current worktree is not a dev worktree: %v", devWorktreeName)
 	}
+
 	dirtyFiles, err := scmProvider.ListDirtyFiles("")
 	if err != nil {
 		return seederr.Wrap(err)
