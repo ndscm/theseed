@@ -91,14 +91,6 @@ type Provider interface {
 	// ancestor of base and target.
 	GetMergeBaseCommitId(base string, target string) (string, error)
 
-	// IsDevBranch reports whether branchName is a dev branch, meaning an
-	// "<owner>/dev/<focus>" branch whose owner is not a reserved handle.
-	IsDevBranch(branchName string) bool
-
-	// IsMeltBranch reports whether branchName is a melt branch, meaning an
-	// "<owner>/melt/<upstream>" branch whose owner is not a reserved handle.
-	IsMeltBranch(branchName string) bool
-
 	// # commit
 
 	// GetCommitId resolves commit (a ref, partial id, or full id) to a full
