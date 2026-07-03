@@ -11,6 +11,7 @@ go_library(
         "flag_item.go",
         "secret_flag.go",
         "string_flag.go",
+        "string_list_flag.go",
     ],
     importpath = "github.com/ndscm/theseed/seed/infra/flag/go/seedflag",
     deps = [

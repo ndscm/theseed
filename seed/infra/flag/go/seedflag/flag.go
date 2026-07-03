@@ -91,6 +91,12 @@ func (cf *CommandFlags) DefineString(name string, defaultValue string, usage str
 	return item
 }
 
+func (cf *CommandFlags) DefineStringList(name string, defaultValues []string, usage string) *StringListFlag {
+	item := newStringListFlag(defaultValues, usage)
+	cf.flags[name] = item
+	return item
+}
+
 func (cf *CommandFlags) DefineFile(name string, defaultValue string, usage string) *FileFlag {
 	item := newFileFlag(defaultValue, usage)
 	cf.flags[name] = item
@@ -211,6 +217,10 @@ func DefineBool(name string, defaultValue bool, usage string) *BoolFlag {
 
 func DefineString(name string, defaultValue string, usage string) *StringFlag {
 	return globalFlags.DefineString(name, defaultValue, usage)
+}
+
+func DefineStringList(name string, defaultValues []string, usage string) *StringListFlag {
+	return globalFlags.DefineStringList(name, defaultValues, usage)
 }
 
 func DefineFile(name string, defaultValue string, usage string) *FileFlag {
