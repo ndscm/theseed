@@ -117,6 +117,10 @@ func (g *GitProvider) GetBranch(branchName string) (string, error) {
 	return GetBranch("", branchName)
 }
 
+func (g *GitProvider) UpdateBranch(branchName string, newPoint string) error {
+	return UpdateBranch("", branchName, newPoint)
+}
+
 func (g *GitProvider) DeleteBranch(branchName string) error {
 	return DeleteBranch("", branchName)
 }
