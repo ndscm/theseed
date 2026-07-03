@@ -323,6 +323,10 @@ func (g *GitProvider) Checkout(worktreePath string, branchName string) error {
 	return Checkout(worktreePath, branchName)
 }
 
+func (g *GitProvider) RestoreWorktree(worktreePath string, source string, staging bool) error {
+	return RestoreWorktree(worktreePath, source, staging)
+}
+
 func (g *GitProvider) CreateCommit(worktreePath string, message string) error {
 	return CreateCommit(worktreePath, message)
 }
