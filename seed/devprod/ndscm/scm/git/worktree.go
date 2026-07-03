@@ -92,6 +92,18 @@ func CreateCommit(worktreePath string, message string) error {
 	return nil
 }
 
+func CreateCommitReuse(worktreePath string, commit string) error {
+	gitArgs := []string{}
+	if worktreePath != "" {
+		gitArgs = append(gitArgs, "-C", worktreePath)
+	}
+	err := seedshell.ImpureRun("git", append(gitArgs, "commit", "-C", commit, "--no-edit", "--allow-empty")...)
+	if err != nil {
+		return seederr.WrapErrorf("failed to commit reusing %v: %w", commit, err)
+	}
+	return nil
+}
+
 func CreateWorktree(gitDir string, worktreePath string, branchName string) error {
 	if gitDir == "" {
 		return seederr.WrapErrorf("git dir is required")
