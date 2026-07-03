@@ -2,6 +2,7 @@ package clientcore
 
 import (
 	"os"
+	"path/filepath"
 
 	"github.com/ndscm/theseed/seed/devprod/ndscm/scm"
 	"github.com/ndscm/theseed/seed/devprod/ndscm/user"
@@ -61,7 +62,7 @@ func NdSubmit(scmProvider scm.Provider, options NdSubmitOptions) error {
 	if err != nil {
 		return seederr.Wrap(err)
 	}
-	worktreePath := scmProvider.GetBranchWorktree(monorepoHome, submitBranch)
+	worktreePath := filepath.Join(monorepoHome, submitBranch)
 	_, err = os.Stat(worktreePath)
 	if err != nil && !os.IsNotExist(err) {
 		return seederr.Wrap(err)
