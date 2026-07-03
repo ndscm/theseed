@@ -21,6 +21,7 @@ go_library(
         "search.go",
         "status.go",
         "verify.go",
+        "wip.go",
         "worktree.go",
     ],
     importpath = "github.com/ndscm/theseed/seed/devprod/ndscm/scm/git",

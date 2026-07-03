@@ -298,6 +298,20 @@ func (g *GitProvider) GetWorktreeOperation(worktreePath string) (string, error) 
 	return GetCurrentOperation(worktreePath)
 }
 
+// # wip
+
+func (g *GitProvider) LoadWipStatus(worktreePath string) (*scm.WipStatus, error) {
+	return LoadWipStatus(worktreePath)
+}
+
+func (g *GitProvider) SaveWipStatus(worktreePath string, status *scm.WipStatus) error {
+	return SaveWipStatus(worktreePath, status)
+}
+
+func (g *GitProvider) RemoveWipStatus(worktreePath string, force bool) error {
+	return RemoveWipStatus(worktreePath, force)
+}
+
 // # worktree
 
 func (g *GitProvider) GetCurrentWorktree(monorepoHome string) (string, string, error) {
