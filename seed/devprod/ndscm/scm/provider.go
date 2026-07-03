@@ -201,12 +201,15 @@ type Provider interface {
 	// are no changes to commit.
 	CreateCommit(worktreePath string, message string) error
 
-	// CreateBranchWorktree materializes branchName as a worktree at the
-	// conventional path under monorepoHome and returns that path.
-	CreateBranchWorktree(monorepoHome string, branchName string) (string, error)
+	// CreateWorktree materializes the worktree at the conventional path for
+	// worktreeName under monorepoHome and returns that path. A branch named
+	// worktreeName must already exist; it is the branch checked out in the
+	// new worktree.
+	CreateWorktree(monorepoHome string, worktreeName string) (string, error)
 
-	// RemoveWorktree deletes the worktree at worktreePath.
-	RemoveWorktree(monorepoHome string, worktreePath string) error
+	// RemoveWorktree deletes the worktree for worktreeName under
+	// monorepoHome. The branch of the same name is left intact.
+	RemoveWorktree(monorepoHome string, worktreeName string) error
 
 	// GetDevWorktree returns the dev branch name and its conventional
 	// worktree path under monorepoHome for ownerHandle and focus, along
