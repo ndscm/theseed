@@ -41,7 +41,10 @@ func NdSync(scmProvider scm.Provider, _ NdSyncOptions) error {
 		return seederr.WrapErrorf("workspace is not a ndscm managed worktree: %v", worktreeName)
 	}
 
-	baseBranch := scm.BaseBranchName(worktreeName)
+	baseBranch, err := scm.GetBaseBranchName(worktreeName)
+	if err != nil {
+		return seederr.Wrap(err)
+	}
 	// # Iterate changes tree
 	chain := []string{worktreeName}
 	for iter := worktreeName; iter != baseBranch; {
