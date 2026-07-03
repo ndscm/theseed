@@ -45,7 +45,7 @@ func NdCut(scmProvider scm.Provider, options NdCutOptions) error {
 		return seederr.WrapErrorf("feature name %v must not contain /", options.FeatureName)
 	}
 
-	changeBranch, err := scm.ChangeBranchName(devWorktreeName, options.FeatureName)
+	changeBranch, err := scm.GetChangeBranchName(devWorktreeName, options.FeatureName)
 	if err != nil {
 		return seederr.Wrap(err)
 	}
