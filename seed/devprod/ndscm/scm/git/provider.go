@@ -220,8 +220,8 @@ func (g *GitProvider) ApplyFormatPatch(worktreePath string, formatPatch string) 
 	return ApplyFormatPatch(worktreePath, formatPatch)
 }
 
-func (g *GitProvider) Rebase(worktreePath string, upstream string) error {
-	return Rebase(worktreePath, upstream)
+func (g *GitProvider) Rebase(worktreePath string, upstream string, onto string) error {
+	return Rebase(worktreePath, upstream, onto)
 }
 
 func (g *GitProvider) PullRebase(worktreePath string) error {

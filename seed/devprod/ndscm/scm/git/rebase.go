@@ -28,14 +28,19 @@ func ApplyFormatPatch(worktreePath string, patch string) error {
 	return nil
 }
 
-func Rebase(worktreePath string, upstream string) error {
+func Rebase(worktreePath string, upstream string, onto string) error {
 	gitArgs := []string{}
 	if worktreePath != "" {
 		gitArgs = append(gitArgs, "-C", worktreePath)
 	}
-	err := seedshell.ImpureRun("git", append(gitArgs, "rebase", upstream)...)
+	gitArgs = append(gitArgs, "rebase")
+	if onto != "" {
+		gitArgs = append(gitArgs, "--onto", onto)
+	}
+	gitArgs = append(gitArgs, upstream)
+	err := seedshell.ImpureRun("git", gitArgs...)
 	if err != nil {
-		return seederr.WrapErrorf("failed to rebase onto %v: %w", upstream, err)
+		return seederr.WrapErrorf("failed to rebase (upstream %v) onto %v: %w", upstream, onto, err)
 	}
 	return nil
 }
