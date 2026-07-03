@@ -132,7 +132,10 @@ func NdApply(scmProvider scm.Provider, options NdApplyOptions) error {
 	}
 
 	// Walk chain and validate, find child of activeBranch.
-	baseBranch := scm.BaseBranchName(devWorktreeName)
+	baseBranch, err := scm.GetBaseBranchName(devWorktreeName)
+	if err != nil {
+		return seederr.Wrap(err)
+	}
 	currentBranch := devWorktreeName
 	childBranch := ""
 	for currentBranch != baseBranch {

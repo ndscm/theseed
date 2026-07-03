@@ -48,8 +48,11 @@ func createDevWorktree(
 		return "", seederr.WrapErrorf("worktree path already exists. path=%v", worktreePath)
 	}
 	branchName := worktreeName
-	baseBranchName := scm.BaseBranchName(branchName)
-	err := scmProvider.CreateBranch(baseBranchName, tracking, tracking)
+	baseBranchName, err := scm.GetBaseBranchName(branchName)
+	if err != nil {
+		return "", seederr.Wrap(err)
+	}
+	err = scmProvider.CreateBranch(baseBranchName, tracking, tracking)
 	if err != nil {
 		return "", seederr.WrapErrorf("failed to create base branch %v: %v", baseBranchName, err)
 	}
@@ -70,7 +73,10 @@ func removeDevWorktree(
 ) (string, error) {
 	worktreeName, worktreePath, _ := getDevWorktree(monorepoHome, ownerHandle, focus)
 	branchName := worktreeName
-	baseBranchName := scm.BaseBranchName(branchName)
+	baseBranchName, err := scm.GetBaseBranchName(branchName)
+	if err != nil {
+		return "", seederr.Wrap(err)
+	}
 	_, currentWorktreePath, err := scmProvider.GetCurrentWorktree(monorepoHome)
 	if err != nil {
 		return "", seederr.Wrap(err)

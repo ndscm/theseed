@@ -57,8 +57,11 @@ func createMeltWorktree(
 		return "", seederr.WrapErrorf("worktree path already exists. path=%v", worktreePath)
 	}
 	branchName := worktreeName
-	baseBranchName := scm.BaseBranchName(branchName)
-	err := scmProvider.CreateBranch(baseBranchName, fromPoint, tracking)
+	baseBranchName, err := scm.GetBaseBranchName(branchName)
+	if err != nil {
+		return "", seederr.Wrap(err)
+	}
+	err = scmProvider.CreateBranch(baseBranchName, fromPoint, tracking)
 	if err != nil {
 		return "", seederr.WrapErrorf("failed to create base branch %v: %v", baseBranchName, err)
 	}
@@ -88,7 +91,10 @@ func removeMeltWorktree(
 	}
 	worktreeName, worktreePath, _ := getMeltWorktree(monorepoHome, ownerHandle, upstreamName)
 	branchName := worktreeName
-	baseBranchName := scm.BaseBranchName(branchName)
+	baseBranchName, err := scm.GetBaseBranchName(branchName)
+	if err != nil {
+		return "", seederr.Wrap(err)
+	}
 	_, currentWorktreePath, err := scmProvider.GetCurrentWorktree(monorepoHome)
 	if err != nil {
 		return "", seederr.Wrap(err)

@@ -29,15 +29,15 @@ func IsBranchType(branchName string, expectedBranchType string) bool {
 	return branchType == expectedBranchType
 }
 
-// BaseBranchName returns the base branch tracking branchName. The base is the
-// same owner/focus under the "base" branch type
-// (e.g. "alice/dev/web" -> "alice/base/dev/web").
-func BaseBranchName(branchName string) string {
+// GetBaseBranchName returns the name of the base branch tracking branchName. The
+// base branch has the same owner and remainder as branchName, with "base"
+// inserted as the branch type (e.g. "christina/dev/web" -> "christina/base/dev/web").
+func GetBaseBranchName(branchName string) (string, error) {
 	ownerHandle, branchType, remain, err := ParseCanonicalBranch(branchName)
 	if err != nil {
-		return ""
+		return "", seederr.Wrap(err)
 	}
-	return ownerHandle + "/base/" + branchType + "/" + remain
+	return ownerHandle + "/base/" + branchType + "/" + remain, nil
 }
 
 // GetChangeBranchName returns the change branch for featureName on devBranch. It is
