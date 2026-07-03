@@ -79,15 +79,16 @@ func NdSync(scmProvider scm.Provider, _ NdSyncOptions) error {
 		return seederr.Wrap(err)
 	}
 	seedlog.Infof("\x1b[34mRebasing onto %v: %v\x1b[0m", baseTracking, chain)
-	incomingCommits, err := scmProvider.ListCommitIds(baseBranch, baseTracking)
+	mergeBaseCommitId, err := scmProvider.GetMergeBaseCommitId(baseBranch, baseTracking)
 	if err != nil {
 		return seederr.Wrap(err)
 	}
-	baseCommitId, err := scmProvider.GetCommitId(baseBranch)
+	incomingCommits := []string{mergeBaseCommitId}
+	trackingIncomingCommits, err := scmProvider.ListCommitIds(mergeBaseCommitId, baseTracking)
 	if err != nil {
 		return seederr.Wrap(err)
 	}
-	incomingCommits = append(incomingCommits, baseCommitId)
+	incomingCommits = append(incomingCommits, trackingIncomingCommits...)
 	for _, incomingCommitId := range incomingCommits {
 		seedlog.Infof("\x1b[34mRebasing to: %v\x1b[0m", incomingCommitId)
 		err := scmProvider.Checkout("", baseBranch)
