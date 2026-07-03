@@ -306,11 +306,11 @@ func (g *GitProvider) GetCurrentWorktree(monorepoHome string) (string, string, e
 	// current worktree may not be connected with ndscm (e.g. ci environment)
 	worktreeName := ""
 	if monorepoHome != "" {
-		branchWorktreeName, err := GetBranchWorktreeBranch(monorepoHome, worktreePath)
+		tmpWorktreeName, err := filepath.Rel(monorepoHome, worktreePath)
 		if err != nil {
 			return "", "", seederr.Wrap(err)
 		}
-		worktreeName = branchWorktreeName
+		worktreeName = tmpWorktreeName
 	}
 
 	return worktreeName, worktreePath, nil
@@ -329,14 +329,6 @@ func (g *GitProvider) CreateBranchWorktree(monorepoHome string, branchName strin
 	return CreateBranchWorktree(monorepoGitDir, monorepoHome, branchName)
 }
 
-func (g *GitProvider) GetBranchWorktree(monorepoHome string, branchName string) string {
-	return GetBranchWorktreePath(monorepoHome, branchName)
-}
-
-func (g *GitProvider) GetBranchWorktreeBranch(monorepoHome string, worktreePath string) (string, error) {
-	return GetBranchWorktreeBranch(monorepoHome, worktreePath)
-}
-
 func (g *GitProvider) RemoveWorktree(monorepoHome string, worktreePath string) error {
 	monorepoGitDir := guessMonorepoGitDir(monorepoHome)
 	return RemoveWorktree(monorepoGitDir, worktreePath)
@@ -350,8 +342,7 @@ func (g *GitProvider) GetDevWorktree(
 		focus = "main"
 	}
 	worktreeName = ownerHandle + "/dev/" + focus
-
-	worktreePath := GetBranchWorktreePath(monorepoHome, worktreeName)
+	worktreePath := filepath.Join(monorepoHome, worktreeName)
 
 	exists := false
 	worktreeStat, err := os.Stat(worktreePath)
@@ -465,8 +456,7 @@ func (g *GitProvider) GetMeltWorktree(
 		upstreamName = "default"
 	}
 	worktreeName = ownerHandle + "/melt/" + upstreamName
-
-	worktreePath := GetBranchWorktreePath(monorepoHome, worktreeName)
+	worktreePath := filepath.Join(monorepoHome, worktreeName)
 
 	exists := false
 	worktreeStat, err := os.Stat(worktreePath)

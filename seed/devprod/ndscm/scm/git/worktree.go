@@ -107,19 +107,3 @@ func CreateBranchWorktree(gitDir string, monorepoHome string, branchName string)
 	}
 	return worktreePath, nil
 }
-
-func GetBranchWorktreePath(monorepoHome string, branchName string) string {
-	worktreePath := filepath.Join(monorepoHome, branchName)
-	return worktreePath
-}
-
-func GetBranchWorktreeBranch(monorepoHome string, worktreePath string) (string, error) {
-	branchName, err := filepath.Rel(monorepoHome, worktreePath)
-	if err != nil {
-		return "", seederr.Wrap(err)
-	}
-	if strings.HasPrefix(branchName, ".") {
-		return "", seederr.WrapErrorf("worktree is not under monorepo home: %v", branchName)
-	}
-	return branchName, nil
-}
