@@ -15,6 +15,11 @@ func NdUncut(scmProvider scm.Provider, options NdUncutOptions) error {
 	if seedshell.ShellEval() {
 		return seederr.WrapErrorf("nd-uncut should not run with --shell-eval")
 	}
+
+	monorepoHome, err := scm.MonorepoHome()
+	if err != nil {
+		return seederr.Wrap(err)
+	}
 	dirtyFiles, err := scmProvider.ListDirtyFiles("")
 	if err != nil {
 		return seederr.Wrap(err)
@@ -22,18 +27,20 @@ func NdUncut(scmProvider scm.Provider, options NdUncutOptions) error {
 	if len(dirtyFiles) > 0 {
 		return seederr.WrapErrorf("workspace is dirty:\n%v", dirtyFiles)
 	}
-	devBranch, err := scmProvider.GetWorktreeBranch("")
+	devWorktreeName, _, err := scmProvider.GetCurrentWorktree(monorepoHome)
 	if err != nil {
 		return seederr.Wrap(err)
 	}
-	if !scmProvider.IsDevBranch(devBranch) {
-		return seederr.WrapErrorf("workspace branch is not a dev branch: %v", devBranch)
+	if !scm.IsBranchType(devWorktreeName, "dev") {
+		return seederr.WrapErrorf("current worktree is not a dev worktree: %v", devWorktreeName)
 	}
-	changeBranch, err := scm.ChangeBranchName(devBranch, options.FeatureName)
+
+	changeBranch, err := scm.ChangeBranchName(devWorktreeName, options.FeatureName)
 	if err != nil {
 		return seederr.Wrap(err)
 	}
-	currentBranch := devBranch
+
+	currentBranch := devWorktreeName
 	childBranch := ""
 	for !scm.IsBranchType(currentBranch, "base") {
 		currentTrackingBranch, err := scmProvider.GetBranchTracking(currentBranch)
@@ -51,7 +58,7 @@ func NdUncut(scmProvider scm.Provider, options NdUncutOptions) error {
 		currentBranch = currentTrackingBranch
 	}
 	if childBranch == "" {
-		return seederr.WrapErrorf("change branch %v not found in tracking chain of %v", changeBranch, devBranch)
+		return seederr.WrapErrorf("change branch %v not found in tracking chain of %v", changeBranch, devWorktreeName)
 	}
 	changeTracking, err := scmProvider.GetBranchTracking(changeBranch)
 	if err != nil {

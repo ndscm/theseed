@@ -16,6 +16,7 @@ func NdSync(scmProvider scm.Provider, _ NdSyncOptions) error {
 	if seedshell.ShellEval() {
 		return seederr.WrapErrorf("nd-sync should not run with --shell-eval")
 	}
+
 	monorepoHome, err := scm.MonorepoHome()
 	if err != nil {
 		return seederr.Wrap(err)
@@ -35,10 +36,11 @@ func NdSync(scmProvider scm.Provider, _ NdSyncOptions) error {
 	if err != nil {
 		return seederr.Wrap(err)
 	}
-	if !scmProvider.IsDevBranch(worktreeName) &&
-		!scmProvider.IsMeltBranch(worktreeName) {
+	if !scm.IsBranchType(worktreeName, "dev") &&
+		!scm.IsBranchType(worktreeName, "melt") {
 		return seederr.WrapErrorf("workspace is not a ndscm managed worktree: %v", worktreeName)
 	}
+
 	baseBranch := scm.BaseBranchName(worktreeName)
 	// # Iterate changes tree
 	chain := []string{worktreeName}
