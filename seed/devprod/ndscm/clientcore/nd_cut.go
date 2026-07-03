@@ -21,6 +21,11 @@ func NdCut(scmProvider scm.Provider, options NdCutOptions) error {
 	if seedshell.ShellEval() {
 		return seederr.WrapErrorf("nd-cut should not run with --shell-eval")
 	}
+
+	monorepoHome, err := scm.MonorepoHome()
+	if err != nil {
+		return seederr.Wrap(err)
+	}
 	dirtyFiles, err := scmProvider.ListDirtyFiles("")
 	if err != nil {
 		return seederr.Wrap(err)
@@ -28,19 +33,19 @@ func NdCut(scmProvider scm.Provider, options NdCutOptions) error {
 	if len(dirtyFiles) > 0 {
 		return seederr.WrapErrorf("workspace is dirty:\n%v", dirtyFiles)
 	}
-	devBranch, err := scmProvider.GetWorktreeBranch("")
+	devWorktreeName, _, err := scmProvider.GetCurrentWorktree(monorepoHome)
 	if err != nil {
 		return seederr.Wrap(err)
 	}
-	if !scmProvider.IsDevBranch(devBranch) {
-		return seederr.WrapErrorf("workspace branch is not a dev branch: %v", devBranch)
+	if !scm.IsBranchType(devWorktreeName, "dev") {
+		return seederr.WrapErrorf("current worktree is not a dev worktree: %v", devWorktreeName)
 	}
 
 	if strings.Contains(options.FeatureName, "/") {
 		return seederr.WrapErrorf("feature name %v must not contain /", options.FeatureName)
 	}
 
-	changeBranch, err := scm.ChangeBranchName(devBranch, options.FeatureName)
+	changeBranch, err := scm.ChangeBranchName(devWorktreeName, options.FeatureName)
 	if err != nil {
 		return seederr.Wrap(err)
 	}
@@ -63,7 +68,7 @@ func NdCut(scmProvider scm.Provider, options NdCutOptions) error {
 	if err != nil {
 		return seederr.Wrap(err)
 	}
-	currentBranch := devBranch
+	currentBranch := devWorktreeName
 	trackingBranch := ""
 	for !scm.IsBranchType(currentBranch, "base") {
 		currentTrackingBranch, err := scmProvider.GetBranchTracking(currentBranch)
@@ -90,7 +95,7 @@ func NdCut(scmProvider scm.Provider, options NdCutOptions) error {
 		currentBranch = currentTrackingBranch
 	}
 	if trackingBranch == "" {
-		return seederr.WrapErrorf("target %v (%v) does not exist on %v branch", options.CutPoint, targetCommitId, devBranch)
+		return seederr.WrapErrorf("target %v (%v) does not exist on %v", options.CutPoint, targetCommitId, devWorktreeName)
 	}
 	err = scmProvider.CreateBranch(changeBranch, targetCommitId, trackingBranch)
 	if err != nil {
