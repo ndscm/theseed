@@ -205,15 +205,6 @@ type Provider interface {
 	// conventional path under monorepoHome and returns that path.
 	CreateBranchWorktree(monorepoHome string, branchName string) (string, error)
 
-	// GetBranchWorktree returns the conventional worktree path for branchName
-	// under monorepoHome. It does not check whether the worktree exists.
-	GetBranchWorktree(monorepoHome string, branchName string) string
-
-	// GetBranchWorktreeBranch returns the branch name implied by worktreePath
-	// under monorepoHome (the inverse of GetBranchWorktree). It fails if
-	// worktreePath is not under monorepoHome.
-	GetBranchWorktreeBranch(monorepoHome string, worktreePath string) (string, error)
-
 	// RemoveWorktree deletes the worktree at worktreePath.
 	RemoveWorktree(monorepoHome string, worktreePath string) error
 
