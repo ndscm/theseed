@@ -211,31 +211,6 @@ type Provider interface {
 	// monorepoHome. The branch of the same name is left intact.
 	RemoveWorktree(monorepoHome string, worktreeName string) error
 
-	// GetDevWorktree returns the dev branch name and its conventional
-	// worktree path under monorepoHome for ownerHandle and focus, along
-	// with whether that worktree currently exists. The branch is
-	// "<owner>/dev/<focus>" (focus defaults to "main").
-	GetDevWorktree(
-		monorepoHome string, ownerHandle string, focus string,
-	) (string, string, bool)
-
-	// CreateDevWorktree creates a dev worktree under monorepoHome. It sets
-	// up a base tracking branch at tracking, creates the working branch on
-	// top of it, and materializes the worktree. The working branch is
-	// "<owner>/dev/<focus>" (focus defaults to "main"), and the base branch
-	// is its matching base branch. Pass "" for focus to get the default dev
-	// branch.
-	CreateDevWorktree(
-		monorepoHome string, ownerHandle string, focus string, tracking string,
-	) (string, error)
-
-	// RemoveDevWorktree removes the dev worktree, its dev branch, and
-	// its base branch under monorepoHome. It returns the new working
-	// directory if it changed, or "" if it did not.
-	RemoveDevWorktree(
-		monorepoHome string, ownerHandle string, focus string,
-	) (string, error)
-
 	// GetMeltWorktree returns the melt branch name and its conventional
 	// worktree path under monorepoHome for ownerHandle and upstreamName,
 	// along with whether that worktree currently exists. The branch is
