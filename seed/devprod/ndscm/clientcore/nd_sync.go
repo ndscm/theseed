@@ -94,7 +94,7 @@ func NdSync(scmProvider scm.Provider, _ NdSyncOptions) error {
 		if err != nil {
 			return seederr.Wrap(err)
 		}
-		err = scmProvider.Rebase("", incomingCommitId)
+		err = scmProvider.Rebase("", incomingCommitId, "")
 		if err != nil {
 			return seederr.Wrap(err)
 		}
