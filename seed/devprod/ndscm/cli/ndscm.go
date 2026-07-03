@@ -108,6 +108,11 @@ func run() error {
 		if err != nil {
 			return seederr.Wrap(err)
 		}
+	case "split":
+		err := ndSplit(args[1:])
+		if err != nil {
+			return seederr.Wrap(err)
+		}
 	case "submit":
 		err := ndSubmit(args[1:])
 		if err != nil {
