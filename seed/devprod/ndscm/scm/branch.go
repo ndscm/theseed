@@ -40,15 +40,15 @@ func BaseBranchName(branchName string) string {
 	return ownerHandle + "/base/" + branchType + "/" + remain
 }
 
-// ChangeBranchName returns the change branch for featureName on devBranch. It is
+// GetChangeBranchName returns the change branch for featureName on devBranch. It is
 // "<owner>/change/<focus>/<featureName>" derived from the dev branch.
-func ChangeBranchName(devBranch string, featureName string) (string, error) {
-	ownerHandle, branchType, focus, err := ParseCanonicalBranch(devBranch)
+func GetChangeBranchName(devBranchName string, featureName string) (string, error) {
+	ownerHandle, branchType, focus, err := ParseCanonicalBranch(devBranchName)
 	if err != nil {
 		return "", seederr.Wrap(err)
 	}
 	if branchType != "dev" {
-		return "", seederr.WrapErrorf("workspace branch is not a dev branch: %v", devBranch)
+		return "", seederr.WrapErrorf("workspace branch is not a dev branch: %v", devBranchName)
 	}
 	return ownerHandle + "/change/" + focus + "/" + featureName, nil
 }
