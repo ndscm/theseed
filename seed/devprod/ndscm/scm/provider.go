@@ -201,6 +201,12 @@ type Provider interface {
 	// Checkout switches worktreePath to branchName.
 	Checkout(worktreePath string, branchName string) error
 
+	// RestoreWorktree overwrites every tracked file in worktreePath with its
+	// content at source, leaving the checked-out branch unchanged. When staging
+	// is true it also overwrites the staging area (index) so that both the
+	// worktree files and the index match source.
+	RestoreWorktree(worktreePath string, source string, staging bool) error
+
 	// CreateCommit records the staged changes in worktreePath as a new commit
 	// with the given message. When nothing is staged it first stages every
 	// change, including untracked files; when a subset is already staged it
