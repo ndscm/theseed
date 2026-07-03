@@ -10,6 +10,7 @@ go_library(
         "nd_change.go",
         "nd_commit.go",
         "nd_connect.go",
+        "nd_continue.go",
         "nd_cut.go",
         "nd_dev.go",
         "nd_melt.go",
