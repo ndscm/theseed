@@ -4,7 +4,6 @@ import (
 	"context"
 	"crypto/tls"
 	"errors"
-	"net"
 	"net/http"
 	"os"
 	"time"
@@ -23,6 +22,7 @@ import (
 	"github.com/ndscm/theseed/seed/infra/http/go/seedsession"
 	"github.com/ndscm/theseed/seed/infra/init/go/seedinit"
 	"github.com/ndscm/theseed/seed/infra/log/go/seedlog"
+	"github.com/ndscm/theseed/seed/infra/tier/go/servicetier"
 	"golang.org/x/sync/errgroup"
 )
 
@@ -50,6 +50,8 @@ var optimizedTransport = &http.Transport{
 }
 
 type SfeRouteHandler struct {
+	parser *servicetier.ServiceTierParser
+
 	golinkRoute http.Handler
 
 	kurisuRoute http.Handler
@@ -60,27 +62,28 @@ type SfeRouteHandler struct {
 }
 
 func (h *SfeRouteHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	hostname, port, err := net.SplitHostPort(r.Host)
+	serviceTier, err := h.parser.Parse(r.Host)
 	if err != nil {
-		hostname = r.Host
-		port = ""
+		seedlog.Errorf("Unsupported host. err=%v", err)
+		http.Error(w, "Bad Gateway", http.StatusBadGateway)
+		return
 	}
-	seedlog.Infof("SFE request: host=%s port=%s path=%s", hostname, port, r.URL.Path)
+	seedlog.Infof("SFE request: service=%s path=%s", serviceTier, r.URL.Path)
 
-	switch hostname {
-	case "go.ndscm.com":
+	switch serviceTier.Service {
+	case "go":
 		h.golinkRoute.ServeHTTP(w, r)
 		return
-	case "kurisu.ndscm.com":
+	case "golink":
+		h.golinkRoute.ServeHTTP(w, r)
+		return
+	case "kurisu":
 		h.kurisuRoute.ServeHTTP(w, r)
 		return
-	case "kurisu.ndscm.biz":
-		h.kurisuRoute.ServeHTTP(w, r)
-		return
-	case "stuff.ndscm.com":
+	case "stuff":
 		h.stuffRoute.ServeHTTP(w, r)
 		return
-	case "workflow.ndscm.biz":
+	case "workflow":
 		h.workflowRoute.ServeHTTP(w, r)
 		return
 	}
@@ -117,6 +120,8 @@ func CreateSfeRouteHandler(sfeOpenidClient *openid.OpenidClient) (*SfeRouteHandl
 	}
 
 	h := &SfeRouteHandler{
+		parser: servicetier.NewStaticParser([]string{"ndscm.com", "ndscm.biz"}),
+
 		golinkRoute:   seedsession.InterceptSessionMiddleware(golinkRoute, sessionInitializer),
 		kurisuRoute:   seedsession.InterceptSessionMiddleware(kurisuRoute, sessionInitializer),
 		stuffRoute:    seedsession.InterceptSessionMiddleware(stuffRoute, sessionInitializer),
