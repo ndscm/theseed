@@ -105,6 +105,9 @@ type Provider interface {
 	// It fails if the segment is not pure (e.g. contains a merge commit).
 	ListCommitIds(from string, to string) ([]string, error)
 
+	// GetCommitMetadata resolves commit and returns its metadata, including
+	// authorship, commit and author times, the subject and body, and any
+	// extended trailers.
 	GetCommitMetadata(commit string) (*CommitMetadata, error)
 
 	// GetCommitFormatPatch renders commit as a single format-patch (header,
