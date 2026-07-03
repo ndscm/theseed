@@ -61,8 +61,8 @@ func NdConnect(scmProvider scm.Provider, options NdConnectOptions) error {
 	}
 	worktreePath := mainWorktree
 	if !options.NoDev {
-		devWorktree, err := scmProvider.CreateDevWorktree(
-			monorepoHome, currentUserHandle, "", remoteMainBranch,
+		devWorktree, err := createDevWorktree(
+			scmProvider, monorepoHome, currentUserHandle, "", remoteMainBranch,
 		)
 		if err != nil {
 			return seederr.Wrap(err)

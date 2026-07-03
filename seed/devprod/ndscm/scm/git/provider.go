@@ -9,7 +9,6 @@ import (
 	"github.com/ndscm/theseed/seed/devprod/ndscm/scm"
 	"github.com/ndscm/theseed/seed/devprod/ndscm/user"
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
-	"github.com/ndscm/theseed/seed/infra/log/go/seedlog"
 )
 
 func sanitizeTrailerKey(key string) (string, error) {
@@ -333,120 +332,6 @@ func (g *GitProvider) RemoveWorktree(monorepoHome string, worktreeName string) e
 	monorepoGitDir := guessMonorepoGitDir(monorepoHome)
 	worktreePath := filepath.Join(monorepoHome, worktreeName)
 	return RemoveWorktree(monorepoGitDir, worktreePath)
-}
-
-func (g *GitProvider) GetDevWorktree(
-	monorepoHome string, ownerHandle string, focus string,
-) (string, string, bool) {
-	worktreeName := ""
-	if focus == "" {
-		focus = "main"
-	}
-	worktreeName = ownerHandle + "/dev/" + focus
-	worktreePath := filepath.Join(monorepoHome, worktreeName)
-
-	exists := false
-	worktreeStat, err := os.Stat(worktreePath)
-	if err == nil && worktreeStat.IsDir() {
-		exists = true
-	}
-
-	return worktreeName, worktreePath, exists
-}
-
-func (g *GitProvider) CreateDevWorktree(
-	monorepoHome string, ownerHandle string, focus string, tracking string,
-) (string, error) {
-	monorepoGitDir := guessMonorepoGitDir(monorepoHome)
-	worktreeName, worktreePath, exists := g.GetDevWorktree(monorepoHome, ownerHandle, focus)
-	if exists {
-		return "", seederr.WrapErrorf("worktree path already exists. path=%v", worktreePath)
-	}
-	branchName := worktreeName
-	baseBranchName := scm.BaseBranchName(branchName)
-	err := CreateBranch(monorepoGitDir, baseBranchName, tracking, tracking)
-	if err != nil {
-		return "", seederr.WrapErrorf("failed to create base branch %v: %v", baseBranchName, err)
-	}
-	err = CreateBranch(monorepoGitDir, branchName, baseBranchName, baseBranchName)
-	if err != nil {
-		return "", seederr.WrapErrorf("failed to create worktree branch %v: %v", branchName, err)
-	}
-	newWorktreePath, err := CreateBranchWorktree(monorepoGitDir, monorepoHome, branchName)
-	if err != nil {
-		return "", seederr.WrapErrorf("failed to create branch worktree %v: %v", branchName, err)
-	}
-	return newWorktreePath, nil
-}
-
-func (g *GitProvider) RemoveDevWorktree(
-	monorepoHome string, ownerHandle string, focus string,
-) (string, error) {
-	monorepoGitDir := guessMonorepoGitDir(monorepoHome)
-	worktreeName, worktreePath, _ := g.GetDevWorktree(monorepoHome, ownerHandle, focus)
-	branchName := worktreeName
-	baseBranchName := scm.BaseBranchName(branchName)
-	currentWorktreePath, err := GetCurrentWorktreePath()
-	if err != nil {
-		return "", seederr.Wrap(err)
-	}
-	needChdir := currentWorktreePath == worktreePath
-	dirtyFiles, err := GetStatus(worktreePath)
-	if err != nil {
-		return "", seederr.Wrap(err)
-	}
-	if len(dirtyFiles) > 0 {
-		return "", seederr.WrapErrorf("workspace is dirty:\n%v", dirtyFiles)
-	}
-	devTracking, err := GetBranchTracking(monorepoGitDir, branchName)
-	if err != nil {
-		return "", seederr.Wrap(err)
-	}
-	if devTracking != baseBranchName {
-		seedlog.Warnf("Dev branch %v is tracking %v instead of its base branch, please cleanup dev worktree (with nd sync) before removing", branchName, devTracking)
-		return "", seederr.WrapErrorf("dev branch %v is not tracking its base branch", branchName)
-	}
-	baseTracking, err := GetBranchTracking(monorepoGitDir, baseBranchName)
-	if err != nil {
-		return "", seederr.Wrap(err)
-	}
-	baseCommits, err := ListCommitHash(monorepoGitDir, baseTracking, baseBranchName)
-	if err != nil {
-		return "", seederr.Wrap(err)
-	}
-	if len(baseCommits) > 0 {
-		seedlog.Warnf("Base branch %v is not fully merged to its tracking upstream %v, please drop the commits: %v", baseBranchName, baseTracking, baseCommits)
-		return "", seederr.WrapErrorf("base branch %v contains changes", baseBranchName)
-	}
-	devCommits, err := ListCommitHash(monorepoGitDir, baseBranchName, branchName)
-	if err != nil {
-		return "", seederr.Wrap(err)
-	}
-	if len(devCommits) > 0 {
-		seedlog.Warnf("Dev branch %v is not fully merged to its base branch %v, please drop the commits: %v", branchName, baseBranchName, devCommits)
-		return "", seederr.WrapErrorf("dev branch %v contains changes", branchName)
-	}
-	newCwd := ""
-	if needChdir {
-		err = os.Chdir(monorepoHome)
-		if err != nil {
-			return "", seederr.Wrap(err)
-		}
-		newCwd = monorepoHome
-	}
-	err = RemoveWorktree(monorepoGitDir, worktreePath)
-	if err != nil {
-		return "", seederr.Wrap(err)
-	}
-	err = DeleteBranch(monorepoGitDir, branchName)
-	if err != nil {
-		return "", seederr.Wrap(err)
-	}
-	err = DeleteBranch(monorepoGitDir, baseBranchName)
-	if err != nil {
-		return "", seederr.Wrap(err)
-	}
-	return newCwd, nil
 }
 
 func (g *GitProvider) GetMeltWorktree(
