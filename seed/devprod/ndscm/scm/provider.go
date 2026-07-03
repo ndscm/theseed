@@ -137,9 +137,10 @@ type Provider interface {
 	// current branch, preserving the original commit message and trailers.
 	ApplyFormatPatch(worktreePath string, formatPatch string) error
 
-	// Rebase replays the commits of the worktree's current branch on top of
+	// Rebase replays the commits of the worktree's current branch that are not
+	// in upstream on top of onto. If onto is empty, it replays them on top of
 	// upstream.
-	Rebase(worktreePath string, upstream string) error
+	Rebase(worktreePath string, upstream string, onto string) error
 
 	// PullRebase fetches the worktree branch's tracking remote and rebases
 	// onto the updated tracking branch.
