@@ -74,6 +74,10 @@ type Provider interface {
 	// GetBranch resolves branchName to its commit id.
 	GetBranch(branchName string) (string, error)
 
+	// UpdateBranch force-moves branchName to point at newPoint, recording a
+	// reflog entry for the move.
+	UpdateBranch(branchName string, newPoint string) error
+
 	// DeleteBranch removes branchName even if it has unmerged commits.
 	DeleteBranch(branchName string) error
 
