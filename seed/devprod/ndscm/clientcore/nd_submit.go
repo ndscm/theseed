@@ -94,7 +94,7 @@ func NdSubmit(scmProvider scm.Provider, options NdSubmitOptions) error {
 	if err != nil {
 		return seederr.Wrap(err)
 	}
-	worktreePath, err = scmProvider.CreateBranchWorktree(monorepoHome, submitBranch)
+	worktreePath, err = scmProvider.CreateWorktree(monorepoHome, submitBranch)
 	if err != nil {
 		return seederr.Wrap(err)
 	}
@@ -110,7 +110,7 @@ func NdSubmit(scmProvider scm.Provider, options NdSubmitOptions) error {
 	if err != nil {
 		return seederr.Wrap(err)
 	}
-	err = scmProvider.RemoveWorktree(monorepoHome, worktreePath)
+	err = scmProvider.RemoveWorktree(monorepoHome, submitBranch)
 	if err != nil {
 		return seederr.Wrap(err)
 	}
