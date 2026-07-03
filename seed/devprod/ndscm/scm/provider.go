@@ -240,6 +240,12 @@ type Provider interface {
 	// are no changes to commit.
 	CreateCommit(worktreePath string, message string) error
 
+	// CreateCommitReuse records a new commit from the staged content of
+	// worktreePath, reusing the message and authorship of commit without
+	// editing them. It always creates a commit, even when the staged content is
+	// identical to the parent.
+	CreateCommitReuse(worktreePath string, commit string) error
+
 	// CreateWorktree materializes the worktree at the conventional path for
 	// worktreeName under monorepoHome and returns that path. A branch named
 	// worktreeName must already exist; it is the branch checked out in the
