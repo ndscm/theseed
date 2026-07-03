@@ -324,13 +324,14 @@ func (g *GitProvider) CreateCommit(worktreePath string, message string) error {
 	return CreateCommit(worktreePath, message)
 }
 
-func (g *GitProvider) CreateBranchWorktree(monorepoHome string, branchName string) (string, error) {
+func (g *GitProvider) CreateWorktree(monorepoHome string, worktreeName string) (string, error) {
 	monorepoGitDir := guessMonorepoGitDir(monorepoHome)
-	return CreateBranchWorktree(monorepoGitDir, monorepoHome, branchName)
+	return CreateBranchWorktree(monorepoGitDir, monorepoHome, worktreeName)
 }
 
-func (g *GitProvider) RemoveWorktree(monorepoHome string, worktreePath string) error {
+func (g *GitProvider) RemoveWorktree(monorepoHome string, worktreeName string) error {
 	monorepoGitDir := guessMonorepoGitDir(monorepoHome)
+	worktreePath := filepath.Join(monorepoHome, worktreeName)
 	return RemoveWorktree(monorepoGitDir, worktreePath)
 }
 
