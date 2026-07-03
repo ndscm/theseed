@@ -52,3 +52,14 @@ func GetChangeBranchName(devBranchName string, featureName string) (string, erro
 	}
 	return ownerHandle + "/change/" + focus + "/" + featureName, nil
 }
+
+// GetWipBranchName returns the wip branch tracking branchName. The wip branch is the
+// same owner/focus under the "wip" branch type
+// (e.g. "alice/dev/web" -> "alice/wip/dev/web").
+func GetWipBranchName(branchName string) (string, error) {
+	ownerHandle, branchType, remain, err := ParseCanonicalBranch(branchName)
+	if err != nil {
+		return "", seederr.Wrap(err)
+	}
+	return ownerHandle + "/wip/" + branchType + "/" + remain, nil
+}

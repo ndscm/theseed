@@ -16,6 +16,7 @@ go_library(
         "nd_run.go",
         "nd_setup.go",
         "nd_shell.go",
+        "nd_split.go",
         "nd_submit.go",
         "nd_sync.go",
         "nd_uncut.go",
