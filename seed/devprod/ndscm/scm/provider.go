@@ -33,6 +33,18 @@ type CommitMetadata struct {
 	Extended []KeyValue
 }
 
+type WipSplitStatus struct {
+	Belong string `json:"belong"`
+
+	CommitId string `json:"commitId"`
+}
+
+type WipStatus struct {
+	Operation string `json:"operation"`
+
+	Split *WipSplitStatus `json:"split,omitempty"`
+}
+
 // Provider is the abstraction over a Source Code Management backend (e.g.
 // git). Each backend registers a provider via Register, and the active one is
 // selected at runtime through the --scm flag.
@@ -189,6 +201,20 @@ type Provider interface {
 	// (e.g. "rebase", "merge", "cherry-pick") in worktreePath, or "" if
 	// idle.
 	GetWorktreeOperation(worktreePath string) (string, error)
+
+	// # wip
+
+	// LoadWipStatus returns the wip status persisted for worktreePath, or nil
+	// when no wip operation is in progress.
+	LoadWipStatus(worktreePath string) (*WipStatus, error)
+
+	// SaveWipStatus persists status for worktreePath, overwriting any existing
+	// wip status.
+	SaveWipStatus(worktreePath string, status *WipStatus) error
+
+	// RemoveWipStatus deletes the wip status persisted for worktreePath. When
+	// force is true a missing status is not an error.
+	RemoveWipStatus(worktreePath string, force bool) error
 
 	// # worktree
 
