@@ -4,14 +4,17 @@ RUN userdel --remove ubuntu || true
 
 RUN apt update
 RUN apt install -y build-essential
+RUN apt install -y crun
 RUN apt install -y curl
 RUN apt install -y direnv
+RUN apt install -y fuse-overlayfs
 RUN apt install -y git
 RUN apt install -y gnupg2
 RUN apt install -y iputils-ping
 RUN apt install -y libcap2-bin
 RUN apt install -y lsb-release
 RUN apt install -y netcat-openbsd
+RUN apt install -y podman
 RUN apt install -y rsync
 RUN apt install -y ssh
 RUN apt install -y vim
@@ -27,6 +30,29 @@ COPY ./smd /opt/smd
 COPY --chmod=0755 ./entrypoint.sh /opt/amadeus/entrypoint.sh
 
 RUN useradd --uid 1000 --shell /usr/bin/zsh --create-home amadeus
+
+# # Rootless podman-in-podman support
+#
+# Nested rootless podman can't create a new user namespace (the outer container
+# lacks CAP_SETUID/CAP_SETGID in the host userns, so newuidmap's write to
+# uid_map is denied). These configs make the inner podman reuse the outer
+# namespaces (userns=host) and use fuse-overlayfs instead of a real overlay
+# mount.
+#
+# Run the outer container with `--privileged --device /dev/fuse`
+
+COPY ./containers.conf /etc/containers/containers.conf
+RUN sed \
+  -e 's|^#mount_program|mount_program|g' \
+  -e 's|^mountopt[[:space:]]*=.*$|mountopt = "nodev,fsync=0"|g' \
+  /usr/share/containers/storage.conf \
+  >/etc/containers/storage.conf
+
+ENV _CONTAINERS_USERNS_CONFIGURED=""
+ENV BUILDAH_ISOLATION=chroot
+
+VOLUME /playpen/home
+
 # The container starts as root so the entrypoint can chown the mounted home; it
 # drops to the amadeus user before running the workload.
 WORKDIR /home/amadeus
