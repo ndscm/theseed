@@ -36,6 +36,9 @@ cp -f ./seed/vendor/uv/bin/uv ./seed/newtype/amadeus/container/bin/uv
 cp -f ./seed/vendor/uv/bin/uvx ./seed/newtype/amadeus/container/bin/uvx
 
 mkdir -p ./seed/newtype/amadeus/container/amadeus/
+./seed/newtype/amadeus/playpen/container/build.sh
+"${container_engine}" save "ghcr.io/ndscm/seed-newtype-amadeus-playpen-container:latest" \
+  >"./seed/newtype/amadeus/container/amadeus/playpen.tar"
 bazel build --stamp //seed/newtype/amadeus/server
 cp -f ./bazel-bin/seed/newtype/amadeus/server/amadeus-server_/amadeus-server ./seed/newtype/amadeus/container/amadeus/amadeus-server
 
