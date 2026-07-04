@@ -197,7 +197,7 @@ func NdApply(scmProvider scm.Provider, options NdApplyOptions) error {
 	seedlog.Infof("Applied %v as %v", remoteChangeBranch, changeBranch)
 
 	// Sync the chain.
-	err = NdSync(scmProvider, NdSyncOptions{})
+	err = NdSync(scmProvider, NdSyncOptions{Fetch: "never"})
 	if err != nil {
 		return seederr.Wrap(err)
 	}

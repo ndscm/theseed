@@ -10,13 +10,15 @@ import (
 )
 
 type NdSyncOptions struct {
+	Fetch string
 }
 
-func NdSync(scmProvider scm.Provider, _ NdSyncOptions) error {
+func NdSync(scmProvider scm.Provider, options NdSyncOptions) error {
 	if seedshell.ShellEval() {
 		return seederr.WrapErrorf("nd-sync should not run with --shell-eval")
 	}
 
+	fetch := options.Fetch == "always"
 	monorepoHome, err := scm.MonorepoHome()
 	if err != nil {
 		return seederr.Wrap(err)
@@ -68,11 +70,18 @@ func NdSync(scmProvider scm.Provider, _ NdSyncOptions) error {
 	if !slices.Contains(chain, activeBranch) {
 		return seederr.WrapErrorf("active branch %v is not in the changes chain: %v", activeBranch, chain)
 	}
-	// # Fetch upstream changes
-	err = scmProvider.FetchAll()
-	if err != nil {
-		return seederr.Wrap(err)
+	if options.Fetch == "auto" && activeBranch == worktreeName {
+		fetch = true
 	}
+
+	// # Fetch upstream changes
+	if fetch {
+		err = scmProvider.FetchAll()
+		if err != nil {
+			return seederr.Wrap(err)
+		}
+	}
+
 	// # Rebase dev branch
 	baseTracking, err := scmProvider.GetBranchTracking(baseBranch)
 	if err != nil {
