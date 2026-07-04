@@ -57,7 +57,7 @@ func continueSplit(scmProvider scm.Provider, wipStatus *scm.WipStatus, wipBranch
 	if err != nil {
 		return seederr.Wrap(err)
 	}
-	err = NdSync(scmProvider, NdSyncOptions{})
+	err = NdSync(scmProvider, NdSyncOptions{Fetch: "never"})
 	if err != nil {
 		return seederr.Wrap(err)
 	}
