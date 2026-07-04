@@ -40,6 +40,7 @@ async def build(**kwargs) -> None:
             re.compile(r"^seed/devprod/rbe/bes/.*$"),
             re.compile(r"^seed/devprod/scalpel/go/.*$"),
             re.compile(r"^seed/devprod/starlark/inbazel/go/.*$"),
+            re.compile(r"^seed/infra/buildinfo/bazel/.*$"),
             re.compile(r"^seed/infra/buildinfo/go/.*$"),
             re.compile(r"^seed/infra/context/go/.*$"),
             re.compile(r"^seed/infra/dotenv/go/.*$"),
@@ -159,6 +160,7 @@ async def build(**kwargs) -> None:
             re.compile(r"^.*cxx.*$"),
             re.compile(r"^.*parse_headers.*$"),
             re.compile(r"^.*rules_js.*$"),
+            re.compile(r"^.*rules_python.*$"),
         ],
         "",
         **kwargs,
@@ -175,9 +177,9 @@ async def run(**kwargs) -> None:
 
     await clean.clean_empty(**kwargs)
 
-    # Stops the rebuild at commit index 1629 (2026-06-22), update the script
+    # Stops the rebuild at commit index 1817 (2026-07-04), update the script
     # and check results before rebuilding more commits.
-    await rebuild.rebuild("10001629", fresh=True, **kwargs)
+    await rebuild.rebuild("10001817", fresh=True, **kwargs)
     subprocess.run(
         ["git", "tag", "initial"],
         check=True,
