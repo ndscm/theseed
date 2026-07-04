@@ -26,7 +26,7 @@ import (
 )
 
 var flagPort = seedflag.DefineString("port", "4665", "Port to run the server on") // Default port assignment word: HOOK (4665)
-var flagChannels = seedflag.DefineString("channels", "/broadcast:/subscribe", "Comma separated list, each item in the form /<broadcast>:/<subscribe>")
+var flagChannel = seedflag.DefineStringList("channel", []string{"/broadcast:/subscribe"}, "Repeatable, each in the form /<broadcast>:/<subscribe>")
 
 // interceptBodyLimitMiddleware caps request body size at max bytes. Required by
 // webhook.NewWebhookHandler, which buffers entire POST bodies in memory — without
@@ -45,7 +45,7 @@ func run() error {
 	}
 
 	mux := http.NewServeMux()
-	channels := strings.Split(flagChannels.Get(), ",")
+	channels := flagChannel.Get()
 	for _, channel := range channels {
 		// SplitN with n=3 so inputs with extra colons (e.g. "/a:/b:/c") land in
 		// the len != 2 branch below and are rejected rather than silently
