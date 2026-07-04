@@ -5,25 +5,25 @@
   "platforms": {
     "linux-x86_64": {
       "path": "ndscm",
-      "size": 2583269,
+      "size": 2592508,
       "hash": "blake3",
-      "digest": "1d088fe8abbd164eed6d926cb6cca2f514a17497d37af24c98ee44f26eda2883",
+      "digest": "01566255b0abd09b8f0bee35b3e2b68009beb901c7d42948783bf8385e0c9d5f",
       "format": "tar.gz",
       "providers": [
         {
-          "url": "https://github.com/ndscm/ndscm/releases/download/v26.6.23/ndscm-linux-x86_64.tar.gz"
+          "url": "https://github.com/ndscm/ndscm/releases/download/v26.7.4/ndscm-linux-x86_64.tar.gz"
         }
       ]
     },
     "macos-aarch64": {
       "path": "ndscm",
-      "size": 2401382,
+      "size": 2410289,
       "hash": "blake3",
-      "digest": "7d2cc455218e60fd56b41058c529904d4987a7b4f899c60d75f1c25d495f197c",
+      "digest": "af3e51c8116faa34511cc707ef69a928e93964b3c941f2d43e3d2e73b3162219",
       "format": "tar.gz",
       "providers": [
         {
-          "url": "https://github.com/ndscm/ndscm/releases/download/v26.6.23/ndscm-darwin-arm64.tar.gz"
+          "url": "https://github.com/ndscm/ndscm/releases/download/v26.7.4/ndscm-darwin-arm64.tar.gz"
         }
       ]
     }
