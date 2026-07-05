@@ -102,6 +102,7 @@ EOF
 cat <<EOF | sudo tee "\${state_dir}/env"
 AMADEUS_PORT=${port}
 AMADEUS_OPENID_DISCOVERY_URL=https://account.ndscm.com/realms/ndscm/.well-known/openid-configuration
+AMADEUS_PLAYPEN=${user_handle}
 AMADEUS_SILICON_REFRESH_TOKEN_FILE=/run/secrets/SILICON_REFRESH_TOKEN
 AMADEUS_HOOIN_COMMUTE_SERVICE_SERVER=${hooin_url}
 EOF
