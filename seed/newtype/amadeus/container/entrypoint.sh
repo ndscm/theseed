@@ -44,6 +44,10 @@ if [[ "$(id -u)" -eq 0 ]]; then
     chown -R amadeus:amadeus /sys/fs/cgroup/amadeus
   fi
 
+  if [[ -d "/playpen/home" ]]; then
+    chown amadeus:amadeus /playpen/home
+  fi
+
   exec setpriv \
     --reuid amadeus \
     --regid amadeus \
@@ -56,6 +60,10 @@ if [[ -z "$(ls -A "/home/amadeus/")" ]]; then
   cp --recursive --no-target-directory /etc/skel/ "${HOME}/"
   cp /etc/zsh/newuser.zshrc.recommended /home/amadeus/.zshrc
   printf "%s\n" "export PATH=\"/home/amadeus/.local/bin:\$PATH\"" >>/home/amadeus/.zshrc
+fi
+
+if [[ -w "/sys/fs/cgroup/amadeus/cgroup.procs" ]]; then
+  podman load --input /opt/amadeus/playpen.tar
 fi
 
 exec "$@"
