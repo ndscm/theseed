@@ -4,6 +4,12 @@ set -o pipefail
 cd "$(dirname "${BASH_SOURCE[0]}")"
 
 set +x
-password="${1:-""}"
+refresh_token="${1:-""}"
 
-./deploy-docker.sh "steins.ndscm.biz" "christina" "2447" "${password}"
+./deploy.sh \
+  "steins.ndscm.biz" \
+  "christina" \
+  "2447" \
+  "https://hooin.ndscm.biz/" \
+  "christina" \
+  "${refresh_token}"
