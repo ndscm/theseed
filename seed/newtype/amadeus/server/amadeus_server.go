@@ -24,8 +24,7 @@ func run() error {
 		return seederr.Wrap(err)
 	}
 
-	conscious := onduty.NewConscious()
-	err = conscious.Initialize()
+	conscious, err := onduty.CreateConscious()
 	if err != nil {
 		return seederr.Wrap(err)
 	}

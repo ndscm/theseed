@@ -58,19 +58,6 @@ type Conscious struct {
 	topics      map[string]*LiveTopic
 }
 
-func NewConscious() *Conscious {
-	return &Conscious{}
-}
-
-func (s *Conscious) Initialize() error {
-	b, err := brain.DefaultBrain()
-	if err != nil {
-		return seederr.Wrap(err)
-	}
-	s.brain = b
-	return nil
-}
-
 func (s *Conscious) SetConnectHandler(handler http.Handler) {
 	s.connectHandler = handler
 }
@@ -339,4 +326,12 @@ func (s *Conscious) Hibernate() chan struct{} {
 	}
 	s.cancelConnect()
 	return s.connectDone
+}
+
+func CreateConscious() (*Conscious, error) {
+	b, err := brain.DefaultBrain()
+	if err != nil {
+		return nil, seederr.Wrap(err)
+	}
+	return &Conscious{brain: b}, nil
 }
