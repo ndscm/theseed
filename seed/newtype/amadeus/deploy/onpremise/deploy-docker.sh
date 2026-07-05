@@ -14,6 +14,9 @@ if [[ "${container_engine}" != "docker" ]]; then
   exit 1
 fi
 
+printf 'docker support is temporarily disabled, please use podman instead\n'
+exit 1
+
 mount_home=${MOUNT_HOME:-"/mnt/data/${user_handle}/home"}
 mount_run_secrets=${MOUNT_RUN_SECRETS:-"/mnt/data/${user_handle}/run/secrets"}
 
