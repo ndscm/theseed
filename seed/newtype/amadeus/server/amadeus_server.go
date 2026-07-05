@@ -17,11 +17,13 @@ import (
 	"github.com/ndscm/theseed/seed/newtype/amadeus/commute/proto/commutepbconnect"
 	commuteservice "github.com/ndscm/theseed/seed/newtype/amadeus/commute/service"
 	"github.com/ndscm/theseed/seed/newtype/amadeus/onduty"
+	"github.com/ndscm/theseed/seed/newtype/amadeus/playpen"
 	"github.com/ndscm/theseed/seed/newtype/amadeus/wake/proto/wakepbconnect"
 	wakeservice "github.com/ndscm/theseed/seed/newtype/amadeus/wake/service"
 )
 
 var flagPort = seedflag.DefineString("port", "2623", "Server port") // Default port assignment word: AMAD (2623)
+var flagPlaypen = seedflag.DefineString("playpen", "", "Playpen user handle (e.g. christina)")
 
 // SIGRT3 is SIGRTMIN+3 (signal 37 on Linux). When the container runs with
 // podman's --systemd=always, podman uses SIGRTMIN+3 as the stop signal instead
@@ -37,7 +39,22 @@ func run() error {
 		return seederr.Wrap(err)
 	}
 
-	conscious, err := onduty.CreateConscious()
+	playpenController := (*playpen.PlaypenController)(nil)
+	playpenUserHandle := flagPlaypen.Get()
+	if playpenUserHandle != "" {
+		controller, err := playpen.BootPlaypenController(playpenUserHandle)
+		if err != nil {
+			return seederr.Wrap(err)
+		}
+		defer func() {
+			err := controller.Shutdown()
+			if err != nil {
+				seedlog.Errorf("Failed to shutdown playpen controller: %v", err)
+			}
+		}()
+		playpenController = controller
+	}
+	conscious, err := onduty.CreateConscious(playpenController)
 	if err != nil {
 		return seederr.Wrap(err)
 	}

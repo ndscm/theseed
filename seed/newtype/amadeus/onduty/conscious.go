@@ -14,6 +14,7 @@ import (
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
 	"github.com/ndscm/theseed/seed/infra/log/go/seedlog"
 	"github.com/ndscm/theseed/seed/newtype/amadeus/brain"
+	"github.com/ndscm/theseed/seed/newtype/amadeus/playpen"
 	"github.com/ndscm/theseed/seed/newtype/gajetto/proto/brainpb"
 	"github.com/ndscm/theseed/seed/newtype/hooin/commute/client/go/commuteclient"
 	"google.golang.org/grpc/codes"
@@ -41,6 +42,8 @@ func increaseBackoff(backoff time.Duration) time.Duration {
 // connection and reports brain steps back, transparently reconnecting if the
 // stream breaks so registered topics survive the gap.
 type Conscious struct {
+	playpenController *playpen.PlaypenController
+
 	brain brain.Brain
 
 	connectHandler http.Handler
@@ -331,10 +334,14 @@ func (s *Conscious) Hibernate() chan struct{} {
 	return s.connectDone
 }
 
-func CreateConscious() (*Conscious, error) {
+func CreateConscious(playpenController *playpen.PlaypenController) (*Conscious, error) {
 	b, err := brain.DefaultBrain()
 	if err != nil {
 		return nil, seederr.Wrap(err)
 	}
-	return &Conscious{brain: b}, nil
+	return &Conscious{
+		playpenController: playpenController,
+
+		brain: b,
+	}, nil
 }

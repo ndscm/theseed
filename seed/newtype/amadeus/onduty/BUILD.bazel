@@ -17,6 +17,7 @@ go_library(
         "//seed/infra/error/go/seederr",
         "//seed/infra/log/go/seedlog",
         "//seed/newtype/amadeus/brain",
+        "//seed/newtype/amadeus/playpen",
         "//seed/newtype/gajetto/proto:brain_go_proto",
         "//seed/newtype/hooin/commute/client/go/commuteclient",
         "@org_golang_google_grpc//codes",

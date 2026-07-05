@@ -21,6 +21,7 @@ go_library(
         "//seed/newtype/amadeus/commute/proto:commute_go_connect",
         "//seed/newtype/amadeus/commute/service",
         "//seed/newtype/amadeus/onduty",
+        "//seed/newtype/amadeus/playpen",
         "//seed/newtype/amadeus/wake/proto:wake_go_connect",
         "//seed/newtype/amadeus/wake/service",
     ],
