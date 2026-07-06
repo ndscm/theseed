@@ -107,6 +107,9 @@ func (s *Conscious) Input(
 	seedlog.Infof("Processing conscious input. input=%v", input)
 
 	topic := input.GetTopic()
+	if topic == "" {
+		topic = "default"
+	}
 	err := s.ensureTopicStarted(topic)
 	if err != nil {
 		return seederr.Wrap(err)
