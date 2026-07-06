@@ -11,7 +11,9 @@ import {
 } from "../../../../../../../gajetto/proto/brain_pb"
 import { useHooinDictateService } from "../../../../../../../hooin/dictate/client/tsx/HooinDictateServiceContext"
 import { useHooinRosterService } from "../../../../../../../hooin/roster/client/tsx/HooinRosterServiceContext"
-import BrainThreadPanel from "../../../../../components/BrainThreadPanel"
+import BrainThreadPanel, {
+  type BrainThread,
+} from "../../../../../components/BrainThreadPanel"
 
 const PersonBrainPage: React.FC<{ params: { handle: string } }> = ({
   params,
@@ -21,7 +23,7 @@ const PersonBrainPage: React.FC<{ params: { handle: string } }> = ({
   const rosterService = useHooinRosterService()
   const dictateService = useHooinDictateService()
 
-  const [threads, setThreads] = useState<BrainInput[]>([])
+  const [threads, setThreads] = useState<BrainThread[]>([])
   const [inputTopic, setInputTopic] = useState("")
   const [inputText, setInputText] = useState("")
   const refOfThreadsEnd = useRef<HTMLDivElement>(null)
@@ -53,12 +55,24 @@ const PersonBrainPage: React.FC<{ params: { handle: string } }> = ({
       return
     }
 
+    const uuid = crypto.randomUUID()
     const brainInput: BrainInput = Protobuf.create(BrainInputSchema, {
-      uuid: crypto.randomUUID(),
+      uuid,
+      taskUuid: uuid,
       text,
-      topic: inputTopic,
+      topic: inputTopic || "default",
     })
-    setThreads((prev) => [...prev, brainInput])
+    const stream = dictateService.SendBrainInputStreamBrainStep(
+      personHandle,
+      brainInput,
+    )
+    const newThread: BrainThread = {
+      personId: personHandle,
+      input: brainInput,
+      steps: [],
+      live: stream,
+    }
+    setThreads((prev) => [...prev, newThread])
     setInputText("")
   }, [inputText, dictateService, personHandle, inputTopic])
 
@@ -78,12 +92,8 @@ const PersonBrainPage: React.FC<{ params: { handle: string } }> = ({
         <div
           className={tw({ layout: "mx-auto flex max-w-3xl flex-col gap-4" })}
         >
-          {threads.map((input) => (
-            <BrainThreadPanel
-              key={input.uuid}
-              personId={personHandle}
-              input={input}
-            />
+          {threads.map((thread) => (
+            <BrainThreadPanel key={thread.input.uuid} thread={thread} />
           ))}
           <div ref={refOfThreadsEnd} />
         </div>
