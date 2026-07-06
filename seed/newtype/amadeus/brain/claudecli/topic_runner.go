@@ -28,7 +28,7 @@ type ongoingTracker struct {
 	mutex sync.Mutex
 	cond  *sync.Cond
 
-	inFlight bool
+	taskUuid string
 
 	cmdExited bool
 }
@@ -45,16 +45,16 @@ func newOngoingTracker() *ongoingTracker {
 // instead of being rejected. It returns false without reserving when the
 // subprocess has already exited, so the caller can fail the request rather
 // than write to a dead subprocess.
-func (t *ongoingTracker) waitAdmit() bool {
+func (t *ongoingTracker) waitAdmit(taskUuid string) bool {
 	t.mutex.Lock()
 	defer t.mutex.Unlock()
-	for t.inFlight && !t.cmdExited {
+	for t.taskUuid != "" && !t.cmdExited {
 		t.cond.Wait()
 	}
 	if t.cmdExited {
 		return false
 	}
-	t.inFlight = true
+	t.taskUuid = taskUuid
 	t.cond.Broadcast()
 	return true
 }
@@ -62,8 +62,8 @@ func (t *ongoingTracker) waitAdmit() bool {
 func (t *ongoingTracker) release() {
 	t.mutex.Lock()
 	defer t.mutex.Unlock()
-	if t.inFlight {
-		t.inFlight = false
+	if t.taskUuid != "" {
+		t.taskUuid = ""
 	} else {
 		seedlog.Warnf("received result with no ongoing request")
 	}
@@ -80,7 +80,7 @@ func (t *ongoingTracker) onCmdExit() {
 func (t *ongoingTracker) waitIdle() {
 	t.mutex.Lock()
 	defer t.mutex.Unlock()
-	for t.inFlight && !t.cmdExited {
+	for t.taskUuid != "" && !t.cmdExited {
 		t.cond.Wait()
 	}
 }
@@ -210,7 +210,12 @@ func (tr *topicRunner) thinkLoop() {
 			// Block until any prior request has drained so at most one is
 			// ever in flight. The request stays held here rather than being
 			// rejected, preserving it for delivery once the slot frees.
-			if !tr.ongoing.waitAdmit() {
+			taskUuid := req.input.GetTaskUuid()
+			if taskUuid == "" {
+				req.err <- seederr.WrapErrorf("task uuid is empty")
+				continue
+			}
+			if !tr.ongoing.waitAdmit(taskUuid) {
 				req.err <- seederr.WrapErrorf(
 					"topic %q: runner closed", tr.topic)
 				continue
@@ -289,6 +294,7 @@ func (tr *topicRunner) dispatchLine(line []byte) {
 		Timestamp: timestamppb.Now(),
 		Type:      stepType,
 		Topic:     tr.topic,
+		TaskUuid:  tr.ongoing.taskUuid,
 		Data:      data,
 	}
 
