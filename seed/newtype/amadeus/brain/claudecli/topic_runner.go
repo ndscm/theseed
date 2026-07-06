@@ -27,7 +27,8 @@ const (
 type ongoingTracker struct {
 	mutex sync.Mutex
 	cond  *sync.Cond
-	count int
+
+	inFlight bool
 
 	cmdExited bool
 }
@@ -38,18 +39,31 @@ func newOngoingTracker() *ongoingTracker {
 	return tracker
 }
 
-func (t *ongoingTracker) increment() {
+// waitAdmit blocks until no request is in flight, then reserves the single
+// in-flight slot and returns true, enforcing at most one simultaneous input
+// per topic. A second input therefore waits for the first to complete
+// instead of being rejected. It returns false without reserving when the
+// subprocess has already exited, so the caller can fail the request rather
+// than write to a dead subprocess.
+func (t *ongoingTracker) waitAdmit() bool {
 	t.mutex.Lock()
 	defer t.mutex.Unlock()
-	t.count++
+	for t.inFlight && !t.cmdExited {
+		t.cond.Wait()
+	}
+	if t.cmdExited {
+		return false
+	}
+	t.inFlight = true
 	t.cond.Broadcast()
+	return true
 }
 
-func (t *ongoingTracker) decrement() {
+func (t *ongoingTracker) release() {
 	t.mutex.Lock()
 	defer t.mutex.Unlock()
-	if t.count > 0 {
-		t.count--
+	if t.inFlight {
+		t.inFlight = false
 	} else {
 		seedlog.Warnf("received result with no ongoing request")
 	}
@@ -63,17 +77,17 @@ func (t *ongoingTracker) onCmdExit() {
 	t.cond.Broadcast()
 }
 
-func (t *ongoingTracker) waitZero() {
+func (t *ongoingTracker) waitIdle() {
 	t.mutex.Lock()
 	defer t.mutex.Unlock()
-	for t.count > 0 && !t.cmdExited {
+	for t.inFlight && !t.cmdExited {
 		t.cond.Wait()
 	}
 }
 
-type writeRequest struct {
-	line []byte
-	err  chan error
+type thinkRequest struct {
+	input *brainpb.BrainInput
+	err   chan error
 }
 
 type topicRunner struct {
@@ -86,21 +100,26 @@ type topicRunner struct {
 	cmd   *exec.Cmd
 	stdin io.WriteCloser
 
-	// writeQueue serializes stdin writes through writeLoop. Using a channel
+	// thinkQueue serializes stdin writes through thinkLoop. Using a channel
 	// instead of a mutex lets Input select on ctx.Done() when the
 	// subprocess stalls reading stdin, rather than queueing behind a
-	// stuck Write call that holds the lock.
-	writeQueue chan writeRequest
+	// stuck Write call that holds the lock. It is buffered so that a burst
+	// of Input callers can enqueue without blocking on thinkLoop draining
+	// the previous request; once the buffer fills, Input blocks until a
+	// slot frees or its context is cancelled.
+	thinkQueue chan thinkRequest
 
 	handlerMutex sync.RWMutex
 	handler      brain.BrainStepHandler
 
-	// ongoing tracks in-flight requests: incremented in writeLoop right
-	// after a successful stdin write, decremented when a stream output
-	// line of type "result" is received. The increment must happen in
-	// writeLoop (not after the caller reads req.err) so a fast "result"
-	// line can't decrement a still-zero counter. Hibernate(wait=true)
-	// uses it to block until the subprocess has drained or exited.
+	// ongoing tracks the in-flight request: thinkLoop admits at most one at
+	// a time via waitAdmit (a second input blocks in thinkLoop until the
+	// first completes rather than being rejected), and releases the slot
+	// when a stream output line of type "result" is received. The slot must
+	// be reserved in thinkLoop (not after the caller reads req.err) so a fast
+	// "result" line can't release a slot that was never reserved.
+	// Hibernate(wait=true) uses it to block until the subprocess has drained
+	// or exited.
 	ongoing *ongoingTracker
 
 	done chan struct{}
@@ -164,12 +183,12 @@ func newTopicRunner(topic string, topicDir string) (*topicRunner, error) {
 		runnerCancel: cancel,
 		cmd:          cmd,
 		stdin:        stdin,
-		writeQueue:   make(chan writeRequest),
+		thinkQueue:   make(chan thinkRequest, 32),
 		ongoing:      newOngoingTracker(),
 		done:         make(chan struct{}),
 	}
 
-	go tr.writeLoop()
+	go tr.thinkLoop()
 	go tr.readStdout(stdout)
 	go tr.readStderr(stderr)
 	go tr.waitCmd()
@@ -180,17 +199,39 @@ func newTopicRunner(topic string, topicDir string) (*topicRunner, error) {
 	return tr, nil
 }
 
-// writeLoop serializes writes to tr.stdin so that Input callers never
+// thinkLoop serializes writes to tr.stdin so that Input callers never
 // share a live Write call. It exits when runnerCtx is cancelled; a Write
 // that is stuck on a stalled subprocess is unblocked by Close() closing
 // stdin.
-func (tr *topicRunner) writeLoop() {
+func (tr *topicRunner) thinkLoop() {
 	for {
 		select {
-		case req := <-tr.writeQueue:
-			_, err := tr.stdin.Write(req.line)
-			if err == nil {
-				tr.ongoing.increment()
+		case req := <-tr.thinkQueue:
+			// Block until any prior request has drained so at most one is
+			// ever in flight. The request stays held here rather than being
+			// rejected, preserving it for delivery once the slot frees.
+			if !tr.ongoing.waitAdmit() {
+				req.err <- seederr.WrapErrorf(
+					"topic %q: runner closed", tr.topic)
+				continue
+			}
+			payload := claudepayload.StreamInputUser{
+				StreamInputEnvelope: claudepayload.StreamInputEnvelope{Type: "user"},
+				Message: &claudepayload.StreamInputMessage{
+					Role:    "user",
+					Content: req.input.GetText(),
+				},
+			}
+			line, err := json.Marshal(payload)
+			if err != nil {
+				tr.ongoing.release()
+				req.err <- seederr.Wrap(err)
+				continue
+			}
+			line = append(line, '\n')
+			_, err = tr.stdin.Write(line)
+			if err != nil {
+				tr.ongoing.release()
 			}
 			req.err <- err
 		case <-tr.runnerCtx.Done():
@@ -252,7 +293,7 @@ func (tr *topicRunner) dispatchLine(line []byte) {
 	}
 
 	if step.Type == "result" {
-		tr.ongoing.decrement()
+		tr.ongoing.release()
 	}
 
 	tr.handlerMutex.RLock()
@@ -266,22 +307,9 @@ func (tr *topicRunner) dispatchLine(line []byte) {
 }
 
 func (tr *topicRunner) Input(ctx context.Context, input *brainpb.BrainInput) error {
-	payload := claudepayload.StreamInputUser{
-		StreamInputEnvelope: claudepayload.StreamInputEnvelope{Type: "user"},
-		Message: &claudepayload.StreamInputMessage{
-			Role:    "user",
-			Content: input.GetText(),
-		},
-	}
-	line, err := json.Marshal(payload)
-	if err != nil {
-		return seederr.Wrap(err)
-	}
-	line = append(line, '\n')
-
-	req := writeRequest{line: line, err: make(chan error, 1)}
+	req := thinkRequest{input: input, err: make(chan error, 1)}
 	select {
-	case tr.writeQueue <- req:
+	case tr.thinkQueue <- req:
 	case <-ctx.Done():
 		return seederr.Wrap(ctx.Err())
 	case <-tr.runnerCtx.Done():
@@ -311,7 +339,7 @@ func (tr *topicRunner) RegisterStepHandler(handler brain.BrainStepHandler) error
 
 func (tr *topicRunner) Hibernate(wait bool) error {
 	if wait {
-		tr.ongoing.waitZero()
+		tr.ongoing.waitIdle()
 	}
 	err := tr.stdin.Close()
 	if err != nil {
