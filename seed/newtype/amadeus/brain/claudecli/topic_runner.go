@@ -12,6 +12,7 @@ import (
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
 	"github.com/ndscm/theseed/seed/infra/log/go/seedlog"
 	"github.com/ndscm/theseed/seed/newtype/amadeus/brain"
+	"github.com/ndscm/theseed/seed/newtype/amadeus/playpen"
 	"github.com/ndscm/theseed/seed/newtype/gajetto/payload/claudepayload"
 	"github.com/ndscm/theseed/seed/newtype/gajetto/proto/brainpb"
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -97,8 +98,12 @@ type topicRunner struct {
 	runnerCtx    context.Context
 	runnerCancel context.CancelFunc
 
-	cmd   *exec.Cmd
 	stdin io.WriteCloser
+
+	// wait blocks until the claude process exits, returning its exit error.
+	// It abstracts over the two launch modes so waitCmd need not know whether
+	// claude runs as a host subprocess or inside the playpen container.
+	wait func() error
 
 	// thinkQueue serializes stdin writes through thinkLoop. Using a channel
 	// instead of a mutex lets Input select on ctx.Done() when the
@@ -125,25 +130,35 @@ type topicRunner struct {
 	done chan struct{}
 }
 
-// newTopicRunner spawns the per-topic `claude` subprocess in stream-json
-// mode under topicDir and returns a runner that serializes stdin writes
-// and dispatches stdout JSON lines as BrainSteps.
-//
-// Security note: the subprocess is started with
-// --permission-mode=bypassPermissions, which disables every interactive
-// permission prompt the Claude CLI would otherwise raise. This is the
-// only practical mode for an unattended agent — there is no human
-// available to approve file edits, shell commands, or network calls at
-// the prompt — but it also means the spawned `claude` process has the
-// full file-system and shell access of the user it is running as.
-// Treat the container itself as the security boundary: anything
-// reachable from this process is reachable by the model. See
-// seed/newtype/amadeus/README.md ("Security boundary") for the
-// surrounding containment story.
-func newTopicRunner(topic string, topicDir string) (*topicRunner, error) {
-	ctx, cancel := context.WithCancel(context.Background())
+// brainProc is the launched claude process, either a subprocess on the host or
+// a process running inside the playpen container. Both expose the same stdio
+// pipes plus a wait, so the runner's loops don't care which is in use.
+type brainProc struct {
+	stdin  io.WriteCloser
+	stdout io.ReadCloser
+	stderr io.ReadCloser
+	wait   func() error
+	pid    int
+}
 
-	cmd := exec.CommandContext(ctx, "claude",
+// startBrainProc launches the claude CLI in stream-json mode for a topic. With
+// a nil playpen controller it runs as a subprocess on the host with topicDir as
+// its working directory; otherwise it runs inside the playpen container with
+// topicDir as the container-side working directory, confining the model to the
+// container's filesystem and process namespace.
+//
+// Security note: claude is started with --permission-mode=bypassPermissions,
+// which disables every interactive permission prompt the CLI would otherwise
+// raise. This is the only practical mode for an unattended agent — there is no
+// human available to approve file edits, shell commands, or network calls at
+// the prompt — but it also means the `claude` process has the full file-system
+// and shell access of the user it runs as. Treat the container itself as the
+// security boundary: anything reachable from the process is reachable by the
+// model, which is why a playpen confines it to the container.
+func startBrainProc(
+	ctx context.Context, topicDir string, pc *playpen.PlaypenController,
+) (*brainProc, error) {
+	claudeArgs := []string{
 		"--continue",
 		"--input-format", "stream-json",
 		"--model", "opus",
@@ -151,26 +166,71 @@ func newTopicRunner(topic string, topicDir string) (*topicRunner, error) {
 		"--permission-mode", "bypassPermissions",
 		"--print",
 		"--verbose",
-	)
+	}
+	if pc != nil {
+		// Run claude under the playpen user's login shell so ~/.zshrc is
+		// sourced (PATH and environment) before claude starts, then delegate
+		// the session to claude so it owns the streams for continuous stdin.
+		tty, err := pc.StartTty(ctx, "/usr/bin/zsh", []string{"-i"})
+		if err != nil {
+			return nil, seederr.Wrap(err)
+		}
+		err = tty.Delegate(topicDir, "claude", claudeArgs)
+		if err != nil {
+			// StartTty already started the podman exec client; reap it before
+			// returning so it (and its os/exec kill goroutine) isn't leaked.
+			closeErr := tty.Close()
+			if closeErr != nil {
+				seedlog.Warnf("topic %q: error closing tty after delegate failure: %v",
+					topicDir, closeErr)
+			}
+			return nil, seederr.Wrap(err)
+		}
+		return &brainProc{
+			stdin:  tty.Stdin,
+			stdout: tty.Stdout,
+			stderr: tty.Stderr,
+			wait:   tty.Wait,
+			pid:    tty.Pid(),
+		}, nil
+	}
+
+	cmd := exec.CommandContext(ctx, "claude", claudeArgs...)
 	cmd.Dir = topicDir
 
 	stdin, err := cmd.StdinPipe()
 	if err != nil {
-		cancel()
 		return nil, seederr.Wrap(err)
 	}
 	stdout, err := cmd.StdoutPipe()
 	if err != nil {
-		cancel()
 		return nil, seederr.Wrap(err)
 	}
 	stderr, err := cmd.StderrPipe()
 	if err != nil {
-		cancel()
 		return nil, seederr.Wrap(err)
 	}
-
 	err = cmd.Start()
+	if err != nil {
+		return nil, seederr.Wrap(err)
+	}
+	return &brainProc{
+		stdin:  stdin,
+		stdout: stdout,
+		stderr: stderr,
+		wait:   cmd.Wait,
+		pid:    cmd.Process.Pid,
+	}, nil
+}
+
+// newTopicRunner spawns the per-topic `claude` process in stream-json mode
+// under topicDir and returns a runner that serializes stdin writes and
+// dispatches stdout JSON lines as BrainSteps. When pc is non-nil the process
+// runs inside the playpen container instead of directly on the host.
+func newTopicRunner(topic string, topicDir string, pc *playpen.PlaypenController) (*topicRunner, error) {
+	ctx, cancel := context.WithCancel(context.Background())
+
+	proc, err := startBrainProc(ctx, topicDir, pc)
 	if err != nil {
 		cancel()
 		return nil, seederr.Wrap(err)
@@ -181,20 +241,20 @@ func newTopicRunner(topic string, topicDir string) (*topicRunner, error) {
 		topicDir:     topicDir,
 		runnerCtx:    ctx,
 		runnerCancel: cancel,
-		cmd:          cmd,
-		stdin:        stdin,
+		stdin:        proc.stdin,
+		wait:         proc.wait,
 		thinkQueue:   make(chan thinkRequest, 32),
 		ongoing:      newOngoingTracker(),
 		done:         make(chan struct{}),
 	}
 
 	go tr.thinkLoop()
-	go tr.readStdout(stdout)
-	go tr.readStderr(stderr)
+	go tr.readStdout(proc.stdout)
+	go tr.readStderr(proc.stderr)
 	go tr.waitCmd()
 
 	seedlog.Infof("topic %q: claude started (pid=%d, dir=%s)",
-		topic, cmd.Process.Pid, topicDir)
+		topic, proc.pid, topicDir)
 
 	return tr, nil
 }
@@ -273,7 +333,7 @@ func (tr *topicRunner) waitCmd() {
 		tr.ongoing.onCmdExit()
 		close(tr.done)
 	}()
-	err := tr.cmd.Wait()
+	err := tr.wait()
 	if err != nil {
 		seedlog.Warnf("topic %q: claude exited: %v", tr.topic, err)
 		return

@@ -15,6 +15,7 @@ go_library(
         "//seed/infra/flag/go/seedflag",
         "//seed/infra/log/go/seedlog",
         "//seed/newtype/amadeus/brain",
+        "//seed/newtype/amadeus/playpen",
         "//seed/newtype/gajetto/payload/claudepayload",
         "//seed/newtype/gajetto/proto:brain_go_proto",
         "@com_github_google_uuid//:uuid",
