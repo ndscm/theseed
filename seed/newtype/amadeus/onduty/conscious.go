@@ -335,7 +335,7 @@ func (s *Conscious) Hibernate() chan struct{} {
 }
 
 func CreateConscious(playpenController *playpen.PlaypenController) (*Conscious, error) {
-	b, err := brain.DefaultBrain()
+	b, err := brain.DefaultBrain(playpenController)
 	if err != nil {
 		return nil, seederr.Wrap(err)
 	}
