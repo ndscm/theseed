@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"connectrpc.com/connect"
+	"github.com/google/uuid"
 	"github.com/ndscm/theseed/seed/cloud/login/go/login"
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
 	"github.com/ndscm/theseed/seed/newtype/gajetto/proto/brainpb"
@@ -11,6 +12,19 @@ import (
 	"github.com/ndscm/theseed/seed/newtype/hooin/onsite"
 	"google.golang.org/grpc/codes"
 )
+
+func prepareBrainInput(brainInput *brainpb.BrainInput) *brainpb.BrainInput {
+	if brainInput.GetUuid() == "" {
+		brainInput.Uuid = uuid.NewString()
+	}
+	if brainInput.GetTopic() == "" {
+		brainInput.Topic = "default"
+	}
+	if brainInput.GetTaskUuid() == "" {
+		brainInput.TaskUuid = brainInput.GetUuid()
+	}
+	return brainInput
+}
 
 type HooinDictateService struct {
 	office *onsite.Office
@@ -33,8 +47,9 @@ func (svc *HooinDictateService) SendBrainInput(
 	if brainInput == nil {
 		return nil, seederr.CodeErrorf(codes.InvalidArgument, "brain_input is required")
 	}
+	brainInput = prepareBrainInput(brainInput)
 
-	sub := onsite.NewStepSubscriber(personId, brainInput.GetTopic())
+	sub := onsite.NewStepSubscriber(personId, brainInput.GetTopic(), brainInput.GetTaskUuid())
 	svc.office.SubscribeSteps(sub)
 	defer svc.office.UnsubscribeSteps(sub)
 
@@ -74,8 +89,9 @@ func (svc *HooinDictateService) SendBrainInputStreamBrainStep(
 	if brainInput == nil {
 		return seederr.CodeErrorf(codes.InvalidArgument, "brain_input is required")
 	}
+	brainInput = prepareBrainInput(brainInput)
 
-	sub := onsite.NewStepSubscriber(personId, brainInput.GetTopic())
+	sub := onsite.NewStepSubscriber(personId, brainInput.GetTopic(), brainInput.GetTaskUuid())
 	svc.office.SubscribeSteps(sub)
 	defer svc.office.UnsubscribeSteps(sub)
 
@@ -121,7 +137,7 @@ func (svc *HooinDictateService) SubscribeBrainStep(
 	merged := make(chan *brainpb.BrainStep, 16)
 	subs := make([]*onsite.StepSubscriber, 0, len(personTopics))
 	for _, pt := range personTopics {
-		sub := onsite.NewStepSubscriber(pt.GetPersonId(), pt.GetTopic())
+		sub := onsite.NewStepSubscriber(pt.GetPersonId(), pt.GetTopic(), "")
 		svc.office.SubscribeSteps(sub)
 		subs = append(subs, sub)
 

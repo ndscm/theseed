@@ -29,7 +29,7 @@ func (svc *HooinCommuteService) ReportBrainStep(
 		return nil, seederr.CodeErrorf(codes.InvalidArgument, "brain_step is required")
 	}
 
-	svc.office.BroadcastStep(personId, step.GetTopic(), step)
+	svc.office.BroadcastStep(personId, step)
 
 	return connect.NewResponse(&emptypb.Empty{}), nil
 }

@@ -13,17 +13,19 @@ import (
 type StepSubscriber struct {
 	personId string
 	topic    string
+	taskUuid string
 	channel  chan *brainpb.BrainStep
-}
-
-func NewStepSubscriber(personId string, topic string) *StepSubscriber {
-	return &StepSubscriber{
-		personId: personId,
-		topic:    topic,
-		channel:  make(chan *brainpb.BrainStep, 16),
-	}
 }
 
 func (s *StepSubscriber) Receive() <-chan *brainpb.BrainStep {
 	return s.channel
+}
+
+func NewStepSubscriber(personId string, topic string, taskUuid string) *StepSubscriber {
+	return &StepSubscriber{
+		personId: personId,
+		topic:    topic,
+		taskUuid: taskUuid,
+		channel:  make(chan *brainpb.BrainStep, 16),
+	}
 }

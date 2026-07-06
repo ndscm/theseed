@@ -82,7 +82,7 @@ func (ofc *Office) UnsubscribeSteps(sub *StepSubscriber) {
 // Callers must not hold stepSubscribersMutex when sending on the
 // returned subscribers' channels: the snapshot exists precisely so that
 // the lock can be released before any blocking send.
-func (ofc *Office) matchStepSubscribers(personId string, topic string) []*StepSubscriber {
+func (ofc *Office) matchStepSubscribers(personId string, topic string, taskUuid string) []*StepSubscriber {
 	ofc.stepSubscribersMutex.Lock()
 	defer ofc.stepSubscribersMutex.Unlock()
 	targets := make([]*StepSubscriber, 0, len(ofc.stepSubscribers))
@@ -93,13 +93,16 @@ func (ofc *Office) matchStepSubscribers(personId string, topic string) []*StepSu
 		if sub.topic != "" && sub.topic != topic {
 			continue
 		}
+		if sub.taskUuid != "" && sub.taskUuid != taskUuid {
+			continue
+		}
 		targets = append(targets, sub)
 	}
 	return targets
 }
 
-func (ofc *Office) BroadcastStep(personId string, topic string, step *brainpb.BrainStep) {
-	subscribers := ofc.matchStepSubscribers(personId, topic)
+func (ofc *Office) BroadcastStep(personId string, step *brainpb.BrainStep) {
+	subscribers := ofc.matchStepSubscribers(personId, step.GetTopic(), step.GetTaskUuid())
 
 	// Fanout must not block the reporting RPC on any one slow or
 	// disappearing subscriber, so the send is non-blocking: if the
@@ -111,7 +114,7 @@ func (ofc *Office) BroadcastStep(personId string, topic string, step *brainpb.Br
 		select {
 		case sub.channel <- step:
 		default:
-			seedlog.Warnf("BrainStep subscriber channel full or gone, dropping step: person=%q topic=%q", personId, topic)
+			seedlog.Warnf("BrainStep subscriber channel full or gone, dropping step: person=%q topic=%q", personId, step.GetTopic())
 		}
 	}
 }
