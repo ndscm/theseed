@@ -7,8 +7,14 @@ import {
   type BrainStep,
   BrainStepSchema,
 } from "../../../gajetto/proto/brain_pb"
-import { useHooinDictateService } from "../../../hooin/dictate/client/tsx/HooinDictateServiceContext"
 import KurisuPanel from "./KurisuPanel"
+
+export type BrainThread = {
+  personId: string
+  input: BrainInput
+  steps: BrainStep[]
+  live: AsyncIterable<BrainStep>
+}
 
 const BrainStepItem: React.FC<{ step: BrainStep }> = ({ step }) => {
   const [expanded, setExpanded] = React.useState(false)
@@ -46,27 +52,25 @@ const BrainStepItem: React.FC<{ step: BrainStep }> = ({ step }) => {
 }
 
 const BrainThreadPanel: React.FC<{
-  personId: string
-  input: BrainInput
-}> = ({ personId, input }) => {
-  const dictateService = useHooinDictateService()
-  const startedRef = useRef(false)
+  thread: BrainThread
+}> = ({ thread }) => {
   const [steps, setSteps] = React.useState<BrainStep[]>([])
+  const startedRef = useRef(false)
+
+  useEffect(() => {
+    setSteps(thread.steps)
+  }, [thread])
 
   const start = useCallback(async () => {
-    if (!dictateService || !personId || !input?.text) {
-      return
-    }
-    if (startedRef.current) {
+    if (!thread.live || startedRef.current) {
       return
     }
     startedRef.current = true
 
-    const stream = dictateService.SendBrainInputStreamBrainStep(personId, input)
-    for await (const step of stream) {
+    for await (const step of thread.live) {
       setSteps((prev) => [...prev, step])
     }
-  }, [dictateService, personId, input])
+  }, [thread.live])
 
   useEffect(() => {
     start()
@@ -75,13 +79,13 @@ const BrainThreadPanel: React.FC<{
   const lastStep = steps[steps.length - 1]
 
   return (
-    <KurisuPanel title={input.topic} subtitle={input.uuid}>
+    <KurisuPanel title={thread.input.topic} subtitle={thread.input.taskUuid}>
       <div
         className={tw({
           appearance: "text-base-content text-sm",
         })}
       >
-        {input.text}
+        {thread.input.text}
       </div>
       {steps.map((step, index) => (
         <BrainStepItem key={index} step={step} />
