@@ -14,6 +14,7 @@ go_library(
         "//seed/infra/error/go/seederr",
         "//seed/infra/flag/go/seedflag",
         "//seed/infra/log/go/seedlog",
+        "//seed/newtype/amadeus/playpen",
         "//seed/newtype/gajetto/proto:brain_go_proto",
     ],
 )

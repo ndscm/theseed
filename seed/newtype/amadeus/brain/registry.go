@@ -6,6 +6,7 @@ import (
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
 	"github.com/ndscm/theseed/seed/infra/flag/go/seedflag"
 	"github.com/ndscm/theseed/seed/infra/log/go/seedlog"
+	"github.com/ndscm/theseed/seed/newtype/amadeus/playpen"
 )
 
 var flagBrain = seedflag.DefineString("brain", "", "Brain implementation (e.g. claudecli)")
@@ -23,13 +24,13 @@ type BrainEntry struct {
 	initialized      bool
 }
 
-func (e *BrainEntry) Initialize() error {
+func (e *BrainEntry) Initialize(playpenController *playpen.PlaypenController) error {
 	e.initializedMutex.Lock()
 	defer e.initializedMutex.Unlock()
 	if e.initialized {
 		return seederr.WrapErrorf("the brain is already initialized")
 	}
-	err := e.provider.Initialize()
+	err := e.provider.Initialize(playpenController)
 	if err != nil {
 		return seederr.Wrap(err)
 	}
@@ -69,12 +70,12 @@ func getDefaultBrainEntry() (*BrainEntry, error) {
 	return entry, nil
 }
 
-func DefaultBrain() (Brain, error) {
+func DefaultBrain(playpenController *playpen.PlaypenController) (Brain, error) {
 	entry, err := getDefaultBrainEntry()
 	if err != nil {
 		return nil, seederr.Wrap(err)
 	}
-	err = entry.Initialize()
+	err = entry.Initialize(playpenController)
 	if err != nil {
 		return nil, seederr.Wrap(err)
 	}
