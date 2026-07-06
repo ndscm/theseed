@@ -8,7 +8,7 @@ container_engine=${CONTAINER_ENGINE:-"podman"}
 export CONTAINER_ENGINE="${container_engine}"
 ./seed/devprod/container/ubuntu/build.sh
 
-bazel build //seed/newtype/hooin/server
+bazel build --stamp //seed/newtype/hooin/server
 cp -f ./bazel-bin/seed/newtype/hooin/server/hooin-server_/hooin-server ./seed/newtype/hooin/container/hooin-server
 
 cd ./seed/newtype/hooin/container/
