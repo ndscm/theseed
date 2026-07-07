@@ -11,5 +11,4 @@ refresh_token="${1:-""}"
   "daru" \
   "3278" \
   "https://hooin.ndscm.biz/" \
-  "daru" \
   "${refresh_token}"
