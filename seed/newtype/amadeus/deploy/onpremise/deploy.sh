@@ -24,7 +24,7 @@ export CONTAINER_ENGINE="${container_engine}"
 ./seed/newtype/amadeus/container/build.sh
 
 # Stage the container image on the remote.
-podman save "ghcr.io/ndscm/seed-newtype-amadeus-container:latest" | ssh "${server}" "cat > /tmp/seed-newtype-amadeus-container.tar"
+podman save "ghcr.io/ndscm/seed-newtype-amadeus-container:latest" | ssh "${server}" "cat > ~/seed-newtype-amadeus-container.tar"
 
 # Deploy quadlet unit and the silicon refresh token secret, then start the service.
 #
@@ -64,6 +64,13 @@ cat <<END | ssh "${server}" "cat > ~/install-amadeus-${user_handle}.sh"
 #!/usr/bin/env bash
 set -eux
 set -o pipefail
+
+printf 'Loading container image...\n' >&2
+sudo mv ~/seed-newtype-amadeus-container.tar ~${user_handle}/seed-newtype-amadeus-container.tar
+sudo chown '${user_handle}:${user_handle}' ~${user_handle}/seed-newtype-amadeus-container.tar
+trap 'sudo rm -f ~${user_handle}/seed-newtype-amadeus-container.tar' EXIT
+sudo machinectl shell '${user_handle}@' /bin/bash -c 'podman load --input ~/seed-newtype-amadeus-container.tar'
+sudo machinectl shell '${user_handle}@' /bin/bash -c 'podman image exists ghcr.io/ndscm/seed-newtype-amadeus-container:latest'
 
 printf 'Creating quadlets...\n' >&2
 service_user_home=\$(eval printf ~'${user_handle}')
@@ -113,11 +120,9 @@ sudo chown '${user_handle}:${user_handle}' "${mount_home}"
 sudo mkdir -p "${mount_playpen_home}"
 sudo chown '${user_handle}:${user_handle}' "${mount_playpen_home}"
 
-printf 'Loading container and restarting service...\n' >&2
-sudo chmod 644 /tmp/seed-newtype-amadeus-container.tar
-sudo machinectl shell '${user_handle}@' /bin/bash -c 'podman load --input /tmp/seed-newtype-amadeus-container.tar'
-sudo machinectl shell '${user_handle}@' /bin/bash -c 'podman image exists ghcr.io/ndscm/seed-newtype-amadeus-container:latest'
-sudo machinectl shell '${user_handle}@' /bin/bash -c 'systemctl --user daemon-reload && systemctl --user restart amadeus'
+printf 'Restarting service...\n' >&2
+sudo machinectl shell '${user_handle}@' /bin/bash -c 'systemctl --user daemon-reload'
+sudo machinectl shell '${user_handle}@' /bin/bash -c 'systemctl --user restart amadeus'
 END
 
 ssh -t "${server}" "
