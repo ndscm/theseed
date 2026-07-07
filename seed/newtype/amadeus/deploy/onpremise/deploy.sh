@@ -68,7 +68,9 @@ set -o pipefail
 printf 'Creating quadlets...\n' >&2
 service_user_home=\$(eval printf ~'${linux_user}')
 quadlet_dir=\${service_user_home}/.config/containers/systemd
+state_dir=\${service_user_home}/.local/state/amadeus
 sudo machinectl shell '${linux_user}@' /usr/bin/mkdir -p "\${quadlet_dir}"
+sudo machinectl shell '${linux_user}@' /usr/bin/mkdir -p "\${state_dir}"
 
 cat <<EOF | sudo tee "\${quadlet_dir}/amadeus.container"
 [Unit]
@@ -83,7 +85,8 @@ RunInit=true
 Network=host
 Secret=SILICON_REFRESH_TOKEN
 Volume=${mount_home}:/home:Z
-Exec=/opt/amadeus/amadeus-server --port ${port} --openid_discovery_url https://account.ndscm.com/realms/ndscm/.well-known/openid-configuration --silicon_refresh_token_file /run/secrets/SILICON_REFRESH_TOKEN --hooin_commute_service_server ${hooin_url} --verbose
+EnvironmentFile=%S/amadeus/env
+Exec=/opt/amadeus/amadeus-server --verbose
 
 [Service]
 Restart=always
@@ -92,6 +95,13 @@ TasksMax=infinity
 
 [Install]
 WantedBy=default.target
+EOF
+
+cat <<EOF | sudo tee "\${state_dir}/env"
+AMADEUS_PORT=${port}
+AMADEUS_OPENID_DISCOVERY_URL=https://account.ndscm.com/realms/ndscm/.well-known/openid-configuration
+AMADEUS_SILICON_REFRESH_TOKEN_FILE=/run/secrets/SILICON_REFRESH_TOKEN
+AMADEUS_HOOIN_COMMUTE_SERVICE_SERVER=${hooin_url}
 EOF
 
 printf 'Creating quadlet volumes...\n' >&2
