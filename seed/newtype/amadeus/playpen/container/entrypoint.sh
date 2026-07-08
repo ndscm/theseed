@@ -6,7 +6,7 @@ playpen_user="${1:-"christina"}"
 init_process="${2:-""}"
 
 if ! id "${playpen_user}" &>/dev/null; then
-  useradd --shell /usr/bin/zsh --create-home "${playpen_user}"
+  useradd --uid 1000 --shell /usr/bin/zsh --create-home "${playpen_user}"
 fi
 
 if [[ ! -f "/home/${playpen_user}/.zshrc" ]]; then
