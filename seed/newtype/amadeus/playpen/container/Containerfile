@@ -1,5 +1,7 @@
 FROM ghcr.io/ndscm/ubuntu:latest
 
+RUN userdel --remove ubuntu || true
+
 # System packages
 
 RUN apt update
@@ -8,6 +10,7 @@ RUN apt install -y curl
 RUN apt install -y direnv
 RUN apt install -y git
 RUN apt install -y gnupg2
+RUN apt install -y iproute2
 RUN apt install -y iputils-ping
 RUN apt install -y libcap2-bin
 RUN apt install -y lsb-release
