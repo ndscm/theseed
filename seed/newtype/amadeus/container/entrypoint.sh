@@ -58,9 +58,4 @@ if [[ -z "$(ls -A "/home/amadeus/")" ]]; then
   printf "%s\n" "export PATH=\"/home/amadeus/.local/bin:\$PATH\"" >>/home/amadeus/.zshrc
 fi
 
-# Run the command under an interactive zsh so that any CLI tools spawned from
-# here (notably the Claude CLI and other developer tooling) see the same shell
-# environment a real developer would have on their workstation: ~/.zshrc is
-# sourced, PATH includes ~/.local/bin, aliases and completions are loaded, and
-# tools that probe `$-` for an interactive shell behave as expected.
-exec zsh -i -c 'exec "$@"' zsh "$@"
+exec "$@"
