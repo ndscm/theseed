@@ -12,20 +12,9 @@ if [[ ",${maintain_scopes}," == *",user,"* ]]; then
     if [[ -d "${HOME}/ndscm/theseed" ]]; then
       printf "\e[33mFound existing theseed monorepo, skip connect.\e[0m\n"
     else
-      ndscm connect \
-        --repos_home "${HOME}/ndscm" \
-        theseed "git@github.com:ndscm/theseed.git"
+      ndscm connect theseed "git@github.com:ndscm/theseed.git"
     fi
-
-    cat <<EOF >>"${HOME}/.managed_profile.tmp"
-
-## Monorepo
-
-export ND_REPOS_HOME="\${HOME}/ndscm"
-EOF
   fi
-
-  export ND_REPOS_HOME="${HOME}/ndscm"
 
   printf "\e[32m[user] Check theseed monorepo done.\e[0m\n"
 fi
