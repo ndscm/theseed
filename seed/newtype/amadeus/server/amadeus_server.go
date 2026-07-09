@@ -23,6 +23,11 @@ import (
 
 var flagPort = seedflag.DefineString("port", "2623", "Server port") // Default port assignment word: AMAD (2623)
 
+// SIGRT3 is SIGRTMIN+3 (signal 37 on Linux). When the container runs with
+// podman's --systemd=always, podman uses SIGRTMIN+3 as the stop signal instead
+// of SIGTERM, so amadeus-server (PID 1) must handle it to shut down gracefully.
+const SIGRT3 = syscall.Signal(37)
+
 func run() error {
 	_, err := seedinit.Initialize(
 		seedinit.WithEnvPrefix("AMADEUS_"),
@@ -103,7 +108,7 @@ func run() error {
 	}()
 
 	stopChan := make(chan os.Signal, 1)
-	signal.Notify(stopChan, os.Interrupt, syscall.SIGTERM)
+	signal.Notify(stopChan, os.Interrupt, syscall.SIGTERM, SIGRT3)
 	serveErrChan := make(chan error, 1)
 	go func() {
 		seedlog.Infof("Starting amadeus server on :%v", port)
