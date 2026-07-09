@@ -27,6 +27,7 @@ go_library(
         "nd_dev.go",
         "nd_format.go",
         "nd_lock.go",
+        "nd_main.go",
         "nd_melt.go",
         "nd_run.go",
         "nd_setup.go",
