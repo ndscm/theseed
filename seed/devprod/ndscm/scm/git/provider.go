@@ -81,6 +81,14 @@ func (g *GitProvider) Connect(
 			return "", "", seederr.Wrap(err)
 		}
 	}
+	err = SetBranchTracking(gitDir, mainBranch, remoteMainBranch)
+	if err != nil {
+		return "", "", seederr.Wrap(err)
+	}
+	err = UpdateBranch(gitDir, mainBranch, remoteMainBranch)
+	if err != nil {
+		return "", "", seederr.Wrap(err)
+	}
 	worktreePath, err := CreateBranchWorktree(gitDir, monorepoHome, mainBranch)
 	if err != nil {
 		return "", "", seederr.Wrap(err)
