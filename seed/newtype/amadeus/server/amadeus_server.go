@@ -1,7 +1,12 @@
 package main
 
 import (
+	"context"
+	"errors"
 	"os"
+	"os/signal"
+	"syscall"
+	"time"
 
 	"github.com/ndscm/theseed/seed/infra/auth/go/openidjwt"
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
@@ -75,10 +80,43 @@ func run() error {
 		return seederr.Wrap(err)
 	}
 
-	seedlog.Infof("Starting amadeus server on :%v", flagPort.Get())
-	err = seedgrpc.ListenAndServe(":"+flagPort.Get(), handler)
+	port := flagPort.Get()
+	server, err := seedgrpc.CreateServer(":"+port, handler)
 	if err != nil {
 		return seederr.Wrap(err)
+	}
+	defer func() {
+		const shutdownDrainTimeout = 10 * time.Second
+
+		ctx, cancel := context.WithTimeout(context.Background(), shutdownDrainTimeout)
+		defer cancel()
+		err := server.Shutdown(ctx)
+		if err != nil {
+			if errors.Is(err, context.DeadlineExceeded) {
+				seedlog.Errorf("Drain timed out after %v, force-closing amadeus server", shutdownDrainTimeout)
+				err = server.Close()
+			}
+		}
+		if err != nil {
+			seedlog.Errorf("Failed to shutdown amadeus server: %v", err)
+		}
+	}()
+
+	stopChan := make(chan os.Signal, 1)
+	signal.Notify(stopChan, os.Interrupt, syscall.SIGTERM)
+	serveErrChan := make(chan error, 1)
+	go func() {
+		seedlog.Infof("Starting amadeus server on :%v", port)
+		serveErrChan <- server.Serve()
+	}()
+
+	select {
+	case <-stopChan:
+		seedlog.Infof("Shutting down amadeus server")
+	case err = <-serveErrChan:
+		if err != nil {
+			return seederr.Wrap(err)
+		}
 	}
 	return nil
 }
