@@ -13,6 +13,7 @@ go_library(
         "nd_continue.go",
         "nd_cut.go",
         "nd_dev.go",
+        "nd_main.go",
         "nd_melt.go",
         "nd_run.go",
         "nd_setup.go",
