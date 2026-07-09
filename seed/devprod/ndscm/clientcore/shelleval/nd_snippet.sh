@@ -9,6 +9,9 @@ function nd {
     "dev")
       eval "$(ndscm --shell-eval ${1} ${@:2})"
       ;;
+    "main")
+      eval "$(ndscm --shell-eval ${1} ${@:2})"
+      ;;
     "melt")
       eval "$(ndscm --shell-eval ${1} ${@:2})"
       ;;
