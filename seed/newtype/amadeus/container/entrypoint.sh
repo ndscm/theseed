@@ -9,10 +9,6 @@ set -o pipefail
 # capabilities. Once that is done we re-exec ourselves as the unprivileged
 # amadeus user for the actual workload.
 if [[ "$(id -u)" -eq 0 ]]; then
-  mkdir -p /home/amadeus
-  chown amadeus:amadeus /home/amadeus
-  chmod 0750 /home/amadeus
-
   # Give the unprivileged amadeus user a writable, controller-delegated cgroup-v2
   # subtree so the nested rootless podman can create cgroups for --systemd=always
   # playpen containers. This is what `systemd --user` does for a login session on
@@ -54,12 +50,6 @@ if [[ "$(id -u)" -eq 0 ]]; then
     --init-groups \
     env "HOME=/home/amadeus" \
     "$0" "$@"
-fi
-
-if [[ -z "$(ls -A "/home/amadeus/")" ]]; then
-  cp --recursive --no-target-directory /etc/skel/ "${HOME}/"
-  cp /etc/zsh/newuser.zshrc.recommended /home/amadeus/.zshrc
-  printf "%s\n" "export PATH=\"/home/amadeus/.local/bin:\$PATH\"" >>/home/amadeus/.zshrc
 fi
 
 if [[ -w "/sys/fs/cgroup/amadeus/cgroup.procs" ]]; then
