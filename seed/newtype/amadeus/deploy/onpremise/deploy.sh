@@ -17,7 +17,6 @@ if [[ "${container_engine}" != "podman" ]]; then
   exit 1
 fi
 
-mount_home=${MOUNT_HOME:-"/mnt/data/${user_handle}/home"}
 mount_playpen_home=${MOUNT_PLAYPEN_HOME:-"/mnt/data/${user_handle}/playpen/home"}
 
 export CONTAINER_ENGINE="${container_engine}"
@@ -92,7 +91,6 @@ Network=host
 AddDevice=/dev/fuse
 PodmanArgs=--privileged --systemd=always
 Secret=SILICON_REFRESH_TOKEN
-Volume=${mount_home}:/home:Z
 Volume=${mount_playpen_home}:/playpen/home:Z
 EnvironmentFile=%S/amadeus/env
 Exec=/opt/amadeus/amadeus-server --verbose
@@ -115,8 +113,6 @@ AMADEUS_HOOIN_COMMUTE_SERVICE_SERVER=${hooin_url}
 EOF
 
 printf 'Creating quadlet volumes...\n' >&2
-sudo mkdir -p "${mount_home}"
-sudo chown '${user_handle}:${user_handle}' "${mount_home}"
 sudo mkdir -p "${mount_playpen_home}"
 sudo chown '${user_handle}:${user_handle}' "${mount_playpen_home}"
 
