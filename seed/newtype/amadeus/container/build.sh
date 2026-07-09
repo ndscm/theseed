@@ -11,7 +11,7 @@ export CONTAINER_ENGINE="${container_engine}"
 mkdir -p ./seed/newtype/amadeus/container/amadeus/
 ./seed/newtype/amadeus/playpen/container/build.sh
 "${container_engine}" save "ghcr.io/ndscm/seed-newtype-amadeus-playpen-container:latest" \
-  >"./seed/newtype/amadeus/container/amadeus/playpen.tar"
+  >"./seed/newtype/amadeus/container/playpen.tar"
 bazel build --stamp //seed/newtype/amadeus/server
 cp -f ./bazel-bin/seed/newtype/amadeus/server/amadeus-server_/amadeus-server ./seed/newtype/amadeus/container/amadeus/amadeus-server
 

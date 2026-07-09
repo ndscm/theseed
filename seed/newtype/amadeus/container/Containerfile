@@ -28,11 +28,25 @@ RUN useradd --uid 1000 --shell /usr/bin/bash --create-home amadeus
 # Run the outer container with `--privileged --device /dev/fuse`
 
 COPY ./containers.conf /etc/containers/containers.conf
-RUN sed \
-  -e 's|^#mount_program|mount_program|g' \
-  -e 's|^mountopt[[:space:]]*=.*$|mountopt = "nodev,fsync=0"|g' \
-  /usr/share/containers/storage.conf \
-  >/etc/containers/storage.conf
+COPY --chown=amadeus:amadeus ./storage.conf /home/amadeus/.config/containers/storage.conf
+
+# Prepopulate the playpen image into a shared, read-only additional image store
+# instead of loading it into the amadeus user's store on every container start.
+# The store is written by root, so force_mask=shared makes its files
+# world-readable (with the original permissions preserved in an xattr and
+# presented back by fuse-overlayfs) -- otherwise the unprivileged amadeus user
+# could not read the root-owned layers. amadeus's storage.conf references this
+# path via additionalimagestores above. The tar is bind-mounted for the load so
+# its ~750MB never ends up baked into an image layer.
+RUN --mount=type=bind,source=./playpen.tar,target=/tmp/playpen.tar \
+  podman \
+  --root /usr/local/share/containers/storage \
+  --runroot /run/amadeus \
+  --storage-driver overlay \
+  --storage-opt overlay.mount_program=/usr/bin/fuse-overlayfs \
+  --storage-opt overlay.force_mask=shared \
+  load --input /tmp/playpen.tar \
+  && chmod -R a+rX /usr/local/share/containers
 
 ENV _CONTAINERS_USERNS_CONFIGURED=""
 ENV BUILDAH_ISOLATION=chroot

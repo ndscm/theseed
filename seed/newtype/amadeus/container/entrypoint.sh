@@ -52,8 +52,4 @@ if [[ "$(id -u)" -eq 0 ]]; then
     "$0" "$@"
 fi
 
-if [[ -w "/sys/fs/cgroup/amadeus/cgroup.procs" ]]; then
-  podman load --input /opt/amadeus/playpen.tar
-fi
-
 exec "$@"
