@@ -131,8 +131,9 @@ chmod +x ~/install-amadeus-${user_handle}.sh
 ~/install-amadeus-${user_handle}.sh
 "
 
-printf "Use this command to access the container:\n"
+printf "Use this command to login the quadlet user:\n"
 printf "    \x1b[1;33mssh -t ${server} sudo machinectl shell ${user_handle}@ /bin/bash\x1b[0m\n"
-printf "    \x1b[1;33mssh -t ${server} sudo machinectl shell ${user_handle}@ /usr/bin/podman exec --interactive --tty --user amadeus amadeus /usr/bin/zsh\x1b[0m\n"
+printf "Use this command to access the container:\n"
+printf "    \x1b[1;33mssh -t ${server} sudo machinectl shell ${user_handle}@ /usr/bin/podman exec -i -t -u amadeus amadeus podman exec -i -t -u ${user_handle} playpen /usr/bin/zsh -i\x1b[0m\n"
 
 ssh -t ${server} sudo machinectl shell ${user_handle}@ /usr/bin/podman logs --follow amadeus
