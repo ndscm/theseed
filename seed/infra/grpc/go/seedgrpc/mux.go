@@ -4,9 +4,20 @@ import (
 	"net/http"
 	"strings"
 
+	"connectrpc.com/connect"
 	"connectrpc.com/grpchealth"
+	"connectrpc.com/validate"
+	"github.com/ndscm/theseed/seed/infra/grpc/go/grpclog"
 	"github.com/ndscm/theseed/seed/infra/log/go/seedlog"
 )
+
+func WithCommonInterceptors(options ...connect.Interceptor) connect.Option {
+	interceptors := []connect.Interceptor{}
+	interceptors = append(interceptors, options...)
+	interceptors = append(interceptors, grpclog.NewLogInterceptor())
+	interceptors = append(interceptors, validate.NewInterceptor())
+	return connect.WithInterceptors(interceptors...)
+}
 
 type GrpcMux struct {
 	http.ServeMux
@@ -15,12 +26,6 @@ type GrpcMux struct {
 
 	serviceNames  []string
 	healthChecker *grpchealth.StaticChecker
-}
-
-func CreateGrpcMux(interceptors ...func(http.Handler) http.Handler) (*GrpcMux, error) {
-	m := &GrpcMux{}
-	m.interceptors = interceptors
-	return m, nil
 }
 
 func (cls *GrpcMux) Register(path string, handler http.Handler) error {
@@ -39,4 +44,10 @@ func (cls *GrpcMux) Ready() (http.Handler, error) {
 	)
 	cls.Handle(grpchealth.NewHandler(cls.healthChecker))
 	return cls, nil
+}
+
+func CreateGrpcMux(interceptors ...func(http.Handler) http.Handler) (*GrpcMux, error) {
+	m := &GrpcMux{}
+	m.interceptors = interceptors
+	return m, nil
 }
