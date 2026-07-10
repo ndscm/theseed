@@ -16,6 +16,8 @@
     "onDuty": "On Duty"
   },
   "terminal": {
+    "connect": "Connect",
+    "connectionClosed": "Connection closed",
     "title": "Terminal"
   },
   "workstation": {
