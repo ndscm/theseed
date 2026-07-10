@@ -3,6 +3,7 @@ syntax = "proto3";
 package seed.newtype.amadeus.commute.proto;
 
 import "google/protobuf/empty.proto";
+import "seed/infra/terminal/proto/terminal.proto";
 import "seed/newtype/gajetto/proto/brain.proto";
 
 option go_package = "github.com/ndscm/theseed/seed/newtype/amadeus/commute/proto/commutepb";
@@ -11,6 +12,20 @@ message SendBrainInputRequest {
   seed.newtype.gajetto.proto.BrainInput brain_input = 2;
 }
 
+// AmadeusCommuteService is reached by hooin over the commute connection the
+// agent dials out on. That connection multiplexes HTTP request/response pairs
+// and carries streams in both directions, so a terminal is one long-lived
+// bidirectional stream rather than a sequence of polls.
 service AmadeusCommuteService {
   rpc SendBrainInput(SendBrainInputRequest) returns (google.protobuf.Empty) {}
+
+  // StartTerminal opens a pseudo-terminal in the playpen container, carrying
+  // keystrokes one way and terminal output the other. The terminal lives as
+  // long as the stream: ending the stream ends the shell.
+  //
+  // The agent serves exactly one person, so the opening frame names only a
+  // window size. Hooin serves many, which is why its own terminal frames add
+  // the person to it.
+  rpc StartTerminal(stream seed.infra.terminal.proto.TerminalInputFrame)
+      returns (stream seed.infra.terminal.proto.TerminalOutputFrame) {}
 }
