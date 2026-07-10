@@ -6,14 +6,21 @@ package(default_visibility = [
 
 go_library(
     name = "service",
-    srcs = ["commute_service.go"],
+    srcs = [
+        "commute_service.go",
+        "terminal.go",
+    ],
     importpath = "github.com/ndscm/theseed/seed/newtype/amadeus/commute/service",
     deps = [
         "//seed/cloud/login/go/login",
         "//seed/infra/error/go/seederr",
+        "//seed/infra/log/go/seedlog",
+        "//seed/infra/terminal/proto:terminal_go_proto",
         "//seed/newtype/amadeus/commute/proto:commute_go_proto",
         "//seed/newtype/amadeus/onduty",
+        "//seed/newtype/amadeus/playpen",
         "@com_connectrpc_connect//:connect",
+        "@com_github_creack_pty//:pty",
         "@org_golang_google_grpc//codes",
         "@org_golang_google_protobuf//types/known/emptypb",
     ],

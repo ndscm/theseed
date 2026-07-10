@@ -6,6 +6,7 @@ import (
 	"connectrpc.com/connect"
 	"github.com/ndscm/theseed/seed/cloud/login/go/login"
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
+	"github.com/ndscm/theseed/seed/infra/terminal/proto/terminalpb"
 	"github.com/ndscm/theseed/seed/newtype/amadeus/commute/proto/commutepb"
 	"github.com/ndscm/theseed/seed/newtype/amadeus/onduty"
 	"google.golang.org/grpc/codes"
@@ -34,6 +35,27 @@ func (svc *AmadeusCommuteService) SendBrainInput(
 		return nil, seederr.Wrap(err)
 	}
 	return connect.NewResponse(&emptypb.Empty{}), nil
+}
+
+// StartTerminal runs a terminal for the life of the stream. It is the only RPC
+// here that needs the commute connection to carry a stream in both directions
+// at once: the shell's output must reach the caller while the caller is still
+// typing.
+func (svc *AmadeusCommuteService) StartTerminal(
+	ctx context.Context,
+	stream *connect.BidiStream[terminalpb.TerminalInputFrame, terminalpb.TerminalOutputFrame],
+) error {
+	_, err := login.EnsureLoginUser(ctx)
+	if err != nil {
+		return seederr.Wrap(err)
+	}
+	// TODO(nagi): add fine-grained authorization
+
+	err = startTerminal(ctx, svc.conscious, stream)
+	if err != nil {
+		return seederr.Wrap(err)
+	}
+	return nil
 }
 
 func NewAmadeusCommuteService(conscious *onduty.Conscious) *AmadeusCommuteService {
