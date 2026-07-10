@@ -432,6 +432,12 @@ importers:
         specifier: workspace:^
         version: link:../../../gajetto/proto
 
+  seed/newtype/hooin/invade/proto:
+    dependencies:
+      '@theseed/seed-infra-terminal-proto':
+        specifier: workspace:^
+        version: link:../../../../infra/terminal/proto
+
   seed/newtype/hooin/roster/client/tsx:
     dependencies:
       '@bufbuild/protobuf':
