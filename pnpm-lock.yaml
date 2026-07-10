@@ -432,6 +432,40 @@ importers:
         specifier: workspace:^
         version: link:../../../gajetto/proto
 
+  seed/newtype/hooin/invade/client/tsx:
+    dependencies:
+      '@bufbuild/protobuf':
+        specifier: 2.12.0
+        version: 2.12.0
+      '@connectrpc/connect':
+        specifier: 2.1.1
+        version: 2.1.1(@bufbuild/protobuf@2.12.0)
+      '@connectrpc/connect-web':
+        specifier: 2.1.1
+        version: 2.1.1(@bufbuild/protobuf@2.12.0)(@connectrpc/connect@2.1.1(@bufbuild/protobuf@2.12.0))
+      '@theseed/seed-infra-terminal-proto':
+        specifier: workspace:^
+        version: link:../../../../../infra/terminal/proto
+      '@theseed/seed-newtype-hooin-invade-proto':
+        specifier: workspace:^
+        version: link:../../proto
+      react:
+        specifier: 19.2.5
+        version: 19.2.5
+      react-dom:
+        specifier: 19.2.5
+        version: 19.2.5(react@19.2.5)
+    devDependencies:
+      '@types/react':
+        specifier: 19.2.7
+        version: 19.2.7
+      '@types/react-dom':
+        specifier: 19.2.3
+        version: 19.2.3(@types/react@19.2.7)
+      typescript:
+        specifier: 5.9.3
+        version: 5.9.3
+
   seed/newtype/hooin/invade/proto:
     dependencies:
       '@theseed/seed-infra-terminal-proto':
