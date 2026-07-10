@@ -4,9 +4,30 @@ package seed.cloud.bidirequest.proto;
 
 option go_package = "github.com/ndscm/theseed/seed/cloud/bidirequest/proto/bidirequestpb";
 
+// Payload is one frame on a multiplexed stream.
+//
+// A stream is a pair of independent byte streams, one per direction, carrying
+// an HTTP/1.1 request one way and its response the other. Each side ends its
+// own direction with `end`; either side may abandon both with `reset`. A frame
+// may carry data and `end` at once.
 message Payload {
+  // Identifies the stream the frame belongs to. Odd ids are opened by the
+  // client side of the connection, even ids by the server side, so the two
+  // never collide.
   uint32 stream_id = 1;
+
+  // The next bytes of the sender's direction of the stream.
   bytes data = 2;
+
+  // Set on the last frame the sender will send on this stream. The receiver
+  // sees the end of the message it is reading — a request body's EOF, or the
+  // end of a response.
+  bool end = 3;
+
+  // Set to abandon the stream in both directions, e.g. because the request
+  // was cancelled or the message on it could not be parsed. The receiver
+  // fails whatever is reading from it.
+  bool reset = 4;
 }
 
 service BidirequestService {
