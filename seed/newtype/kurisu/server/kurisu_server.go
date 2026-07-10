@@ -20,6 +20,8 @@ import (
 	"github.com/ndscm/theseed/seed/infra/log/go/seedlog"
 	"github.com/ndscm/theseed/seed/newtype/hooin/dictate/client/go/dictateclient"
 	"github.com/ndscm/theseed/seed/newtype/hooin/dictate/proto/dictatepbconnect"
+	"github.com/ndscm/theseed/seed/newtype/hooin/invade/client/go/invadeclient"
+	"github.com/ndscm/theseed/seed/newtype/hooin/invade/proto/invadepbconnect"
 	"github.com/ndscm/theseed/seed/newtype/hooin/roster/client/go/rosterclient"
 	"github.com/ndscm/theseed/seed/newtype/hooin/roster/proto/rosterpbconnect"
 	"github.com/ndscm/theseed/seed/newtype/kurisu/proto/kurisupbconnect"
@@ -83,6 +85,18 @@ func run() error {
 		},
 	}
 	mux.Handle("/"+dictatepbconnect.HooinDictateServiceName+"/", dictateProxy)
+
+	invadeUrl, err := url.Parse(invadeclient.HooinInvadeServiceServerFlag())
+	if err != nil {
+		return seederr.Wrap(err)
+	}
+	invadeProxy := &httputil.ReverseProxy{
+		Rewrite: func(r *httputil.ProxyRequest) {
+			r.SetURL(invadeUrl)
+			r.SetXForwarded()
+		},
+	}
+	mux.Handle("/"+invadepbconnect.HooinInvadeServiceName+"/", invadeProxy)
 
 	rosterUrl, err := url.Parse(rosterclient.HooinRosterServiceServer())
 	if err != nil {
