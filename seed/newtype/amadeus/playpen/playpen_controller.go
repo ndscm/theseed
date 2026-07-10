@@ -11,6 +11,7 @@ import (
 	"os/exec"
 	"time"
 
+	"github.com/creack/pty"
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
 	"github.com/ndscm/theseed/seed/infra/log/go/seedlog"
 )
@@ -95,6 +96,67 @@ func (pc *PlaypenController) StartShell(
 		Stdout: stdout,
 		Stderr: stderr,
 	}, nil
+}
+
+// StartTerminal opens a terminal session inside the playpen container,
+// running shellPath with args as the playpen user (e.g. "/usr/bin/zsh", ["-i"])
+// on a pseudo-terminal sized to window. A zero row or column count falls back
+// to the conventional 24x80; window's pixel dimensions are passed through
+// untouched, and zero is the right value for them on a terminal nobody is
+// drawing graphics on.
+//
+// The size is applied to the terminal before the exec client starts, not after:
+// podman reads the size of the terminal it is attached to in order to size the
+// terminal it allocates in the container. Starting at 0x0 and resizing
+// afterwards would race that read, and a lost resize would leave the shell
+// convinced it has no window at all.
+//
+// The session is started under ctx, with the same caveat as StartShellSession:
+// cancelling ctx kills the podman exec client on the host, but whether that
+// terminates the shell inside the container is podman-version dependent. Prefer
+// Close, which hangs up the terminal.
+func (pc *PlaypenController) StartTerminal(
+	ctx context.Context, window pty.Winsize, shellPath string, args []string,
+) (*PlaypenTerminal, error) {
+	if window.Rows == 0 {
+		window.Rows = defaultTtyRows
+	}
+	if window.Cols == 0 {
+		window.Cols = defaultTtyCols
+	}
+
+	// --tty asks podman to allocate a pseudo-terminal for the shell inside the
+	// container, which it sizes from the terminal its own client is attached to.
+	execArgs := []string{
+		"exec",
+		"--interactive",
+		"--tty",
+		"--user", pc.userHandle,
+		playpenContainerName,
+		shellPath,
+	}
+	execArgs = append(execArgs, args...)
+
+	cmd := exec.CommandContext(ctx, "podman", execArgs...)
+
+	// StartWithSize hands podman a pseudo-terminal as its stdin, stdout, and
+	// stderr, already sized, and starts it.
+	ptyFile, err := pty.StartWithSize(cmd, &window)
+	if err != nil {
+		return nil, seederr.Wrap(err)
+	}
+
+	seedlog.Infof("Playpen tty session started. pid=%d shell=%s %v user=%s size=%dx%d",
+		cmd.Process.Pid, shellPath, args, pc.userHandle, window.Rows, window.Cols)
+
+	session := &PlaypenTerminal{
+		ptyFile: ptyFile,
+	}
+	session.userHandle = pc.userHandle
+	session.cmd = cmd
+	session.Stdin = ptyFile
+	session.Stdout = ptyFile
+	return session, nil
 }
 
 // Shutdown stops and removes the playpen container. It is best effort: --force
