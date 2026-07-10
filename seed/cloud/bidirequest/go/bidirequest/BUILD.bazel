@@ -1,4 +1,4 @@
-load("@rules_go//go:def.bzl", "go_library")
+load("@rules_go//go:def.bzl", "go_library", "go_test")
 
 go_library(
     name = "bidirequest",
@@ -11,5 +11,14 @@ go_library(
     deps = [
         "//seed/cloud/bidirequest/proto:bidirequest_go_proto",
         "//seed/infra/log/go/seedlog",
+    ],
+)
+
+go_test(
+    name = "bidirequest_test",
+    srcs = ["wrap_test.go"],
+    embed = [":bidirequest"],
+    deps = [
+        "//seed/cloud/bidirequest/proto:bidirequest_go_proto",
     ],
 )
