@@ -8,6 +8,7 @@ import (
 	"github.com/ndscm/theseed/seed/infra/flag/go/seedflag"
 	"github.com/ndscm/theseed/seed/infra/grpc/go/grpclog"
 	"github.com/ndscm/theseed/seed/infra/http/go/seedbearer"
+	"github.com/ndscm/theseed/seed/infra/terminal/proto/terminalpb"
 	"github.com/ndscm/theseed/seed/newtype/amadeus/commute/proto/commutepb"
 	"github.com/ndscm/theseed/seed/newtype/amadeus/commute/proto/commutepbconnect"
 	"github.com/ndscm/theseed/seed/newtype/gajetto/proto/brainpb"
@@ -28,6 +29,15 @@ func (c *AmadeusCommuteClient) SendBrainInput(
 			BrainInput: input,
 		}))
 	return err
+}
+
+// StartTerminal opens a terminal on the agent's playpen. The caller sends a start
+// frame first, then keystrokes and resizes, and receives terminal output until
+// the shell exits. The terminal lives as long as the stream.
+func (c *AmadeusCommuteClient) StartTerminal(
+	ctx context.Context,
+) *connect.BidiStreamForClient[terminalpb.TerminalInputFrame, terminalpb.TerminalOutputFrame] {
+	return c.client.StartTerminal(ctx)
 }
 
 type amadeusCommuteClientOptions struct {
