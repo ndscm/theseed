@@ -4,7 +4,10 @@ package(default_visibility = ["//seed/newtype/amadeus:__subpackages__"])
 
 go_library(
     name = "playpen",
-    srcs = ["playpen_controller.go"],
+    srcs = [
+        "playpen_controller.go",
+        "playpen_shell.go",
+    ],
     importpath = "github.com/ndscm/theseed/seed/newtype/amadeus/playpen",
     deps = [
         "//seed/infra/error/go/seederr",
