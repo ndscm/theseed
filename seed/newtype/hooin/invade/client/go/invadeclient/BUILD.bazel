@@ -1,0 +1,23 @@
+load("@rules_go//go:def.bzl", "go_library")
+
+package(default_visibility = [
+    "//seed/newtype/amadeus:__subpackages__",
+    "//seed/newtype/hooin:__subpackages__",
+    "//seed/newtype/kurisu:__subpackages__",
+])
+
+go_library(
+    name = "invadeclient",
+    srcs = ["invade_client.go"],
+    importpath = "github.com/ndscm/theseed/seed/newtype/hooin/invade/client/go/invadeclient",
+    deps = [
+        "//seed/infra/error/go/seederr",
+        "//seed/infra/flag/go/seedflag",
+        "//seed/infra/grpc/go/grpclog",
+        "//seed/infra/http/go/seedbearer",
+        "//seed/infra/terminal/proto:terminal_go_proto",
+        "//seed/newtype/hooin/invade/proto:invade_go_connect",
+        "//seed/newtype/hooin/invade/proto:invade_go_proto",
+        "@com_connectrpc_connect//:connect",
+    ],
+)
