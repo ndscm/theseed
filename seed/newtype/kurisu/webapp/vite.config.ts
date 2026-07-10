@@ -28,6 +28,9 @@ export default defineConfig({
       "/seed.newtype.hooin.dictate.proto.HooinDictateService/": {
         target: process.env.HOOIN_DICTATE_SERVICE_SERVER || "",
       },
+      "/seed.newtype.hooin.invade.proto.HooinInvadeService/": {
+        target: process.env.HOOIN_INVADE_SERVICE_SERVER || "",
+      },
       "/seed.newtype.hooin.roster.proto.HooinRosterService/": {
         target: process.env.HOOIN_ROSTER_SERVICE_SERVER || "",
       },
