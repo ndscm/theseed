@@ -61,6 +61,10 @@ type Conscious struct {
 	topics      map[string]*LiveTopic
 }
 
+func (s *Conscious) GetPlaypenController() *playpen.PlaypenController {
+	return s.playpenController
+}
+
 func (s *Conscious) SetConnectHandler(handler http.Handler) {
 	s.connectHandler = handler
 }
