@@ -1,0 +1,8 @@
+{
+  "name": "@theseed/seed-newtype-hooin-invade-proto",
+  "version": "0.0.0",
+  "private": true,
+  "dependencies": {
+    "@theseed/seed-infra-terminal-proto": "workspace:^"
+  }
+}

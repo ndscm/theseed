@@ -1,0 +1,65 @@
+syntax = "proto3";
+
+package seed.newtype.hooin.invade.proto;
+
+import "google/protobuf/empty.proto";
+import "seed/infra/terminal/proto/terminal.proto";
+
+option go_package = "github.com/ndscm/theseed/seed/newtype/hooin/invade/proto/invadepb";
+
+// StartTerminalRequest opens a terminal session on a person's workstation.
+message StartTerminalRequest {
+  // Identifier of the person whose workstation the terminal runs on. May be
+  // a UUID or a user-defined short identifier (e.g. handle).
+  string person_id = 1;
+
+  // The frame that opens the terminal. Its `session_uuid` names the terminal
+  // for the `SendTerminalInput` calls that type at it, and must be there:
+  // hooin holds one terminal per stream but many streams at once, and finds
+  // one by that name alone.
+  seed.infra.terminal.proto.TerminalInputFrame start = 2;
+}
+
+// SendTerminalInputRequest types at a terminal on a person's workstation.
+message SendTerminalInputRequest {
+  // Identifier of the person whose workstation the terminal runs on — the same
+  // one `StartTerminal` opened it with. Terminals belong to the workstation
+  // they run on, so a session uuid names one only within a person.
+  string person_id = 1;
+
+  // What to type. Its `session_uuid` names which of the person's terminals, and
+  // its `start` must be unset, because only `StartTerminal` opens one.
+  seed.infra.terminal.proto.TerminalInputFrame frame = 2;
+}
+
+// HooinInvadeService reaches into a person's workstation from outside it.
+//
+// Brain input and step reporting live on `HooinDictateService`: a terminal is
+// a different thing from a thought, and the person driving one is sitting at a
+// shell rather than talking to an agent.
+service HooinInvadeService {
+  // StartTerminal opens an interactive terminal on a person's workstation and
+  // streams everything it prints, until the shell exits or the caller hangs
+  // up. The terminal lives as long as this stream.
+  //
+  // A terminal is bidirectional, but this pair of RPCs is not, deliberately.
+  // A browser cannot open a gRPC bidirectional stream — grpc-web has no
+  // client streaming — and the Cloud Run domain mapping in front of hooin
+  // cannot carry the end-to-end HTTP/2 one would need. A server stream and a
+  // unary call both survive that path.
+  rpc StartTerminal(StartTerminalRequest)
+      returns (stream seed.infra.terminal.proto.TerminalOutputFrame) {}
+
+  // SendTerminalInput types at a terminal that `StartTerminal` opened, or
+  // tells it its window has been resized. The `person_id` and the frame's
+  // `session_uuid` together name which terminal — hooin holds one per stream
+  // and many streams at once, on many workstations — and the frame's `start`
+  // must be unset, because only `StartTerminal` opens one.
+  //
+  // Each call is its own request, and nothing orders two requests in flight
+  // at once. A caller with more than one keystroke to deliver must not send
+  // the next before the last has returned, or the shell may read them out of
+  // order.
+  rpc SendTerminalInput(SendTerminalInputRequest)
+      returns (google.protobuf.Empty) {}
+}
