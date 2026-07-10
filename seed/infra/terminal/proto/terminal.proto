@@ -1,0 +1,104 @@
+syntax = "proto3";
+
+package seed.infra.terminal.proto;
+
+option go_package = "github.com/ndscm/theseed/seed/infra/terminal/proto/terminalpb";
+
+// TerminalWindowSize is the size of a terminal's window, in character cells.
+// A zero row or column count asks for the terminal's default size.
+message TerminalWindowSize {
+  uint32 rows = 1;
+  uint32 cols = 2;
+}
+
+// TerminalError says how a terminal's shell exited, or what went wrong around
+// a shell that is still running. Which of the two it is is told by the field it
+// rides on a TerminalOutputFrame — `exit` versus `error` — and that is the
+// difference between the session being over and merely disturbed.
+message TerminalError {
+  // Machine-readable code categorizing the reason, or 0 when there is none —
+  // as on a shell that exited cleanly.
+  int32 code = 1;
+
+  // Human-readable reason, when there is one worth showing.
+  string message = 2;
+}
+
+// TerminalInputFrame is one message from the terminal's driver to the agent.
+// A session's first frame must be a `start`; every later frame must not be.
+//
+// The fields are not a `oneof`. A frame may set several at once, and each is a
+// thing to do rather than a case to choose between: a window that changed size
+// and the keystrokes typed after it travel together, and the frame that opens a
+// terminal may already be typing at it. A receiver applies all of them, and in
+// this order: `start`, then `resize`, then `input` — so the shell echoes the
+// keystrokes at the size they were typed at.
+//
+// What a frame carries is told by presence: `start` and `resize` are messages
+// and are absent when unset, while `input` is only meaningful when non-empty —
+// bytes have no presence in proto3, and an empty keystroke is nothing to
+// deliver anyway.
+message TerminalInputFrame {
+  // Names the terminal session the frame belongs to, for a receiver that holds
+  // more than one. Empty names the stream's default session.
+  //
+  // A receiver serving a single terminal per stream — the agent behind hooin
+  // does — has nothing to tell apart, and ignores it. It is carried for the
+  // drivers in between, which do not: hooin holds one terminal per stream and
+  // many streams at once, and knows them apart by this name.
+  optional string session_uuid = 1;
+
+  // Position of the frame in its session's input, counting from 0. The sender
+  // stamps it in send order; the receiver applies frames in index order.
+  //
+  // It exists because a session's input need not arrive on one ordered stream —
+  // hooin turns each keystroke into its own request — so frames can overtake
+  // one another. Nothing here reorders them: a receiver that sees a gap (an
+  // index past the one it expected) applies what it has and never waits for the
+  // missing frames, and drops any that arrive after their turn has passed.
+  uint32 index = 2;
+
+  // Opens the terminal, at this size.
+  optional TerminalWindowSize start = 3;
+
+  // Bytes typed at the terminal, delivered to the shell verbatim.
+  optional bytes input = 4;
+
+  // Reports that the window has been resized. It delivers SIGWINCH to the
+  // foreground process group, so the shell and any full-screen program
+  // redraw at the new size.
+  optional TerminalWindowSize resize = 5;
+}
+
+// TerminalOutputFrame is one message from the agent to the terminal's driver.
+//
+// As with TerminalInputFrame, the fields are not a `oneof` and are told apart
+// by presence: `output` carries nothing when empty, `exit` is absent until the
+// shell has gone, and `error` is absent unless something went wrong around a
+// shell still running. A frame may set several at once — a shell's last words
+// and the news that it is gone travel together — so a driver must render
+// `output` before it acts on `exit`, or lose the last thing the terminal
+// printed.
+message TerminalOutputFrame {
+  // Names the session the frame came from, echoing the `session_uuid` that
+  // opened it — empty for the stream's default session, which is what a
+  // sender serving a single terminal per stream leaves it as.
+  optional string session_uuid = 1;
+
+  // Position of the frame in its session's output, counting from 0. It works
+  // the same way as TerminalInputFrame.index.
+  uint32 index = 2;
+
+  // Set when the shell has exited; the terminal is gone, and this is the last
+  // frame of its session.
+  optional TerminalError exit = 3;
+
+  // Raw terminal output, escape sequences included. A driver must feed this
+  // to a terminal emulator rather than render it as text.
+  optional bytes output = 4;
+
+  // Set when something went wrong around the terminal but the shell is still
+  // running — for instance, some of the driver's input was lost in transit.
+  // Unlike `exit`, it does not end the session.
+  optional TerminalError error = 5;
+}
