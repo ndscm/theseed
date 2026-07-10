@@ -19,6 +19,8 @@ import (
 	commuteservice "github.com/ndscm/theseed/seed/newtype/hooin/commute/service"
 	"github.com/ndscm/theseed/seed/newtype/hooin/dictate/proto/dictatepbconnect"
 	dictateservice "github.com/ndscm/theseed/seed/newtype/hooin/dictate/service"
+	"github.com/ndscm/theseed/seed/newtype/hooin/invade/proto/invadepbconnect"
+	invadeservice "github.com/ndscm/theseed/seed/newtype/hooin/invade/service"
 	"github.com/ndscm/theseed/seed/newtype/hooin/onsite"
 	"github.com/ndscm/theseed/seed/newtype/hooin/roster/proto/rosterpbconnect"
 	rosterservice "github.com/ndscm/theseed/seed/newtype/hooin/roster/service"
@@ -106,6 +108,15 @@ func run() error {
 	dictateSvc := dictateservice.NewHooinDictateService(office)
 	err = mux.Register(dictatepbconnect.NewHooinDictateServiceHandler(
 		dictateSvc,
+		seedgrpc.WithCommonInterceptors(),
+	))
+	if err != nil {
+		return seederr.Wrap(err)
+	}
+
+	invadeSvc := invadeservice.NewHooinInvadeService(office)
+	err = mux.Register(invadepbconnect.NewHooinInvadeServiceHandler(
+		invadeSvc,
 		seedgrpc.WithCommonInterceptors(),
 	))
 	if err != nil {
