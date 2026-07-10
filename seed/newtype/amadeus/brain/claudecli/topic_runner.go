@@ -171,13 +171,13 @@ func startBrainProc(
 		// Run claude under the playpen user's login shell so ~/.zshrc is
 		// sourced (PATH and environment) before claude starts, then delegate
 		// the session to claude so it owns the streams for continuous stdin.
-		tty, err := pc.StartTty(ctx, "/usr/bin/zsh", []string{"-i"})
+		tty, err := pc.StartShell(ctx, "/usr/bin/zsh", []string{"-i"})
 		if err != nil {
 			return nil, seederr.Wrap(err)
 		}
 		err = tty.Delegate(topicDir, "claude", claudeArgs)
 		if err != nil {
-			// StartTty already started the podman exec client; reap it before
+			// StartShell already started the podman exec client; reap it before
 			// returning so it (and its os/exec kill goroutine) isn't leaked.
 			closeErr := tty.Close()
 			if closeErr != nil {
