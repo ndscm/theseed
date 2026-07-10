@@ -26,6 +26,7 @@
     "@theseed/seed-devprod-gotcha-tsx": "workspace:^",
     "@theseed/seed-infra-buildinfo-ts": "workspace:^",
     "@theseed/seed-newtype-hooin-dictate-client-tsx": "workspace:^",
+    "@theseed/seed-newtype-hooin-invade-client-tsx": "workspace:^",
     "@theseed/seed-newtype-hooin-roster-client-tsx": "workspace:^",
     "@types/node": "catalog:",
     "@types/react": "catalog:",
