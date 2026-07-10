@@ -1,4 +1,4 @@
-load("@rules_go//go:def.bzl", "go_library")
+load("@rules_go//go:def.bzl", "go_library", "go_test")
 
 package(default_visibility = ["//seed/newtype/hooin:__subpackages__"])
 
@@ -22,5 +22,18 @@ go_library(
         "@com_connectrpc_connect//:connect",
         "@com_github_google_uuid//:uuid",
         "@org_golang_google_grpc//codes",
+    ],
+)
+
+go_test(
+    name = "onsite_test",
+    srcs = ["duty_test.go"],
+    embed = [":onsite"],
+    deps = [
+        "//seed/cloud/bidirequest/go/bidirequest",
+        "//seed/cloud/bidirequest/proto:bidirequest_go_proto",
+        "//seed/infra/terminal/proto:terminal_go_proto",
+        "//seed/newtype/amadeus/commute/proto:commute_go_connect",
+        "@com_connectrpc_connect//:connect",
     ],
 )
