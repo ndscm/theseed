@@ -1,0 +1,9 @@
+http_archive = use_repo_rule("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
+
+http_archive(
+    name = "vscode_web_release",
+    build_file = "//seed/devprod/bazel/external:files.BUILD.bazel",
+    integrity = "sha256-HnUNpymrW3TjOUNz9F4yFIwRxQc2XwOPNRsw3S2bOy8=",
+    strip_prefix = "vscode-web",
+    url = "https://vscode.download.prss.microsoft.com/dbazure/download/stable/4fe60c8b1cdac1c4c174f2fb180d0d758272d713/vscode-web.tar.gz",
+)
