@@ -3,6 +3,7 @@ load("@rules_go//go:def.bzl", "go_library")
 go_library(
     name = "jwtcore",
     srcs = [
+        "dynamic.go",
         "jwk.go",
         "jwks_store.go",
         "jws_header.go",
