@@ -11,21 +11,8 @@ import (
 	"github.com/ndscm/theseed/seed/infra/auth/go/openid"
 	"github.com/ndscm/theseed/seed/infra/context/go/seedctx"
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
-	"github.com/ndscm/theseed/seed/infra/jwt/go/jwsdecoder"
 	"github.com/ndscm/theseed/seed/infra/log/go/seedlog"
 )
-
-func decodeJwt(jwsDecoder *jwsdecoder.JwsDecoder, accessToken string) (*openid.OpenidUserInfo, error) {
-	payload, err := jwsDecoder.Decode(accessToken)
-	if err != nil {
-		return nil, err
-	}
-	userInfo, err := openid.DecodeOpenidUserInfo(payload)
-	if err != nil {
-		return nil, seederr.Wrap(err)
-	}
-	return userInfo, nil
-}
 
 func OpenidJwtUser(ctx context.Context) (*openid.OpenidUserInfo, error) {
 	if ctx == nil {
@@ -49,14 +36,14 @@ func withOpenidJwtUser(parent context.Context, userInfo *openid.OpenidUserInfo) 
 type openidJwtMiddleware struct {
 	next http.Handler
 
-	jwtDecoder *jwsdecoder.JwsDecoder
+	openidDecoder *OpenidDecoder
 }
 
 func (m *openidJwtMiddleware) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	authorization := r.Header.Get("Authorization")
 	if strings.HasPrefix(authorization, "Bearer ") {
 		accessToken := strings.TrimPrefix(authorization, "Bearer ")
-		userInfo, err := decodeJwt(m.jwtDecoder, accessToken)
+		userInfo, err := m.openidDecoder.Decode(accessToken)
 		if err != nil {
 			seedlog.Errorf("Failed to decode JWT: %v", err)
 		}
@@ -67,24 +54,22 @@ func (m *openidJwtMiddleware) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 	m.next.ServeHTTP(w, r)
 }
 
+var _ http.Handler = (*openidJwtMiddleware)(nil)
+
 type OpenidJwtInterceptor struct {
-	jwsDecoder *jwsdecoder.JwsDecoder
+	openidDecoder *OpenidDecoder
+}
+
+func (i *OpenidJwtInterceptor) Intercept(next http.Handler) http.Handler {
+	return &openidJwtMiddleware{next: next, openidDecoder: i.openidDecoder}
 }
 
 func CreateOpenidJwtInterceptor() (*OpenidJwtInterceptor, error) {
 	i := &OpenidJwtInterceptor{}
-	jwksStore, err := CreateOpenidJwksStore()
+	openidDecoder, err := CreateOpenidDecoder()
 	if err != nil {
 		return nil, seederr.Wrap(err)
 	}
-	jwsDecoder, err := jwsdecoder.CreateJwsDecoder(jwksStore)
-	if err != nil {
-		return nil, seederr.Wrap(err)
-	}
-	i.jwsDecoder = jwsDecoder
+	i.openidDecoder = openidDecoder
 	return i, nil
-}
-
-func (i *OpenidJwtInterceptor) Intercept(next http.Handler) http.Handler {
-	return &openidJwtMiddleware{next: next, jwtDecoder: i.jwsDecoder}
 }
