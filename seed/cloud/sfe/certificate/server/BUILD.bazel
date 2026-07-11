@@ -16,7 +16,7 @@ go_library(
         "//seed/cloud/sfe/certificate/challenge/cloudflarednschallenge",
         "//seed/cloud/sfe/certificate/proto:certificate_go_connect",
         "//seed/cloud/sfe/certificate/service",
-        "//seed/infra/auth/go/openidjwt",
+        "//seed/infra/auth/go/openidverify",
         "//seed/infra/error/go/seederr",
         "//seed/infra/flag/go/seedflag",
         "//seed/infra/grpc/go/seedgrpc",
