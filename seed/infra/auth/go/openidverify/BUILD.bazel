@@ -1,13 +1,13 @@
 load("@rules_go//go:def.bzl", "go_library")
 
 go_library(
-    name = "openidjwt",
+    name = "openidverify",
     srcs = [
         "decoder.go",
         "discovery.go",
         "interceptor.go",
     ],
-    importpath = "github.com/ndscm/theseed/seed/infra/auth/go/openidjwt",
+    importpath = "github.com/ndscm/theseed/seed/infra/auth/go/openidverify",
     visibility = ["//visibility:public"],
     deps = [
         "//seed/infra/auth/go/openid",

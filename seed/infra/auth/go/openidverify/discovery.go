@@ -1,4 +1,4 @@
-package openidjwt
+package openidverify
 
 import (
 	"context"

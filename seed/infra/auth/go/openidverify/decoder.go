@@ -1,4 +1,4 @@
-package openidjwt
+package openidverify
 
 import (
 	"github.com/ndscm/theseed/seed/infra/auth/go/openid"
