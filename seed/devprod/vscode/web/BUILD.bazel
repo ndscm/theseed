@@ -1,0 +1,15 @@
+load("//seed/devprod/starlark/archive:defs.bzl", "create_tar_gz")
+
+package(default_visibility = ["//seed/devprod/vscode:__subpackages__"])
+
+alias(
+    name = "web",
+    actual = ":vscode-web-release_tar_gz",
+)
+
+create_tar_gz(
+    name = "vscode-web-release_tar_gz",
+    srcs = ["@vscode_web_release//:files"],
+    out = "vscode-web-release.tar.gz",
+    strip_components = 2,
+)
