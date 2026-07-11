@@ -9,7 +9,7 @@ go_library(
     ],
     deps = [
         "//seed/infra/auth/go/openid",
-        "//seed/infra/auth/go/openidjwt",
+        "//seed/infra/auth/go/openidverify",
         "//seed/infra/error/go/seederr",
     ],
 )

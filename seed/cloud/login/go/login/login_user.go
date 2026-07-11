@@ -4,12 +4,12 @@ import (
 	"context"
 
 	"github.com/ndscm/theseed/seed/infra/auth/go/openid"
-	"github.com/ndscm/theseed/seed/infra/auth/go/openidjwt"
+	"github.com/ndscm/theseed/seed/infra/auth/go/openidverify"
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
 )
 
 func LoginUser(ctx context.Context) (*openid.OpenidUserInfo, error) {
-	openidUser, err := openidjwt.OpenidJwtUser(ctx)
+	openidUser, err := openidverify.OpenidUser(ctx)
 	if err != nil {
 		return nil, seederr.Wrap(err)
 	}
