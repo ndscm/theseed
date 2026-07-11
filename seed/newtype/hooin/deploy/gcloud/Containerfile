@@ -6,5 +6,7 @@ CMD [ \
   "--port", "8080", \
   "--static_team_file", "/etc/steins/team.json", \
   "--openid_discovery_url", "https://account.ndscm.com/realms/ndscm/.well-known/openid-configuration", \
+  "--trust_openid_authorized_party", "kurisu-sfe-prod", \
+  "--trust_openid_authorized_party", "silicon-prod", \
   "--verbose" \
   ]
