@@ -9,10 +9,6 @@ module(
     version = "1.0",
 )
 
-http_archive = use_repo_rule("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
-
-git_repository = use_repo_rule("@bazel_tools//tools/build_defs/repo:git.bzl", "git_repository")
-
 bazel_dep(name = "platforms", version = "1.0.0")
 
 # Android
