@@ -1,0 +1,47 @@
+load("@rules_go//go:def.bzl", "go_binary", "go_library")
+load("//seed/devprod/ndscm/starlark:defs.bzl", "nd_bootstrap")
+load("//seed/devprod/starlark/archive:defs.bzl", "extract_tar")
+
+package(default_visibility = ["//visibility:private"])
+
+alias(
+    name = "demo",
+    actual = ":vscode-web-demo-server",
+)
+
+extract_tar(
+    name = "node_modules",
+    srcs = ["//seed/devprod/vscode/web"],
+    subdir = "vscode-web",
+)
+
+go_library(
+    name = "server_lib",
+    srcs = ["server.go"],
+    embedsrcs = [":node_modules"],  # keep: prevent gazelle from expanding the ignored vscode-web directory
+    importpath = "github.com/ndscm/theseed/seed/devprod/vscode/web/demo",
+    deps = [
+        "//seed/infra/error/go/seederr",
+        "//seed/infra/flag/go/seedflag",
+        "//seed/infra/init/go/seedinit",
+        "//seed/infra/log/go/seedlog",
+    ],
+)
+
+go_binary(
+    name = "vscode-web-demo-server",
+    embed = [":server_lib"],
+    pure = "on",
+)
+
+nd_bootstrap(
+    dsts = [
+        {
+            "dst": "node_modules",
+            "dir": True,
+            "srcs": [{
+                "src": ":node_modules",
+            }],
+        },
+    ],
+)
