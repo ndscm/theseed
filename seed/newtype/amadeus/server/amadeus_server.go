@@ -8,7 +8,7 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/ndscm/theseed/seed/infra/auth/go/openidjwt"
+	"github.com/ndscm/theseed/seed/infra/auth/go/openidverify"
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
 	"github.com/ndscm/theseed/seed/infra/flag/go/seedflag"
 	"github.com/ndscm/theseed/seed/infra/grpc/go/seedgrpc"
@@ -59,7 +59,7 @@ func run() error {
 		return seederr.Wrap(err)
 	}
 
-	openidInterceptor, err := openidjwt.CreateOpenidJwtInterceptor()
+	openidInterceptor, err := openidverify.CreateOpenidInterceptor()
 	if err != nil {
 		return seederr.Wrap(err)
 	}
