@@ -2,5 +2,17 @@ package(default_visibility = ["//visibility:public"])
 
 filegroup(
     name = "files",
-    srcs = glob(["**"]),
+    # Bazel writes its own repo metadata into the extracted archive. Left in, it rides
+    # along into anything built from this filegroup -- and a BUILD.bazel copied back
+    # into the source tree turns the extracted directory into a bazel package.
+    srcs = glob(
+        ["**"],
+        exclude = [
+            "BUILD.bazel",
+            "MODULE.bazel",
+            "MODULE.bazel.lock",
+            "REPO.bazel",
+            "WORKSPACE.bazel",
+        ],
+    ),
 )
