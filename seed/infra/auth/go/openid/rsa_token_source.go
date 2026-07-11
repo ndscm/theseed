@@ -4,7 +4,6 @@ import (
 	"crypto/rand"
 	"crypto/rsa"
 	"encoding/base64"
-	"encoding/json"
 	"time"
 
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
@@ -31,22 +30,12 @@ func (s *RsaTokenSource) Token() (*oauth2.Token, error) {
 		return nil, seederr.Wrap(err)
 	}
 
-	aud := json.RawMessage{}
-	if len(s.audiences) == 1 {
-		aud, err = json.Marshal(s.audiences[0])
-	} else {
-		aud, err = json.Marshal(s.audiences)
-	}
-	if err != nil {
-		return nil, seederr.Wrap(err)
-	}
-
 	iat := now.Unix()
 	expUnix := exp.Unix()
 	payload := jwtcore.JwtPayload{
 		Iss: s.clientId,
 		Sub: s.clientId,
-		Aud: aud,
+		Aud: s.audiences,
 		Jti: base64.RawURLEncoding.EncodeToString(jtiBytes),
 		Iat: &iat,
 		Exp: &expUnix,
