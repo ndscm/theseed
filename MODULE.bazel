@@ -134,3 +134,6 @@ include("//contrib/vendor/hedronvision/bazel-compile-commands-extractor:bazel-co
 
 ## Keycloak
 include("//seed/vendor/keycloak:keycloak.MODULE.bazel")
+
+## VS Code
+include("//seed/vendor/vscode:vscode.MODULE.bazel")
