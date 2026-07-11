@@ -7,6 +7,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"math/big"
+	"slices"
 	"strings"
 	"time"
 
@@ -16,12 +17,24 @@ import (
 	"github.com/ndscm/theseed/seed/infra/log/go/seedlog"
 )
 
-var flagSkipJwtVerification = seedflag.DefineBool("skip_jwt_verification", false, "Skip JWT verification and trust all JWT (for testing only)")
-var flagJwtAudience = seedflag.DefineString("jwt_audience", "", "expected JWT audience (aud claim)")
+var flagSkipJwtVerification = seedflag.DefineBool(
+	"skip_jwt_verification", false,
+	"Skip JWT verification and trust all JWT (for testing only)",
+)
+var flagJwtAudience = seedflag.DefineString(
+	"jwt_audience", "",
+	"the only JWT audience (aud claim) allowed; the JWT must carry exactly this one audience",
+)
+var flagJwtIncludeAudience = seedflag.DefineStringList(
+	"jwt_include_audience", []string{},
+	"JWT audiences (aud claim) that must all be present; the JWT may carry additional audiences",
+)
 
 // JwsDecoder verifies OpenID Connect JWTs using statically configured kid-to-certificate mappings.
 type JwsDecoder struct {
 	audience string
+
+	includeAudiences []string
 
 	jwksStore jwtcore.JwksStore
 }
@@ -94,6 +107,25 @@ func (v *JwsDecoder) verifyJwtSignature(issuer string, headerB64 string, payload
 	return nil
 }
 
+// verifyAudience checks the aud claim against the configured audience policy.
+// When no audience is configured, any audience is accepted.
+func (v *JwsDecoder) verifyAudience(aud jwtcore.StringOrStrings) error {
+	if v.audience != "" {
+		if len(aud) != 1 {
+			return seederr.WrapErrorf("JWT must carry exactly 1 audience %q, got %v", v.audience, []string(aud))
+		}
+		if aud[0] != v.audience {
+			return seederr.WrapErrorf("JWT audience is %q, expected %q", aud[0], v.audience)
+		}
+	}
+	for _, includeAudience := range v.includeAudiences {
+		if !slices.Contains(aud, includeAudience) {
+			return seederr.WrapErrorf("JWT audience does not contain expected %q, got %v", includeAudience, []string(aud))
+		}
+	}
+	return nil
+}
+
 func (v *JwsDecoder) Decode(jwsB64 string) ([]byte, error) {
 	parts := strings.Split(jwsB64, ".")
 	if len(parts) != 3 {
@@ -122,15 +154,18 @@ func (v *JwsDecoder) Decode(jwsB64 string) ([]byte, error) {
 	if payload.Nbf != nil && now < *payload.Nbf {
 		return nil, seederr.WrapErrorf("JWT is not yet valid (nbf)")
 	}
-	if v.audience != "" && !payload.AudiencesContains(v.audience) {
-		return nil, seederr.WrapErrorf("JWT audience does not contain expected %q", v.audience)
+	err = v.verifyAudience(payload.Aud)
+	if err != nil {
+		return nil, seederr.Wrap(err)
 	}
 	return payloadBytes, nil
 }
 
 func CreateJwsDecoder(jwksStore jwtcore.JwksStore) (*JwsDecoder, error) {
 	v := &JwsDecoder{
-		audience:  flagJwtAudience.Get(),
+		audience:         flagJwtAudience.Get(),
+		includeAudiences: flagJwtIncludeAudience.Get(),
+
 		jwksStore: jwksStore,
 	}
 	return v, nil
