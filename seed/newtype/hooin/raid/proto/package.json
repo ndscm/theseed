@@ -1,0 +1,8 @@
+{
+  "name": "@theseed/seed-newtype-hooin-raid-proto",
+  "version": "0.0.0",
+  "private": true,
+  "dependencies": {
+    "@theseed/seed-infra-filesystem-proto": "workspace:^"
+  }
+}
