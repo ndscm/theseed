@@ -8,11 +8,13 @@ go_library(
         "playpen_controller.go",
         "playpen_shell.go",
         "playpen_terminal.go",
+        "simple_file_system.go",
     ],
     importpath = "github.com/ndscm/theseed/seed/newtype/amadeus/playpen",
     deps = [
         "//seed/infra/error/go/seederr",
         "//seed/infra/log/go/seedlog",
         "@com_github_creack_pty//:pty",
+        "@org_golang_google_grpc//codes",
     ],
 )
