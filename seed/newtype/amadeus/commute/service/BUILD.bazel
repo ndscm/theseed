@@ -14,6 +14,7 @@ go_library(
     deps = [
         "//seed/cloud/login/go/login",
         "//seed/infra/error/go/seederr",
+        "//seed/infra/filesystem/proto:simplefs_go_proto",
         "//seed/infra/log/go/seedlog",
         "//seed/infra/terminal/proto:terminal_go_proto",
         "//seed/newtype/amadeus/commute/proto:commute_go_proto",
