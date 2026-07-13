@@ -90,6 +90,20 @@ func (d *PersonDuty) GetTerminal(owner string, sessionUuid string) (*TerminalSes
 	return session, nil
 }
 
+// SimpleFileSystem reaches the file system of this person's workstation.
+//
+// Like StartTerminal, and unlike Send, it holds no lock: the commute connection
+// multiplexes concurrent requests, and an editor asks about many paths at once.
+// Nothing here is held between two calls — a file is named, read, and let go —
+// so a client per call costs nothing and keeps none of them waiting on another.
+//
+// What the file system allows is the workstation's own business: the agent runs
+// each of these inside the playpen container as the person whose workstation it
+// is. This forwards, and carries back what the file system said.
+func (d *PersonDuty) SimpleFileSystem() *commuteclient.AmadeusCommuteClient {
+	return commuteclient.NewAmadeusCommuteClient(commuteclient.WithHttpClient(d.client))
+}
+
 func CreatePersonDuty(stream bidirequest.PayloadStream, handler http.Handler) *PersonDuty {
 	client := bidirequest.WrapServerSide(stream, handler)
 	return &PersonDuty{
