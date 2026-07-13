@@ -29,6 +29,8 @@ go_library(
         "//seed/newtype/hooin/invade/proto:invade_go_connect",
         "//seed/newtype/hooin/invade/service",
         "//seed/newtype/hooin/onsite",
+        "//seed/newtype/hooin/raid/proto:raid_go_connect",
+        "//seed/newtype/hooin/raid/service",
         "//seed/newtype/hooin/roster/proto:roster_go_connect",
         "//seed/newtype/hooin/roster/service",
     ],
