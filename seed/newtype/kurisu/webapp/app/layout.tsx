@@ -5,6 +5,7 @@ import { LoginServiceProvider } from "../../../../cloud/login/client/tsx/LoginSe
 import Gotcha from "../../../../devprod/gotcha/tsx/Gotcha"
 import { HooinDictateServiceProvider } from "../../../hooin/dictate/client/tsx/HooinDictateServiceContext"
 import { HooinInvadeServiceProvider } from "../../../hooin/invade/client/tsx/HooinInvadeServiceContext"
+import { HooinRaidServiceProvider } from "../../../hooin/raid/client/tsx/HooinRaidServiceContext"
 import { HooinRosterServiceProvider } from "../../../hooin/roster/client/tsx/HooinRosterServiceContext"
 import { KurisuServiceProvider } from "../../client/tsx/KurisuServiceContext"
 
@@ -13,12 +14,14 @@ const RootLayout: React.FC = () => {
     <LoginServiceProvider>
       <HooinDictateServiceProvider>
         <HooinInvadeServiceProvider>
-          <HooinRosterServiceProvider>
-            <KurisuServiceProvider>
-              <Gotcha />
-              <Outlet />
-            </KurisuServiceProvider>
-          </HooinRosterServiceProvider>
+          <HooinRaidServiceProvider>
+            <HooinRosterServiceProvider>
+              <KurisuServiceProvider>
+                <Gotcha />
+                <Outlet />
+              </KurisuServiceProvider>
+            </HooinRosterServiceProvider>
+          </HooinRaidServiceProvider>
         </HooinInvadeServiceProvider>
       </HooinDictateServiceProvider>
     </LoginServiceProvider>

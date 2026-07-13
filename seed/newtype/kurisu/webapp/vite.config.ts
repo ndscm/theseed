@@ -31,6 +31,9 @@ export default defineConfig({
       "/seed.newtype.hooin.invade.proto.HooinInvadeService/": {
         target: process.env.HOOIN_INVADE_SERVICE_SERVER || "",
       },
+      "/seed.newtype.hooin.raid.proto.HooinRaidService/": {
+        target: process.env.HOOIN_RAID_SERVICE_SERVER || "",
+      },
       "/seed.newtype.hooin.roster.proto.HooinRosterService/": {
         target: process.env.HOOIN_ROSTER_SERVICE_SERVER || "",
       },
