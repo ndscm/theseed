@@ -1,0 +1,23 @@
+load("@rules_go//go:def.bzl", "go_library")
+
+package(default_visibility = [
+    "//seed/newtype/amadeus:__subpackages__",
+    "//seed/newtype/hooin:__subpackages__",
+    "//seed/newtype/kurisu:__subpackages__",
+])
+
+go_library(
+    name = "raidclient",
+    srcs = ["raid_client.go"],
+    importpath = "github.com/ndscm/theseed/seed/newtype/hooin/raid/client/go/raidclient",
+    deps = [
+        "//seed/infra/error/go/seederr",
+        "//seed/infra/filesystem/proto:simplefs_go_proto",
+        "//seed/infra/flag/go/seedflag",
+        "//seed/infra/grpc/go/grpclog",
+        "//seed/infra/http/go/seedbearer",
+        "//seed/newtype/hooin/raid/proto:raid_go_connect",
+        "//seed/newtype/hooin/raid/proto:raid_go_proto",
+        "@com_connectrpc_connect//:connect",
+    ],
+)
