@@ -1,0 +1,115 @@
+
+syntax = "proto3";
+
+package seed.newtype.hooin.raid.proto;
+
+import "google/protobuf/empty.proto";
+import "seed/infra/filesystem/proto/simplefs.proto";
+
+option go_package = "github.com/ndscm/theseed/seed/newtype/hooin/raid/proto/raidpb";
+
+// Every message below is the person whose workstation is meant, and the request
+// the agent on it would have been asked directly. Hooin adds the person and
+// nothing else: it is what stands between a browser and a workstation, and what
+// it forwards is the question as it was asked.
+//
+// So the file system is described in one place, and this is not it. What may be
+// written, and whether a directory goes with everything in it, is simplefs's to
+// say — a second copy of those fields here would be a second file system, one
+// path away from the first and free to disagree with it.
+//
+// Nothing comes back from here that is hooin's own either: the answers are the
+// agent's, forwarded, and are simplefs's messages entire.
+
+message GetUserHomeRequest {
+  string person_id = 1;
+}
+
+message StatRequest {
+  string person_id = 1;
+  seed.infra.filesystem.proto.FilePath request = 2;
+}
+
+message ReadDirectoryRequest {
+  string person_id = 1;
+  seed.infra.filesystem.proto.FilePath request = 2;
+}
+
+message CreateDirectoryRequest {
+  string person_id = 1;
+  seed.infra.filesystem.proto.FilePath request = 2;
+}
+
+message ReadFileRequest {
+  string person_id = 1;
+  seed.infra.filesystem.proto.FilePath request = 2;
+}
+
+message WriteFileRequest {
+  string person_id = 1;
+  seed.infra.filesystem.proto.WriteFileRequest request = 2;
+}
+
+message DeleteRequest {
+  string person_id = 1;
+  seed.infra.filesystem.proto.DeleteRequest request = 2;
+}
+
+message RenameRequest {
+  string person_id = 1;
+  seed.infra.filesystem.proto.RenameRequest request = 2;
+}
+
+// HooinRaidService reaches into the file system of a person's workstation from
+// outside it.
+//
+// The terminal on that same workstation is `HooinInvadeService`, and the agent
+// on it `HooinDictateService`. A file is none of those things: it is named,
+// read, and let go, where a terminal is a shell somebody is sitting at and a
+// thought is something an agent is having.
+service HooinRaidService {
+  // The RPCs below reach the file system of a person's workstation, and are
+  // forwarded to the agent on it as they arrive. They are shaped to the editor
+  // that calls them — a VS Code file system provider in the browser, which asks
+  // exactly these questions — and each is one operation on one path.
+  //
+  // Every one of them is unary. That is what a browser can call: a file is
+  // read whole and written whole, so nothing here needs a stream, and the
+  // path in front of hooin carries none.
+  //
+  // The person's own workstation is what enforces access. The agent runs each
+  // of these inside the playpen container as the person whose workstation it
+  // is, so a path they may not read is refused there, not here.
+
+  // GetUserHome reports the home directory on a person's workstation. It
+  // is where an editor opening that workstation starts.
+  rpc GetUserHome(GetUserHomeRequest)
+      returns (seed.infra.filesystem.proto.FilePath) {}
+
+  // Stat reports what a path is, and fails with NOT_FOUND when nothing is
+  // there.
+  rpc Stat(StatRequest) returns (seed.infra.filesystem.proto.FileStat) {}
+
+  // ReadDirectory lists the names in a directory, and what each one is.
+  rpc ReadDirectory(ReadDirectoryRequest)
+      returns (seed.infra.filesystem.proto.ReadDirectoryResponse) {}
+
+  // CreateDirectory creates one directory whose parent already exists.
+  rpc CreateDirectory(CreateDirectoryRequest) returns (google.protobuf.Empty) {}
+
+  // ReadFile reads a whole file. One too large to carry in a single message is
+  // refused rather than truncated.
+  rpc ReadFile(ReadFileRequest)
+      returns (seed.infra.filesystem.proto.FileContent) {}
+
+  // WriteFile replaces a file's contents, creating it if the request allows.
+  rpc WriteFile(WriteFileRequest) returns (google.protobuf.Empty) {}
+
+  // Delete removes a file, or a directory that the request allows to go
+  // with everything in it.
+  rpc Delete(DeleteRequest) returns (google.protobuf.Empty) {}
+
+  // Rename moves a path to another, which is also how one is renamed in
+  // place.
+  rpc Rename(RenameRequest) returns (google.protobuf.Empty) {}
+}
