@@ -37,6 +37,9 @@ export default defineConfig({
       "/seed.newtype.kurisu.proto.KurisuService/": {
         target: process.env.KURISU_SERVICE_SERVER || "",
       },
+      "/vscode/": {
+        target: process.env.KURISU_SERVICE_SERVER || "",
+      },
     },
   },
 })
