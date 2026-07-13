@@ -24,6 +24,8 @@ import (
 	"github.com/ndscm/theseed/seed/newtype/hooin/dictate/proto/dictatepbconnect"
 	"github.com/ndscm/theseed/seed/newtype/hooin/invade/client/go/invadeclient"
 	"github.com/ndscm/theseed/seed/newtype/hooin/invade/proto/invadepbconnect"
+	"github.com/ndscm/theseed/seed/newtype/hooin/raid/client/go/raidclient"
+	"github.com/ndscm/theseed/seed/newtype/hooin/raid/proto/raidpbconnect"
 	"github.com/ndscm/theseed/seed/newtype/hooin/roster/client/go/rosterclient"
 	"github.com/ndscm/theseed/seed/newtype/hooin/roster/proto/rosterpbconnect"
 	"github.com/ndscm/theseed/seed/newtype/kurisu/proto/kurisupbconnect"
@@ -99,6 +101,18 @@ func run() error {
 		},
 	}
 	mux.Handle("/"+invadepbconnect.HooinInvadeServiceName+"/", invadeProxy)
+
+	raidUrl, err := url.Parse(raidclient.HooinRaidServiceServerFlag())
+	if err != nil {
+		return seederr.Wrap(err)
+	}
+	raidProxy := &httputil.ReverseProxy{
+		Rewrite: func(r *httputil.ProxyRequest) {
+			r.SetURL(raidUrl)
+			r.SetXForwarded()
+		},
+	}
+	mux.Handle("/"+raidpbconnect.HooinRaidServiceName+"/", raidProxy)
 
 	rosterUrl, err := url.Parse(rosterclient.HooinRosterServiceServer())
 	if err != nil {
