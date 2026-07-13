@@ -13,6 +13,7 @@ proto_library(
     name = "commute_proto",
     srcs = ["commute.proto"],
     deps = [
+        "//seed/infra/filesystem/proto:simplefs_proto",
         "//seed/infra/terminal/proto:terminal_proto",
         "//seed/newtype/gajetto/proto:brain_proto",
         "@protobuf//:empty_proto",
@@ -25,6 +26,7 @@ go_proto_library(
     importpath = "github.com/ndscm/theseed/seed/newtype/amadeus/commute/proto/commutepb",
     proto = ":commute_proto",
     deps = [
+        "//seed/infra/filesystem/proto:simplefs_go_proto",
         "//seed/infra/terminal/proto:terminal_go_proto",
         "//seed/newtype/gajetto/proto:brain_go_proto",
     ],
@@ -36,6 +38,7 @@ go_connect_library(
     proto = ":commute_proto",
     deps = [
         ":commute_go_proto",
+        "//seed/infra/filesystem/proto:simplefs_go_proto",
         "//seed/infra/terminal/proto:terminal_go_proto",
         "//seed/newtype/gajetto/proto:brain_go_proto",
         "@com_connectrpc_connect//:connect",

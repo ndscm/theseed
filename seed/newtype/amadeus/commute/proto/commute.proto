@@ -3,6 +3,7 @@ syntax = "proto3";
 package seed.newtype.amadeus.commute.proto;
 
 import "google/protobuf/empty.proto";
+import "seed/infra/filesystem/proto/simplefs.proto";
 import "seed/infra/terminal/proto/terminal.proto";
 import "seed/newtype/gajetto/proto/brain.proto";
 
@@ -28,4 +29,53 @@ service AmadeusCommuteService {
   // the person to it.
   rpc StartTerminal(stream seed.infra.terminal.proto.TerminalInputFrame)
       returns (stream seed.infra.terminal.proto.TerminalOutputFrame) {}
+
+  // The RPCs below reach the workstation's file system. They are shaped to the
+  // editor that drives them from the far side of hooin — a VS Code file system
+  // provider, which asks exactly these questions — and each is one operation on
+  // one path, with no handle or session between them: a file is opened, read,
+  // and written by naming it, and nothing is held open in between.
+  //
+  // The agent runs them inside the playpen container as the person whose
+  // workstation it is, so the container's own permissions are what says whether
+  // a path may be read or written. Nothing here widens that.
+
+  // GetUserHome reports the home directory of the person the workstation
+  // belongs to. It is where an editor with no folder in mind opens.
+  rpc GetUserHome(google.protobuf.Empty)
+      returns (seed.infra.filesystem.proto.FilePath) {}
+
+  // Stat reports what a path is. It fails with NOT_FOUND when nothing is
+  // there, which is how a caller asks whether a path exists.
+  rpc Stat(seed.infra.filesystem.proto.FilePath)
+      returns (seed.infra.filesystem.proto.FileStat) {}
+
+  // ReadDirectory lists the names in a directory, and what each one is. It is
+  // not recursive: a caller walking a tree asks about each directory in turn.
+  rpc ReadDirectory(seed.infra.filesystem.proto.FilePath)
+      returns (seed.infra.filesystem.proto.ReadDirectoryResponse) {}
+
+  // CreateDirectory creates one directory whose parent already exists.
+  rpc CreateDirectory(seed.infra.filesystem.proto.FilePath)
+      returns (google.protobuf.Empty) {}
+
+  // ReadFile reads a whole file. A file too large to carry in one message is
+  // refused rather than truncated — an editor that cannot see all of a file
+  // must not be handed the beginning of it and told it is the file.
+  rpc ReadFile(seed.infra.filesystem.proto.FilePath)
+      returns (seed.infra.filesystem.proto.FileContent) {}
+
+  // WriteFile replaces a file's contents, creating it if the request allows.
+  rpc WriteFile(seed.infra.filesystem.proto.WriteFileRequest)
+      returns (google.protobuf.Empty) {}
+
+  // Delete removes a file, or a directory that the request allows to go
+  // with everything in it.
+  rpc Delete(seed.infra.filesystem.proto.DeleteRequest)
+      returns (google.protobuf.Empty) {}
+
+  // Rename moves a path to another, which is also how a file is renamed in
+  // place. Source and destination are both absolute.
+  rpc Rename(seed.infra.filesystem.proto.RenameRequest)
+      returns (google.protobuf.Empty) {}
 }
