@@ -1,0 +1,182 @@
+syntax = "proto3";
+
+// A file system that a VS Code file system provider can be written against
+// without translating anything.
+//
+// The messages below mirror `vscode.FileSystemProvider`: one message per
+// argument list of `stat`, `readDirectory`, `createDirectory`, `readFile`,
+// `writeFile`, `delete` and `rename`, carrying what that call carries and
+// nothing besides. A service that speaks these is a provider that happens to be
+// somewhere else, and the code between the two is a courier rather than a
+// translator — `file_type` is already `vscode.FileType`, `overwrite` is already
+// the option VS Code passes, and a stat that crossed three processes arrives as
+// the stat the editor asked for.
+//
+// It is simple in the way a provider is simple, and for the same reason. A file
+// is read whole and written whole: there is no handle, no offset, and nothing
+// held between two calls, because a provider has none of those either — an
+// editor opens a file, and saves the buffer it holds back over it. (VS Code has
+// proposed an API for reading part of a file. It is proposed, and this is not
+// built on it.) Nothing here watches, either: a caller is told what is there
+// when it asks, and is not told when that changes behind its back.
+//
+// What a call refuses is as much of the mirror as what it returns. A path that
+// is not there fails with NOT_FOUND, one that may not be touched with
+// PERMISSION_DENIED, a directory read as a file with FAILED_PRECONDITION —
+// which is how an editor asks whether a path exists (it reads it, and is told
+// it is not there) and whether it may overwrite one (it writes, and is told it
+// exists). A service that answers these with a bare INTERNAL has told the
+// editor nothing it can act on.
+//
+// Nothing here says whose file system it is, or where. A caller that reaches
+// more than one wraps these in a message that names the one it means; every
+// path is absolute on whichever it turns out to be.
+package seed.infra.filesystem.proto;
+
+option go_package = "github.com/ndscm/theseed/seed/infra/filesystem/proto/simplefspb";
+
+// FilePath is one path, and is the whole of what `stat`, `readDirectory`,
+// `createDirectory` and `readFile` have to say: each names a path and asks about
+// it. It is what `GetUserHome` answers with, too — a home is a path.
+message FilePath {
+  // The path, absolute on the file system it is a path on.
+  string path = 1;
+}
+
+// FileType is what a path is, one bit at a time. The values are the ones VS
+// Code uses — an editor is what these are read by, at the end of the trip, and
+// a number it can use as it stands is one nothing on the way has to translate.
+//
+// A path is described by the bits it has, not by one of them: a symbolic link
+// to a directory is `FILE_TYPE_DIRECTORY | FILE_TYPE_SYMBOLIC_LINK`, which says
+// both what will be found there and that a link was followed to find it. A
+// caller that only wants to know what it is looking at masks the link bit off;
+// one that cares that it points asks for that bit.
+//
+// This is why the field carrying it is an integer rather than this enum: a
+// value with two bits set is not one of the values below, and saying it is
+// would be a lie the generated code has to keep.
+enum FileType {
+  // A path that is there and is none of the below: a socket, a device, a link
+  // pointing nowhere. There is nothing to do with one, and a caller shown it is
+  // being told only that the name is taken.
+  FILE_TYPE_UNSPECIFIED = 0;
+
+  // A path that can be read whole and written whole.
+  FILE_TYPE_FILE = 1;
+
+  // A path that can be listed.
+  FILE_TYPE_DIRECTORY = 2;
+
+  // A path that points. What it points at is in the other bits — a link to a
+  // directory is a directory that points — and a link pointing nowhere is this
+  // bit and nothing else.
+  FILE_TYPE_SYMBOLIC_LINK = 64;
+}
+
+// FileStat is what is known about one path: `vscode.FileStat`, field for field.
+// It is what `stat` answers with, and a path that is not there is not one of
+// these — it is a NOT_FOUND, which is how a caller asks whether a path exists.
+message FileStat {
+  // What the path is: a bitmask of FileType, and never a single one of its
+  // values where two are true.
+  uint32 file_type = 1;
+
+  // Size in bytes, of the target of a symbolic link rather than the link.
+  uint64 size = 2;
+
+  // When the file was last modified, in milliseconds since the epoch — when
+  // what is in it was last written. `vscode.FileStat.mtime`.
+  int64 modification_timestamp_ms = 3;
+
+  // When the file's inode last changed, in milliseconds since the epoch. This is
+  // POSIX's `ctime`, and is neither of the times either side of it: it moves
+  // later than `modification_timestamp_ms` whenever a rename or a chmod touches
+  // the file without touching what is in it.
+  //
+  // It is here because it is the only time some file systems can give — see
+  // `creation_timestamp_ms` — and because a caller may genuinely want it. It is
+  // not what an editor means by `ctime`, and handing it over as one would tell
+  // the editor a file was created the last time somebody chmod'ed it.
+  int64 change_timestamp_ms = 4;
+
+  // When the file was made, in milliseconds since the epoch: the birth time,
+  // and the one time here that never moves again. This is what
+  // `vscode.FileStat.ctime` asks for — the editor's `ctime` is a creation time,
+  // whatever POSIX means by the name.
+  //
+  // It is 0 when the file system keeps no birth time; not all of them do, and a
+  // file system that does not has nothing truer to say. A caller that must show
+  // something for such a file falls back to `change_timestamp_ms`, which every
+  // file has.
+  int64 creation_timestamp_ms = 5;
+}
+
+// FileContent is what `readFile` answers with: a whole file, or nothing.
+message FileContent {
+  // The file's contents, all of them. A file too large to carry in one message
+  // is refused rather than truncated — half a file is not the file, and an
+  // editor handed the beginning of one would save it back over the rest.
+  bytes content = 1;
+}
+
+// ReadDirectoryResponse is what is in a directory, and is what `readDirectory`
+// answers with. It does not recurse: a caller walking a tree asks about each
+// directory in turn.
+message ReadDirectoryResponse {
+  // Each name in the directory, and what that name is — a bitmask of FileType,
+  // as on FileStat. The names are the directory's own, not paths: the directory
+  // they are in is the one that was asked about.
+  //
+  // It is a map because a directory is one: no two names in it are the same. It
+  // has no order, and neither has a listing — the editor sorts what it shows.
+  map<string, uint32> entries = 1;
+}
+
+// WriteFileRequest replaces a file's contents, all of them. There is no offset
+// to write at: the buffer an editor holds is the file.
+message WriteFileRequest {
+  // The file to write.
+  string path = 1;
+
+  // The file's whole new contents. There is no way to write part of a file:
+  // an editor saves the buffer it holds, and that is the file.
+  bytes content = 2;
+
+  // Whether a file that is not there may be created. Unset, writing to a path
+  // that does not exist fails rather than creating it.
+  bool create = 3;
+
+  // Whether a file that is there may be replaced. Unset, writing over an
+  // existing file fails rather than truncating it.
+  bool overwrite = 4;
+}
+
+// DeleteRequest removes a path, of whatever kind. What is there is the file
+// system's business rather than the caller's: an editor deletes by naming a
+// path, and does not first ask what it is.
+message DeleteRequest {
+  // The path to remove. One that is not there is a NOT_FOUND rather than a
+  // success — a caller deleting something that is already gone has lost track
+  // of it, and an editor shows that.
+  string path = 1;
+
+  // Whether a directory may be deleted along with everything in it. Unset, a
+  // directory that is not empty is refused, and a file is deleted either way.
+  bool recursive = 2;
+}
+
+// RenameRequest moves a path onto another, which is also how one is renamed in
+// place: a rename is a move whose destination is in the same directory.
+message RenameRequest {
+  // The path to move. One that is not there is a NOT_FOUND.
+  string source_path = 1;
+
+  // Where it goes. Its parent must already exist — a rename makes no directory
+  // on its way.
+  string destination_path = 2;
+
+  // Whether an existing destination may be replaced. Unset, a rename onto a
+  // path that exists fails rather than clobbering it.
+  bool overwrite = 3;
+}
