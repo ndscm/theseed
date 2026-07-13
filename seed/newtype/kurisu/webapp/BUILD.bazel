@@ -33,6 +33,7 @@ react_router_webapp(
         "//seed/cloud/login/ts/vite-plugin-unsafe-dev-login",
         "//seed/devprod/gotcha/tsx",
         "//seed/devprod/ts/grouping-tailwind",
+        "//seed/devprod/vscode/web/tsx",
         "//seed/infra/buildinfo/ts",
         "//seed/infra/terminal/proto:terminal_ts_proto",
         "//seed/newtype/hooin/dictate/client/tsx",
