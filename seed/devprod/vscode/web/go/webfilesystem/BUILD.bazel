@@ -1,0 +1,37 @@
+load("@rules_go//go:def.bzl", "go_library")
+load("//seed/devprod/ndscm/starlark:defs.bzl", "nd_bootstrap")
+load("//seed/devprod/starlark/archive:defs.bzl", "extract_tar")
+
+package(default_visibility = ["//visibility:public"])
+
+# The extension is extracted under a directory called node_modules, as the
+# workbench's own assets are: it carries a package.json — VS Code's manifest —
+# and anything else this would be called is a directory pnpm would walk into and
+# take for a workspace package of its own.
+extract_tar(
+    name = "node_modules",
+    srcs = ["//seed/devprod/vscode/extension/web-file-system"],
+    subdir = "web-file-system",
+)
+
+go_library(
+    name = "webfilesystem",
+    srcs = ["handler.go"],
+    embedsrcs = [":node_modules"],  # keep: prevent gazelle from expanding the ignored web-file-system directory
+    importpath = "github.com/ndscm/theseed/seed/devprod/vscode/web/go/webfilesystem",
+    deps = [
+        "//seed/infra/error/go/seederr",
+    ],
+)
+
+nd_bootstrap(
+    dsts = [
+        {
+            "dst": "node_modules",
+            "dir": True,
+            "srcs": [{
+                "src": ":node_modules",
+            }],
+        },
+    ],
+)
