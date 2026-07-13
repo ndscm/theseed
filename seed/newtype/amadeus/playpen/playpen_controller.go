@@ -159,6 +159,10 @@ func (pc *PlaypenController) StartTerminal(
 	return session, nil
 }
 
+func (pc *PlaypenController) SimpleFileSystem() *SimpleFileSystem {
+	return WrapSimpleFileSystem(playpenContainerName, pc.userHandle)
+}
+
 // Shutdown stops and removes the playpen container. It is best effort: --force
 // sends the container's stop signal, waits, then removes it.
 func (pc *PlaypenController) Shutdown() error {
