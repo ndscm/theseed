@@ -10,6 +10,8 @@ import (
 	"github.com/ndscm/theseed/seed/cloud/login/go/loginservice"
 	"github.com/ndscm/theseed/seed/cloud/login/proto/loginpbconnect"
 	"github.com/ndscm/theseed/seed/devprod/reactrouter/go/reactrouter"
+	"github.com/ndscm/theseed/seed/devprod/vscode/web/go/vscodeweb"
+	"github.com/ndscm/theseed/seed/devprod/vscode/web/go/webfilesystem"
 	"github.com/ndscm/theseed/seed/infra/auth/go/openidverify"
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
 	"github.com/ndscm/theseed/seed/infra/flag/go/seedflag"
@@ -109,6 +111,17 @@ func run() error {
 		},
 	}
 	mux.Handle("/"+rosterpbconnect.HooinRosterServiceName+"/", rosterProxy)
+
+	vscodePath, vscodeHandler, err := vscodeweb.CreateAssetProvider("/vscode/")
+	if err != nil {
+		return seederr.Wrap(err)
+	}
+	mux.Handle(vscodePath, vscodeHandler)
+	wfsPath, wfsHandler, err := webfilesystem.CreateAssetProvider("/vscode/")
+	if err != nil {
+		return seederr.Wrap(err)
+	}
+	mux.Handle(wfsPath, wfsHandler)
 
 	webapp, err := fs.Sub(embedFs, "webapp")
 	if err != nil {
