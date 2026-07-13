@@ -37,6 +37,8 @@ go_library(
         "//seed/newtype/hooin/dictate/proto:dictate_go_connect",
         "//seed/newtype/hooin/invade/client/go/invadeclient",
         "//seed/newtype/hooin/invade/proto:invade_go_connect",
+        "//seed/newtype/hooin/raid/client/go/raidclient",
+        "//seed/newtype/hooin/raid/proto:raid_go_connect",
         "//seed/newtype/hooin/roster/client/go/rosterclient",
         "//seed/newtype/hooin/roster/proto:roster_go_connect",
         "//seed/newtype/kurisu/proto:kurisu_go_connect",
