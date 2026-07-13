@@ -1,0 +1,28 @@
+{
+  "name": "@theseed/seed-newtype-hooin-raid-client-tsx",
+  "version": "0.0.0",
+  "private": true,
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "/dist"
+  ],
+  "scripts": {
+    "build": "tsc"
+  },
+  "dependencies": {
+    "@bufbuild/protobuf": "catalog:",
+    "@theseed/seed-devprod-vscode-web-ts-web-file-system": "workspace:^",
+    "@connectrpc/connect": "catalog:",
+    "@connectrpc/connect-web": "catalog:",
+    "@theseed/seed-infra-filesystem-proto": "workspace:^",
+    "@theseed/seed-newtype-hooin-raid-proto": "workspace:^",
+    "react": "catalog:",
+    "react-dom": "catalog:"
+  },
+  "devDependencies": {
+    "@types/react": "catalog:",
+    "@types/react-dom": "catalog:",
+    "typescript": "catalog:"
+  }
+}
