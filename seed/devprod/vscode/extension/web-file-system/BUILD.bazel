@@ -1,0 +1,33 @@
+load("@aspect_rules_ts//ts:defs.bzl", "ts_project")
+load("@npm//:defs.bzl", "npm_link_all_packages")
+load("//seed/devprod/starlark/archive:defs.bzl", "create_tar_gz")
+
+package(default_visibility = ["//visibility:public"])
+
+npm_link_all_packages()
+
+ts_project(
+    name = "ts_project",
+    srcs = glob(["src/**/*.ts"]),
+    declaration = True,
+    declaration_map = True,
+    out_dir = "dist",
+    root_dir = "src",
+    source_map = True,
+    transpiler = "tsc",
+    tsconfig = "tsconfig.json",
+    deps = [":node_modules"],
+)
+
+# The extension is served as a flat directory: the manifest, and the one file it
+# names as its `browser` entry. VS Code fetches the manifest from wherever the
+# workbench says the extension is, and everything else it needs it reads from
+# there — so what is served is exactly these two files, side by side.
+create_tar_gz(
+    name = "web-file-system",
+    srcs = [
+        "package.json",
+        ":ts_project",
+    ],
+    out = "web-file-system.tar.gz",
+)

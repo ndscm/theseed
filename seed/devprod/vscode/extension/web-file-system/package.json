@@ -1,0 +1,41 @@
+{
+  "name": "vscode-web-file-system",
+  "displayName": "Web File System",
+  "description": "Registers a VS Code file system that is answered by the page the workbench is embedded in.",
+  "version": "0.0.0",
+  "private": true,
+  "publisher": "ndscm",
+  "license": "MIT",
+  "engines": {
+    "vscode": "^1.100.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "extensionKind": [
+    "web"
+  ],
+  "activationEvents": [
+    "onFileSystem:web-file-system"
+  ],
+  "browser": "./extension.js",
+  "contributes": {
+    "configuration": {
+      "title": "Web File System",
+      "properties": {
+        "webFileSystem.channel": {
+          "type": "string",
+          "default": "",
+          "markdownDescription": "Name of the `BroadcastChannel` the page answers file system questions on. It needs setting only when one origin embeds several workbenches and each wants its own; when empty, both halves meet on `vscode-web-file-system`."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "build": "tsc"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.100.0",
+    "typescript": "catalog:"
+  }
+}
