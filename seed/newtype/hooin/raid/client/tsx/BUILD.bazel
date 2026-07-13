@@ -38,6 +38,8 @@ ts_project(
 js_library(
     name = "tsx",
     srcs = [
+        "HooinRaidFileSystem/index.d.ts",
+        "HooinRaidFileSystem/index.js",
         "HooinRaidServiceContext/index.d.ts",
         "HooinRaidServiceContext/index.js",
         ":package.json",
