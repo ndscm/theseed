@@ -41,3 +41,10 @@ __pycache__
 .target
 **/*.rs.bk
 /target
+
+# Playwright
+.playwright
+.playwright-cli
+blob-report
+playwright-report
+test-results
