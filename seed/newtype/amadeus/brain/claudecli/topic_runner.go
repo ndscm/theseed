@@ -160,6 +160,7 @@ func startBrainProc(
 ) (*brainProc, error) {
 	claudeArgs := []string{
 		"--continue",
+		"--thinking-display", "summarized",
 		"--input-format", "stream-json",
 		"--model", "opus",
 		"--output-format", "stream-json",
