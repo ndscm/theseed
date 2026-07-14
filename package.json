@@ -11,9 +11,11 @@
     "@bufbuild/protoc-gen-es": "catalog:",
     "@connectrpc/connect": "catalog:",
     "@connectrpc/connect-node": "catalog:",
+    "@playwright/cli": "catalog:",
     "@trivago/prettier-plugin-sort-imports": "catalog:",
     "@types/node": "catalog:",
     "babel-plugin-react-compiler": "catalog:",
+    "playwright": "catalog:",
     "prettier": "catalog:",
     "prettier-plugin-tailwindcss": "catalog:",
     "typescript": "catalog:"
