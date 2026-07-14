@@ -670,6 +670,9 @@ importers:
       '@theseed/seed-newtype-hooin-invade-client-tsx':
         specifier: workspace:^
         version: link:../../hooin/invade/client/tsx
+      '@theseed/seed-newtype-hooin-raid-client-tsx':
+        specifier: workspace:^
+        version: link:../../hooin/raid/client/tsx
       '@theseed/seed-newtype-hooin-roster-client-tsx':
         specifier: workspace:^
         version: link:../../hooin/roster/client/tsx
