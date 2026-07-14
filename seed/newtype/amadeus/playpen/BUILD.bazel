@@ -1,4 +1,4 @@
-load("@rules_go//go:def.bzl", "go_library")
+load("@rules_go//go:def.bzl", "go_library", "go_test")
 
 package(default_visibility = ["//seed/newtype/amadeus:__subpackages__"])
 
@@ -15,6 +15,16 @@ go_library(
         "//seed/infra/error/go/seederr",
         "//seed/infra/log/go/seedlog",
         "@com_github_creack_pty//:pty",
+        "@org_golang_google_grpc//codes",
+    ],
+)
+
+go_test(
+    name = "playpen_test",
+    srcs = ["simple_file_system_test.go"],
+    embed = [":playpen"],
+    deps = [
+        "//seed/infra/error/go/seederr",
         "@org_golang_google_grpc//codes",
     ],
 )
