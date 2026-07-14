@@ -42,5 +42,6 @@ react_router_webapp(
         "//seed/newtype/hooin/raid/client/tsx",
         "//seed/newtype/hooin/roster/client/tsx",
         "//seed/newtype/kurisu/client/tsx",
+        "//seed/visual/markdown/tsx",
     ],
 )

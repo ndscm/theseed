@@ -30,6 +30,7 @@
     "@theseed/seed-newtype-hooin-invade-client-tsx": "workspace:^",
     "@theseed/seed-newtype-hooin-raid-client-tsx": "workspace:^",
     "@theseed/seed-newtype-hooin-roster-client-tsx": "workspace:^",
+    "@theseed/seed-visual-markdown-tsx": "workspace:^",
     "@types/node": "catalog:",
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
