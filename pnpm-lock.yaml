@@ -381,6 +381,12 @@ importers:
         specifier: 5.9.3
         version: 5.9.3
 
+  seed/devprod/vscode/web/ts/web-file-system:
+    devDependencies:
+      typescript:
+        specifier: 5.9.3
+        version: 5.9.3
+
   seed/infra/auth/ts:
     devDependencies:
       '@types/node':
