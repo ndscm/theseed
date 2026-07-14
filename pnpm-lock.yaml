@@ -513,6 +513,12 @@ importers:
         specifier: workspace:^
         version: link:../../../../infra/terminal/proto
 
+  seed/newtype/hooin/raid/proto:
+    dependencies:
+      '@theseed/seed-infra-filesystem-proto':
+        specifier: workspace:^
+        version: link:../../../../infra/filesystem/proto
+
   seed/newtype/hooin/roster/client/tsx:
     dependencies:
       '@bufbuild/protobuf':
