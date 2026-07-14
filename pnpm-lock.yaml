@@ -658,6 +658,9 @@ importers:
       '@theseed/seed-devprod-gotcha-tsx':
         specifier: workspace:^
         version: link:../../../devprod/gotcha/tsx
+      '@theseed/seed-devprod-vscode-web-tsx':
+        specifier: workspace:^
+        version: link:../../../devprod/vscode/web/tsx
       '@theseed/seed-infra-buildinfo-ts':
         specifier: workspace:^
         version: link:../../../infra/buildinfo/ts
