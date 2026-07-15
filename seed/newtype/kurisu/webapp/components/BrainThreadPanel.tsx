@@ -1,8 +1,20 @@
 import * as Protobuf from "@bufbuild/protobuf"
-import React, { useCallback, useEffect, useRef } from "react"
+import React, { useCallback, useEffect, useMemo, useRef } from "react"
 
-import tw from "../../../../devprod/ts/grouping-tailwind/dist"
+import {
+  CircleCheckIcon,
+  CircleDotIcon,
+  CircleEllipsisIcon,
+  CircleIcon,
+  LoaderCircleIcon,
+  ZapIcon,
+} from "lucide-react"
+
+import tw from "../../../../devprod/ts/grouping-tailwind"
 import MarkdownView from "../../../../visual/markdown/tsx/MarkdownView"
+import ClaudePayload, {
+  type StreamOutputMessage,
+} from "../../../gajetto/payload/ts/claude-payload"
 import {
   type BrainInput,
   type BrainStep,
@@ -71,27 +83,150 @@ const markdownClassNames = {
   ul: tw({ layout: "my-2 pl-5", appearance: "list-disc" }),
 }
 
-const BrainStepItem: React.FC<{ step: BrainStep }> = ({ step }) => {
-  const [expanded, setExpanded] = React.useState(false)
+const AssistantTextMessage: React.FC<{ text: string }> = ({ text }) => {
+  return (
+    <div
+      className={tw({
+        layout: "mt-3 p-3",
+        appearance:
+          "border-base-200 text-base-content rounded-lg border text-sm",
+      })}
+    >
+      <MarkdownView
+        content={text}
+        className={tw({
+          layout: "[&>*:first-child]:mt-0 [&>*:last-child]:mb-0",
+          appearance: "break-words",
+        })}
+        htmlClassNames={markdownClassNames}
+      />
+    </div>
+  )
+}
 
+const AssistantThinkingMessage: React.FC<{ thinking: string }> = ({
+  thinking,
+}) => {
+  return (
+    <div
+      className={tw({
+        layout: "mt-3 p-3",
+        appearance: "border-base-200 text-neutral rounded-lg border text-sm",
+      })}
+    >
+      {thinking}
+    </div>
+  )
+}
+
+const AssistantToolUseMessage: React.FC<{ name: string; input: unknown }> = ({
+  name,
+  input,
+}) => {
+  return (
+    <div
+      className={tw({
+        layout: "mt-3 p-3",
+        appearance: "bg-base-200 rounded-lg",
+      })}
+    >
+      <span
+        className={tw({
+          appearance: "text-base-content font-mono text-xs font-medium",
+        })}
+      >
+        {name}
+      </span>
+      <pre
+        className={tw({
+          layout: "m-0 mt-2 overflow-x-auto",
+          appearance: "text-neutral font-mono text-xs",
+        })}
+      >
+        {JSON.stringify(input ?? {}, null, 2)}
+      </pre>
+    </div>
+  )
+}
+
+const UserTextMessage: React.FC<{ text: string }> = ({ text }) => {
   return (
     <div
       className={tw({
         layout: "mt-3",
+        appearance: "bg-base-200 text-base-content rounded-lg p-3 text-sm",
+      })}
+    >
+      <MarkdownView
+        content={text}
+        className={tw({
+          layout: "[&>*:first-child]:mt-0 [&>*:last-child]:mb-0",
+          appearance: "break-words",
+        })}
+        htmlClassNames={markdownClassNames}
+      />
+    </div>
+  )
+}
+
+const UserToolResultMessage: React.FC<{
+  content: unknown
+  isError: boolean
+}> = ({ content, isError }) => {
+  const text =
+    typeof content === "string"
+      ? content
+      : JSON.stringify(content ?? {}, null, 2)
+  return (
+    <div
+      className={tw({
+        layout: "mt-3 p-3",
+        appearance: isError
+          ? "bg-error/10 text-error rounded-lg"
+          : "bg-base-200 text-neutral rounded-lg",
+      })}
+    >
+      <pre
+        className={tw({
+          layout: "m-0 overflow-x-auto",
+          appearance: "font-mono text-xs",
+        })}
+      >
+        {text}
+      </pre>
+    </div>
+  )
+}
+
+const BrainStepItem: React.FC<{
+  prefix?: React.ReactNode
+  title?: React.ReactNode
+  step: BrainStep
+  children?: React.ReactNode
+}> = ({ prefix: prefix, title, step, children }) => {
+  const [showRaw, setShowRaw] = React.useState(false)
+
+  return (
+    <div
+      className={tw({
+        layout: "mt-3 flex flex-col",
         appearance: "border-base-200 border-t pt-3",
       })}
     >
-      <div
+      <button
+        type="button"
         className={tw({
-          layout: "flex cursor-pointer items-center gap-2",
-          appearance: "text-neutral text-xs font-medium",
+          layout: "flex items-center gap-2",
+          appearance: "text-neutral cursor-pointer text-xs font-medium",
           state: "hover:text-base-content",
         })}
-        onClick={() => setExpanded((prev) => !prev)}
+        onClick={() => setShowRaw((prev) => !prev)}
       >
-        <span className={tw({ appearance: "font-mono" })}>{step.type}</span>
-      </div>
-      {expanded && (
+        {prefix}
+        {title && <span>{title}</span>}
+      </button>
+      {children}
+      {showRaw && (
         <pre
           className={tw({
             layout: "m-0 mt-2 overflow-x-auto",
@@ -102,23 +237,201 @@ const BrainStepItem: React.FC<{ step: BrainStep }> = ({ step }) => {
           {Protobuf.toJsonString(BrainStepSchema, step, { prettySpaces: 2 })}
         </pre>
       )}
-      {step.type === "result" && (
-        <div
+    </div>
+  )
+}
+
+const BrainSystemStepItem: React.FC<{ step: BrainStep }> = ({ step }) => {
+  const output = ClaudePayload.DecodeStreamOutput(step.data)
+  if (!output || output.type !== "system") {
+    return <>error: wrong type</>
+  }
+  return (
+    <BrainStepItem
+      key={step.uuid}
+      prefix={<CircleIcon className={tw({ layout: "size-4" })} />}
+      title={<>{output.subtype ?? "system"}</>}
+      step={step}
+    />
+  )
+}
+
+const BrainSystemSteps: React.FC<{ steps: BrainStep[] }> = ({ steps }) => {
+  const [expanded, setExpanded] = React.useState(false)
+
+  return (
+    <div className={tw({ layout: "flex flex-col" })}>
+      <button
+        type="button"
+        className={tw({
+          layout: "mt-3 flex items-center justify-start gap-2 pt-3",
+          appearance:
+            "border-base-200 text-neutral cursor-pointer border-t text-xs font-medium",
+          state: "hover:text-base-content",
+        })}
+        onClick={() => setExpanded((prev) => !prev)}
+      >
+        <CircleIcon className={tw({ layout: "size-4" })} />
+        {steps.length} system event{steps.length !== 1 ? "s" : ""}
+      </button>
+      {expanded &&
+        steps.map((step) => (
+          <BrainSystemStepItem key={step.uuid} step={step} />
+        ))}
+    </div>
+  )
+}
+
+const summarizeAssistantMessage = (message: StreamOutputMessage) => {
+  const results = (message.content || []).map((block) => {
+    switch (block.type) {
+      case "text":
+        return "Step"
+      case "thinking":
+        return "Thinking"
+      case "tool_use":
+        return block.name ? `Tool: ${block.name}` : "Tool"
+      default:
+        return block.type
+    }
+  })
+  return results.join("; ")
+}
+
+const BrainAssistantStepItem: React.FC<{ step: BrainStep }> = ({ step }) => {
+  const output = ClaudePayload.DecodeStreamOutput(step.data)
+
+  if (!output || output.type !== "assistant") {
+    return <>error: wrong type</>
+  }
+
+  const message = output.message || {}
+
+  return (
+    <BrainStepItem
+      key={step.uuid}
+      prefix={<CircleDotIcon className={tw({ layout: "size-4" })} />}
+      title={summarizeAssistantMessage(message)}
+      step={step}
+    >
+      {message.content?.map((block, index) => (
+        <React.Fragment key={index}>
+          {block.type === "text" && (
+            <AssistantTextMessage text={block.text ?? ""} />
+          )}
+          {block.type === "thinking" && (
+            <AssistantThinkingMessage thinking={block.thinking ?? ""} />
+          )}
+          {block.type === "tool_use" && (
+            <AssistantToolUseMessage
+              name={block.name ?? ""}
+              input={block.input}
+            />
+          )}
+        </React.Fragment>
+      ))}
+    </BrainStepItem>
+  )
+}
+
+const summarizeUserMessage = (message: StreamOutputMessage) => {
+  const results = (message.content || []).map((block) => {
+    switch (block.type) {
+      case "text":
+        return "Text"
+      case "tool_result":
+        return "Tool Result"
+      default:
+        return block.type
+    }
+  })
+  return results.join("; ")
+}
+
+const BrainUserStepItem: React.FC<{ step: BrainStep }> = ({ step }) => {
+  const output = ClaudePayload.DecodeStreamOutput(step.data)
+  if (!output || output.type !== "user") {
+    return <>error: wrong type</>
+  }
+
+  const message = output.message || {}
+
+  return (
+    <BrainStepItem
+      key={step.uuid}
+      prefix={<CircleEllipsisIcon className={tw({ layout: "size-4" })} />}
+      title={summarizeUserMessage(message)}
+      step={step}
+    >
+      {message.content?.map((block, index) => (
+        <React.Fragment key={index}>
+          {block.type === "text" && <UserTextMessage text={block.text ?? ""} />}
+          {block.type === "tool_result" && (
+            <UserToolResultMessage
+              content={block.content}
+              isError={block.is_error ?? false}
+            />
+          )}
+        </React.Fragment>
+      ))}
+    </BrainStepItem>
+  )
+}
+
+const BrainResultStepItem: React.FC<{ step: BrainStep }> = ({ step }) => {
+  const output = ClaudePayload.DecodeStreamOutput(step.data)
+  if (!output || output.type !== "result") {
+    return <>error: wrong type</>
+  }
+  return (
+    <BrainStepItem
+      key={step.uuid}
+      prefix={<CircleCheckIcon className={tw({ layout: "size-4" })} />}
+      title={"Result"}
+      step={step}
+    >
+      <div
+        className={tw({
+          layout: "mt-3 p-3",
+          appearance:
+            "border-base-200 text-base-content rounded-lg border text-sm",
+        })}
+      >
+        <MarkdownView
+          content={output.result ?? ""}
           className={tw({
-            layout: "mt-3",
-            appearance: "bg-base-200 text-base-content rounded-lg p-3 text-sm",
+            layout: "[&>*:first-child]:mt-0 [&>*:last-child]:mb-0",
+            appearance: "break-words",
           })}
-        >
-          <MarkdownView
-            content={step.data?.result?.toString() || ""}
-            className={tw({
-              layout: "[&>*:first-child]:mt-0 [&>*:last-child]:mb-0",
-              appearance: "break-words",
-            })}
-            htmlClassNames={markdownClassNames}
-          />
-        </div>
-      )}
+          htmlClassNames={markdownClassNames}
+        />
+      </div>
+    </BrainStepItem>
+  )
+}
+
+const BrainUnknownStepItem: React.FC<{ step: BrainStep }> = ({ step }) => {
+  return (
+    <BrainStepItem
+      key={step.uuid}
+      prefix={<CircleIcon className={tw({ layout: "size-4" })} />}
+      title={step.type}
+      step={step}
+    />
+  )
+}
+
+const BrainStreamingStepItem: React.FC = () => {
+  return (
+    <div
+      className={tw({
+        layout: "mt-3 flex items-center justify-start gap-2 pt-3",
+        appearance: "border-base-200 text-neutral border-t text-xs font-medium",
+      })}
+    >
+      <LoaderCircleIcon
+        className={tw({ layout: "size-4", appearance: "animate-spin" })}
+      />
     </div>
   )
 }
@@ -127,11 +440,38 @@ const BrainThreadPanel: React.FC<{
   thread: BrainThread
 }> = ({ thread }) => {
   const [steps, setSteps] = React.useState<BrainStep[]>([])
+  const [streaming, setStreaming] = React.useState(false)
   const startedRef = useRef(false)
+  const spinnerRef = useRef<HTMLDivElement>(null)
+  const spinnerVisibleRef = useRef(true)
 
   useEffect(() => {
     setSteps(thread.steps)
   }, [thread])
+
+  // Track whether the streaming spinner is on screen so we only auto-scroll
+  // when the user is already following the tail (not when they've scrolled up).
+  useEffect(() => {
+    const el = spinnerRef.current
+    if (!el) {
+      return
+    }
+    const observer = new IntersectionObserver(([entry]) => {
+      spinnerVisibleRef.current = entry?.isIntersecting ?? false
+    })
+    observer.observe(el)
+    return () => {
+      observer.disconnect()
+    }
+  }, [streaming])
+
+  // On new steps, keep the latest element in view only if the spinner was
+  // already visible.
+  useEffect(() => {
+    if (streaming && spinnerVisibleRef.current) {
+      spinnerRef.current?.scrollIntoView({ behavior: "smooth", block: "end" })
+    }
+  }, [steps, streaming])
 
   const start = useCallback(async () => {
     if (!thread.live || startedRef.current) {
@@ -139,8 +479,13 @@ const BrainThreadPanel: React.FC<{
     }
     startedRef.current = true
 
-    for await (const step of thread.live) {
-      setSteps((prev) => [...prev, step])
+    setStreaming(true)
+    try {
+      for await (const step of thread.live) {
+        setSteps((prev) => [...prev, step])
+      }
+    } finally {
+      setStreaming(false)
     }
   }, [thread.live])
 
@@ -148,18 +493,57 @@ const BrainThreadPanel: React.FC<{
     start()
   }, [start])
 
+  const chain: React.ReactNode[] = useMemo(() => {
+    const result: React.ReactNode[] = []
+    for (let stepIndex = 0; stepIndex < steps.length; stepIndex++) {
+      const step = steps[stepIndex]
+      switch (step.type) {
+        case "system": {
+          let nextStepIndex = stepIndex + 1
+          while (
+            nextStepIndex < steps.length &&
+            steps[nextStepIndex].type === "system"
+          ) {
+            nextStepIndex++
+          }
+          const group = steps.slice(stepIndex, nextStepIndex)
+          result.push(<BrainSystemSteps key={group[0].uuid} steps={group} />)
+          stepIndex = nextStepIndex - 1
+          break
+        }
+        case "assistant":
+          result.push(<BrainAssistantStepItem key={step.uuid} step={step} />)
+          break
+        case "user":
+          result.push(<BrainUserStepItem key={step.uuid} step={step} />)
+          break
+        case "result":
+          result.push(<BrainResultStepItem key={step.uuid} step={step} />)
+          break
+        default:
+          result.push(<BrainUnknownStepItem key={step.uuid} step={step} />)
+      }
+    }
+    return result
+  }, [steps])
+
   return (
     <KurisuPanel title={thread.input.topic} subtitle={thread.input.taskUuid}>
       <div
         className={tw({
+          layout: "flex items-start gap-2",
           appearance: "text-base-content text-sm",
         })}
       >
-        {thread.input.text}
+        <ZapIcon className={tw({ layout: "mt-0.5 size-4 shrink-0" })} />
+        <span>{thread.input.text}</span>
       </div>
-      {steps.map((step, index) => (
-        <BrainStepItem key={index} step={step} />
-      ))}
+      {chain}
+      {streaming && (
+        <div ref={spinnerRef}>
+          <BrainStreamingStepItem />
+        </div>
+      )}
     </KurisuPanel>
   )
 }
