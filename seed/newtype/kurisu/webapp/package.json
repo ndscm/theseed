@@ -26,6 +26,7 @@
     "@theseed/seed-devprod-gotcha-tsx": "workspace:^",
     "@theseed/seed-devprod-vscode-web-tsx": "workspace:^",
     "@theseed/seed-infra-buildinfo-ts": "workspace:^",
+    "@theseed/seed-newtype-gajetto-payload-ts-claude-payload": "workspace:^",
     "@theseed/seed-newtype-hooin-dictate-client-tsx": "workspace:^",
     "@theseed/seed-newtype-hooin-invade-client-tsx": "workspace:^",
     "@theseed/seed-newtype-hooin-raid-client-tsx": "workspace:^",

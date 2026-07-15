@@ -37,6 +37,7 @@ react_router_webapp(
         "//seed/infra/buildinfo/ts",
         "//seed/infra/filesystem/proto:simplefs_ts_proto",
         "//seed/infra/terminal/proto:terminal_ts_proto",
+        "//seed/newtype/gajetto/payload/ts/claude-payload",
         "//seed/newtype/hooin/dictate/client/tsx",
         "//seed/newtype/hooin/invade/client/tsx",
         "//seed/newtype/hooin/raid/client/tsx",
