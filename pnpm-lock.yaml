@@ -439,6 +439,12 @@ importers:
 
   seed/infra/terminal/proto: {}
 
+  seed/newtype/gajetto/payload/ts/claude-payload:
+    devDependencies:
+      typescript:
+        specifier: 5.9.3
+        version: 5.9.3
+
   seed/newtype/gajetto/proto: {}
 
   seed/newtype/hooin/dictate/client/tsx:
