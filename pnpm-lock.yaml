@@ -678,6 +678,9 @@ importers:
       '@theseed/seed-infra-buildinfo-ts':
         specifier: workspace:^
         version: link:../../../infra/buildinfo/ts
+      '@theseed/seed-newtype-gajetto-payload-ts-claude-payload':
+        specifier: workspace:^
+        version: link:../../gajetto/payload/ts/claude-payload
       '@theseed/seed-newtype-hooin-dictate-client-tsx':
         specifier: workspace:^
         version: link:../../hooin/dictate/client/tsx
