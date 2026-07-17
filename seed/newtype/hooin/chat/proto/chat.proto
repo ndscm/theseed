@@ -1,0 +1,81 @@
+syntax = "proto3";
+
+package seed.newtype.hooin.chat.proto;
+
+import "google/protobuf/timestamp.proto";
+
+option go_package = "github.com/ndscm/theseed/seed/newtype/hooin/chat/proto/chatpb";
+
+// MessagePayload is the content payload of a delivered message.
+//
+// It is the body carried by a `Message`, independent of where the message is
+// delivered, so the same content shape is reused across delivery contexts
+// (direct messages and channel messages).
+message MessagePayload {
+  // The type of content carried in `content` (empty for text content).
+  string message_type = 1;
+
+  // The message body. Interpreted according to `message_type`; for a text
+  // message this is the raw UTF-8 text. Markdown is supported.
+  string content = 2;
+}
+
+// Message is a single message delivered to a direct-message thread or a
+// channel.
+//
+// It is the resource returned by `CreateMessage` and streamed by
+// `SubscribeMessages`. See AIP-123 (resource) and AIP-122 (resource names).
+message Message {
+  // Identifier. The resource name of the message.
+  // Format: people/{sender_id}/dm/{receiver_id}/messages/{message_id} or
+  // channels/{channel_id}/messages/{message_id}
+  string name = 1;
+
+  // Required. The content of the message.
+  MessagePayload message_payload = 2;
+
+  // Output only. The time at which the message was created, assigned by the
+  // server. See AIP-142 (`_time` suffix) and AIP-148 (`create_time`).
+  google.protobuf.Timestamp create_time = 3;
+}
+
+// Request message for `HooinChatService.CreateMessage`. See AIP-133.
+message CreateMessageRequest {
+  // Required. The direct-message thread or channel to post the message to.
+  // Format: people/{sender_id}/dm/{receiver_id} or channels/{channel_id}
+  string parent = 1;
+
+  // Required. The message to create. Its `name` field is ignored; the server
+  // assigns the resource name under `parent`, generating the final
+  // `{message_id}` segment.
+  Message message = 2;
+}
+
+// Request message for `HooinChatService.SubscribeMessages`. This is a custom
+// streaming method; see AIP-136.
+message SubscribeMessagesRequest {
+  // Required. The channels to subscribe to, either dm channels or global
+  // channels. Messages from all listed channels are merged into the single
+  // returned stream. Each entry has the format:
+  // people/{sender_id}/dm/{receiver_id} or channels/{channel_id}
+  repeated string channels = 1;
+
+  // Optional. If set, only messages with a `create_time` at or after this
+  // instant are delivered, beginning with a backfill of matching history
+  // before live messages are streamed. If empty, only messages created after
+  // the subscription opens are delivered.
+  google.protobuf.Timestamp since_time = 2;
+}
+
+// HooinChatService is the external-facing side of the hooin chat portal. It
+// exposes messaging over both direct-message threads and channels.
+service HooinChatService {
+  // CreateMessage posts a single message to a direct-message thread or channel
+  // and returns the created `Message` once persisted. Standard Create method;
+  // see AIP-133.
+  rpc CreateMessage(CreateMessageRequest) returns (Message) {}
+
+  // SubscribeMessages opens a long-lived server stream of the `Message`s
+  // delivered to a direct-message thread or channel, ordered by `create_time`.
+  rpc SubscribeMessages(SubscribeMessagesRequest) returns (stream Message) {}
+}
