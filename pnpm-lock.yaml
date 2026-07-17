@@ -578,6 +578,8 @@ importers:
 
   seed/newtype/gajetto/proto: {}
 
+  seed/newtype/hooin/chat/proto: {}
+
   seed/newtype/hooin/dictate/client/tsx:
     dependencies:
       '@bufbuild/protobuf':
