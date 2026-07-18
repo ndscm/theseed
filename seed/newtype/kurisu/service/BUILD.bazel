@@ -11,9 +11,9 @@ go_library(
         "//seed/cloud/login/go/login",
         "//seed/infra/auth/go/openid",
         "//seed/infra/error/go/seederr",
-        "//seed/infra/http/go/seedbearer",
         "//seed/infra/log/go/seedlog",
         "//seed/newtype/kurisu/proto:kurisu_go_proto",
         "@com_connectrpc_connect//:connect",
+        "@com_github_google_uuid//:uuid",
     ],
 )

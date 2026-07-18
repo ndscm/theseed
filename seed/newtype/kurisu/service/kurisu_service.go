@@ -2,15 +2,14 @@ package service
 
 import (
 	"context"
-	"net/http"
 	"time"
 
 	"connectrpc.com/connect"
+	"github.com/google/uuid"
 	"github.com/ndscm/theseed/seed/cloud/keycloak/client/go/keycloak"
 	"github.com/ndscm/theseed/seed/cloud/login/go/login"
 	"github.com/ndscm/theseed/seed/infra/auth/go/openid"
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
-	"github.com/ndscm/theseed/seed/infra/http/go/seedbearer"
 	"github.com/ndscm/theseed/seed/infra/log/go/seedlog"
 	"github.com/ndscm/theseed/seed/newtype/kurisu/proto/kurisupb"
 )
@@ -33,11 +32,19 @@ func (svc *KurisuService) CreateSiliconJwt(
 
 	// only support keycloak for now
 
-	siliconUuid, err := svc.keycloakClient.GetKeycloakUser(ctx, personId)
+	siliconUser := (*keycloak.UserRepresentation)(nil)
+	_, err = uuid.Parse(personId)
 	if err != nil {
-		return nil, seederr.Wrap(err)
+		// guess the personId is actually the person handle
+		siliconUser, err = svc.keycloakClient.GetUserByHandle(ctx, true, personId)
+		if err != nil {
+			return nil, seederr.Wrap(err)
+		}
 	}
-	password, err := svc.keycloakClient.GenerateKeycloakUserPassword(ctx, siliconUuid)
+	siliconUuid := siliconUser.Id
+	siliconUsername := siliconUser.Username
+
+	password, err := svc.keycloakClient.GenerateUserPassword(ctx, true, siliconUuid)
 	if err != nil {
 		return nil, seederr.Wrap(err)
 	}
@@ -46,14 +53,14 @@ func (svc *KurisuService) CreateSiliconJwt(
 		// The removal will fail if the user doesn't have the manage-users permission, but it's anticipated.
 		cleanupCtx, cancelCleanup := context.WithTimeout(context.WithoutCancel(ctx), 1*time.Minute)
 		defer cancelCleanup()
-		err := svc.keycloakClient.RemoveKeycloakUserPassword(cleanupCtx, siliconUuid)
+		err := svc.keycloakClient.RemoveUserPassword(cleanupCtx, true, siliconUuid)
 		if err != nil {
 			seedlog.Warnf("Silicon user password is kept. personId=%v", personId)
 		}
 	}()
 
 	tokenSource, err := svc.siliconOpenidProvider.PasswordGrant(
-		ctx, personId, password, []string{"openid", "basic", "profile", "email", "offline_access"}, nil,
+		ctx, siliconUsername, password, []string{"openid", "basic", "profile", "email", "offline_access"}, nil,
 	)
 	if err != nil {
 		return nil, seederr.Wrap(err)
@@ -79,10 +86,8 @@ func CreateKurisuService() (*KurisuService, error) {
 		"",
 	)
 
-	keycloakProvider, err := keycloak.CreateKeycloakClient(
-		keycloak.WithDiscoveryUrl(openid.OpenidDiscoveryUrlFlag()),
-		keycloak.WithHttpClient(seedbearer.InterceptBearerTransport(http.DefaultClient)),
-	)
+	kurisuOpenidClient := openid.NewOpenidClient(openid.OpenidDiscoveryUrlFlag(), "kurisu-prod", "")
+	keycloakProvider, err := keycloak.CreateKeycloakClient(kurisuOpenidClient)
 	if err != nil {
 		return nil, seederr.Wrap(err)
 	}
