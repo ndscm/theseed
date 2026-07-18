@@ -39,6 +39,42 @@ func (c *KeycloakClient) getHttpClient(
 	return client, nil
 }
 
+// GetRealm returns the Keycloak admin REST representation of the client's realm.
+// The request authenticates with the client's configured transport, which must
+// carry a token holding the realm-management view-realm role.
+func (c *KeycloakClient) GetRealm(
+	ctx context.Context, useCtxBearer bool,
+) (*RealmRepresentation, error) {
+	httpClient, err := c.getHttpClient(ctx, useCtxBearer)
+	if err != nil {
+		return nil, seederr.Wrap(err)
+	}
+	requestUrl := c.server + "/admin/realms/" + url.PathEscape(c.realm)
+	request, err := http.NewRequestWithContext(ctx, http.MethodGet, requestUrl, nil)
+	if err != nil {
+		return nil, seederr.Wrap(err)
+	}
+	response, err := httpClient.Do(request)
+	if err != nil {
+		return nil, seederr.Wrap(err)
+	}
+	defer response.Body.Close()
+	responseBytes, err := io.ReadAll(response.Body)
+	if err != nil {
+		return nil, seederr.Wrap(err)
+	}
+	if response.StatusCode != http.StatusOK {
+		return nil, seederr.WrapErrorf("failed to get keycloak realm: status %d, body: %s", response.StatusCode, string(responseBytes))
+	}
+
+	realm := &RealmRepresentation{}
+	err = json.Unmarshal(responseBytes, realm)
+	if err != nil {
+		return nil, seederr.Wrap(err)
+	}
+	return realm, nil
+}
+
 // GetKeycloakUser resolves the Keycloak username to the user's
 // Keycloak uuid. The request authenticates as the login user via the
 // bearer transport, so that user must hold the realm-management view-users role.

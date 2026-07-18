@@ -5,6 +5,7 @@ go_library(
     srcs = [
         "client.go",
         "credential.go",
+        "realm.go",
         "user.go",
     ],
     importpath = "github.com/ndscm/theseed/seed/cloud/keycloak/client/go/keycloak",
