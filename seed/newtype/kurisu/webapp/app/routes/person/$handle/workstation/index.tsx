@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from "react"
+import React, { useCallback, useEffect, useMemo, useState } from "react"
 import { useTranslation } from "react-i18next"
 
 import { HouseIcon } from "lucide-react"
@@ -7,6 +7,7 @@ import tw from "../../../../../../../../devprod/ts/grouping-tailwind"
 import VscodeWebWorkbench from "../../../../../../../../devprod/vscode/web/tsx/VscodeWebWorkbench"
 import HooinRaidFileSystem from "../../../../../../../hooin/raid/client/tsx/HooinRaidFileSystem"
 import { useHooinRaidService } from "../../../../../../../hooin/raid/client/tsx/HooinRaidServiceContext"
+import { useHooinRosterService } from "../../../../../../../hooin/roster/client/tsx/HooinRosterServiceContext"
 
 const PersonWorkstationPage: React.FC<{ params: { handle: string } }> = ({
   params,
@@ -14,7 +15,9 @@ const PersonWorkstationPage: React.FC<{ params: { handle: string } }> = ({
   const { handle } = params
   const { t } = useTranslation("person")
   const raidService = useHooinRaidService()
+  const rosterService = useHooinRosterService()
 
+  const [personId, setPersonId] = useState<string>("")
   // The folder the editor is open on, and, being empty, whether it is open at
   // all: an editor is a folder somebody asked for, and until somebody has, there
   // is a button here instead. A workbench that failed to open leaves it empty
@@ -28,6 +31,18 @@ const PersonWorkstationPage: React.FC<{ params: { handle: string } }> = ({
     .replace(/@$/, "")
     .toLowerCase()
     .trim()
+
+  useEffect(() => {
+    void (async () => {
+      if (!rosterService) {
+        return
+      }
+      const member = await rosterService.GetTeamMember("", {
+        handle: personHandle,
+      })
+      setPersonId(member.personId)
+    })()
+  }, [rosterService, personHandle])
 
   // The workstation is what the editor opens, and this is what it reads it
   // through: the questions the editor asks about a path arrive here, on the
@@ -50,14 +65,14 @@ const PersonWorkstationPage: React.FC<{ params: { handle: string } }> = ({
 
     setError("")
     try {
-      const path = await raidService.GetUserHome(personHandle)
+      const path = await raidService.GetUserHome(personId)
       setWorkspacePath(path)
     } catch (homeError: unknown) {
       setError(
         homeError instanceof Error ? homeError.message : String(homeError),
       )
     }
-  }, [raidService, personHandle])
+  }, [raidService, personId])
 
   return (
     <main className={tw({ layout: "flex min-h-0 flex-1 flex-col" })}>
