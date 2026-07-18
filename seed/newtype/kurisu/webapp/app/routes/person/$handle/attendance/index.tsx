@@ -1,9 +1,10 @@
-import React, { useCallback, useEffect } from "react"
+import React, { useCallback, useEffect, useState } from "react"
 import { useTranslation } from "react-i18next"
 
 import { ClipboardCopyIcon, UserKeyIcon, XIcon } from "lucide-react"
 
 import tw from "../../../../../../../../devprod/ts/grouping-tailwind"
+import { useHooinRosterService } from "../../../../../../../hooin/roster/client/tsx/HooinRosterServiceContext"
 import { useKurisuService } from "../../../../../../client/tsx/KurisuServiceContext"
 
 const PersonAttendancePage: React.FC<{ params: { handle: string } }> = ({
@@ -12,9 +13,12 @@ const PersonAttendancePage: React.FC<{ params: { handle: string } }> = ({
   const { handle } = params
   const { t } = useTranslation("person")
   const kurisuService = useKurisuService()
-  const [refreshToken, setRefreshToken] = React.useState<string>("")
-  const [isRegenerating, setIsRegenerating] = React.useState<boolean>(false)
-  const [isCopied, setIsCopied] = React.useState<boolean>(false)
+  const rosterService = useHooinRosterService()
+
+  const [personId, setPersonId] = useState<string>("")
+  const [refreshToken, setRefreshToken] = useState<string>("")
+  const [isRegenerating, setIsRegenerating] = useState<boolean>(false)
+  const [isCopied, setIsCopied] = useState<boolean>(false)
 
   useEffect(() => {
     if (!refreshToken) {
@@ -29,6 +33,18 @@ const PersonAttendancePage: React.FC<{ params: { handle: string } }> = ({
     .toLowerCase()
     .trim()
 
+  useEffect(() => {
+    void (async () => {
+      if (!rosterService) {
+        return
+      }
+      const member = await rosterService.GetTeamMember("", {
+        handle: personHandle,
+      })
+      setPersonId(member.personId)
+    })()
+  }, [rosterService, personHandle])
+
   const regenerateToken = useCallback(async () => {
     if (!kurisuService) {
       return
@@ -36,12 +52,12 @@ const PersonAttendancePage: React.FC<{ params: { handle: string } }> = ({
     setRefreshToken("")
     setIsRegenerating(true)
     try {
-      const response = await kurisuService.CreateSiliconJwt(personHandle)
+      const response = await kurisuService.CreateSiliconJwt(personId)
       setRefreshToken(response.refreshToken)
     } finally {
       setIsRegenerating(false)
     }
-  }, [kurisuService, personHandle])
+  }, [kurisuService, personId])
 
   const copyRefreshToken = useCallback(async () => {
     if (refreshToken) {

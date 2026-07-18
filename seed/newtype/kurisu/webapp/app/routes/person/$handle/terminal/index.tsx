@@ -12,6 +12,7 @@ import {
   TerminalInputFrameSchema,
 } from "../../../../../../../../infra/terminal/proto/terminal_pb"
 import { useHooinInvadeService } from "../../../../../../../hooin/invade/client/tsx/HooinInvadeServiceContext"
+import { useHooinRosterService } from "../../../../../../../hooin/roster/client/tsx/HooinRosterServiceContext"
 
 const UbuntuTerminalTheme = {
   background: "#300a24",
@@ -43,6 +44,9 @@ const PersonTerminalPage: React.FC<{ params: { handle: string } }> = ({
   const { handle } = params
   const { t } = useTranslation("person")
   const invadeService = useHooinInvadeService()
+  const rosterService = useHooinRosterService()
+
+  const [personId, setPersonId] = useState<string>("")
   const [connected, setConnected] = useState(false)
   const [endMessage, setEndMessage] = useState("")
   const refOfTerminalContainer = useRef<HTMLDivElement>(null)
@@ -54,6 +58,18 @@ const PersonTerminalPage: React.FC<{ params: { handle: string } }> = ({
     .toLowerCase()
     .trim()
 
+  useEffect(() => {
+    void (async () => {
+      if (!rosterService) {
+        return
+      }
+      const member = await rosterService.GetTeamMember("", {
+        handle: personHandle,
+      })
+      setPersonId(member.personId)
+    })()
+  }, [rosterService, personHandle])
+
   const connect = useCallback(() => {
     setEndMessage("")
     setConnected(true)
@@ -61,7 +77,7 @@ const PersonTerminalPage: React.FC<{ params: { handle: string } }> = ({
 
   useEffect(() => {
     const container = refOfTerminalContainer.current
-    if (!invadeService || !container || !connected) {
+    if (!invadeService || !container || !connected || !personId) {
       return
     }
 
@@ -139,7 +155,7 @@ const PersonTerminalPage: React.FC<{ params: { handle: string } }> = ({
           if (abortController.signal.aborted || exited) {
             return
           }
-          await invadeService.SendTerminalInput(personHandle, frame)
+          await invadeService.SendTerminalInput(personId, frame)
         } catch (error) {
           console.warn("terminal input lost:", error)
         }
@@ -166,7 +182,7 @@ const PersonTerminalPage: React.FC<{ params: { handle: string } }> = ({
       const readOutput = async () => {
         try {
           const stream = invadeService.StartTerminal(
-            personHandle,
+            personId,
             Protobuf.create(TerminalInputFrameSchema, {
               sessionUuid,
               index: takeInputIndex(),
@@ -256,7 +272,7 @@ const PersonTerminalPage: React.FC<{ params: { handle: string } }> = ({
       disposed = true
       dispose()
     }
-  }, [invadeService, personHandle, connected, t])
+  }, [invadeService, personId, connected, t])
 
   return (
     <main className={tw({ layout: "flex min-h-0 flex-1 flex-col" })}>
@@ -280,7 +296,7 @@ const PersonTerminalPage: React.FC<{ params: { handle: string } }> = ({
           <button
             className={tw({ component: "btn btn-primary" })}
             onClick={connect}
-            disabled={!invadeService}
+            disabled={!invadeService || !personId}
           >
             <TerminalIcon />
             {t("terminal.connect", "Connect")}
