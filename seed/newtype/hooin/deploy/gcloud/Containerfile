@@ -1,11 +1,10 @@
 FROM ghcr.io/ndscm/seed-newtype-hooin-container:latest
 
-COPY ./team.json /etc/steins/team.json
-
 CMD [ \
   "--port", "8080", \
-  "--static_team_file", "/etc/steins/team.json", \
   "--openid_discovery_url", "https://account.ndscm.com/realms/ndscm/.well-known/openid-configuration", \
+  "--openid_client_id", "hooin-prod", \
+  "--openid_client_secret_file", "/run/secrets/HOOIN_OPENID_CLIENT_SECRET/latest", \
   "--trust_openid_authorized_party", "kurisu-sfe-prod", \
   "--trust_openid_authorized_party", "silicon-prod", \
   "--verbose" \
