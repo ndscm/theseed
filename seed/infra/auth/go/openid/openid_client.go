@@ -92,6 +92,10 @@ type OpenidClient struct {
 	tokenSources      map[string]oauth2.TokenSource
 }
 
+func (oc *OpenidClient) DiscoveryUrl() string {
+	return oc.discoveryUrl
+}
+
 func (oc *OpenidClient) ClientId() string {
 	return oc.clientId
 }
