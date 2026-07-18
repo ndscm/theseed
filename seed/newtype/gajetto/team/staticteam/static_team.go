@@ -26,20 +26,20 @@ type StaticPerson struct {
 	Organic string `json:"organic,omitempty"`
 }
 
-func (p *StaticPerson) GetPersonId() string {
-	return p.personId
+func (p *StaticPerson) GetPersonId(ctx context.Context) (string, error) {
+	return p.personId, nil
 }
 
-func (p *StaticPerson) GetHandle() string {
-	return p.Handle
+func (p *StaticPerson) GetHandle(ctx context.Context) (string, error) {
+	return p.Handle, nil
 }
 
-func (p *StaticPerson) GetDisplayName() string {
-	return p.DisplayName
+func (p *StaticPerson) GetDisplayName(ctx context.Context) (string, error) {
+	return p.DisplayName, nil
 }
 
-func (p *StaticPerson) GetOrganic() string {
-	return p.Organic
+func (p *StaticPerson) GetOrganic(ctx context.Context) (string, error) {
+	return p.Organic, nil
 }
 
 var _ team.Person = (*StaticPerson)(nil)
@@ -52,32 +52,41 @@ type StaticTeam struct {
 	Members map[string]*StaticPerson `json:"members"`
 }
 
-func (t *StaticTeam) GetTeamUuid() string {
-	return ""
+func (t *StaticTeam) GetTeamId(ctx context.Context) (string, error) {
+	return "", nil
 }
 
-func (t *StaticTeam) GetHandle() string {
-	return t.Handle
+func (t *StaticTeam) GetHandle(ctx context.Context) (string, error) {
+	return t.Handle, nil
 }
 
-func (t *StaticTeam) GetDisplayName() string {
-	return t.DisplayName
+func (t *StaticTeam) GetDisplayName(ctx context.Context) (string, error) {
+	return t.DisplayName, nil
 }
 
-func (t *StaticTeam) GetMember(personId string) (team.Person, bool) {
+func (t *StaticTeam) GetMember(ctx context.Context, personId string) (team.Person, error) {
 	member, ok := t.Members[personId]
 	if !ok {
-		return nil, false
+		return nil, seederr.CodeErrorf(codes.NotFound, "member not found")
 	}
-	return member, true
+	return member, nil
 }
 
-func (t *StaticTeam) ListMembers() map[string]team.Person {
+func (t *StaticTeam) GetMemberByHandle(ctx context.Context, personHandle string) (team.Person, error) {
+	for _, member := range t.Members {
+		if member.Handle == personHandle {
+			return member, nil
+		}
+	}
+	return nil, seederr.CodeErrorf(codes.NotFound, "member not found")
+}
+
+func (t *StaticTeam) ListMembers(ctx context.Context) (map[string]team.Person, error) {
 	members := map[string]team.Person{}
 	for id, p := range t.Members {
 		members[id] = p
 	}
-	return members
+	return members, nil
 }
 
 func (t *StaticTeam) Auth(ctx context.Context) (personId string, err error) {
