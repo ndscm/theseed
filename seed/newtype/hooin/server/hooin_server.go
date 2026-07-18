@@ -7,6 +7,7 @@ import (
 
 	"github.com/ndscm/theseed/seed/cloud/bidirequest/go/bidirequest"
 	"github.com/ndscm/theseed/seed/cloud/bidirequest/go/bidirequestservice"
+	"github.com/ndscm/theseed/seed/infra/auth/go/openid"
 	"github.com/ndscm/theseed/seed/infra/auth/go/openidverify"
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
 	"github.com/ndscm/theseed/seed/infra/flag/go/seedflag"
@@ -14,6 +15,8 @@ import (
 	"github.com/ndscm/theseed/seed/infra/http/go/seedbearer"
 	"github.com/ndscm/theseed/seed/infra/init/go/seedinit"
 	"github.com/ndscm/theseed/seed/infra/log/go/seedlog"
+	"github.com/ndscm/theseed/seed/newtype/gajetto/team"
+	"github.com/ndscm/theseed/seed/newtype/gajetto/team/keycloakteam"
 	"github.com/ndscm/theseed/seed/newtype/gajetto/team/staticteam"
 	"github.com/ndscm/theseed/seed/newtype/hooin/commute/proto/commutepbconnect"
 	commuteservice "github.com/ndscm/theseed/seed/newtype/hooin/commute/service"
@@ -28,7 +31,18 @@ import (
 	rosterservice "github.com/ndscm/theseed/seed/newtype/hooin/roster/service"
 )
 
-var flagPort = seedflag.DefineString("port", "4664", "Server port") // Default port assignment word: HOOI (4664)
+var flagPort = seedflag.DefineString(
+	"port", "4664", // Default port assignment word: HOOI (4664)
+	"Server port",
+)
+var flagOpenidClientId = seedflag.DefineString(
+	"openid_client_id", "",
+	"Client ID for OpenID Connect",
+)
+var flagOpenidClientSecret = seedflag.DefineSecret(
+	"openid_client_secret",
+	"Client Secret for OpenID Connect",
+)
 
 type OfficeConnectHandler struct {
 	office *onsite.Office
@@ -71,11 +85,30 @@ func run() error {
 		return seederr.Wrap(err)
 	}
 
-	team, err := staticteam.LoadTeam()
-	if err != nil {
-		return seederr.Wrap(err)
+	t := (team.Team)(nil)
+	openidClientId := flagOpenidClientId.Get()
+	if openidClientId != "" {
+		openidClientSecret, err := flagOpenidClientSecret.LoadString()
+		if err != nil {
+			return seederr.Wrap(err)
+		}
+		openidClient := openid.NewOpenidClient(
+			openid.OpenidDiscoveryUrlFlag(), openidClientId, openidClientSecret,
+		)
+		keycloakTeam, err := keycloakteam.ConnectTeam(openidClient)
+		if err != nil {
+			return seederr.Wrap(err)
+		}
+		t = keycloakTeam
+	} else {
+		staticTeam, err := staticteam.LoadTeam()
+		if err != nil {
+			return seederr.Wrap(err)
+		}
+		t = staticTeam
 	}
-	office, err := onsite.NewOffice(team)
+
+	office, err := onsite.NewOffice(t)
 	if err != nil {
 		return seederr.Wrap(err)
 	}
