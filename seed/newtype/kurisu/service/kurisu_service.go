@@ -40,6 +40,11 @@ func (svc *KurisuService) CreateSiliconJwt(
 		if err != nil {
 			return nil, seederr.Wrap(err)
 		}
+	} else {
+		siliconUser, err = svc.keycloakClient.GetUser(ctx, true, personId)
+		if err != nil {
+			return nil, seederr.Wrap(err)
+		}
 	}
 	siliconUuid := siliconUser.Id
 	siliconUsername := siliconUser.Username
