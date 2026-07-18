@@ -5,6 +5,8 @@ import { createGrpcWebTransport } from "@connectrpc/connect-web"
 import React, { useCallback, useEffect, useMemo, useState } from "react"
 
 import {
+  type GetTeamMemberRequest,
+  GetTeamMemberRequestSchema,
   type GetTeamRequest,
   GetTeamRequestSchema,
   HooinRosterService,
@@ -12,10 +14,17 @@ import {
   ListTeamMembersRequestSchema,
   type ListTeamMembersResponse,
   type Team,
+  type TeamMember,
 } from "../../../proto/roster_pb"
 
 interface HooinRosterServiceInterface {
   GetTeam: () => Promise<Team>
+  GetTeamMember: (
+    personId: string,
+    options?: {
+      handle?: string
+    },
+  ) => Promise<TeamMember>
   ListTeamMembers: () => Promise<ListTeamMembersResponse>
 }
 
@@ -49,6 +58,26 @@ export const HooinRosterServiceProvider: React.FC<{
     return await clientGrpcWeb.getTeam(requestPb)
   }, [clientGrpcWeb])
 
+  const GetTeamMember = useCallback(
+    async (
+      personId: string,
+      options?: { handle?: string },
+    ): Promise<TeamMember> => {
+      if (!clientGrpcWeb) {
+        throw new Error("Hooin Roster service not initialized")
+      }
+      const requestPb: GetTeamMemberRequest = Protobuf.create(
+        GetTeamMemberRequestSchema,
+        {
+          personId,
+          handle: options?.handle ?? "",
+        },
+      )
+      return await clientGrpcWeb.getTeamMember(requestPb)
+    },
+    [clientGrpcWeb],
+  )
+
   const ListTeamMembers =
     useCallback(async (): Promise<ListTeamMembersResponse> => {
       if (!clientGrpcWeb) {
@@ -67,9 +96,10 @@ export const HooinRosterServiceProvider: React.FC<{
     }
     return {
       GetTeam,
+      GetTeamMember,
       ListTeamMembers,
     }
-  }, [clientGrpcWeb, GetTeam, ListTeamMembers])
+  }, [clientGrpcWeb, GetTeam, GetTeamMember, ListTeamMembers])
 
   return (
     <HooinRosterServiceContext.Provider value={serviceInterface}>
