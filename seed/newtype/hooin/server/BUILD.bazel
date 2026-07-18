@@ -14,6 +14,7 @@ go_library(
     deps = [
         "//seed/cloud/bidirequest/go/bidirequest",
         "//seed/cloud/bidirequest/go/bidirequestservice",
+        "//seed/infra/auth/go/openid",
         "//seed/infra/auth/go/openidverify",
         "//seed/infra/error/go/seederr",
         "//seed/infra/flag/go/seedflag",
@@ -21,6 +22,8 @@ go_library(
         "//seed/infra/http/go/seedbearer",
         "//seed/infra/init/go/seedinit",
         "//seed/infra/log/go/seedlog",
+        "//seed/newtype/gajetto/team",
+        "//seed/newtype/gajetto/team/keycloakteam",
         "//seed/newtype/gajetto/team/staticteam",
         "//seed/newtype/hooin/commute/proto:commute_go_connect",
         "//seed/newtype/hooin/commute/service",
