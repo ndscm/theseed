@@ -23,6 +23,7 @@ const PersonBrainPage: React.FC<{ params: { handle: string } }> = ({
   const rosterService = useHooinRosterService()
   const dictateService = useHooinDictateService()
 
+  const [personId, setPersonId] = useState<string>("")
   const [threads, setThreads] = useState<BrainThread[]>([])
   const [inputTopic, setInputTopic] = useState("")
   const [inputText, setInputText] = useState("")
@@ -34,6 +35,18 @@ const PersonBrainPage: React.FC<{ params: { handle: string } }> = ({
     .replace(/@$/, "")
     .toLowerCase()
     .trim()
+
+  useEffect(() => {
+    void (async () => {
+      if (!rosterService) {
+        return
+      }
+      const member = await rosterService.GetTeamMember("", {
+        handle: personHandle,
+      })
+      setPersonId(member.personId)
+    })()
+  }, [rosterService, personHandle])
 
   const reload = useCallback(async () => {
     if (!rosterService) {
@@ -51,7 +64,7 @@ const PersonBrainPage: React.FC<{ params: { handle: string } }> = ({
 
   const sendMessage = useCallback(() => {
     const text = inputText.trim()
-    if (!text || !dictateService) {
+    if (!text || !dictateService || !personId) {
       return
     }
 
@@ -63,18 +76,18 @@ const PersonBrainPage: React.FC<{ params: { handle: string } }> = ({
       topic: inputTopic || "default",
     })
     const stream = dictateService.SendBrainInputStreamBrainStep(
-      personHandle,
+      personId,
       brainInput,
     )
     const newThread: BrainThread = {
-      personId: personHandle,
+      personId,
       input: brainInput,
       steps: [],
       live: stream,
     }
     setThreads((prev) => [...prev, newThread])
     setInputText("")
-  }, [inputText, dictateService, personHandle, inputTopic])
+  }, [inputText, dictateService, personId, inputTopic])
 
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent) => {
@@ -156,7 +169,7 @@ const PersonBrainPage: React.FC<{ params: { handle: string } }> = ({
                 layout: "shrink-0",
               })}
               onClick={sendMessage}
-              disabled={!inputText.trim() || !dictateService}
+              disabled={!inputText.trim() || !dictateService || !personId}
             >
               <SendIcon />
             </button>
