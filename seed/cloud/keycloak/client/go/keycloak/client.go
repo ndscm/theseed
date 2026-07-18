@@ -11,6 +11,7 @@ import (
 	"net/http"
 	"net/url"
 	"regexp"
+	"strconv"
 	"strings"
 
 	"github.com/ndscm/theseed/seed/infra/auth/go/openid"
@@ -75,6 +76,52 @@ func (c *KeycloakClient) GetRealm(
 	return realm, nil
 }
 
+// GetUser fetches a single user by Keycloak uuid. The request
+// authenticates with the client's configured transport, which must carry a
+// token holding the realm-management view-users role. A missing user surfaces
+// as fs.ErrNotExist.
+func (c *KeycloakClient) GetUser(
+	ctx context.Context, useCtxBearer bool, userUuid string,
+) (*UserRepresentation, error) {
+	httpClient, err := c.getHttpClient(ctx, useCtxBearer)
+	if err != nil {
+		return nil, seederr.Wrap(err)
+	}
+
+	requestUrl := c.server + "/admin/realms/" + url.PathEscape(c.realm) +
+		"/users/" + url.PathEscape(userUuid)
+	seedlog.Debugf("Request: %s", requestUrl)
+
+	request, err := http.NewRequestWithContext(
+		ctx, http.MethodGet, requestUrl, nil)
+	if err != nil {
+		return nil, seederr.Wrap(err)
+	}
+	response, err := httpClient.Do(request)
+	if err != nil {
+		return nil, seederr.Wrap(err)
+	}
+	defer response.Body.Close()
+	responseBytes, err := io.ReadAll(response.Body)
+	if err != nil {
+		return nil, seederr.Wrap(err)
+	}
+	if response.StatusCode == http.StatusNotFound {
+		return nil, seederr.Wrap(fs.ErrNotExist)
+	}
+	if response.StatusCode != http.StatusOK {
+		return nil, seederr.WrapErrorf("failed to get keycloak user: status %d, body: %s", response.StatusCode, string(responseBytes))
+	}
+	seedlog.Debugf("Response: %s", string(responseBytes))
+
+	user := &UserRepresentation{}
+	err = json.Unmarshal(responseBytes, user)
+	if err != nil {
+		return nil, seederr.Wrap(err)
+	}
+	return user, nil
+}
+
 // GetKeycloakUser resolves the Keycloak username to the user's
 // Keycloak uuid. The request authenticates as the login user via the
 // bearer transport, so that user must hold the realm-management view-users role.
@@ -124,6 +171,59 @@ func (c *KeycloakClient) GetUserByHandle(
 		return nil, seederr.WrapErrorf("multiple users found for handle: %s", userHandle)
 	}
 	return &users[0], nil
+}
+
+// usersPageSize bounds each users page. Keycloak caps the page size server-side,
+// so ListUsers pages through the realm until a short page signals the end.
+const usersPageSize = 100
+
+// ListUsers returns every enabled user in the realm. It pages through the realm
+// so the result is complete regardless of size. The request authenticates with the
+// client's configured transport, which must carry a token holding the
+// realm-management view-users role.
+func (c *KeycloakClient) ListUsers(
+	ctx context.Context, useCtxBearer bool,
+) ([]UserRepresentation, error) {
+	httpClient, err := c.getHttpClient(ctx, useCtxBearer)
+	if err != nil {
+		return nil, seederr.Wrap(err)
+	}
+
+	users := []UserRepresentation{}
+	for first := 0; ; first += usersPageSize {
+		requestUrl := c.server + "/admin/realms/" + url.PathEscape(c.realm)
+		query := url.Values{}
+		query.Set("first", strconv.Itoa(first))
+		query.Set("max", strconv.Itoa(usersPageSize))
+		query.Set("enabled", "true")
+		requestUrl += "/users?" + query.Encode()
+		request, err := http.NewRequestWithContext(ctx, http.MethodGet, requestUrl, nil)
+		if err != nil {
+			return nil, seederr.Wrap(err)
+		}
+		response, err := httpClient.Do(request)
+		if err != nil {
+			return nil, seederr.Wrap(err)
+		}
+		responseBytes, err := io.ReadAll(response.Body)
+		response.Body.Close()
+		if err != nil {
+			return nil, seederr.Wrap(err)
+		}
+		if response.StatusCode != http.StatusOK {
+			return nil, seederr.WrapErrorf("failed to list keycloak users: status %d, body: %s", response.StatusCode, string(responseBytes))
+		}
+
+		page := []UserRepresentation{}
+		err = json.Unmarshal(responseBytes, &page)
+		if err != nil {
+			return nil, seederr.Wrap(err)
+		}
+		users = append(users, page...)
+		if len(page) < usersPageSize {
+			return users, nil
+		}
+	}
 }
 
 // GenerateUserPassword sets a fresh random password on the user and
