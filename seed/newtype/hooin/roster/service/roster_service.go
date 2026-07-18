@@ -24,10 +24,23 @@ func (svc *HooinRosterService) GetTeam(
 		return nil, seederr.Wrap(err)
 	}
 
+	teamId, err := svc.office.Team.GetTeamId(ctx)
+	if err != nil {
+		return nil, seederr.Wrap(err)
+	}
+	teamHandle, err := svc.office.Team.GetHandle(ctx)
+	if err != nil {
+		return nil, seederr.Wrap(err)
+	}
+	teamDisplayName, err := svc.office.Team.GetDisplayName(ctx)
+	if err != nil {
+		return nil, seederr.Wrap(err)
+	}
+
 	team := &rosterpb.Team{
-		TeamUuid:    svc.office.Team.GetTeamUuid(),
-		Handle:      svc.office.Team.GetHandle(),
-		DisplayName: svc.office.Team.GetDisplayName(),
+		TeamUuid:    teamId,
+		Handle:      teamHandle,
+		DisplayName: teamDisplayName,
 	}
 	return connect.NewResponse(team), nil
 }
@@ -41,15 +54,36 @@ func (svc *HooinRosterService) ListTeamMembers(
 		return nil, seederr.Wrap(err)
 	}
 
-	members := svc.office.Team.ListMembers()
+	teamId, err := svc.office.Team.GetTeamId(ctx)
+	if err != nil {
+		return nil, seederr.Wrap(err)
+	}
+
+	members, err := svc.office.Team.ListMembers(ctx)
+	if err != nil {
+		return nil, seederr.Wrap(err)
+	}
 	teamMembers := []*rosterpb.TeamMember{}
 	for personId, person := range members {
+		personHandle, err := person.GetHandle(ctx)
+		if err != nil {
+			return nil, seederr.Wrap(err)
+		}
+		personDisplayName, err := person.GetDisplayName(ctx)
+		if err != nil {
+			return nil, seederr.Wrap(err)
+		}
+		personOrganic, err := person.GetOrganic(ctx)
+		if err != nil {
+			return nil, seederr.Wrap(err)
+		}
+
 		teamMembers = append(teamMembers, &rosterpb.TeamMember{
-			TeamUuid:    svc.office.Team.GetTeamUuid(),
+			TeamUuid:    teamId,
 			PersonId:    personId,
-			Handle:      person.GetHandle(),
-			DisplayName: person.GetDisplayName(),
-			Organic:     person.GetOrganic(),
+			Handle:      personHandle,
+			DisplayName: personDisplayName,
+			Organic:     personOrganic,
 			OnDuty:      svc.office.GetDuty(personId) != nil,
 		})
 	}
