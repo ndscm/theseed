@@ -12,6 +12,11 @@ message Team {
 
 message GetTeamRequest {}
 
+message GetTeamMemberRequest {
+  string person_id = 1;
+  string handle = 2;
+}
+
 message TeamMember {
   string team_uuid = 1;
   string person_id = 2;
@@ -30,6 +35,9 @@ message ListTeamMembersResponse {
 
 service HooinRosterService {
   rpc GetTeam(GetTeamRequest) returns (Team) {}
+
+  rpc GetTeamMember(GetTeamMemberRequest) returns (TeamMember) {}
+
   rpc ListTeamMembers(ListTeamMembersRequest)
       returns (ListTeamMembersResponse) {}
 }
