@@ -177,9 +177,10 @@ func (c *KeycloakClient) GetUserByHandle(
 // so ListUsers pages through the realm until a short page signals the end.
 const usersPageSize = 100
 
-// ListUsers returns every enabled user in the realm. It pages through the realm
-// so the result is complete regardless of size. The request authenticates with the
-// client's configured transport, which must carry a token holding the
+// ListUsers returns every enabled user in the realm, skipping client service
+// accounts. It walks through all the pages, so the result is complete no matter
+// how many users there are. The request authenticates with the client's
+// configured transport, which must carry a token that holds the
 // realm-management view-users role.
 func (c *KeycloakClient) ListUsers(
 	ctx context.Context, useCtxBearer bool,
@@ -193,9 +194,12 @@ func (c *KeycloakClient) ListUsers(
 	for first := 0; ; first += usersPageSize {
 		requestUrl := c.server + "/admin/realms/" + url.PathEscape(c.realm)
 		query := url.Values{}
+		query.Set("enabled", "true")
 		query.Set("first", strconv.Itoa(first))
 		query.Set("max", strconv.Itoa(usersPageSize))
-		query.Set("enabled", "true")
+		// The search parameter is required to exclude service accounts
+		// See: https://github.com/keycloak/keycloak/blob/26.6.4/services/src/main/java/org/keycloak/services/resources/admin/UsersResource.java#L307
+		query.Set("search", "*")
 		requestUrl += "/users?" + query.Encode()
 		request, err := http.NewRequestWithContext(ctx, http.MethodGet, requestUrl, nil)
 		if err != nil {
