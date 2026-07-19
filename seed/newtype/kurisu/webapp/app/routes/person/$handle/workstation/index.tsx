@@ -47,12 +47,17 @@ const PersonWorkstationPage: React.FC<{ params: { handle: string } }> = ({
   // The workstation is what the editor opens, and this is what it reads it
   // through: the questions the editor asks about a path arrive here, on the
   // page, and are answered over raid. The workbench itself never sees any of it.
+  //
+  // The editor names the workstation by the handle it was opened on — that is
+  // the authority it shows — but raid names it by the person's id, which is what
+  // a role is granted on. The map is how the one becomes the other; until the
+  // roster has answered there is no id to give, and the editor is not open yet.
   const webFileSystem = useMemo(() => {
     if (!raidService) {
       return null
     }
-    return new HooinRaidFileSystem(raidService)
-  }, [raidService])
+    return new HooinRaidFileSystem(raidService, { [personHandle]: personId })
+  }, [raidService, personHandle, personId])
 
   // Where the person's home is is the workstation's answer rather than this
   // page's to guess: it is the folder the editor opens, and asking for it is
