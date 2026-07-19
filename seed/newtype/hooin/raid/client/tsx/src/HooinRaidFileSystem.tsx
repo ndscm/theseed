@@ -67,14 +67,28 @@ const toWebFileSystemError = (error: unknown): unknown => {
 // calls: a path is named, reached, and let go.
 export class HooinRaidFileSystem implements WebFileSystemInterface {
   private readonly raidService: HooinRaidServiceInterface
+  private readonly authorities: { [authority: string]: string }
 
-  constructor(raidService: HooinRaidServiceInterface) {
+  constructor(
+    raidService: HooinRaidServiceInterface,
+    authorities?: { [authority: string]: string },
+  ) {
     this.raidService = raidService
+    this.authorities = authorities || {}
+  }
+
+  // getPersonId reads the person a URI names. Its authority is the handle the
+  // workbench was opened on — the one it shows — and the id it stands for is
+  // what raid is called with, because that is what a role is granted on. An
+  // authority with no id known falls through as itself, so a URI that already
+  // names an id reaches the workstation it names.
+  private getPersonId(authority: string): string {
+    return this.authorities[authority] ?? authority
   }
 
   async stat(uri: WebFileSystemUri): Promise<WebFileStat> {
     const stat = await this.raid(() => {
-      return this.raidService.Stat(uri.authority, uri.path)
+      return this.raidService.Stat(this.getPersonId(uri.authority), uri.path)
     })
     // The times and the size are 64-bit on the wire, and arrive as bigints. An
     // editor wants numbers, and no file is old enough or large enough for the
@@ -96,14 +110,20 @@ export class HooinRaidFileSystem implements WebFileSystemInterface {
 
   async readDirectory(uri: WebFileSystemUri): Promise<[string, number][]> {
     const entries = await this.raid(() => {
-      return this.raidService.ReadDirectory(uri.authority, uri.path)
+      return this.raidService.ReadDirectory(
+        this.getPersonId(uri.authority),
+        uri.path,
+      )
     })
     return Object.entries(entries)
   }
 
   async readFile(uri: WebFileSystemUri): Promise<Uint8Array> {
     return this.raid(() => {
-      return this.raidService.ReadFile(uri.authority, uri.path)
+      return this.raidService.ReadFile(
+        this.getPersonId(uri.authority),
+        uri.path,
+      )
     })
   }
 
@@ -114,7 +134,7 @@ export class HooinRaidFileSystem implements WebFileSystemInterface {
   ): Promise<void> {
     await this.raid(() => {
       return this.raidService.WriteFile(
-        uri.authority,
+        this.getPersonId(uri.authority),
         uri.path,
         content,
         options,
@@ -124,7 +144,10 @@ export class HooinRaidFileSystem implements WebFileSystemInterface {
 
   async createDirectory(uri: WebFileSystemUri): Promise<void> {
     await this.raid(() => {
-      return this.raidService.CreateDirectory(uri.authority, uri.path)
+      return this.raidService.CreateDirectory(
+        this.getPersonId(uri.authority),
+        uri.path,
+      )
     })
   }
 
@@ -133,7 +156,11 @@ export class HooinRaidFileSystem implements WebFileSystemInterface {
     options: { recursive: boolean },
   ): Promise<void> {
     await this.raid(() => {
-      return this.raidService.Delete(uri.authority, uri.path, options)
+      return this.raidService.Delete(
+        this.getPersonId(uri.authority),
+        uri.path,
+        options,
+      )
     })
   }
 
@@ -153,7 +180,7 @@ export class HooinRaidFileSystem implements WebFileSystemInterface {
     }
     await this.raid(() => {
       return this.raidService.Rename(
-        source.authority,
+        this.getPersonId(source.authority),
         source.path,
         destination.path,
         options,
