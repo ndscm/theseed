@@ -1,0 +1,73 @@
+#!/usr/bin/env dotslash
+
+{
+  "name": "sops",
+  "platforms": {
+    "linux-aarch64": {
+      "path": "sops",
+      "size": 48300194,
+      "hash": "blake3",
+      "digest": "c0a616fe478bf308aab71a1306914b5f17cdeeef5e40e8658d7c68a51eb845e6",
+      "providers": [
+        {
+          "url": "https://github.com/getsops/sops/releases/download/v3.13.2/sops-v3.13.2.linux.arm64"
+        }
+      ]
+    },
+    "linux-x86_64": {
+      "path": "sops",
+      "size": 52129954,
+      "hash": "blake3",
+      "digest": "05867fac4425aa864d40212f4e0f707fb32184ed4c5acd5460b3b7e3e072dfc1",
+      "providers": [
+        {
+          "url": "https://github.com/getsops/sops/releases/download/v3.13.2/sops-v3.13.2.linux.amd64"
+        }
+      ]
+    },
+    "macos-aarch64": {
+      "path": "sops",
+      "size": 50122210,
+      "hash": "blake3",
+      "digest": "0816efdf75cb3d59bf1e663cab3d81b79eeabe5af55b1fd90b56620ebc3c6004",
+      "providers": [
+        {
+          "url": "https://github.com/getsops/sops/releases/download/v3.13.2/sops-v3.13.2.darwin.arm64"
+        }
+      ]
+    },
+    "macos-x86_64": {
+      "path": "sops",
+      "size": 53666192,
+      "hash": "blake3",
+      "digest": "ef623420ac2a8ecf614e6c361b2ceb789e7d305187c662950df4534b00cb0112",
+      "providers": [
+        {
+          "url": "https://github.com/getsops/sops/releases/download/v3.13.2/sops-v3.13.2.darwin.amd64"
+        }
+      ]
+    },
+    "windows-aarch64": {
+      "path": "sops.exe",
+      "size": 48925696,
+      "hash": "blake3",
+      "digest": "c4eb3bc5626a43da4af0b76a31d58b5edcb8ede82398265bd128b610c319b74c",
+      "providers": [
+        {
+          "url": "https://github.com/getsops/sops/releases/download/v3.13.2/sops-v3.13.2.arm64.exe"
+        }
+      ]
+    },
+    "windows-x86_64": {
+      "path": "sops.exe",
+      "size": 53494784,
+      "hash": "blake3",
+      "digest": "da3d23a20fcddbbcff8ffaf1597ba70dea45ea2ab30af164b5859176e441b993",
+      "providers": [
+        {
+          "url": "https://github.com/getsops/sops/releases/download/v3.13.2/sops-v3.13.2.amd64.exe"
+        }
+      ]
+    }
+  }
+}
