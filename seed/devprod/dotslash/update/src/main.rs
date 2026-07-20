@@ -17,9 +17,6 @@ struct Args {
     /// May be passed multiple times.
     #[arg(long = "replace", value_name = "KEY=VALUE")]
     replacements: Vec<String>,
-
-    #[arg(long, default_value_t = false)]
-    no_format: bool,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -94,19 +91,6 @@ fn run() -> Result<()> {
             platform.size = entry.size;
             platform.hash = entry.hash;
             platform.digest = entry.digest;
-            let inferred_format = entry.format.as_deref().unwrap_or_default();
-            if args.no_format {
-                platform.format = None;
-            } else if platform.format.is_none()
-                && !inferred_format.is_empty()
-                && !inferred_format.starts_with("TODO")
-            {
-                // Prefer the format declared in the template; only fall back to
-                // the one dotslash inferred when the template didn't provide it.
-                // dotslash emits a "TODO: ..." placeholder when it can't guess
-                // the format from the URL; leave format unset rather than emit it.
-                platform.format = Some(inferred_format.to_string());
-            }
         }
         eprintln!("Fetched: platform={:#?}", platform);
     }
