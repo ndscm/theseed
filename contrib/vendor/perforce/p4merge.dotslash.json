@@ -3,6 +3,7 @@
   "platforms": {
     "linux-x86_64": {
       "path": "p4v-2026.1.2933292/bin/p4merge",
+      "format": "tar.gz",
       "providers": [
         {
           "url": "https://filehost.perforce.com/perforce/{{TAG}}/bin.linux26x86_64/p4v.tgz"

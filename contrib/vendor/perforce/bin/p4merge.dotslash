@@ -1,0 +1,19 @@
+#!/usr/bin/env dotslash
+
+{
+  "name": "p4merge",
+  "platforms": {
+    "linux-x86_64": {
+      "path": "p4v-2026.1.2933292/bin/p4merge",
+      "size": 197931486,
+      "hash": "blake3",
+      "digest": "326f0478de9564bc31ada040334de5cae0fb4f4870530b60b8ec6f482c160f54",
+      "format": "tar.gz",
+      "providers": [
+        {
+          "url": "https://filehost.perforce.com/perforce/r26.1/bin.linux26x86_64/p4v.tgz"
+        }
+      ]
+    }
+  }
+}
