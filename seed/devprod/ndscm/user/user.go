@@ -8,11 +8,11 @@ import (
 )
 
 var flagUserHandle = seedflag.DefineString("user_handle", "", "the user handle")
-var flagUserEmail = seedflag.DefineString("user_email", "", "the user email")
+var flagUserDomain = seedflag.DefineString("user_domain", "", "the user email domain")
 var flagUserDisplayName = seedflag.DefineString("user_display_name", "", "the user display name")
 
 var validHandle = regexp.MustCompile(`^[a-z][a-z0-9._-]*$`)
-var validEmail = regexp.MustCompile(`^[a-z0-9._%+\-]+@[a-z0-9.\-]+\.[a-z]{2,}$`)
+var validDomain = regexp.MustCompile(`^[a-z0-9]+([.-][a-z0-9]+)*$`)
 var invalidDisplayName = regexp.MustCompile("[\"\\\\\\n\\r\\t]")
 
 // CurrentUserHandle returns the user handle from the --user_handle flag.
@@ -29,17 +29,35 @@ func CurrentUserHandle() (string, error) {
 	return handle, nil
 }
 
-// CurrentUserEmail returns the user email from the --user_email flag.
-// The email must use only lowercase letters, digits, and common symbols
-// in the local part, with a lowercase domain.
+// CurrentUserDomain returns the user email domain from the --user_domain flag.
+// The domain is one or more labels of lowercase letters and digits joined by
+// single dots or dashes, with no leading, trailing, or consecutive separators.
+// A single-label private domain such as "localhost" is accepted; a public
+// top-level domain is not required.
+func CurrentUserDomain() (string, error) {
+	domain := flagUserDomain.Get()
+	if domain == "" {
+		return "", seederr.WrapErrorf("user_domain is required")
+	}
+	if !validDomain.MatchString(domain) {
+		return "", seederr.WrapErrorf("user_domain %q is invalid: use lowercase letters and digits in dot- or dash-separated labels", domain)
+	}
+	return domain, nil
+}
+
+// CurrentUserEmail returns the user email constructed as handle@domain from the
+// validated --user_handle and --user_domain flags. It returns an error if either
+// flag is missing or invalid; see CurrentUserHandle and CurrentUserDomain.
 func CurrentUserEmail() (string, error) {
-	email := flagUserEmail.Get()
-	if email == "" {
-		return "", seederr.WrapErrorf("user_email is required")
+	handle, err := CurrentUserHandle()
+	if err != nil {
+		return "", err
 	}
-	if !validEmail.MatchString(email) {
-		return "", seederr.WrapErrorf("user_email %q is invalid", email)
+	domain, err := CurrentUserDomain()
+	if err != nil {
+		return "", err
 	}
+	email := handle + "@" + domain
 	return email, nil
 }
 
