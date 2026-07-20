@@ -10,5 +10,9 @@ bazel run //seed/devprod/dotslash/update -- \
   --skeleton "$(pwd)/seed/vendor/python/python3.dotslash.json" \
   --replace "TAG=${tag}" \
   --replace "VERSION=${version}" \
-  >./seed/vendor/python/bin/python3
-chmod +x ./seed/vendor/python/bin/python3
+  --outdir "$(pwd)/seed/vendor/python/bin"
+
+chmod +x ./seed/vendor/python/bin/python3.dotslash
+
+ln -s -f python3.dotslash ./seed/vendor/python/bin/python
+ln -s -f python3.dotslash ./seed/vendor/python/bin/python3
