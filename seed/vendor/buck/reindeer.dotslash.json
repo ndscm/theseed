@@ -1,0 +1,50 @@
+{
+  "name": "reindeer",
+  "platforms": {
+    "linux-aarch64": {
+      "path": "reindeer-aarch64-unknown-linux-musl",
+      "format": "zst",
+      "providers": [
+        {
+          "url": "https://github.com/facebookincubator/reindeer/releases/download/{{TAG}}/reindeer-aarch64-unknown-linux-musl.zst"
+        }
+      ]
+    },
+    "linux-x86_64": {
+      "path": "reindeer-x86_64-unknown-linux-musl",
+      "format": "zst",
+      "providers": [
+        {
+          "url": "https://github.com/facebookincubator/reindeer/releases/download/{{TAG}}/reindeer-x86_64-unknown-linux-musl.zst"
+        }
+      ]
+    },
+    "macos-aarch64": {
+      "path": "reindeer-aarch64-apple-darwin",
+      "format": "zst",
+      "providers": [
+        {
+          "url": "https://github.com/facebookincubator/reindeer/releases/download/{{TAG}}/reindeer-aarch64-apple-darwin.zst"
+        }
+      ]
+    },
+    "macos-x86_64": {
+      "path": "reindeer-x86_64-apple-darwin",
+      "format": "zst",
+      "providers": [
+        {
+          "url": "https://github.com/facebookincubator/reindeer/releases/download/{{TAG}}/reindeer-x86_64-apple-darwin.zst"
+        }
+      ]
+    },
+    "windows-x86_64": {
+      "path": "reindeer-x86_64-pc-windows-msvc.exe",
+      "format": "zst",
+      "providers": [
+        {
+          "url": "https://github.com/facebookincubator/reindeer/releases/download/{{TAG}}/reindeer-x86_64-pc-windows-msvc.exe.zst"
+        }
+      ]
+    }
+  }
+}
