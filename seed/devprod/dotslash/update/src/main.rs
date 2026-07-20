@@ -12,9 +12,6 @@ struct Args {
     #[arg(long, default_value = "skeleton.dotslash.json")]
     skeleton: String,
 
-    #[arg(long, default_value = "v0.0.0")]
-    tag: String,
-
     /// Placeholder replacement in `KEY=VALUE` form; each occurrence of
     /// `{{KEY}}` in paths and provider URLs is replaced with `VALUE`.
     /// May be passed multiple times.
@@ -58,9 +55,6 @@ struct DotSlash {
 fn run() -> Result<()> {
     let args = Args::parse();
 
-    // `--replace` entries take precedence over the built-in `{{TAG}}`, which is
-    // applied last so its `--tag` default doesn't consume a `{{TAG}}` that an
-    // explicit `--replace TAG=...` is meant to fill.
     let mut replacements: Vec<(String, String)> = Vec::new();
     for replacement in &args.replacements {
         let (key, value) = replacement.split_once('=').context(format!(
@@ -68,7 +62,6 @@ fn run() -> Result<()> {
         ))?;
         replacements.push((format!("{{{{{key}}}}}"), value.to_string()));
     }
-    replacements.push(("{{TAG}}".to_string(), args.tag.clone()));
     let apply = |mut s: String| {
         for (placeholder, value) in &replacements {
             s = s.replace(placeholder.as_str(), value);
