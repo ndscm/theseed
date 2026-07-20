@@ -12,5 +12,8 @@ fi
 bazel run //seed/devprod/dotslash/update -- \
   --skeleton "$(pwd)/seed/vendor/claude/claude.dotslash.json" \
   --replace "TAG=${tag}" \
-  >./seed/vendor/claude/bin/claude
-chmod +x ./seed/vendor/claude/bin/claude
+  --outdir "$(pwd)/seed/vendor/claude/bin"
+
+chmod +x ./seed/vendor/claude/bin/claude.dotslash
+
+ln -s -f claude.dotslash ./seed/vendor/claude/bin/claude
