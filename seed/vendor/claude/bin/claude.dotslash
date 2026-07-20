@@ -1,0 +1,73 @@
+#!/usr/bin/env dotslash
+
+{
+  "name": "claude",
+  "platforms": {
+    "linux-aarch64": {
+      "path": "claude",
+      "size": 250394248,
+      "hash": "blake3",
+      "digest": "8529f88f32ea51677c746842a4c13f56255fb08ad7e7c5bdb8acfc27d90d8b89",
+      "providers": [
+        {
+          "url": "https://downloads.claude.ai/claude-code-releases/2.1.177/linux-arm64/claude"
+        }
+      ]
+    },
+    "linux-x86_64": {
+      "path": "claude",
+      "size": 250480336,
+      "hash": "blake3",
+      "digest": "53b4ef0cbe1be3346af85695e5298bd89c4e9b1b8331a70b719e8091e6fc9b11",
+      "providers": [
+        {
+          "url": "https://downloads.claude.ai/claude-code-releases/2.1.177/linux-x64/claude"
+        }
+      ]
+    },
+    "macos-aarch64": {
+      "path": "claude",
+      "size": 225124512,
+      "hash": "blake3",
+      "digest": "3f31dacf4a88698d19b6bfa35f43d547b12f75dcafaa66736b6d5b5140cb2ca6",
+      "providers": [
+        {
+          "url": "https://downloads.claude.ai/claude-code-releases/2.1.177/darwin-arm64/claude"
+        }
+      ]
+    },
+    "macos-x86_64": {
+      "path": "claude",
+      "size": 227642800,
+      "hash": "blake3",
+      "digest": "ef02c07eebe9bf75f0a16a79ff172a2ef56e525b513e04fa9c3c398d5930afdc",
+      "providers": [
+        {
+          "url": "https://downloads.claude.ai/claude-code-releases/2.1.177/darwin-x64/claude"
+        }
+      ]
+    },
+    "windows-aarch64": {
+      "path": "claude.exe",
+      "size": 241821856,
+      "hash": "blake3",
+      "digest": "c21eafa92a034ebacb467ad814a97fcdb8783e838b351a12e9942d4ff73f1ca2",
+      "providers": [
+        {
+          "url": "https://downloads.claude.ai/claude-code-releases/2.1.177/win32-arm64/claude.exe"
+        }
+      ]
+    },
+    "windows-x86_64": {
+      "path": "claude.exe",
+      "size": 245856928,
+      "hash": "blake3",
+      "digest": "db04c738c713b08bd5a509d05c172aa719871ac64ea232e94131fea6d1dc8258",
+      "providers": [
+        {
+          "url": "https://downloads.claude.ai/claude-code-releases/2.1.177/win32-x64/claude.exe"
+        }
+      ]
+    }
+  }
+}
