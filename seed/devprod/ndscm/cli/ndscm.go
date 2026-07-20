@@ -108,6 +108,11 @@ func run() error {
 		if err != nil {
 			return seederr.Wrap(err)
 		}
+	case "secret":
+		err := ndSecret(args[1:])
+		if err != nil {
+			return seederr.Wrap(err)
+		}
 	case "setup":
 		err := ndSetup(args[1:])
 		if err != nil {

@@ -66,6 +66,10 @@ func (cc *ClientCore) NdRun(options NdRunOptions) error {
 	return NdRun(cc.scmProvider, options)
 }
 
+func (cc *ClientCore) NdSecret(options NdSecretOptions) error {
+	return NdSecret(cc.scmProvider, options)
+}
+
 func (cc *ClientCore) NdSetup(options NdSetupOptions) error {
 	return NdSetup(options)
 }
