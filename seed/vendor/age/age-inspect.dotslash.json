@@ -3,6 +3,7 @@
   "platforms": {
     "linux-aarch64": {
       "path": "age/age-inspect",
+      "format": "tar.gz",
       "providers": [
         {
           "url": "https://github.com/FiloSottile/age/releases/download/{{TAG}}/age-{{TAG}}-linux-arm64.tar.gz"
@@ -11,6 +12,7 @@
     },
     "linux-x86_64": {
       "path": "age/age-inspect",
+      "format": "tar.gz",
       "providers": [
         {
           "url": "https://github.com/FiloSottile/age/releases/download/{{TAG}}/age-{{TAG}}-linux-amd64.tar.gz"
@@ -19,6 +21,7 @@
     },
     "macos-aarch64": {
       "path": "age/age-inspect",
+      "format": "tar.gz",
       "providers": [
         {
           "url": "https://github.com/FiloSottile/age/releases/download/{{TAG}}/age-{{TAG}}-darwin-arm64.tar.gz"
@@ -27,6 +30,7 @@
     },
     "macos-x86_64": {
       "path": "age/age-inspect",
+      "format": "tar.gz",
       "providers": [
         {
           "url": "https://github.com/FiloSottile/age/releases/download/{{TAG}}/age-{{TAG}}-darwin-amd64.tar.gz"
@@ -35,6 +39,7 @@
     },
     "windows-x86_64": {
       "path": "age/age-inspect.exe",
+      "format": "zip",
       "providers": [
         {
           "url": "https://github.com/FiloSottile/age/releases/download/{{TAG}}/age-{{TAG}}-windows-amd64.zip"
