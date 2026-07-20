@@ -16,6 +16,8 @@ import (
 type NdMainOptions struct {
 	Remove bool
 
+	Orphan string
+
 	Area  string
 	Start string
 }
@@ -37,7 +39,7 @@ func getAreaWorktree(
 
 func createAreaWorktree(
 	scmProvider scm.Provider,
-	monorepoHome string, area string, startPoint string,
+	monorepoHome string, area string, orphan string, startPoint string,
 ) (string, error) {
 	worktreeName, worktreePath, exists := getAreaWorktree(monorepoHome, area)
 	if exists {
@@ -59,17 +61,30 @@ func createAreaWorktree(
 		if startPoint != "" {
 			return "", seederr.WrapErrorf("cannot specify a start point when remote branch %v already exists", remoteTracking)
 		}
+		if orphan != "" {
+			seedlog.Warnf("Ignoring --orphan message: remote branch %v already exists", remoteTracking)
+		}
 		err = scmProvider.CreateBranch(branchName, remoteTracking, remoteTracking)
 		if err != nil {
 			return "", seederr.WrapErrorf("failed to create branch %v: %v", branchName, err)
 		}
 	} else {
-		if startPoint == "" {
-			startPoint = "origin/main"
-		}
-		err = scmProvider.CreateBranch(branchName, startPoint, "")
-		if err != nil {
-			return "", seederr.WrapErrorf("failed to create branch %v: %v", branchName, err)
+		if startPoint == "" && orphan != "" {
+			err = scmProvider.CreateOrphanBranch(branchName, orphan)
+			if err != nil {
+				return "", seederr.WrapErrorf("failed to create orphan branch %v: %v", branchName, err)
+			}
+		} else {
+			if orphan != "" {
+				seedlog.Warnf("Ignoring --orphan message: start point %v was specified", startPoint)
+			}
+			if startPoint == "" {
+				startPoint = "origin/main"
+			}
+			err = scmProvider.CreateBranch(branchName, startPoint, "")
+			if err != nil {
+				return "", seederr.WrapErrorf("failed to create branch %v: %v", branchName, err)
+			}
 		}
 		err = scmProvider.PushBranch(branchName, remote, remoteBranchName)
 		if err != nil {
@@ -169,6 +184,9 @@ func NdMain(scmProvider scm.Provider, options NdMainOptions) error {
 		if startPoint != "" {
 			return seederr.WrapErrorf("cannot specify a start point for main area")
 		}
+		if options.Orphan != "" {
+			seedlog.Warnf("Ignoring --orphan message: cannot create an orphan branch for the main area")
+		}
 		worktreePath = filepath.Join(monorepoHome, "main")
 	} else {
 		if !areaRegex.MatchString(area) {
@@ -182,6 +200,9 @@ func NdMain(scmProvider scm.Provider, options NdMainOptions) error {
 			if !exists {
 				return seederr.WrapErrorf("area worktree %v does not exist", areaWorktreePath)
 			}
+			if options.Orphan != "" {
+				seedlog.Warnf("Ignoring --orphan message: --remove was specified")
+			}
 			newCwd, err := removeAreaWorktree(scmProvider, monorepoHome, area)
 			if err != nil {
 				return seederr.Wrap(err)
@@ -194,8 +215,11 @@ func NdMain(scmProvider scm.Provider, options NdMainOptions) error {
 				if startPoint != "" {
 					return seederr.WrapErrorf("cannot specify a start point when area worktree already exists")
 				}
+				if options.Orphan != "" {
+					seedlog.Warnf("Ignoring --orphan message: area worktree %v already exists", areaWorktreePath)
+				}
 			} else {
-				areaWorktreePath, err = createAreaWorktree(scmProvider, monorepoHome, area, startPoint)
+				areaWorktreePath, err = createAreaWorktree(scmProvider, monorepoHome, area, options.Orphan, startPoint)
 				if err != nil {
 					return seederr.Wrap(err)
 				}
