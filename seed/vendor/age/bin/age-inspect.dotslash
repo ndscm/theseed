@@ -1,0 +1,67 @@
+#!/usr/bin/env dotslash
+
+{
+  "name": "age-inspect",
+  "platforms": {
+    "linux-aarch64": {
+      "path": "age/age-inspect",
+      "size": 9466344,
+      "hash": "blake3",
+      "digest": "85bfe2cd9485668eb7071d087862bd83cce47d4839f3db41a0279c19fe794524",
+      "format": "tar.gz",
+      "providers": [
+        {
+          "url": "https://github.com/FiloSottile/age/releases/download/v1.3.1/age-v1.3.1-linux-arm64.tar.gz"
+        }
+      ]
+    },
+    "linux-x86_64": {
+      "path": "age/age-inspect",
+      "size": 10263766,
+      "hash": "blake3",
+      "digest": "5d419f193b3fa998bd37f2ce4392858a4a6fde224b467649a7b43f083762b0ca",
+      "format": "tar.gz",
+      "providers": [
+        {
+          "url": "https://github.com/FiloSottile/age/releases/download/v1.3.1/age-v1.3.1-linux-amd64.tar.gz"
+        }
+      ]
+    },
+    "macos-aarch64": {
+      "path": "age/age-inspect",
+      "size": 9685129,
+      "hash": "blake3",
+      "digest": "d86f2a77816f81bf07ca2c983649b1a72d026f73aec09c3b80d42e1ac34e2b7b",
+      "format": "tar.gz",
+      "providers": [
+        {
+          "url": "https://github.com/FiloSottile/age/releases/download/v1.3.1/age-v1.3.1-darwin-arm64.tar.gz"
+        }
+      ]
+    },
+    "macos-x86_64": {
+      "path": "age/age-inspect",
+      "size": 10288093,
+      "hash": "blake3",
+      "digest": "8d3ca2c46540ac20923234a28580691a7aeda60c14d32cde76bbdac1b5207793",
+      "format": "tar.gz",
+      "providers": [
+        {
+          "url": "https://github.com/FiloSottile/age/releases/download/v1.3.1/age-v1.3.1-darwin-amd64.tar.gz"
+        }
+      ]
+    },
+    "windows-x86_64": {
+      "path": "age/age-inspect.exe",
+      "size": 10741348,
+      "hash": "blake3",
+      "digest": "b7559550037511c78e097bafc5a970912bfa4b8927079041658e059f74066c0d",
+      "format": "zip",
+      "providers": [
+        {
+          "url": "https://github.com/FiloSottile/age/releases/download/v1.3.1/age-v1.3.1-windows-amd64.zip"
+        }
+      ]
+    }
+  }
+}
