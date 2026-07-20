@@ -1,0 +1,62 @@
+#!/usr/bin/env dotslash
+
+{
+  "name": "jq",
+  "platforms": {
+    "linux-aarch64": {
+      "path": "jq",
+      "size": 1797872,
+      "hash": "blake3",
+      "digest": "4786647126a7ae8f1125c915e5e9460f5ce16c55c3b42100794e7971084fd805",
+      "providers": [
+        {
+          "url": "https://github.com/jqlang/jq/releases/download/jq-1.8.1/jq-linux-arm64"
+        }
+      ]
+    },
+    "linux-x86_64": {
+      "path": "jq",
+      "size": 2255816,
+      "hash": "blake3",
+      "digest": "b0419e57743765a9682d7924816269862890716d7bd3c1b78b2a3dd1f311a7f9",
+      "providers": [
+        {
+          "url": "https://github.com/jqlang/jq/releases/download/jq-1.8.1/jq-linux-amd64"
+        }
+      ]
+    },
+    "macos-aarch64": {
+      "path": "jq",
+      "size": 841408,
+      "hash": "blake3",
+      "digest": "d7f94364d8375d9004ac8169fdbb665f61360c2bcc7cceed1d7306dc6f8958b7",
+      "providers": [
+        {
+          "url": "https://github.com/jqlang/jq/releases/download/jq-1.8.1/jq-macos-arm64"
+        }
+      ]
+    },
+    "macos-x86_64": {
+      "path": "jq",
+      "size": 855272,
+      "hash": "blake3",
+      "digest": "b18ab7e2df18b61ef0df3f28f198506fd7782a793ff9c0a850ef53001c791a20",
+      "providers": [
+        {
+          "url": "https://github.com/jqlang/jq/releases/download/jq-1.8.1/jq-macos-amd64"
+        }
+      ]
+    },
+    "windows-x86_64": {
+      "path": "jq.exe",
+      "size": 1026560,
+      "hash": "blake3",
+      "digest": "8480bd15cc99ce86a32197d28f55fac04fdd74b7e845bd33b479d9b3649ee31a",
+      "providers": [
+        {
+          "url": "https://github.com/jqlang/jq/releases/download/jq-1.8.1/jq-windows-amd64.exe"
+        }
+      ]
+    }
+  }
+}
