@@ -8,5 +8,8 @@ tag="${1:-"v5.1.0"}"
 bazel run //seed/devprod/dotslash/update -- \
   --skeleton "$(pwd)/seed/vendor/lego/lego.dotslash.json" \
   --replace "TAG=${tag}" \
-  >./seed/vendor/lego/bin/lego
-chmod +x ./seed/vendor/lego/bin/lego
+  --outdir "$(pwd)/seed/vendor/lego/bin"
+
+chmod +x ./seed/vendor/lego/bin/lego.dotslash
+
+ln -s -f lego.dotslash ./seed/vendor/lego/bin/lego

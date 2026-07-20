@@ -1,0 +1,79 @@
+#!/usr/bin/env dotslash
+
+{
+  "name": "lego",
+  "platforms": {
+    "linux-aarch64": {
+      "path": "lego",
+      "size": 18942061,
+      "hash": "blake3",
+      "digest": "a8cf19531af29e64ea9691f89627a38bc7c6885b92715092eb62af95d872a51d",
+      "format": "tar.gz",
+      "providers": [
+        {
+          "url": "https://github.com/go-acme/lego/releases/download/v5.1.0/lego_v5.1.0_linux_arm64.tar.gz"
+        }
+      ]
+    },
+    "linux-x86_64": {
+      "path": "lego",
+      "size": 20949100,
+      "hash": "blake3",
+      "digest": "51902f5ed81c52fb01cfb79aaa573d27ef3b6e15823ebc5f7ef7d2bb0e8f4e74",
+      "format": "tar.gz",
+      "providers": [
+        {
+          "url": "https://github.com/go-acme/lego/releases/download/v5.1.0/lego_v5.1.0_linux_amd64.tar.gz"
+        }
+      ]
+    },
+    "macos-aarch64": {
+      "path": "lego",
+      "size": 20061611,
+      "hash": "blake3",
+      "digest": "41745d7ce58290e0d94084f3e696b70d0b59fc20e20156cbab5d88a4b571caf4",
+      "format": "tar.gz",
+      "providers": [
+        {
+          "url": "https://github.com/go-acme/lego/releases/download/v5.1.0/lego_v5.1.0_darwin_arm64.tar.gz"
+        }
+      ]
+    },
+    "macos-x86_64": {
+      "path": "lego",
+      "size": 21560011,
+      "hash": "blake3",
+      "digest": "6ed5eda37c826fd897525c576009bb62e092093f20acbcc8096624c7fa8fa4ca",
+      "format": "tar.gz",
+      "providers": [
+        {
+          "url": "https://github.com/go-acme/lego/releases/download/v5.1.0/lego_v5.1.0_darwin_amd64.tar.gz"
+        }
+      ]
+    },
+    "windows-aarch64": {
+      "path": "lego.exe",
+      "size": 18845130,
+      "hash": "blake3",
+      "digest": "2fc1a5aca3e12a2d6a453d3df983d058cea0be5ff3c6ccee614151cae255b530",
+      "format": "zip",
+      "providers": [
+        {
+          "url": "https://github.com/go-acme/lego/releases/download/v5.1.0/lego_v5.1.0_windows_arm64.zip"
+        }
+      ]
+    },
+    "windows-x86_64": {
+      "path": "lego.exe",
+      "size": 21198280,
+      "hash": "blake3",
+      "digest": "bae34d7a7c6ff0b552851362fa70c7d9aa5671ae439b9c935144416a8021fd62",
+      "format": "zip",
+      "providers": [
+        {
+          "url": "https://github.com/go-acme/lego/releases/download/v5.1.0/lego_v5.1.0_windows_amd64.zip"
+        }
+      ]
+    }
+  }
+}
