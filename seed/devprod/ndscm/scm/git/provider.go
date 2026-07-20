@@ -49,11 +49,11 @@ func (g *GitProvider) Connect(
 		return "", "", seederr.Wrap(err)
 	}
 	repoEnvLines = append(repoEnvLines, `ND_USER_HANDLE="`+userHandle+`"`)
-	userEmail, err := user.CurrentUserEmail()
+	userDomain, err := user.CurrentUserDomain()
 	if err != nil {
 		return "", "", seederr.Wrap(err)
 	}
-	repoEnvLines = append(repoEnvLines, `ND_USER_EMAIL="`+userEmail+`"`)
+	repoEnvLines = append(repoEnvLines, `ND_USER_DOMAIN="`+userDomain+`"`)
 	userDisplayName, err := user.CurrentUserDisplayName()
 	if err != nil {
 		return "", "", seederr.Wrap(err)
@@ -102,7 +102,7 @@ func (g *GitProvider) Connect(
 	if err != nil {
 		return "", "", seederr.WrapErrorf("failed to set git user.name: %w", err)
 	}
-	err = SetConfig(gitDir, "user.email", userEmail)
+	err = SetConfig(gitDir, "user.email", userHandle+"@"+userDomain)
 	if err != nil {
 		return "", "", seederr.WrapErrorf("failed to set git user.email: %w", err)
 	}
