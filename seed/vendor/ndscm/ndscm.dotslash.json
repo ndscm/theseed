@@ -3,6 +3,7 @@
   "platforms": {
     "linux-x86_64": {
       "path": "ndscm",
+      "format": "tar.gz",
       "providers": [
         {
           "url": "https://github.com/ndscm/ndscm/releases/download/{{TAG}}/ndscm-linux-x86_64.tar.gz"
@@ -11,6 +12,7 @@
     },
     "macos-aarch64": {
       "path": "ndscm",
+      "format": "tar.gz",
       "providers": [
         {
           "url": "https://github.com/ndscm/ndscm/releases/download/{{TAG}}/ndscm-darwin-arm64.tar.gz"
