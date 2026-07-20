@@ -6,19 +6,16 @@ cd "$(dirname "${BASH_SOURCE[0]}")/../../.."
 tag="${1:-"v1.3.1"}"
 
 bazel run //seed/devprod/dotslash/update -- \
+  --skeleton "$(pwd)/seed/vendor/age/age-inspect.dotslash.json" \
+  --skeleton "$(pwd)/seed/vendor/age/age-keygen.dotslash.json" \
   --skeleton "$(pwd)/seed/vendor/age/age.dotslash.json" \
   --replace "TAG=${tag}" \
-  >./seed/vendor/age/bin/age
-chmod +x ./seed/vendor/age/bin/age
+  --outdir "$(pwd)/seed/vendor/age/bin"
 
-bazel run //seed/devprod/dotslash/update -- \
-  --skeleton "$(pwd)/seed/vendor/age/age-keygen.dotslash.json" \
-  --replace "TAG=${tag}" \
-  >./seed/vendor/age/bin/age-keygen
-chmod +x ./seed/vendor/age/bin/age-keygen
+chmod +x ./seed/vendor/age/bin/age-inspect.dotslash
+chmod +x ./seed/vendor/age/bin/age-keygen.dotslash
+chmod +x ./seed/vendor/age/bin/age.dotslash
 
-bazel run //seed/devprod/dotslash/update -- \
-  --skeleton "$(pwd)/seed/vendor/age/age-inspect.dotslash.json" \
-  --replace "TAG=${tag}" \
-  >./seed/vendor/age/bin/age-inspect
-chmod +x ./seed/vendor/age/bin/age-inspect
+ln -s -f age-inspect.dotslash ./seed/vendor/age/bin/age-inspect
+ln -s -f age-keygen.dotslash ./seed/vendor/age/bin/age-keygen
+ln -s -f age.dotslash ./seed/vendor/age/bin/age
