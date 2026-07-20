@@ -1,0 +1,68 @@
+{
+  "name": "buck2",
+  "platforms": {
+    "linux-aarch64": {
+      "path": "buck2-aarch64-unknown-linux-musl",
+      "format": "zst",
+      "providers": [
+        {
+          "url": "https://github.com/facebook/buck2/releases/download/{{TAG}}/buck2-aarch64-unknown-linux-musl.zst"
+        }
+      ]
+    },
+    "linux-riscv64": {
+      "path": "buck2-riscv64gc-unknown-linux-gnu",
+      "format": "zst",
+      "providers": [
+        {
+          "url": "https://github.com/facebook/buck2/releases/download/{{TAG}}/buck2-riscv64gc-unknown-linux-gnu.zst"
+        }
+      ]
+    },
+    "linux-x86_64": {
+      "path": "buck2-x86_64-unknown-linux-musl",
+      "format": "zst",
+      "providers": [
+        {
+          "url": "https://github.com/facebook/buck2/releases/download/{{TAG}}/buck2-x86_64-unknown-linux-musl.zst"
+        }
+      ]
+    },
+    "macos-aarch64": {
+      "path": "buck2-aarch64-apple-darwin",
+      "format": "zst",
+      "providers": [
+        {
+          "url": "https://github.com/facebook/buck2/releases/download/{{TAG}}/buck2-aarch64-apple-darwin.zst"
+        }
+      ]
+    },
+    "macos-x86_64": {
+      "path": "buck2-x86_64-apple-darwin",
+      "format": "zst",
+      "providers": [
+        {
+          "url": "https://github.com/facebook/buck2/releases/download/{{TAG}}/buck2-x86_64-apple-darwin.zst"
+        }
+      ]
+    },
+    "windows-aarch64": {
+      "path": "buck2-aarch64-pc-windows-msvc.exe",
+      "format": "zst",
+      "providers": [
+        {
+          "url": "https://github.com/facebook/buck2/releases/download/{{TAG}}/buck2-aarch64-pc-windows-msvc.exe.zst"
+        }
+      ]
+    },
+    "windows-x86_64": {
+      "path": "buck2-x86_64-pc-windows-msvc.exe",
+      "format": "zst",
+      "providers": [
+        {
+          "url": "https://github.com/facebook/buck2/releases/download/{{TAG}}/buck2-x86_64-pc-windows-msvc.exe.zst"
+        }
+      ]
+    }
+  }
+}
