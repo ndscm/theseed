@@ -16,6 +16,7 @@ go_library(
         "nd_main.go",
         "nd_melt.go",
         "nd_run.go",
+        "nd_secret.go",
         "nd_setup.go",
         "nd_shell.go",
         "nd_split.go",
