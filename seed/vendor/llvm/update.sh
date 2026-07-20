@@ -7,18 +7,15 @@ tag="${1:-"22.1.7"}"
 
 bazel run //seed/devprod/dotslash/update -- \
   --skeleton "$(pwd)/seed/vendor/llvm/clang-format.dotslash.json" \
-  --replace "TAG=${tag}" \
-  >./seed/vendor/llvm/bin/clang-format
-chmod +x ./seed/vendor/llvm/bin/clang-format
-
-bazel run //seed/devprod/dotslash/update -- \
   --skeleton "$(pwd)/seed/vendor/llvm/clang.dotslash.json" \
-  --replace "TAG=${tag}" \
-  >./seed/vendor/llvm/bin/clang
-chmod +x ./seed/vendor/llvm/bin/clang
-
-bazel run //seed/devprod/dotslash/update -- \
   --skeleton "$(pwd)/seed/vendor/llvm/clangd.dotslash.json" \
   --replace "TAG=${tag}" \
-  >./seed/vendor/llvm/bin/clangd
-chmod +x ./seed/vendor/llvm/bin/clangd
+  --outdir "$(pwd)/seed/vendor/llvm/bin"
+
+chmod +x ./seed/vendor/llvm/bin/clang-format.dotslash
+chmod +x ./seed/vendor/llvm/bin/clang.dotslash
+chmod +x ./seed/vendor/llvm/bin/clangd.dotslash
+
+ln -s -f clang-format.dotslash ./seed/vendor/llvm/bin/clang-format
+ln -s -f clang.dotslash ./seed/vendor/llvm/bin/clang
+ln -s -f clangd.dotslash ./seed/vendor/llvm/bin/clangd
