@@ -72,6 +72,10 @@ fn run() -> Result<()> {
         s
     };
 
+    // Cache `create-url-entry` output by URL so the same URL is only fetched
+    // once, even when it appears across multiple platforms or skeletons.
+    let mut entries: BTreeMap<String, String> = BTreeMap::new();
+
     for skeleton in &args.skeleton {
         let skeleton_bytes = std::fs::read_to_string(skeleton).context("reading skeleton file")?;
         let mut result: DotSlash =
@@ -82,19 +86,33 @@ fn run() -> Result<()> {
             for provider in &mut platform.providers {
                 provider.url = apply(std::mem::take(&mut provider.url));
 
-                eprintln!("Fetching: platform={} url={}", platform_name, provider.url);
-                let output = Command::new("dotslash")
-                    .args(["--", "create-url-entry", &provider.url])
-                    .stderr(std::process::Stdio::inherit())
-                    .output()
-                    .context("running dotslash")?;
-                if !output.status.success() {
-                    anyhow::bail!("dotslash create-url-entry failed for {}", provider.url);
-                }
+                let entry_output = match entries.get(&provider.url) {
+                    Some(cached) => {
+                        eprintln!("Cached: platform={} url={}", platform_name, provider.url);
+                        cached.clone()
+                    }
+                    None => {
+                        eprintln!("Fetching: platform={} url={}", platform_name, provider.url);
+                        let output = Command::new("dotslash")
+                            .args(["--", "create-url-entry", &provider.url])
+                            .stderr(std::process::Stdio::inherit())
+                            .output()
+                            .context("running dotslash")?;
+                        if !output.status.success() {
+                            anyhow::bail!("dotslash create-url-entry failed for {}", provider.url);
+                        }
 
-                let entry: Platform = serde_json::from_slice(&output.stdout)
+                        let entry_output = String::from_utf8(output.stdout).context(format!(
+                            "dotslash output for {} is not UTF-8",
+                            provider.url
+                        ))?;
+                        entries.insert(provider.url.clone(), entry_output.clone());
+                        entry_output
+                    }
+                };
+
+                let entry: Platform = serde_json::from_str(&entry_output)
                     .context(format!("parsing dotslash output for {}", provider.url))?;
-
                 platform.size = entry.size;
                 platform.hash = entry.hash;
                 platform.digest = entry.digest;
