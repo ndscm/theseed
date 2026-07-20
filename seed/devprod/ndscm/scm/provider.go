@@ -83,6 +83,10 @@ type Provider interface {
 	// the new branch is configured to track it.
 	CreateBranch(branchName string, startPoint string, tracking string) error
 
+	// CreateOrphanBranch creates branchName as an orphan branch with no history,
+	// rooted at a single empty commit carrying message.
+	CreateOrphanBranch(branchName string, message string) error
+
 	// GetBranch resolves branchName to its commit id.
 	GetBranch(branchName string) (string, error)
 
