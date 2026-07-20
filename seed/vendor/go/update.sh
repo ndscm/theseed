@@ -8,5 +8,8 @@ tag="${1:-"1.26.4"}"
 bazel run //seed/devprod/dotslash/update -- \
   --skeleton "$(pwd)/seed/vendor/go/go.dotslash.json" \
   --replace "TAG=${tag}" \
-  >./seed/vendor/go/bin/go
-chmod +x ./seed/vendor/go/bin/go
+  --outdir "$(pwd)/seed/vendor/go/bin"
+
+chmod +x ./seed/vendor/go/bin/go.dotslash
+
+ln -s -f go.dotslash ./seed/vendor/go/bin/go
