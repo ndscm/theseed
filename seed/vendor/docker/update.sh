@@ -8,5 +8,8 @@ tag="${1:-"29.5.3"}"
 bazel run //seed/devprod/dotslash/update -- \
   --skeleton "$(pwd)/seed/vendor/docker/docker.dotslash.json" \
   --replace "TAG=${tag}" \
-  >./seed/vendor/docker/bin/docker
-chmod +x ./seed/vendor/docker/bin/docker
+  --outdir "$(pwd)/seed/vendor/docker/bin"
+
+chmod +x ./seed/vendor/docker/bin/docker.dotslash
+
+ln -s -f docker.dotslash ./seed/vendor/docker/bin/docker
