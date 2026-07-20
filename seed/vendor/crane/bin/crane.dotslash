@@ -1,0 +1,79 @@
+#!/usr/bin/env dotslash
+
+{
+  "name": "crane",
+  "platforms": {
+    "linux-aarch64": {
+      "path": "crane",
+      "size": 14842040,
+      "hash": "blake3",
+      "digest": "2589081e4e672813f68a35027663d78710ad40eab1e1d5ea94a508e11d36f9b0",
+      "format": "tar.gz",
+      "providers": [
+        {
+          "url": "https://github.com/google/go-containerregistry/releases/download/v0.21.6/go-containerregistry_Linux_arm64.tar.gz"
+        }
+      ]
+    },
+    "linux-x86_64": {
+      "path": "crane",
+      "size": 16463798,
+      "hash": "blake3",
+      "digest": "49f5c13f94f8c093a2fdc77c7586eb703ece02e52ef517c6b0bc80eabe554f73",
+      "format": "tar.gz",
+      "providers": [
+        {
+          "url": "https://github.com/google/go-containerregistry/releases/download/v0.21.6/go-containerregistry_Linux_x86_64.tar.gz"
+        }
+      ]
+    },
+    "macos-aarch64": {
+      "path": "crane",
+      "size": 15439167,
+      "hash": "blake3",
+      "digest": "9a35c32c68bbd5a051fcc060c9939c75db19825bcde6c034b5303ca7bd1a2cb1",
+      "format": "tar.gz",
+      "providers": [
+        {
+          "url": "https://github.com/google/go-containerregistry/releases/download/v0.21.6/go-containerregistry_Darwin_arm64.tar.gz"
+        }
+      ]
+    },
+    "macos-x86_64": {
+      "path": "crane",
+      "size": 16746300,
+      "hash": "blake3",
+      "digest": "1fddc045fbb623752ae01d01be86bb4e5f545826a06483b00f3761964fe3844f",
+      "format": "tar.gz",
+      "providers": [
+        {
+          "url": "https://github.com/google/go-containerregistry/releases/download/v0.21.6/go-containerregistry_Darwin_x86_64.tar.gz"
+        }
+      ]
+    },
+    "windows-aarch64": {
+      "path": "crane.exe",
+      "size": 15047523,
+      "hash": "blake3",
+      "digest": "5ae0b550770ea3e82898bfcf8205c86ca43a1ec650d00b3ef361983f0249f340",
+      "format": "tar.gz",
+      "providers": [
+        {
+          "url": "https://github.com/google/go-containerregistry/releases/download/v0.21.6/go-containerregistry_Windows_arm64.tar.gz"
+        }
+      ]
+    },
+    "windows-x86_64": {
+      "path": "crane.exe",
+      "size": 16936314,
+      "hash": "blake3",
+      "digest": "1c8b0b4cd95c62b3eac3edc61205698aa9b7fc7e875fc5d72b1af1d07cdc44d2",
+      "format": "tar.gz",
+      "providers": [
+        {
+          "url": "https://github.com/google/go-containerregistry/releases/download/v0.21.6/go-containerregistry_Windows_x86_64.tar.gz"
+        }
+      ]
+    }
+  }
+}
