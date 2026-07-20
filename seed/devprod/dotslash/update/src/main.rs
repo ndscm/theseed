@@ -4,13 +4,11 @@ use clap::Parser;
 use serde::Deserialize;
 use serde::Serialize;
 use std::collections::BTreeMap;
-use std::io::Write;
 use std::process::Command;
 
 #[derive(Parser)]
 struct Args {
-    /// Skeleton file(s) to process. May be passed multiple times, but multiple
-    /// values are only allowed when `--outdir` is set.
+    /// Skeleton file(s) to process. May be passed multiple times.
     #[arg(long, default_value = "skeleton.dotslash.json")]
     skeleton: Vec<String>,
 
@@ -20,11 +18,11 @@ struct Args {
     #[arg(long = "replace", value_name = "KEY=VALUE")]
     replacements: Vec<String>,
 
-    /// If set, write the result to `<outdir>/<basename>.dotslash` instead of
-    /// stdout. The basename is derived from the skeleton file name by stripping
-    /// a trailing `.dotslash.json` suffix, falling back to the whole file name.
+    /// Write each result to `<outdir>/<basename>.dotslash`. The basename is
+    /// derived from the skeleton file name by stripping a trailing
+    /// `.dotslash.json` suffix, falling back to the whole file name.
     #[arg(long)]
-    outdir: Option<String>,
+    outdir: String,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -74,10 +72,6 @@ fn run() -> Result<()> {
         s
     };
 
-    if args.skeleton.len() > 1 && args.outdir.is_none() {
-        anyhow::bail!("multiple --skeleton values require --outdir");
-    }
-
     for skeleton in &args.skeleton {
         let skeleton_bytes = std::fs::read_to_string(skeleton).context("reading skeleton file")?;
         let mut result: DotSlash =
@@ -113,21 +107,16 @@ fn run() -> Result<()> {
         serde_json::to_writer_pretty(&mut out, &result)?;
         out.push(b'\n');
 
-        if let Some(outdir) = &args.outdir {
-            let file_name = std::path::Path::new(skeleton)
-                .file_name()
-                .and_then(|n| n.to_str())
-                .context("skeleton path has no file name")?;
-            let basename = file_name
-                .strip_suffix(".dotslash.json")
-                .unwrap_or(file_name);
-            let path = std::path::Path::new(outdir).join(format!("{basename}.dotslash"));
-            std::fs::write(&path, &out).context(format!("writing {}", path.display()))?;
-            eprintln!("Wrote: {}", path.display());
-        } else {
-            let mut stdout = std::io::stdout().lock();
-            stdout.write_all(&out)?;
-        }
+        let file_name = std::path::Path::new(skeleton)
+            .file_name()
+            .and_then(|n| n.to_str())
+            .context("skeleton path has no file name")?;
+        let basename = file_name
+            .strip_suffix(".dotslash.json")
+            .unwrap_or(file_name);
+        let path = std::path::Path::new(&args.outdir).join(format!("{basename}.dotslash"));
+        std::fs::write(&path, &out).context(format!("writing {}", path.display()))?;
+        eprintln!("Wrote: {}", path.display());
     }
     Ok(())
 }
