@@ -121,6 +121,10 @@ func (g *GitProvider) CreateBranch(branchName string, startPoint string, trackin
 	return CreateBranch("", branchName, startPoint, tracking)
 }
 
+func (g *GitProvider) CreateOrphanBranch(branchName string, message string) error {
+	return CreateOrphanBranch("", branchName, message)
+}
+
 func (g *GitProvider) GetBranch(branchName string) (string, error) {
 	return GetBranch("", branchName)
 }
