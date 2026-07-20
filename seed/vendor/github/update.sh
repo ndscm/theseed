@@ -10,5 +10,8 @@ tag="${1:-"2.94.0"}"
 bazel run //seed/devprod/dotslash/update -- \
   --skeleton "$(pwd)/seed/vendor/github/gh.dotslash.json" \
   --replace "TAG=${tag}" \
-  >./seed/vendor/github/bin/gh
-chmod +x ./seed/vendor/github/bin/gh
+  --outdir "$(pwd)/seed/vendor/github/bin"
+
+chmod +x ./seed/vendor/github/bin/gh.dotslash
+
+ln -s -f gh.dotslash ./seed/vendor/github/bin/gh
