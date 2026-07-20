@@ -1,0 +1,31 @@
+#!/usr/bin/env dotslash
+
+{
+  "name": "ndscm",
+  "platforms": {
+    "linux-x86_64": {
+      "path": "ndscm",
+      "size": 2592508,
+      "hash": "blake3",
+      "digest": "01566255b0abd09b8f0bee35b3e2b68009beb901c7d42948783bf8385e0c9d5f",
+      "format": "tar.gz",
+      "providers": [
+        {
+          "url": "https://github.com/ndscm/ndscm/releases/download/v26.7.4/ndscm-linux-x86_64.tar.gz"
+        }
+      ]
+    },
+    "macos-aarch64": {
+      "path": "ndscm",
+      "size": 2410289,
+      "hash": "blake3",
+      "digest": "af3e51c8116faa34511cc707ef69a928e93964b3c941f2d43e3d2e73b3162219",
+      "format": "tar.gz",
+      "providers": [
+        {
+          "url": "https://github.com/ndscm/ndscm/releases/download/v26.7.4/ndscm-darwin-arm64.tar.gz"
+        }
+      ]
+    }
+  }
+}
