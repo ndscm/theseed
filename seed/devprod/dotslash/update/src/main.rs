@@ -15,6 +15,12 @@ struct Args {
     #[arg(long, default_value = "v0.0.0")]
     tag: String,
 
+    /// Placeholder replacement in `KEY=VALUE` form; each occurrence of
+    /// `{{KEY}}` in paths and provider URLs is replaced with `VALUE`.
+    /// May be passed multiple times.
+    #[arg(long = "replace", value_name = "KEY=VALUE")]
+    replacements: Vec<String>,
+
     #[arg(long, default_value_t = false)]
     no_format: bool,
 }
@@ -52,14 +58,32 @@ struct DotSlash {
 fn run() -> Result<()> {
     let args = Args::parse();
 
+    // `--replace` entries take precedence over the built-in `{{TAG}}`, which is
+    // applied last so its `--tag` default doesn't consume a `{{TAG}}` that an
+    // explicit `--replace TAG=...` is meant to fill.
+    let mut replacements: Vec<(String, String)> = Vec::new();
+    for replacement in &args.replacements {
+        let (key, value) = replacement.split_once('=').context(format!(
+            "invalid --replace, expected KEY=VALUE: {replacement}"
+        ))?;
+        replacements.push((format!("{{{{{key}}}}}"), value.to_string()));
+    }
+    replacements.push(("{{TAG}}".to_string(), args.tag.clone()));
+    let apply = |mut s: String| {
+        for (placeholder, value) in &replacements {
+            s = s.replace(placeholder.as_str(), value);
+        }
+        s
+    };
+
     let skeleton_bytes =
         std::fs::read_to_string(&args.skeleton).context("reading skeleton file")?;
     let mut result: DotSlash = serde_json::from_str(&skeleton_bytes).context("parsing skeleton")?;
 
     for (platform_name, platform) in &mut result.platforms {
-        platform.path = platform.path.replace("{{TAG}}", &args.tag);
+        platform.path = apply(std::mem::take(&mut platform.path));
         for provider in &mut platform.providers {
-            provider.url = provider.url.replace("{{TAG}}", &args.tag);
+            provider.url = apply(std::mem::take(&mut provider.url));
 
             eprintln!("Fetching: platform={} url={}", platform_name, provider.url);
             let output = Command::new("dotslash")
