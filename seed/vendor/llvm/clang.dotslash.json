@@ -3,6 +3,7 @@
   "platforms": {
     "linux-aarch64": {
       "path": "LLVM-{{TAG}}-Linux-ARM64/bin/clang",
+      "format": "tar.xz",
       "providers": [
         {
           "url": "https://github.com/llvm/llvm-project/releases/download/llvmorg-{{TAG}}/LLVM-{{TAG}}-Linux-ARM64.tar.xz"
@@ -11,6 +12,7 @@
     },
     "linux-x86_64": {
       "path": "LLVM-{{TAG}}-Linux-X64/bin/clang",
+      "format": "tar.xz",
       "providers": [
         {
           "url": "https://github.com/llvm/llvm-project/releases/download/llvmorg-{{TAG}}/LLVM-{{TAG}}-Linux-X64.tar.xz"
@@ -19,6 +21,7 @@
     },
     "macos-aarch64": {
       "path": "LLVM-{{TAG}}-macOS-ARM64/bin/clang",
+      "format": "tar.xz",
       "providers": [
         {
           "url": "https://github.com/llvm/llvm-project/releases/download/llvmorg-{{TAG}}/LLVM-{{TAG}}-macOS-ARM64.tar.xz"
