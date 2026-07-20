@@ -138,12 +138,14 @@ if [[ ",${maintain_scopes}," == *",user,"* ]]; then
   fi
 
   if [[ "${oslike}" == "debian" || "${oslike}" == "darwin" ]]; then
-    curl -fsSL "https://raw.githubusercontent.com/ndscm/theseed/refs/heads/main/seed/vendor/direnv/bin/direnv" \
-      >"${HOME}/.local/bin/direnv"
-    chmod +x "${HOME}/.local/bin/direnv"
-    curl -fsSL "https://raw.githubusercontent.com/ndscm/theseed/refs/heads/main/seed/vendor/ndscm/bin/ndscm" \
-      >"${HOME}/.local/bin/ndscm"
-    chmod +x "${HOME}/.local/bin/ndscm"
+    curl -fsSL "https://raw.githubusercontent.com/ndscm/theseed/refs/heads/main/seed/vendor/direnv/bin/direnv.dotslash" \
+      >"${HOME}/.local/bin/direnv.dotslash"
+    chmod +x "${HOME}/.local/bin/direnv.dotslash"
+    ln -s -f direnv.dotslash "${HOME}/.local/bin/direnv"
+    curl -fsSL "https://raw.githubusercontent.com/ndscm/theseed/refs/heads/main/seed/vendor/ndscm/bin/ndscm.dotslash" \
+      >"${HOME}/.local/bin/ndscm.dotslash"
+    chmod +x "${HOME}/.local/bin/ndscm.dotslash"
+    ln -s -f ndscm.dotslash "${HOME}/.local/bin/ndscm"
   fi
 
   printf "\e[32m[user] Check basic packages done.\e[0m\n"
