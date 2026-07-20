@@ -8,5 +8,8 @@ tag="${1:-"v3.13.1"}"
 bazel run //seed/devprod/dotslash/update -- \
   --skeleton "$(pwd)/seed/vendor/shfmt/shfmt.dotslash.json" \
   --replace "TAG=${tag}" \
-  >./seed/vendor/shfmt/bin/shfmt
-chmod +x ./seed/vendor/shfmt/bin/shfmt
+  --outdir "$(pwd)/seed/vendor/shfmt/bin"
+
+chmod +x ./seed/vendor/shfmt/bin/shfmt.dotslash
+
+ln -s -f shfmt.dotslash ./seed/vendor/shfmt/bin/shfmt
