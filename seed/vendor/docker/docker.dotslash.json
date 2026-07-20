@@ -3,6 +3,7 @@
   "platforms": {
     "linux-aarch64": {
       "path": "docker/docker",
+      "format": "tar.gz",
       "providers": [
         {
           "url": "https://download.docker.com/linux/static/stable/aarch64/docker-{{TAG}}.tgz"
@@ -11,6 +12,7 @@
     },
     "linux-x86_64": {
       "path": "docker/docker",
+      "format": "tar.gz",
       "providers": [
         {
           "url": "https://download.docker.com/linux/static/stable/x86_64/docker-{{TAG}}.tgz"
@@ -19,6 +21,7 @@
     },
     "macos-aarch64": {
       "path": "docker/docker",
+      "format": "tar.gz",
       "providers": [
         {
           "url": "https://download.docker.com/mac/static/stable/aarch64/docker-{{TAG}}.tgz"
@@ -27,6 +30,7 @@
     },
     "macos-x86_64": {
       "path": "docker/docker",
+      "format": "tar.gz",
       "providers": [
         {
           "url": "https://download.docker.com/mac/static/stable/x86_64/docker-{{TAG}}.tgz"
@@ -35,6 +39,7 @@
     },
     "windows-x86_64": {
       "path": "docker/docker.exe",
+      "format": "zip",
       "providers": [
         {
           "url": "https://download.docker.com/win/static/stable/x86_64/docker-{{TAG}}.zip"
