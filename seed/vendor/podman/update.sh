@@ -11,5 +11,8 @@ tag="${1:-"5.8.3"}"
 bazel run //seed/devprod/dotslash/update -- \
   --skeleton "$(pwd)/seed/vendor/podman/podman-remote.dotslash.json" \
   --replace "TAG=${tag}" \
-  >./seed/vendor/podman/bin/podman-remote
-chmod +x ./seed/vendor/podman/bin/podman-remote
+  --outdir "$(pwd)/seed/vendor/podman/bin"
+
+chmod +x ./seed/vendor/podman/bin/podman-remote.dotslash
+
+ln -s -f podman-remote.dotslash ./seed/vendor/podman/bin/podman-remote
