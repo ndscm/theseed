@@ -10,12 +10,14 @@ import (
 
 type ndMainFlags struct {
 	remove *seedflag.BoolFlag
+	orphan *seedflag.StringFlag
 }
 
 func parseNdMainFlags(args []string) (ndMainFlags, []string, error) {
 	cf := seedflag.NewCommandFlags("nd-main")
 	cmdFlags := ndMainFlags{}
 	cmdFlags.remove = cf.DefineBool("remove", false, "Remove the area main worktree")
+	cmdFlags.orphan = cf.DefineString("orphan", "", "Create the area branch as an orphan branch with no history, rooted at an empty commit carrying this message")
 	cmdArgs, err := cf.Parse(args,
 		seedflag.WithAnywhereFlag(true),
 	)
@@ -50,6 +52,8 @@ func ndMain(args []string) error {
 	}
 	err = cc.NdMain(clientcore.NdMainOptions{
 		Remove: cmdFlags.remove.Get(),
+
+		Orphan: cmdFlags.orphan.Get(),
 
 		Area:  area,
 		Start: start,
