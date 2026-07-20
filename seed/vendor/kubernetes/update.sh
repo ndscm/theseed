@@ -9,11 +9,17 @@ minikube="${2:-"v1.38.1"}"
 bazel run //seed/devprod/dotslash/update -- \
   --skeleton "$(pwd)/seed/vendor/kubernetes/kubectl.dotslash.json" \
   --replace "TAG=${kubectl}" \
-  >./seed/vendor/kubernetes/bin/kubectl
-chmod +x ./seed/vendor/kubernetes/bin/kubectl
+  --outdir "$(pwd)/seed/vendor/kubernetes/bin"
+
+chmod +x ./seed/vendor/kubernetes/bin/kubectl.dotslash
+
+ln -s -f kubectl.dotslash ./seed/vendor/kubernetes/bin/kubectl
 
 bazel run //seed/devprod/dotslash/update -- \
   --skeleton "$(pwd)/seed/vendor/kubernetes/minikube.dotslash.json" \
   --replace "TAG=${minikube}" \
-  >./seed/vendor/kubernetes/bin/minikube
-chmod +x ./seed/vendor/kubernetes/bin/minikube
+  --outdir "$(pwd)/seed/vendor/kubernetes/bin"
+
+chmod +x ./seed/vendor/kubernetes/bin/minikube.dotslash
+
+ln -s -f minikube.dotslash ./seed/vendor/kubernetes/bin/minikube
