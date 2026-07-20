@@ -3,6 +3,7 @@
   "platforms": {
     "linux-aarch64": {
       "path": "crane",
+      "format": "tar.gz",
       "providers": [
         {
           "url": "https://github.com/google/go-containerregistry/releases/download/{{TAG}}/go-containerregistry_Linux_arm64.tar.gz"
@@ -11,6 +12,7 @@
     },
     "linux-x86_64": {
       "path": "crane",
+      "format": "tar.gz",
       "providers": [
         {
           "url": "https://github.com/google/go-containerregistry/releases/download/{{TAG}}/go-containerregistry_Linux_x86_64.tar.gz"
@@ -19,6 +21,7 @@
     },
     "macos-aarch64": {
       "path": "crane",
+      "format": "tar.gz",
       "providers": [
         {
           "url": "https://github.com/google/go-containerregistry/releases/download/{{TAG}}/go-containerregistry_Darwin_arm64.tar.gz"
@@ -27,6 +30,7 @@
     },
     "macos-x86_64": {
       "path": "crane",
+      "format": "tar.gz",
       "providers": [
         {
           "url": "https://github.com/google/go-containerregistry/releases/download/{{TAG}}/go-containerregistry_Darwin_x86_64.tar.gz"
@@ -35,6 +39,7 @@
     },
     "windows-aarch64": {
       "path": "crane.exe",
+      "format": "tar.gz",
       "providers": [
         {
           "url": "https://github.com/google/go-containerregistry/releases/download/{{TAG}}/go-containerregistry_Windows_arm64.tar.gz"
@@ -43,6 +48,7 @@
     },
     "windows-x86_64": {
       "path": "crane.exe",
+      "format": "tar.gz",
       "providers": [
         {
           "url": "https://github.com/google/go-containerregistry/releases/download/{{TAG}}/go-containerregistry_Windows_x86_64.tar.gz"
