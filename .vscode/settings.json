@@ -41,6 +41,16 @@
     "sync": false
   },
   "go.toolsManagement.autoUpdate": true,
+  "gopls": {
+    // encoding/json/v2 and encoding/json/jsontext are experimental in Go 1.26
+    // (gated behind GOEXPERIMENT=jsonv2, which the Bazel toolchain enables) and
+    // are dated to go1.27 in gopls' symbol table. The stdversion analyzer then
+    // flags every v2 use against the go 1.26.2 directive in go.mod. Disable it;
+    // the build is green and this resolves once we move to Go 1.27.
+    "analyses": {
+      "stdversion": false
+    }
+  },
   "isort.args": ["--profile", "black"],
   "prettier.prettierPath": "./node_modules/prettier",
   "prettier.documentSelectors": ["**/Jenkinsfile"],
