@@ -2,7 +2,8 @@ package main
 
 import (
 	"context"
-	"encoding/json"
+	"encoding/json/jsontext"
+	"encoding/json/v2"
 	"os"
 
 	"github.com/ndscm/theseed/seed/cloud/login/go/devicelogin"
@@ -26,7 +27,7 @@ func sendUnary(ctx context.Context, client *dictateclient.HooinDictateClient, in
 		return seederr.Wrap(err)
 	}
 	data := step.GetData()
-	pretty, err := json.MarshalIndent(data, "", "  ")
+	pretty, err := json.Marshal(data, jsontext.WithIndent("  "))
 	if err != nil {
 		seedlog.Errorf("Failed to marshal step data: %v", err)
 		pretty = []byte("<failed to marshal data>")
@@ -45,7 +46,7 @@ func sendStream(ctx context.Context, client *dictateclient.HooinDictateClient, i
 	for stream.Receive() {
 		step := stream.Msg()
 		data := step.GetData()
-		pretty, err := json.MarshalIndent(data, "", "  ")
+		pretty, err := json.Marshal(data, jsontext.WithIndent("  "))
 		if err != nil {
 			seedlog.Errorf("Failed to marshal step data: %v", err)
 			pretty = []byte("<failed to marshal data>")
