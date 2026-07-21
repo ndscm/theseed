@@ -1,7 +1,8 @@
 package jwtcore
 
 import (
-	"encoding/json"
+	"encoding/json/jsontext"
+	"encoding/json/v2"
 
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
 )
@@ -37,16 +38,18 @@ type Jwk struct {
 type Jwks struct {
 	Keys []Jwk `json:"keys"`
 
-	Raw map[string]any `json:"-"`
+	// Inline holds any JWK Set members not matched by a typed field above. The
+	// ",inline" option makes json v2 treat it as an inline sink, so a single
+	// Unmarshal decodes the known fields and collects the rest here. Each member
+	// is kept as raw JSON so its value can be decoded on demand into the type the
+	// caller expects, without an eager decode to any that would lose number
+	// precision.
+	Inline map[string]jsontext.Value `json:",inline"`
 }
 
 func DecodeJwks(bytes []byte) (*Jwks, error) {
 	jwks := &Jwks{}
 	err := json.Unmarshal(bytes, jwks)
-	if err != nil {
-		return nil, seederr.Wrap(err)
-	}
-	err = json.Unmarshal(bytes, &jwks.Raw)
 	if err != nil {
 		return nil, seederr.Wrap(err)
 	}
