@@ -5,7 +5,7 @@ import (
 	"crypto/ecdsa"
 	"crypto/rsa"
 	"encoding/base64"
-	"encoding/json"
+	"encoding/json/v2"
 	"math/big"
 	"slices"
 	"strings"
