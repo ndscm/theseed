@@ -73,6 +73,7 @@ export PATH="$PWD/{go_bin_dir}:$PATH"
 export GOCACHE="$PWD/.gocache"
 export GOPATH="$PWD/{gopath_dir}"
 export GO111MODULE=off
+export GOEXPERIMENT=jsonv2
 
 mkdir -p "$GOPATH/src/{target_importpath}"
 printf "package ent\\n" > "$GOPATH/src/{target_importpath}/generate.go"
