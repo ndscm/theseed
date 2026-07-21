@@ -1,7 +1,8 @@
 package git
 
 import (
-	"encoding/json"
+	"encoding/json/jsontext"
+	"encoding/json/v2"
 	"os"
 	"path/filepath"
 	"strings"
@@ -49,7 +50,7 @@ func SaveWipStatus(worktreePath string, status *scm.WipStatus) error {
 	if err != nil {
 		return seederr.Wrap(err)
 	}
-	statusBytes, err := json.MarshalIndent(status, "", "  ")
+	statusBytes, err := json.Marshal(status, jsontext.WithIndent("  "))
 	if err != nil {
 		return seederr.WrapErrorf("failed to marshal wip status: %w", err)
 	}
