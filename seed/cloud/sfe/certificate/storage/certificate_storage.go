@@ -1,7 +1,8 @@
 package storage
 
 import (
-	"encoding/json"
+	"encoding/json/jsontext"
+	"encoding/json/v2"
 	"fmt"
 	"os"
 	"strings"
@@ -64,7 +65,7 @@ func (s *LocalCertificateStorage) Update(domain string, acmeCertificate *certifi
 	if err != nil {
 		return seederr.Wrap(err)
 	}
-	acmeCertificateJsonBytes, err := json.MarshalIndent(acmeCertificate, "", "  ")
+	acmeCertificateJsonBytes, err := json.Marshal(acmeCertificate, jsontext.WithIndent("  "))
 	if err != nil {
 		return seederr.Wrap(err)
 	}
