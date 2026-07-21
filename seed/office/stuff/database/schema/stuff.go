@@ -1,7 +1,7 @@
 package schema
 
 import (
-	"encoding/json"
+	"encoding/json/jsontext"
 	"time"
 
 	"entgo.io/ent"
@@ -20,7 +20,7 @@ func (Stuff) Fields() []ent.Field {
 	return []ent.Field{
 		field.UUID("id", uuid.UUID{}).Unique().Immutable().Default(uuid.New).Annotations(entsql.Default("gen_random_uuid()")),
 		field.String("order"),
-		field.JSON("data", &json.RawMessage{}).Optional(),
+		field.JSON("data", &jsontext.Value{}).Optional(),
 		field.String("owner").Optional().Nillable(),
 		field.Time("created_time").Immutable().Default(time.Now),
 		field.Time("updated_time").Default(time.Now).UpdateDefault(time.Now),
