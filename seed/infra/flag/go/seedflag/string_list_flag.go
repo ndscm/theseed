@@ -47,7 +47,7 @@ func (f *StringListFlag) String() string {
 
 var _ FlagDefinition = (*StringListFlag)(nil)
 
-func newStringListFlag(defaultValues []string, usage string) *StringListFlag {
+func NewStringListFlag(defaultValues []string, usage string) *StringListFlag {
 	values := defaultValues
 	if values == nil {
 		values = []string{}
