@@ -20,7 +20,7 @@ func (f *StringFlag) String() string {
 
 var _ FlagDefinition = (*StringFlag)(nil)
 
-func newStringFlag(defaultValue string, usage string) *StringFlag {
+func NewStringFlag(defaultValue string, usage string) *StringFlag {
 	return &StringFlag{
 		FlagItem: FlagItem{
 			usage: usage,

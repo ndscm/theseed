@@ -34,7 +34,7 @@ func (f *BoolFlag) IsBoolFlag() bool {
 
 var _ FlagDefinition = (*BoolFlag)(nil)
 
-func newBoolFlag(defaultValue bool, usage string) *BoolFlag {
+func NewBoolFlag(defaultValue bool, usage string) *BoolFlag {
 	return &BoolFlag{
 		FlagItem: FlagItem{
 			usage: usage,
