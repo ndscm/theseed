@@ -1,7 +1,8 @@
 package openid
 
 import (
-	"encoding/json"
+	"encoding/json/jsontext"
+	"encoding/json/v2"
 
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
 )
@@ -87,18 +88,18 @@ type OpenidUserInfo struct {
 	// meaning, so which Providers send it, and what the values name, varies.
 	Groups []string `json:"groups,omitempty"`
 
-	// Raw holds every claim as it was received, including the claims that have
-	// no field above, such as Provider-specific extensions.
-	Raw map[string]any `json:"-"`
+	// Inline holds the claims that have no field above, such as
+	// Provider-specific extensions. The ",inline" option makes json v2 treat it
+	// as an inline sink, so a single Unmarshal decodes the known claims and
+	// collects the rest here. Each member is kept as raw JSON so its value can
+	// be decoded on demand into the type the caller expects, without an eager
+	// decode to any that would lose number precision.
+	Inline map[string]jsontext.Value `json:",inline"`
 }
 
 func DecodeOpenidUserInfo(bytes []byte) (*OpenidUserInfo, error) {
 	userInfo := &OpenidUserInfo{}
 	err := json.Unmarshal(bytes, userInfo)
-	if err != nil {
-		return nil, seederr.Wrap(err)
-	}
-	err = json.Unmarshal(bytes, &userInfo.Raw)
 	if err != nil {
 		return nil, seederr.Wrap(err)
 	}
