@@ -5,7 +5,11 @@
     "title": "Attendance"
   },
   "brain": {
-    "title": "Brain"
+    "brainInputPlaceholder": "Raw Brain Input",
+    "multilineOffTooltip": "Use <Enter> to send messages",
+    "multilineOnTooltip": "Multi-line enabled. Use <Ctrl> + <Enter> to send messages",
+    "title": "Brain",
+    "topicPlaceholder": "Topic"
   },
   "breadcrumb": {
     "person": "Person"
