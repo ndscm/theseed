@@ -46,7 +46,7 @@
   "prettier.documentSelectors": ["**/Jenkinsfile"],
   "prettier.proseWrap": "always",
   "prettier.semi": false,
-  "typescript.updateImportsOnFileMove.enabled": "always",
+  "js/ts.updateImportsOnFileMove.enabled": "always",
   "xml.format.enforceQuoteStyle": "preferred",
   "xml.format.splitAttributes": "splitNewLine",
 
