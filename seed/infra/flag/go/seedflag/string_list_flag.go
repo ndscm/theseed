@@ -16,7 +16,24 @@ func (f *StringListFlag) Set(s string) error {
 		f.values = nil
 		f.set = true
 	}
-	f.values = append(f.values, s)
+	// Each value is split on commas so a whole list can be supplied by a single
+	// occurrence — e.g. an env var FOO=a,b,c or one --foo=a,b,c on the command
+	// line — in addition to repeating the flag. Entries are trimmed and empty
+	// ones (from surrounding, trailing, or doubled commas) are dropped.
+	//
+	// Because commas are always separators here, a list element cannot itself
+	// contain a comma. If an individual value must carry commas, use a
+	// StringFlag or FileFlag instead of a StringListFlag.
+	s = strings.TrimSpace(s)
+	if s != "" {
+		parts := strings.Split(s, ",")
+		for _, part := range parts {
+			part = strings.TrimSpace(part)
+			if part != "" {
+				f.values = append(f.values, part)
+			}
+		}
+	}
 	return nil
 }
 
