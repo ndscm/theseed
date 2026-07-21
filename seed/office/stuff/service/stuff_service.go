@@ -2,7 +2,7 @@ package service
 
 import (
 	"context"
-	"encoding/json"
+	"encoding/json/jsontext"
 
 	"connectrpc.com/connect"
 	"github.com/google/uuid"
@@ -77,7 +77,7 @@ func (svc *StuffService) CreateStuff(
 	create := db.Stuff.Create()
 	create.SetOrder(req.Msg.Stuff.Order)
 	if req.Msg.Stuff.Data != "" {
-		raw := json.RawMessage(req.Msg.Stuff.Data)
+		raw := jsontext.Value(req.Msg.Stuff.Data)
 		create.SetData(&raw)
 	}
 	loginUser, err := login.LoginUser(ctx)
@@ -174,7 +174,7 @@ func (svc *StuffService) UpdateStuff(
 		update.SetOrder(req.Msg.Stuff.Order)
 	}
 	if req.Msg.Stuff.Data != "" {
-		raw := json.RawMessage(req.Msg.Stuff.Data)
+		raw := jsontext.Value(req.Msg.Stuff.Data)
 		update.SetData(&raw)
 	}
 
