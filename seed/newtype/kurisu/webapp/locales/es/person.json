@@ -21,6 +21,7 @@
     "title": "Terminal"
   },
   "workstation": {
+    "home": "Inicio",
     "title": "Estación de trabajo"
   }
 }
