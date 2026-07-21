@@ -2,7 +2,7 @@ package main
 
 import (
 	"archive/tar"
-	"encoding/json"
+	"encoding/json/v2"
 	"io"
 	"os"
 	"path/filepath"
