@@ -1,7 +1,7 @@
 package schema
 
 import (
-	"encoding/json"
+	"encoding/json/jsontext"
 	"time"
 
 	"entgo.io/ent"
@@ -27,7 +27,7 @@ func (Session) Annotations() []schema.Annotation {
 func (Session) Fields() []ent.Field {
 	return []ent.Field{
 		field.UUID("id", uuid.UUID{}).Unique().Immutable().Default(uuid.New).Annotations(entsql.Default("gen_random_uuid()")),
-		field.JSON("data", &json.RawMessage{}).Optional(),
+		field.JSON("data", &jsontext.Value{}).Optional(),
 		field.Time("expire_time"),
 		field.Time("created_time").Default(time.Now).Immutable(),
 		field.Time("updated_time").Default(time.Now).UpdateDefault(time.Now),
