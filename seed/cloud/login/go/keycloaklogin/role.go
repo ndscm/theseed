@@ -1,7 +1,7 @@
 package keycloaklogin
 
 import (
-	"encoding/json"
+	"encoding/json/v2"
 	"slices"
 
 	"github.com/ndscm/theseed/seed/infra/auth/go/openid"
@@ -18,16 +18,15 @@ func VerifyRole(openidUser *openid.OpenidUserInfo, clientId string, role string)
 	if clientId == "" {
 		clientId = openidUser.Azp
 	}
-	rawResourceAccess, ok := openidUser.Raw["resource_access"]
+	if clientId == "" {
+		return seederr.WrapErrorf("no client id to verify role for user %s (%s)", openidUser.PreferredUsername, openidUser.Sub)
+	}
+	rawResourceAccess, ok := openidUser.Inline["resource_access"]
 	if !ok {
 		return seederr.WrapErrorf("no resource access for user %s (%s)", openidUser.PreferredUsername, openidUser.Sub)
 	}
-	rawResourceAccessBytes, err := json.Marshal(rawResourceAccess)
-	if err != nil {
-		return seederr.Wrap(err)
-	}
 	resourceAccess := ResourceAccess{}
-	err = json.Unmarshal(rawResourceAccessBytes, &resourceAccess)
+	err := json.Unmarshal(rawResourceAccess, &resourceAccess)
 	if err != nil {
 		return seederr.Wrap(err)
 	}
