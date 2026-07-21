@@ -1,7 +1,8 @@
 package claudepayload
 
 import (
-	"encoding/json"
+	"encoding/json/jsontext"
+	"encoding/json/v2"
 
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
 	"google.golang.org/protobuf/types/known/structpb"
@@ -74,16 +75,16 @@ func (s StreamOutputSystem) Data() (*structpb.Struct, error) {
 }
 
 type StreamContentBlock struct {
-	Type      string          `json:"type"`
-	Text      string          `json:"text,omitempty"`
-	Id        string          `json:"id,omitempty"`
-	Name      string          `json:"name,omitempty"`
-	Input     json.RawMessage `json:"input,omitempty"`
-	ToolUseId string          `json:"tool_use_id,omitempty"`
-	Content   json.RawMessage `json:"content,omitempty"`
-	IsError   bool            `json:"is_error,omitempty"`
-	Thinking  string          `json:"thinking,omitempty"`
-	Signature string          `json:"signature,omitempty"`
+	Type      string         `json:"type"`
+	Text      string         `json:"text,omitempty"`
+	Id        string         `json:"id,omitempty"`
+	Name      string         `json:"name,omitempty"`
+	Input     jsontext.Value `json:"input,omitzero"`
+	ToolUseId string         `json:"tool_use_id,omitempty"`
+	Content   jsontext.Value `json:"content,omitzero"`
+	IsError   bool           `json:"is_error,omitzero"`
+	Thinking  string         `json:"thinking,omitempty"`
+	Signature string         `json:"signature,omitempty"`
 }
 
 type StreamOutputMessage struct {
@@ -144,22 +145,22 @@ func (u StreamOutputUser) Data() (*structpb.Struct, error) {
 }
 
 type StreamOutputUsage struct {
-	InputTokens              int64           `json:"input_tokens,omitempty"`
-	CacheCreationInputTokens int64           `json:"cache_creation_input_tokens,omitempty"`
-	CacheReadInputTokens     int64           `json:"cache_read_input_tokens,omitempty"`
-	OutputTokens             int64           `json:"output_tokens,omitempty"`
-	ServerToolUse            json.RawMessage `json:"server_tool_use,omitempty"`
-	ServiceTier              string          `json:"service_tier,omitempty"`
+	InputTokens              int64          `json:"input_tokens,omitzero"`
+	CacheCreationInputTokens int64          `json:"cache_creation_input_tokens,omitzero"`
+	CacheReadInputTokens     int64          `json:"cache_read_input_tokens,omitzero"`
+	OutputTokens             int64          `json:"output_tokens,omitzero"`
+	ServerToolUse            jsontext.Value `json:"server_tool_use,omitzero"`
+	ServiceTier              string         `json:"service_tier,omitempty"`
 }
 
 type StreamOutputResult struct {
 	StreamOutputEnvelope
 	IsError       bool               `json:"is_error"`
-	DurationMs    int64              `json:"duration_ms,omitempty"`
-	DurationApiMs int64              `json:"duration_api_ms,omitempty"`
-	NumTurns      int                `json:"num_turns,omitempty"`
+	DurationMs    int64              `json:"duration_ms,omitzero"`
+	DurationApiMs int64              `json:"duration_api_ms,omitzero"`
+	NumTurns      int                `json:"num_turns,omitzero"`
 	Result        string             `json:"result,omitempty"`
-	TotalCostUsd  float64            `json:"total_cost_usd,omitempty"`
+	TotalCostUsd  float64            `json:"total_cost_usd,omitzero"`
 	Usage         *StreamOutputUsage `json:"usage,omitempty"`
 }
 
