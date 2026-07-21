@@ -1,4 +1,9 @@
 {
+  "attendance": {
+    "isCopiedHint": "Copied",
+    "regenerateTokenButton": "Regenerate Token",
+    "title": "Attendance"
+  },
   "brain": {
     "title": "Brain"
   },
