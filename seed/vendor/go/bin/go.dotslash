@@ -5,73 +5,73 @@
   "platforms": {
     "linux-aarch64": {
       "path": "go/bin/go",
-      "size": 63740285,
+      "size": 63759990,
       "hash": "blake3",
-      "digest": "97c0e3f08b700bbd632ef4d7e1e3cb1edad26e62efb03c9cfdbd293aaeacba10",
+      "digest": "0c4fd2a09b0f791176548555401958cd8b9e419ef0325fa275dd649361977fcf",
       "format": "tar.gz",
       "providers": [
         {
-          "url": "https://go.dev/dl/go1.26.4.linux-arm64.tar.gz"
+          "url": "https://go.dev/dl/go1.26.5.linux-arm64.tar.gz"
         }
       ]
     },
     "linux-x86_64": {
       "path": "go/bin/go",
-      "size": 66861266,
+      "size": 66879095,
       "hash": "blake3",
-      "digest": "24de2813aea0bdde6174564821b18502fac386b5ebf6f574c1087e530996f1a3",
+      "digest": "dfa5756ca69d07e7b54cbebf9c358567d941e61e4c5bfbbd58a0861754bf849d",
       "format": "tar.gz",
       "providers": [
         {
-          "url": "https://go.dev/dl/go1.26.4.linux-amd64.tar.gz"
+          "url": "https://go.dev/dl/go1.26.5.linux-amd64.tar.gz"
         }
       ]
     },
     "macos-aarch64": {
       "path": "go/bin/go",
-      "size": 64723756,
+      "size": 64738542,
       "hash": "blake3",
-      "digest": "b78e916f123b0cfe9ff7b961404bad7d569b44f4e7f1013b97ca4dc9413122c4",
+      "digest": "d308aeb58074bc42c776c9e34523b939d862a4d6e6c2805406f19f5b6bfe8e21",
       "format": "tar.gz",
       "providers": [
         {
-          "url": "https://go.dev/dl/go1.26.4.darwin-arm64.tar.gz"
+          "url": "https://go.dev/dl/go1.26.5.darwin-arm64.tar.gz"
         }
       ]
     },
     "macos-x86_64": {
       "path": "go/bin/go",
-      "size": 67816160,
+      "size": 67836304,
       "hash": "blake3",
-      "digest": "7b7d0ee347dced180ede720d3674bc6b7f358ee5e9805ebeffdf00d77dae20d8",
+      "digest": "9f9aade0118ce2fb167c8889e283024bf405bd5cf7bd8e30fe73933f3a355f3f",
       "format": "tar.gz",
       "providers": [
         {
-          "url": "https://go.dev/dl/go1.26.4.darwin-amd64.tar.gz"
+          "url": "https://go.dev/dl/go1.26.5.darwin-amd64.tar.gz"
         }
       ]
     },
     "windows-aarch64": {
       "path": "go/bin/go.exe",
-      "size": 71422525,
+      "size": 71440103,
       "hash": "blake3",
-      "digest": "5aa7db455556e1a11bd8563c6f4005316050ad0d4ec83e0f347355fd927d75fb",
+      "digest": "3c4263295cc8214113e319c6187e774858be61b6107e36031102fc7a52bf2022",
       "format": "zip",
       "providers": [
         {
-          "url": "https://go.dev/dl/go1.26.4.windows-arm64.zip"
+          "url": "https://go.dev/dl/go1.26.5.windows-arm64.zip"
         }
       ]
     },
     "windows-x86_64": {
       "path": "go/bin/go.exe",
-      "size": 74910419,
+      "size": 74927386,
       "hash": "blake3",
-      "digest": "8365bf3febe5b176f638e30b8fdc413bb2cdc2fdeeea085ccf56f6d323004a6b",
+      "digest": "c4cd44a24c5884504591a60888910ef3026eb95790c03c4369d1f0f78c4df363",
       "format": "zip",
       "providers": [
         {
-          "url": "https://go.dev/dl/go1.26.4.windows-amd64.zip"
+          "url": "https://go.dev/dl/go1.26.5.windows-amd64.zip"
         }
       ]
     }
