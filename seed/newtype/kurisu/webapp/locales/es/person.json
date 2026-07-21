@@ -1,4 +1,9 @@
 {
+  "attendance": {
+    "isCopiedHint": "Copiado",
+    "regenerateTokenButton": "Regenerar token",
+    "title": "Asistencia"
+  },
   "brain": {
     "title": "Cerebro"
   },
