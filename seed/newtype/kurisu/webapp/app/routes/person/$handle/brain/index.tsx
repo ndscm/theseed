@@ -2,7 +2,7 @@ import * as Protobuf from "@bufbuild/protobuf"
 import React, { useCallback, useEffect, useRef, useState } from "react"
 import { useTranslation } from "react-i18next"
 
-import { SendIcon } from "lucide-react"
+import { CornerDownLeftIcon, SendIcon } from "lucide-react"
 
 import tw from "../../../../../../../../devprod/ts/grouping-tailwind"
 import {
@@ -27,6 +27,7 @@ const PersonBrainPage: React.FC<{ params: { handle: string } }> = ({
   const [threads, setThreads] = useState<BrainThread[]>([])
   const [inputTopic, setInputTopic] = useState("")
   const [inputText, setInputText] = useState("")
+  const [isMultilineEnabled, setIsMultilineEnabled] = useState(true)
   const refOfThreadsEnd = useRef<HTMLDivElement>(null)
 
   const personHandle = handle
@@ -90,13 +91,32 @@ const PersonBrainPage: React.FC<{ params: { handle: string } }> = ({
   }, [inputText, dictateService, personId, inputTopic])
 
   const handleKeyDown = useCallback(
-    (e: React.KeyboardEvent) => {
-      if (e.key === "Enter" && e.ctrlKey) {
-        e.preventDefault()
-        sendMessage()
+    (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+      if (e.key === "Enter") {
+        if (e.nativeEvent.isComposing) {
+          // Let the IME commit its candidate; don't send or intercept.
+          return
+        }
+        if (e.shiftKey) {
+          // Shift+Enter always inserts a carriage return.
+          return
+        }
+        if (e.ctrlKey || e.metaKey) {
+          // Ctrl/Cmd+Enter always sends.
+          e.preventDefault()
+          sendMessage()
+          return
+        }
+        if (!isMultilineEnabled) {
+          // Plain Enter sends when multi-line mode is off; otherwise it
+          // inserts a carriage return via the default behavior.
+          e.preventDefault()
+          sendMessage()
+          return
+        }
       }
     },
-    [sendMessage],
+    [sendMessage, isMultilineEnabled],
   )
 
   return (
@@ -156,16 +176,51 @@ const PersonBrainPage: React.FC<{ params: { handle: string } }> = ({
                 state: "focus:outline-none",
               })}
               rows={3}
-              placeholder={t("brain.brainInputPlaceholder", "Brain input")}
+              placeholder={t("brain.brainInputPlaceholder", "Raw Brain Input")}
               value={inputText}
               onChange={(e) => setInputText(e.target.value)}
               onKeyDown={handleKeyDown}
             />
           </div>
-          <div className={tw({ layout: "flex justify-end" })}>
+          <div className={tw({ layout: "flex justify-end gap-1" })}>
+            <button
+              type="button"
+              className={tw(
+                {
+                  component: `btn btn-square btn-ghost`,
+                  layout: "shrink-0",
+                  state:
+                    "hover:border-base-300 hover:bg-transparent hover:shadow-none",
+                },
+                isMultilineEnabled
+                  ? {
+                      appearance: "text-primary",
+                      state: "hover:text-primary",
+                    }
+                  : {
+                      appearance: "text-base-content/40",
+                      state: "hover:text-base-content/40",
+                    },
+              )}
+              onClick={() => setIsMultilineEnabled((prev) => !prev)}
+              aria-pressed={isMultilineEnabled}
+              title={
+                isMultilineEnabled
+                  ? t(
+                      "brain.multilineOnTooltip",
+                      "Multi-line enabled. Use <Ctrl> + <Enter> to send messages",
+                    )
+                  : t(
+                      "brain.multilineOffTooltip",
+                      "Use <Enter> to send messages",
+                    )
+              }
+            >
+              <CornerDownLeftIcon />
+            </button>
             <button
               className={tw({
-                component: "btn btn-primary btn-ghost",
+                component: "btn btn-square btn-primary btn-ghost",
                 layout: "shrink-0",
               })}
               onClick={sendMessage}
