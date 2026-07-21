@@ -59,7 +59,10 @@ bazel_dep(name = "gazelle", version = "0.50.0")
 bazel_dep(name = "cel-spec", version = "0.25.1", repo_name = "dev_cel_expr")
 
 go_sdk = use_extension("@rules_go//go:extensions.bzl", "go_sdk")
-go_sdk.download(version = "1.26.2")
+go_sdk.download(
+    experiments = ["jsonv2"],
+    version = "1.26.2",
+)
 
 go_deps = use_extension("@gazelle//:extensions.bzl", "go_deps")
 go_deps.from_file(go_mod = "//:go.mod")
