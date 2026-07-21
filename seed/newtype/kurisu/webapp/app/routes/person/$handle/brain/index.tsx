@@ -2,7 +2,7 @@ import * as Protobuf from "@bufbuild/protobuf"
 import React, { useCallback, useEffect, useRef, useState } from "react"
 import { useTranslation } from "react-i18next"
 
-import { CornerDownLeftIcon, SendIcon } from "lucide-react"
+import { BracketsIcon, CornerDownLeftIcon, SendIcon } from "lucide-react"
 
 import tw from "../../../../../../../../devprod/ts/grouping-tailwind"
 import {
@@ -25,6 +25,7 @@ const PersonBrainPage: React.FC<{ params: { handle: string } }> = ({
 
   const [personId, setPersonId] = useState<string>("")
   const [threads, setThreads] = useState<BrainThread[]>([])
+  const [isTopicShown, setIsTopicShown] = useState(false)
   const [inputTopic, setInputTopic] = useState("")
   const [inputText, setInputText] = useState("")
   const [isMultilineEnabled, setIsMultilineEnabled] = useState(true)
@@ -74,7 +75,7 @@ const PersonBrainPage: React.FC<{ params: { handle: string } }> = ({
       uuid,
       taskUuid: uuid,
       text,
-      topic: inputTopic || "default",
+      topic: (isTopicShown && inputTopic) || "default",
     })
     const stream = dictateService.SendBrainInputStreamBrainStep(
       personId,
@@ -88,7 +89,7 @@ const PersonBrainPage: React.FC<{ params: { handle: string } }> = ({
     }
     setThreads((prev) => [...prev, newThread])
     setInputText("")
-  }, [inputText, dictateService, personId, inputTopic])
+  }, [inputText, dictateService, personId, isTopicShown, inputTopic])
 
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -142,28 +143,25 @@ const PersonBrainPage: React.FC<{ params: { handle: string } }> = ({
             appearance: "border-base-300 rounded-lg border p-1",
           })}
         >
-          <div
-            className={tw({
-              layout: "flex",
-            })}
-          >
-            <input
-              type="text"
-              list="builtin-topics"
+          {isTopicShown && (
+            <div
               className={tw({
-                component: "input input-ghost",
-                layout: "flex-1",
-                state: "focus:outline-none",
+                layout: "flex",
               })}
-              placeholder={t("brain.topicPlaceholder", "Topic")}
-              value={inputTopic}
-              onChange={(e) => setInputTopic(e.target.value)}
-            />
-            <datalist id="builtin-topics">
-              <option value="develop" />
-              <option value="review" />
-            </datalist>
-          </div>
+            >
+              <input
+                type="text"
+                className={tw({
+                  component: "input input-ghost",
+                  layout: "flex-1",
+                  state: "focus:outline-none",
+                })}
+                placeholder={t("brain.topicPlaceholder", "Topic")}
+                value={inputTopic}
+                onChange={(e) => setInputTopic(e.target.value)}
+              />
+            </div>
+          )}
           <div
             className={tw({
               layout: "flex",
@@ -183,6 +181,35 @@ const PersonBrainPage: React.FC<{ params: { handle: string } }> = ({
             />
           </div>
           <div className={tw({ layout: "flex justify-end gap-1" })}>
+            <button
+              type="button"
+              className={tw(
+                {
+                  component: `btn btn-square btn-ghost`,
+                  layout: "shrink-0",
+                  state:
+                    "hover:border-base-300 hover:bg-transparent hover:shadow-none",
+                },
+                isTopicShown
+                  ? {
+                      appearance: "text-primary",
+                      state: "hover:text-primary",
+                    }
+                  : {
+                      appearance: "text-base-content/40",
+                      state: "hover:text-base-content/40",
+                    },
+              )}
+              onClick={() => {
+                if (isTopicShown) {
+                  setInputTopic("")
+                }
+                setIsTopicShown((prev) => !prev)
+              }}
+              aria-pressed={isTopicShown}
+            >
+              <BracketsIcon />
+            </button>
             <button
               type="button"
               className={tw(
