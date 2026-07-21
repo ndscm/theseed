@@ -2,7 +2,8 @@ package runner
 
 import (
 	"crypto/sha256"
-	"encoding/json"
+	"encoding/json/jsontext"
+	"encoding/json/v2"
 	"path/filepath"
 	"regexp"
 	"slices"
@@ -64,7 +65,7 @@ type RepoPhase struct {
 }
 
 func (rp RepoPhase) String() string {
-	b, _ := json.MarshalIndent(rp, "", "  ")
+	b, _ := json.Marshal(rp, jsontext.WithIndent("  "))
 	return string(b)
 }
 
@@ -109,7 +110,7 @@ func (ra RepoAnalysis) TopologicalSort() ([]string, error) {
 }
 
 func (ra RepoAnalysis) String() string {
-	b, _ := json.MarshalIndent(ra, "", "  ")
+	b, _ := json.Marshal(ra, jsontext.WithIndent("  "))
 	return string(b)
 }
 

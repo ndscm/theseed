@@ -1,7 +1,8 @@
 package runner
 
 import (
-	"encoding/json"
+	"encoding/json/jsontext"
+	"encoding/json/v2"
 	"errors"
 	"os"
 	"os/exec"
@@ -240,7 +241,7 @@ func (r *Runner) Run(phases []string, careRepoPaths []string) error {
 	if err != nil {
 		return seederr.Wrap(err)
 	}
-	analysisJson, err := json.MarshalIndent(repoAnalysis, "", "  ")
+	analysisJson, err := json.Marshal(repoAnalysis, jsontext.WithIndent("  "))
 	if err != nil {
 		return seederr.Wrap(err)
 	}
