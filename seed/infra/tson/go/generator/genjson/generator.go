@@ -1,22 +1,23 @@
 package genjson
 
 import (
-	"encoding/json"
+	"encoding/json/jsontext"
+	"encoding/json/v2"
 	"strings"
 
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
 	"github.com/ndscm/theseed/seed/infra/tson/go/tsonast"
 )
 
-// Generate serializes a tson AST node into json.RawMessage.
-func Generate(node tsonast.AstNode) (json.RawMessage, error) {
+// Generate serializes a tson AST node into jsontext.Value.
+func Generate(node tsonast.AstNode) (jsontext.Value, error) {
 	b := strings.Builder{}
 	err := writeNode(&b, node, 0)
 	if err != nil {
 		return nil, seederr.Wrap(err)
 	}
 	b.WriteByte('\n')
-	return json.RawMessage(b.String()), nil
+	return jsontext.Value(b.String()), nil
 }
 
 func writeNode(b *strings.Builder, node tsonast.AstNode, depth int) error {
