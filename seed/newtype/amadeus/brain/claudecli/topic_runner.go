@@ -3,7 +3,7 @@ package claudecli
 import (
 	"bufio"
 	"context"
-	"encoding/json"
+	"encoding/json/v2"
 	"io"
 	"os/exec"
 	"sync"
