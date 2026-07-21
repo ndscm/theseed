@@ -1,7 +1,7 @@
 package jwtcore
 
 import (
-	"encoding/json"
+	"encoding/json/v2"
 
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
 )
