@@ -79,32 +79,37 @@ type CommandFlags struct {
 	flags   map[string]FlagDefinition
 }
 
+func (cf *CommandFlags) DefineFlag(name string, flagDefinition FlagDefinition) FlagDefinition {
+	cf.flags[name] = flagDefinition
+	return flagDefinition
+}
+
 func (cf *CommandFlags) DefineBool(name string, defaultValue bool, usage string) *BoolFlag {
-	item := newBoolFlag(defaultValue, usage)
+	item := NewBoolFlag(defaultValue, usage)
 	cf.flags[name] = item
 	return item
 }
 
 func (cf *CommandFlags) DefineString(name string, defaultValue string, usage string) *StringFlag {
-	item := newStringFlag(defaultValue, usage)
+	item := NewStringFlag(defaultValue, usage)
 	cf.flags[name] = item
 	return item
 }
 
 func (cf *CommandFlags) DefineStringList(name string, defaultValues []string, usage string) *StringListFlag {
-	item := newStringListFlag(defaultValues, usage)
+	item := NewStringListFlag(defaultValues, usage)
 	cf.flags[name] = item
 	return item
 }
 
 func (cf *CommandFlags) DefineFile(name string, defaultValue string, usage string) *FileFlag {
-	item := newFileFlag(defaultValue, usage)
+	item := NewFileFlag(defaultValue, usage)
 	cf.flags[name] = item
 	return item
 }
 
 func (cf *CommandFlags) DefineSecret(name string, usage string) *SecretFlag {
-	item := newSecretFlag(usage)
+	item := NewSecretFlag(usage)
 	// TODO(nagi): support susceptible secret flag for loading secret from cli or env.
 	cf.flags[name+"_file"] = item.fileFlag
 	return item
@@ -210,6 +215,10 @@ func NewCommandFlags(command string) *CommandFlags {
 }
 
 var globalFlags = NewCommandFlags(os.Args[0])
+
+func DefineFlag(name string, flagDefinition FlagDefinition) FlagDefinition {
+	return globalFlags.DefineFlag(name, flagDefinition)
+}
 
 func DefineBool(name string, defaultValue bool, usage string) *BoolFlag {
 	return globalFlags.DefineBool(name, defaultValue, usage)

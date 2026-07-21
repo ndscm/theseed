@@ -125,10 +125,10 @@ func (f *FileFlag) LoadString() (string, error) {
 
 var _ FlagDefinition = (*FileFlag)(nil)
 
-// newFileFlag returns a FileFlag with the given default value and usage string.
+// NewFileFlag returns a FileFlag with the given default value and usage string.
 // Only the "" and "file" schemes are accepted; use RegisterLocalScheme to add
 // more.
-func newFileFlag(defaultValue string, usage string) *FileFlag {
+func NewFileFlag(defaultValue string, usage string) *FileFlag {
 	return &FileFlag{
 		StringFlag: StringFlag{
 			FlagItem: FlagItem{

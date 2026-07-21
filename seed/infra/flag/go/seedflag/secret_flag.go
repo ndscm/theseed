@@ -1,5 +1,9 @@
 package seedflag
 
+import (
+	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
+)
+
 type SecretFlag struct {
 	stringFlag *StringFlag
 	fileFlag   *FileFlag
@@ -26,16 +30,16 @@ func (f *SecretFlag) Load() ([]byte, error) {
 }
 
 func (f *SecretFlag) LoadString() (string, error) {
-	value := f.stringFlag.Get()
-	if value != "" {
-		return value, nil
+	fileBytes, err := f.Load()
+	if err != nil {
+		return "", seederr.Wrap(err)
 	}
-	return f.fileFlag.LoadString()
+	return string(fileBytes), nil
 }
 
-func newSecretFlag(usage string) *SecretFlag {
+func NewSecretFlag(usage string) *SecretFlag {
 	return &SecretFlag{
-		stringFlag: newStringFlag("", usage),
-		fileFlag:   newFileFlag("", usage),
+		stringFlag: NewStringFlag("", usage),
+		fileFlag:   NewFileFlag("", usage),
 	}
 }
