@@ -5,7 +5,11 @@
     "title": "Asistencia"
   },
   "brain": {
-    "title": "Cerebro"
+    "brainInputPlaceholder": "Entrada cruda del cerebro",
+    "multilineOffTooltip": "Usa <Enter> para enviar mensajes",
+    "multilineOnTooltip": "Multilínea habilitada. Usa <Ctrl> + <Enter> para enviar mensajes",
+    "title": "Cerebro",
+    "topicPlaceholder": "Tema"
   },
   "breadcrumb": {
     "person": "Persona"
