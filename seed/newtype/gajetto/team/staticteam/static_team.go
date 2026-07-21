@@ -2,7 +2,7 @@ package staticteam
 
 import (
 	"context"
-	"encoding/json"
+	"encoding/json/v2"
 
 	"github.com/ndscm/theseed/seed/cloud/login/go/login"
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
