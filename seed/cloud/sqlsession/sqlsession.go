@@ -2,7 +2,8 @@ package sqlsession
 
 import (
 	"context"
-	"encoding/json"
+	"encoding/json/jsontext"
+	"encoding/json/v2"
 	"maps"
 	"net/http"
 	"time"
@@ -56,7 +57,7 @@ func (s *sqlSessionAdapter) Init(ctx context.Context, sessionId string, response
 		if err != nil {
 			return seederr.Wrap(err)
 		}
-		raw := json.RawMessage(dataBytes)
+		raw := jsontext.Value(dataBytes)
 		expires := time.Now().Add(sessionDuration)
 		row, err := s.client.Session.Create().SetData(&raw).SetExpireTime(expires).Save(ctx)
 		if err != nil {
@@ -145,7 +146,7 @@ func (s *sqlSessionAdapter) Update(ctx context.Context, change map[string]string
 	if err != nil {
 		return seederr.Wrap(err)
 	}
-	raw := json.RawMessage(dataBytes)
+	raw := jsontext.Value(dataBytes)
 	err = tx.Session.UpdateOneID(sessionUuid).SetData(&raw).Exec(ctx)
 	if err != nil {
 		return seederr.Wrap(err)
