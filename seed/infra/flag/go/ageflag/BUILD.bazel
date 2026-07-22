@@ -1,0 +1,17 @@
+load("@rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "ageflag",
+    srcs = [
+        "age_secret_flag.go",
+        "identity.go",
+    ],
+    importpath = "github.com/ndscm/theseed/seed/infra/flag/go/ageflag",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//seed/infra/error/go/seederr",
+        "//seed/infra/flag/go/seedflag",
+        "@io_filippo_age//:age",
+        "@io_filippo_age//armor",
+    ],
+)
