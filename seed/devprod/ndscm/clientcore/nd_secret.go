@@ -94,16 +94,100 @@ func createSecretWorktree(
 	return newWorktreePath, nil
 }
 
+// bfsChangedFiles returns the changed file paths in breadth-first order from
+// the worktree root: shallower paths first, ties broken lexicographically.
+// Sorting by (depth, path) is equivalent to a level-order walk of the file
+// tree with lexicographically ordered children, because paths sharing a parent
+// share a prefix and therefore stay grouped within each depth.
+func bfsChangedFiles(paths []string) []string {
+	ordered := slices.Clone(paths)
+	slices.SortFunc(ordered, func(a, b string) int {
+		depthA := strings.Count(a, "/")
+		depthB := strings.Count(b, "/")
+		if depthA != depthB {
+			return depthA - depthB
+		}
+		return strings.Compare(a, b)
+	})
+	return ordered
+}
+
 func NdSecretSync(
 	scmProvider scm.Provider,
 	monorepoHome string, userHandle string, space string,
 ) error {
-	_, _, exists := getSecretWorktree(monorepoHome, userHandle, space)
+	worktreeName, worktreePath, exists := getSecretWorktree(monorepoHome, userHandle, space)
 	if !exists {
-		_, err := createSecretWorktree(scmProvider, monorepoHome, userHandle, space)
+		newWorktreePath, err := createSecretWorktree(scmProvider, monorepoHome, userHandle, space)
 		if err != nil {
 			return seederr.Wrap(err)
 		}
+		worktreePath = newWorktreePath
+	}
+
+	// The secret worktree must have its own branch checked out; refuse to commit
+	// into it if some other branch has been swapped in.
+	branchName, err := scmProvider.GetWorktreeBranch(worktreePath)
+	if err != nil {
+		return seederr.Wrap(err)
+	}
+	if branchName != worktreeName {
+		return seederr.WrapErrorf("secret worktree has unexpected branch checked out: %v (expected: %v)", branchName, worktreeName)
+	}
+
+	// Move the entire worktree out of the staging area, so every secret change
+	// starts unstaged and is committed one file at a time below.
+	err = scmProvider.UpdateStagingArea(worktreePath, ".", false)
+	if err != nil {
+		return seederr.Wrap(err)
+	}
+
+	dirtyFiles, err := scmProvider.ListDirtyFiles(worktreePath)
+	if err != nil {
+		return seederr.Wrap(err)
+	}
+	changedFiles := map[string]string{}
+	for _, f := range dirtyFiles {
+		changedFiles[f.To] = f.Status
+	}
+
+	messagePrefix := ""
+	if userHandle != "" {
+		messagePrefix += userHandle + ": "
+	}
+	messagePrefix += "secret: "
+
+	paths := make([]string, 0, len(changedFiles))
+	for path := range changedFiles {
+		paths = append(paths, path)
+	}
+	for _, path := range bfsChangedFiles(paths) {
+		// The git porcelain worktree status determines the commit verb.
+		action := "update"
+		status := changedFiles[path]
+		if status == "??" {
+			action = "create"
+		} else if len(status) >= 2 && status[1] == 'D' {
+			action = "remove"
+		}
+		message := messagePrefix + action + " " + path
+		err := scmProvider.UpdateStagingArea(worktreePath, path, true)
+		if err != nil {
+			return seederr.Wrap(err)
+		}
+		err = scmProvider.CreateCommit(worktreePath, message)
+		if err != nil {
+			return seederr.Wrap(err)
+		}
+	}
+
+	err = scmProvider.PullRebase(worktreePath)
+	if err != nil {
+		return seederr.Wrap(err)
+	}
+	err = scmProvider.PushBranch(branchName, "origin", branchName, false)
+	if err != nil {
+		return seederr.Wrap(err)
 	}
 	return nil
 }
