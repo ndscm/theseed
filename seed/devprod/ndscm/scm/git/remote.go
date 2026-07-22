@@ -43,12 +43,16 @@ func FetchBranch(gitDir string, remote string, remoteBranchName string, branchNa
 	return nil
 }
 
-func PushBranch(gitDir string, branchName string, remote string, remoteBranchName string) error {
+func PushBranch(gitDir string, branchName string, remote string, remoteBranchName string, force bool) error {
 	gitArgs := []string{}
 	if gitDir != "" {
 		gitArgs = append(gitArgs, "--git-dir", gitDir)
 	}
-	err := seedshell.ImpureRun("git", append(gitArgs, "push", "--force", remote, branchName+":"+remoteBranchName)...)
+	gitArgs = append(gitArgs, "push")
+	if force {
+		gitArgs = append(gitArgs, "--force")
+	}
+	err := seedshell.ImpureRun("git", append(gitArgs, remote, branchName+":"+remoteBranchName)...)
 	if err != nil {
 		return seederr.WrapErrorf("failed to push branch %v to remote %v: %w", branchName, remote, err)
 	}
