@@ -238,6 +238,12 @@ type Provider interface {
 	// worktree files and the index match source.
 	RestoreWorktree(worktreePath string, source string, staging bool) error
 
+	// UpdateStagingArea moves path — a file or directory — into the staging area
+	// when staging is true, or out of it (unstages) when staging is false.
+	// Staging never force-adds git-ignored content, and neither direction is an
+	// error when no files are actually moved.
+	UpdateStagingArea(worktreePath string, path string, staging bool) error
+
 	// CreateCommit records the staged changes in worktreePath as a new commit
 	// with the given message. When nothing is staged it first stages every
 	// change, including untracked files; when a subset is already staged it
