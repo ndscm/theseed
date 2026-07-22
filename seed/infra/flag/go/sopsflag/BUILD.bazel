@@ -8,6 +8,6 @@ go_library(
     deps = [
         "//seed/infra/error/go/seederr",
         "//seed/infra/flag/go/seedflag",
-        "@com_github_getsops_sops_v3//decrypt:go_default_library",
+        "@com_github_getsops_sops_v3//decrypt",
     ],
 )
