@@ -167,9 +167,9 @@ type Provider interface {
 	// the local ref branchName. Stale remote-tracking refs are pruned.
 	FetchBranch(remote string, remoteBranchName string, branchName string) error
 
-	// PushBranch force-pushes the local branchName to remote as
-	// remoteBranchName.
-	PushBranch(branchName string, remote string, remoteBranchName string) error
+	// PushBranch pushes the local branchName to remote as remoteBranchName. When
+	// force is true the push is a force-push, overwriting the remote branch.
+	PushBranch(branchName string, remote string, remoteBranchName string, force bool) error
 
 	// ListRemoteBranches returns the short names of remote-tracking branches
 	// under remote.
