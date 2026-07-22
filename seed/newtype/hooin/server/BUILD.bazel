@@ -18,6 +18,7 @@ go_library(
         "//seed/infra/auth/go/openidverify",
         "//seed/infra/error/go/seederr",
         "//seed/infra/flag/go/seedflag",
+        "//seed/infra/flag/go/sopsflag",
         "//seed/infra/grpc/go/seedgrpc",
         "//seed/infra/http/go/seedbearer",
         "//seed/infra/init/go/seedinit",
