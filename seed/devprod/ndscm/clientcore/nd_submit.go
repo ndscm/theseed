@@ -106,7 +106,7 @@ func NdSubmit(scmProvider scm.Provider, options NdSubmitOptions) error {
 	if err != nil {
 		return seederr.Wrap(err)
 	}
-	err = scmProvider.PushBranch(submitBranch, options.Remote, submitBranch)
+	err = scmProvider.PushBranch(submitBranch, options.Remote, submitBranch, true)
 	if err != nil {
 		return seederr.Wrap(err)
 	}
