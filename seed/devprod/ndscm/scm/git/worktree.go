@@ -48,6 +48,39 @@ func RestoreWorktree(worktreePath string, source string, staging bool) error {
 	return nil
 }
 
+func UpdateStagingArea(worktreePath string, path string, staging bool) error {
+	gitArgs := []string{}
+	if worktreePath != "" {
+		gitArgs = append(gitArgs, "-C", worktreePath)
+	}
+	if !staging {
+		// "reset" quietly restores path's index entries to HEAD, moving them out
+		// of the staging area. It is a silent no-op when nothing under path is
+		// staged, so unstaging never errors.
+		err := seedshell.ImpureRun("git", append(gitArgs, "reset", "--quiet", "--", path)...)
+		if err != nil {
+			return seederr.WrapErrorf("failed to unstage %v: %w", path, err)
+		}
+		return nil
+	}
+	// Explicitly naming an ignored file makes "git add" fail; skip it so ignored
+	// content is never force-added and staging nothing is not an error. A
+	// directory is never reported ignored on its own, so "git add" still stages
+	// its tracked changes while quietly skipping any ignored files within it.
+	err := seedshell.PureRun("git", append(gitArgs, "check-ignore", "--quiet", "--", path)...)
+	if err == nil {
+		// The file is ignored
+		return nil
+	}
+	// No "--force", so ignored files are left out; "git add" also stages the
+	// path's deletion and is a no-op when it has no changes.
+	err = seedshell.ImpureRun("git", append(gitArgs, "add", "--", path)...)
+	if err != nil {
+		return seederr.WrapErrorf("failed to stage %v: %w", path, err)
+	}
+	return nil
+}
+
 func CreateCommit(worktreePath string, message string) error {
 	gitArgs := []string{}
 	if worktreePath != "" {
