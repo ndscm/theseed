@@ -1,0 +1,10 @@
+--- BUILD.bazel
++++ BUILD.bazel
+@@ -97,6 +97,7 @@
+             "-DEFAULTLIB:ws2_32",
+             "-DEFAULTLIB:mswsock",
+         ],
++        "@platforms//os:android": [],
+         "//conditions:default": [
+             "-lpthread",
+         ],
