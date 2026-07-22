@@ -66,7 +66,12 @@ func createSecretWorktree(
 		}
 	} else {
 		// A secret space always starts as an orphan branch with no shared history.
-		err = scmProvider.CreateOrphanBranch(branchName, "secret: init")
+		message := ""
+		if userHandle != "" {
+			message = userHandle + ": "
+		}
+		message += "secret: init"
+		err = scmProvider.CreateOrphanBranch(branchName, message)
 		if err != nil {
 			return "", seederr.WrapErrorf("failed to create orphan branch %v: %v", branchName, err)
 		}
@@ -89,26 +94,64 @@ func createSecretWorktree(
 	return newWorktreePath, nil
 }
 
+func NdSecretSync(
+	scmProvider scm.Provider,
+	monorepoHome string, userHandle string, space string,
+) error {
+	_, _, exists := getSecretWorktree(monorepoHome, userHandle, space)
+	if !exists {
+		_, err := createSecretWorktree(scmProvider, monorepoHome, userHandle, space)
+		if err != nil {
+			return seederr.Wrap(err)
+		}
+	}
+	return nil
+}
+
+func NdSecretGetPath(
+	monorepoHome string, userHandle string, space string,
+	args []string,
+) error {
+	if len(args) != 1 {
+		return seederr.WrapErrorf("nd-secret usage: nd secret [--space=<space>] [--user] get-path <secret-path>")
+	}
+	secretPath := strings.TrimSpace(args[0])
+	_, worktreePath, exists := getSecretWorktree(monorepoHome, userHandle, space)
+	if !exists {
+		syncCommand := "nd secret"
+		if userHandle != "" {
+			syncCommand += " --user"
+		}
+		if space != "" && space != "main" {
+			syncCommand += " --space \"" + space + "\""
+		}
+		syncCommand += " sync"
+		return seederr.WrapErrorf("secret worktree is not initialized, run `%s` first.", syncCommand)
+	}
+	if filepath.IsAbs(secretPath) {
+		return seederr.WrapErrorf("secret path must be relative: %v", secretPath)
+	}
+	secretAbsPath := filepath.Join(worktreePath, secretPath)
+	secretRelPath, err := filepath.Rel(worktreePath, secretAbsPath)
+	if err != nil {
+		return seederr.Wrap(err)
+	}
+	if strings.HasPrefix(secretRelPath, "..") {
+		return seederr.WrapErrorf("secret path escapes the secret worktree: %v", secretPath)
+	}
+	fmt.Printf("%v\n", secretAbsPath)
+	return nil
+}
+
 var secretSpaceRegex = regexp.MustCompile(`^[a-z0-9-]+$`)
 
 func NdSecret(scmProvider scm.Provider, options NdSecretOptions) error {
 	if seedshell.ShellEval() {
 		return seederr.WrapErrorf("nd-secret should not run with --shell-eval")
 	}
-	getPath := false
-	secretPath := ""
+	subcommand := "sync"
 	if len(options.Args) > 0 {
-		subcommand := options.Args[0]
-		switch subcommand {
-		case "get-path":
-			if len(options.Args) != 2 {
-				return seederr.WrapErrorf("nd-secret usage: nd secret [--space=<space>] [--user] get-path <secret-path>")
-			}
-			getPath = true
-			secretPath = strings.TrimSpace(options.Args[1])
-		default:
-			return seederr.WrapErrorf("unknown nd-secret subcommand %v", subcommand)
-		}
+		subcommand = options.Args[0]
 	}
 	monorepoHome, err := scm.MonorepoHome()
 	if err != nil {
@@ -132,26 +175,19 @@ func NdSecret(scmProvider scm.Provider, options NdSecretOptions) error {
 			return seederr.Wrap(err)
 		}
 	}
-	_, worktreePath, exists := getSecretWorktree(monorepoHome, userHandle, space)
-	if !exists {
-		worktreePath, err = createSecretWorktree(scmProvider, monorepoHome, userHandle, space)
+	switch subcommand {
+	case "sync":
+		err := NdSecretSync(scmProvider, monorepoHome, userHandle, space)
 		if err != nil {
 			return seederr.Wrap(err)
 		}
-	}
-	if getPath {
-		if filepath.IsAbs(secretPath) {
-			return seederr.WrapErrorf("secret path must be relative: %v", secretPath)
-		}
-		secretAbsPath := filepath.Join(worktreePath, secretPath)
-		secretRelPath, err := filepath.Rel(worktreePath, secretAbsPath)
+	case "get-path":
+		err := NdSecretGetPath(monorepoHome, userHandle, space, options.Args[1:])
 		if err != nil {
 			return seederr.Wrap(err)
 		}
-		if strings.HasPrefix(secretRelPath, "..") {
-			return seederr.WrapErrorf("secret path escapes the secret worktree: %v", secretPath)
-		}
-		fmt.Printf("%v\n", secretAbsPath)
+	default:
+		return seederr.WrapErrorf("unknown nd-secret subcommand %v", subcommand)
 	}
 	return nil
 }
