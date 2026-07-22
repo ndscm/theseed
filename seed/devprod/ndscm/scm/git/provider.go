@@ -258,8 +258,8 @@ func (g *GitProvider) FetchBranch(remote string, remoteBranchName string, branch
 	return FetchBranch("", remote, remoteBranchName, branchName)
 }
 
-func (g *GitProvider) PushBranch(branchName string, remote string, remoteBranchName string) error {
-	return PushBranch("", branchName, remote, remoteBranchName)
+func (g *GitProvider) PushBranch(branchName string, remote string, remoteBranchName string, force bool) error {
+	return PushBranch("", branchName, remote, remoteBranchName, force)
 }
 
 func (g *GitProvider) ListRemoteBranches(remote string) ([]string, error) {
