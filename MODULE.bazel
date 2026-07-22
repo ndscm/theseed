@@ -14,9 +14,11 @@ bazel_dep(name = "platforms", version = "1.0.0")
 # Android
 
 ## Android Command Line Tools
+
 include("//seed/vendor/android/cmdline-tools:cmdline-tools.MODULE.bazel")
 
 ## Android SDK
+
 include("//seed/vendor/android/sdk:sdk.MODULE.bazel")
 
 # CC
@@ -24,6 +26,7 @@ include("//seed/vendor/android/sdk:sdk.MODULE.bazel")
 include("//seed/vendor/cc:cc.MODULE.bazel")
 
 ## Abseil
+
 include("//seed/vendor/abseil:abseil.MODULE.bazel")
 
 ## Boost
@@ -39,6 +42,7 @@ include("//seed/vendor/container:container.MODULE.bazel")
 include("//seed/vendor/go:go.MODULE.bazel")
 
 # Grpc
+
 bazel_dep(name = "grpc", version = "1.80.0")
 bazel_dep(name = "grpc-java", version = "1.78.0")
 
@@ -77,13 +81,17 @@ include("//seed/vendor/shell:shell.MODULE.bazel")
 # Apps
 
 ## Bazel
+
 include("//seed/vendor/bazel:bazel.MODULE.bazel")
 
 ## Hedronvision Bazel Compile Commands Extractor
+
 include("//contrib/vendor/hedronvision/bazel-compile-commands-extractor:bazel-compile-commands-extractor.MODULE.bazel")
 
 ## Keycloak
+
 include("//seed/vendor/keycloak:keycloak.MODULE.bazel")
 
 ## VS Code
+
 include("//seed/vendor/vscode:vscode.MODULE.bazel")
