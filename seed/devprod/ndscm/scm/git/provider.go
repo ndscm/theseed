@@ -353,6 +353,10 @@ func (g *GitProvider) RestoreWorktree(worktreePath string, source string, stagin
 	return RestoreWorktree(worktreePath, source, staging)
 }
 
+func (g *GitProvider) UpdateStagingArea(worktreePath string, path string, staging bool) error {
+	return UpdateStagingArea(worktreePath, path, staging)
+}
+
 func (g *GitProvider) CreateCommit(worktreePath string, message string) error {
 	return CreateCommit(worktreePath, message)
 }
