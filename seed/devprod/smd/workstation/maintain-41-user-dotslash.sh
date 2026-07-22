@@ -7,6 +7,12 @@ if [[ ",${maintain_scopes}," == *",user,"* ]]; then
   printf "\e[34m[user] Checking dotslash tools...\e[0m\n"
 
   if [[ "${oslike}" == "debian" || "${oslike}" == "darwin" ]]; then
+    cp -a -f ./seed/vendor/age/bin/age "${HOME}/.local/bin/age"
+    cp -a -f ./seed/vendor/age/bin/age-inspect "${HOME}/.local/bin/age-inspect"
+    cp -a -f ./seed/vendor/age/bin/age-inspect.dotslash "${HOME}/.local/bin/age-inspect.dotslash"
+    cp -a -f ./seed/vendor/age/bin/age-keygen "${HOME}/.local/bin/age-keygen"
+    cp -a -f ./seed/vendor/age/bin/age-keygen.dotslash "${HOME}/.local/bin/age-keygen.dotslash"
+    cp -a -f ./seed/vendor/age/bin/age.dotslash "${HOME}/.local/bin/age.dotslash"
     cp -a -f ./seed/vendor/bazel/bin/bazel "${HOME}/.local/bin/bazel"
     cp -a -f ./seed/vendor/bazel/bin/bazelisk "${HOME}/.local/bin/bazelisk"
     cp -a -f ./seed/vendor/bazel/bin/bazelisk.dotslash "${HOME}/.local/bin/bazelisk.dotslash"
@@ -53,6 +59,8 @@ if [[ ",${maintain_scopes}," == *",user,"* ]]; then
     cp -a -f ./seed/vendor/rust/bin/rustup "${HOME}/.local/bin/rustup"
     cp -a -f ./seed/vendor/rust/bin/rustup-init "${HOME}/.local/bin/rustup-init"
     cp -a -f ./seed/vendor/rust/bin/rustup-init.dotslash "${HOME}/.local/bin/rustup-init.dotslash"
+    cp -a -f ./seed/vendor/sops/bin/sops "${HOME}/.local/bin/sops"
+    cp -a -f ./seed/vendor/sops/bin/sops.dotslash "${HOME}/.local/bin/sops.dotslash"
     cp -a -f ./seed/vendor/uv/bin/uv "${HOME}/.local/bin/uv"
     cp -a -f ./seed/vendor/uv/bin/uv.dotslash "${HOME}/.local/bin/uv.dotslash"
     cp -a -f ./seed/vendor/uv/bin/uvx "${HOME}/.local/bin/uvx"
