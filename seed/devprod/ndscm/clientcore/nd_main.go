@@ -86,7 +86,7 @@ func createAreaWorktree(
 				return "", seederr.WrapErrorf("failed to create branch %v: %v", branchName, err)
 			}
 		}
-		err = scmProvider.PushBranch(branchName, remote, remoteBranchName)
+		err = scmProvider.PushBranch(branchName, remote, remoteBranchName, true)
 		if err != nil {
 			return "", seederr.WrapErrorf("failed to push branch %v to %v: %v", branchName, remote, err)
 		}
