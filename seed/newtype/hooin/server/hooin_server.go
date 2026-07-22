@@ -11,6 +11,7 @@ import (
 	"github.com/ndscm/theseed/seed/infra/auth/go/openidverify"
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
 	"github.com/ndscm/theseed/seed/infra/flag/go/seedflag"
+	"github.com/ndscm/theseed/seed/infra/flag/go/sopsflag"
 	"github.com/ndscm/theseed/seed/infra/grpc/go/seedgrpc"
 	"github.com/ndscm/theseed/seed/infra/http/go/seedbearer"
 	"github.com/ndscm/theseed/seed/infra/init/go/seedinit"
@@ -39,7 +40,7 @@ var flagOpenidClientId = seedflag.DefineString(
 	"openid_client_id", "",
 	"Client ID for OpenID Connect",
 )
-var flagOpenidClientSecret = seedflag.DefineSecret(
+var flagOpenidClientSecret = sopsflag.DefineSecret(
 	"openid_client_secret",
 	"Client Secret for OpenID Connect",
 )
