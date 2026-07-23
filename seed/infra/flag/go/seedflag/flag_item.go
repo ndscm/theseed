@@ -6,8 +6,8 @@ import (
 
 type FlagDefinition interface {
 	flag.Value
+
 	Usage() string
-	flag.Value
 }
 
 type FlagItem struct {
