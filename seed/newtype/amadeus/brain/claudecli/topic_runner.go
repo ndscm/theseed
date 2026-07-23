@@ -390,6 +390,14 @@ func (tr *topicRunner) signalFail(err error) {
 	}
 }
 
+// getStepHandler returns the registered handler, or nil if none. The lock is
+// held only for the read so the handler is never invoked under it.
+func (tr *topicRunner) getStepHandler() brain.BrainStepHandler {
+	tr.handlerMutex.RLock()
+	defer tr.handlerMutex.RUnlock()
+	return tr.handler
+}
+
 // startSchedulerLoop owns the scheduler state. It records incoming inputs,
 // promotes thread groups as the ongoing one frees the slot, and hands the next
 // writable input to startWriteLoop over tr.next. It never writes to stdin
@@ -423,22 +431,6 @@ func (tr *topicRunner) startSchedulerLoop() {
 				head.err <- err
 			}
 			tr.signalFail(err)
-			return
-		}
-	}
-}
-
-// startWriteLoop is the single goroutine that writes to tr.stdin, so Input
-// callers never share a live Write call. It writes each input the scheduler
-// loop hands to it over tr.next and answers that input's caller. It exits when
-// runnerCtx is cancelled; a Write stuck on a stalled subprocess is unblocked by
-// Close() closing stdin.
-func (tr *topicRunner) startWriteLoop() {
-	for {
-		select {
-		case req := <-tr.next:
-			tr.writeInput(req)
-		case <-tr.runnerCtx.Done():
 			return
 		}
 	}
@@ -493,8 +485,50 @@ func (tr *topicRunner) writeInput(req *inputPromise) {
 			sibling.err <- seederr.Wrap(err)
 		}
 		tr.signalPromote()
+		req.err <- seederr.Wrap(err)
+		return
 	}
-	req.err <- err
+	req.err <- nil
+
+	// Echo the just-written input back to the step handler as a
+	// "claudecli-input" step, mirroring the stdout steps dispatchLine emits so a
+	// handler sees the input side of the conversation too. The write already
+	// succeeded, so this is best-effort: a failure to encode the payload only
+	// drops the echo rather than failing the input.
+	data, err := payload.Data()
+	if err != nil {
+		seedlog.Warnf("topic %q: encoding claudecli-input step: %v", tr.topic, err)
+		return
+	}
+	step := &brainpb.BrainStep{
+		Uuid:       uuid.NewString(),
+		Timestamp:  timestamppb.Now(),
+		Type:       "claudecli-input",
+		Topic:      tr.topic,
+		ThreadUuid: req.input.GetThreadUuid(),
+		Data:       data,
+	}
+	handler := tr.getStepHandler()
+	if handler == nil {
+		return
+	}
+	handler.HandleBrainStep(tr.runnerCtx, tr.topic, step)
+}
+
+// startWriteLoop is the single goroutine that writes to tr.stdin, so Input
+// callers never share a live Write call. It writes each input the scheduler
+// loop hands to it over tr.next and answers that input's caller. It exits when
+// runnerCtx is cancelled; a Write stuck on a stalled subprocess is unblocked by
+// Close() closing stdin.
+func (tr *topicRunner) startWriteLoop() {
+	for {
+		select {
+		case req := <-tr.next:
+			tr.writeInput(req)
+		case <-tr.runnerCtx.Done():
+			return
+		}
+	}
 }
 
 func (tr *topicRunner) readStdout(stdout io.ReadCloser) {
@@ -560,10 +594,7 @@ func (tr *topicRunner) dispatchLine(line []byte) {
 		}
 	}
 
-	tr.handlerMutex.RLock()
-	handler := tr.handler
-	tr.handlerMutex.RUnlock()
-
+	handler := tr.getStepHandler()
 	if handler == nil {
 		return
 	}
