@@ -23,9 +23,9 @@ block.
    `CreateXXX`).
 3. **Layout Order:**
    - **First:** The `type` declaration.
-   - **Second:** The `NewXXX` or `CreateXXX` constructor / factory (if
-     applicable).
-   - **Third:** All receiver methods bound to that type.
+   - **Second:** All receiver methods bound to that type.
+   - **Third:** The `NewXXX` or `CreateXXX` constructor / factory (if
+     applicable), placed immediately after all the receiver methods.
 
 ### Code Example
 
@@ -42,15 +42,7 @@ type KeycloakAuthenticator struct {
     timeout  time.Duration
 }
 
-// 2. Constructor (Immediately follows type)
-func NewKeycloakAuthenticator(clientID string) *KeycloakAuthenticator {
-    return &KeycloakAuthenticator{
-        clientID: clientID,
-        timeout:  5 * time.Second,
-    }
-}
-
-// 3. Receiver Methods (Tightly grouped, no interleaving)
+// 2. Receiver Methods (Tightly grouped, no interleaving)
 func (k *KeycloakAuthenticator) Authenticate(token string) error {
     // ... auth logic ...
     return nil
@@ -59,6 +51,14 @@ func (k *KeycloakAuthenticator) Authenticate(token string) error {
 func (k *KeycloakAuthenticator) refresh() error {
     // ... refresh logic ...
     return nil
+}
+
+// 3. Constructor (Immediately follows the last method)
+func NewKeycloakAuthenticator(clientID string) *KeycloakAuthenticator {
+    return &KeycloakAuthenticator{
+        clientID: clientID,
+        timeout:  5 * time.Second,
+    }
 }
 
 // ==========================================
@@ -81,8 +81,8 @@ meaningful on its own. If a struct works correctly as `XXX{}` (e.g.,
 zero value directly.
 
 When a constructor is needed, choose exactly one of the two patterns below. **A
-type should expose either a `NewXXX` function OR a `CreateXXX` function, but
-never both.**
+type should expose either a `NewXXX` function OR a heavy-setup function
+(`CreateXXX`, or a fitting variant like `LoadXXX`), but never both.**
 
 ### Pattern A: The `New` Function (Simple Setup)
 
@@ -101,6 +101,10 @@ type SandboxConfig struct {
     RootPriv  bool
 }
 
+func (s *SandboxConfig) IsValid() bool {
+    return s.ImagePath != ""
+}
+
 // NewSandboxConfig acts as a static factory.
 // It does not return an error and performs no I/O.
 func NewSandboxConfig(image string) *SandboxConfig {
@@ -108,10 +112,6 @@ func NewSandboxConfig(image string) *SandboxConfig {
         ImagePath: image,
         RootPriv:  false, // Assign simple defaults
     }
-}
-
-func (s *SandboxConfig) IsValid() bool {
-    return s.ImagePath != ""
 }
 ```
 
@@ -121,7 +121,15 @@ If setting up the object requires reaching out to a database, parsing
 configuration files, or resolving network addresses, the construction might
 fail. In these cases, use a `CreateXXX` function that returns `(*XXX, error)`.
 
-**Constraints for `CreateXXX`:**
+`Create` is the default verb for heavy setup, but it is not the only one. When a
+different verb best describes the intuition of the operation, prefer it — for
+example, `LoadXXX` when the object is hydrated from a file or persisted store,
+`OpenXXX` for a connection or handle, or `DialXXX` for a network endpoint. These
+verbs follow the same contract as `CreateXXX` (they return `(*XXX, error)` and
+perform the heavy lifting); the naming just reads more naturally at the call
+site.
+
+**Constraints for `CreateXXX` (and its heavy-setup variants like `LoadXXX`):**
 
 - **Must return `(*XXX, error)`.**
 - **Used for side-effects and heavy lifting.**
@@ -131,6 +139,11 @@ fail. In these cases, use a `CreateXXX` function that returns `(*XXX, error)`.
 type DatabaseClient struct {
     dsn  string
     conn *sql.DB
+}
+
+func (d *DatabaseClient) Query(query string) error {
+    // ... query logic ...
+    return nil
 }
 
 // CreateDatabaseClient handles the heavy lifting that might fail.
@@ -148,11 +161,6 @@ func CreateDatabaseClient(ctx context.Context, dsn string) (*DatabaseClient, err
         dsn:  dsn,
         conn: db,
     }, nil
-}
-
-func (d *DatabaseClient) Query(query string) error {
-    // ... query logic ...
-    return nil
 }
 ```
 
