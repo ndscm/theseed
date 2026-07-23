@@ -10,10 +10,11 @@ import tw from "../../../../devprod/ts/grouping-tailwind"
 // which also binds the topic and thread uuid before dispatching, so a reply
 // lands under the same thread.
 const BrainThreadInput: React.FC<{
+  ref?: React.Ref<HTMLDivElement>
   value?: string
   onChange?: React.ChangeEventHandler<HTMLTextAreaElement>
   onSend?: () => void
-}> = ({ value, onChange, onSend }) => {
+}> = ({ ref, value, onChange, onSend }) => {
   const { t } = useTranslation("person")
   const [isMultilineEnabled, setIsMultilineEnabled] = useState(true)
 
@@ -56,6 +57,7 @@ const BrainThreadInput: React.FC<{
 
   return (
     <div
+      ref={ref}
       className={tw({
         layout: "mt-3 flex flex-col items-stretch pt-3",
         appearance: "border-base-200 border-t",
