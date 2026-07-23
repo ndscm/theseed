@@ -73,7 +73,7 @@ const PersonBrainPage: React.FC<{ params: { handle: string } }> = ({
     const uuid = crypto.randomUUID()
     const brainInput: BrainInput = Protobuf.create(BrainInputSchema, {
       uuid,
-      taskUuid: uuid,
+      threadUuid: uuid,
       text,
       topic: (isTopicShown && inputTopic) || "default",
     })

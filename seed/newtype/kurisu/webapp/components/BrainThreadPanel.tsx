@@ -528,7 +528,7 @@ const BrainThreadPanel: React.FC<{
   }, [steps])
 
   return (
-    <KurisuPanel title={thread.input.topic} subtitle={thread.input.taskUuid}>
+    <KurisuPanel title={thread.input.topic} subtitle={thread.input.threadUuid}>
       <div
         className={tw({
           layout: "flex items-start gap-2",
