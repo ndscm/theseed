@@ -231,52 +231,6 @@ func newInputScheduler() *inputScheduler {
 	return s
 }
 
-type topicRunner struct {
-	topic    string
-	topicDir string
-
-	// inbox delivers inputs to startSchedulerLoop, which records them in scheduler.
-	// Using a channel instead of a mutex lets Input select on ctx.Done() when
-	// the subprocess stalls reading stdin, rather than queueing behind a stuck
-	// Write call that holds a lock. It is buffered so that a burst of Input
-	// callers can enqueue without blocking on the scheduler loop; once the
-	// buffer fills, Input blocks until a slot frees or its context is cancelled.
-	inbox chan inputPromise
-
-	// promote nudges startSchedulerLoop to re-evaluate after the ongoing thread
-	// frees its slot. It is signalled non-blockingly from the stdout goroutine
-	// (on a "result" line) and from a failed write; a buffer of one coalesces
-	// redundant nudges since at most one promotion is pending at a time.
-	promote chan struct{}
-
-	// next carries the single next input to write from startSchedulerLoop to
-	// startWriteLoop. It is unbuffered so that at most one input is ever in
-	// flight outside the scheduler, keeping shutdown accounting exact.
-	next chan *inputPromise
-
-	// scheduler groups pending inputs by threadUuid. Inputs for the ongoing thread
-	// stream straight to stdin; inputs for other threads are buffered and
-	// promoted a whole group at a time once the ongoing thread frees its slot
-	// (signalled by a stream output line of type "result"). Hibernate(wait=true)
-	// uses it to block until the runner is idle or the subprocess has exited.
-	scheduler *inputScheduler
-
-	runnerCtx    context.Context
-	runnerCancel context.CancelFunc
-
-	stdin io.WriteCloser
-
-	// wait blocks until the claude process exits, returning its exit error.
-	// It abstracts over the two launch modes so waitCmd need not know whether
-	// claude runs as a host subprocess or inside the playpen container.
-	wait func() error
-
-	handlerMutex sync.RWMutex
-	handler      brain.BrainStepHandler
-
-	done chan struct{}
-}
-
 // brainProc is the launched claude process, either a subprocess on the host or
 // a process running inside the playpen container. Both expose the same stdio
 // pipes plus a wait, so the runner's loops don't care which is in use.
@@ -371,46 +325,50 @@ func startBrainProc(
 	}, nil
 }
 
-// newTopicRunner spawns the per-topic `claude` process in stream-json mode
-// under topicDir and returns a runner that serializes stdin writes and
-// dispatches stdout JSON lines as BrainSteps. When pc is non-nil the process
-// runs inside the playpen container instead of directly on the host.
-func newTopicRunner(topic string, topicDir string, pc *playpen.PlaypenController) (*topicRunner, error) {
-	ctx, cancel := context.WithCancel(context.Background())
+type topicRunner struct {
+	topic    string
+	topicDir string
 
-	proc, err := startBrainProc(ctx, topicDir, pc)
-	if err != nil {
-		cancel()
-		return nil, seederr.Wrap(err)
-	}
+	// inbox delivers inputs to startSchedulerLoop, which records them in scheduler.
+	// Using a channel instead of a mutex lets Input select on ctx.Done() when
+	// the subprocess stalls reading stdin, rather than queueing behind a stuck
+	// Write call that holds a lock. It is buffered so that a burst of Input
+	// callers can enqueue without blocking on the scheduler loop; once the
+	// buffer fills, Input blocks until a slot frees or its context is cancelled.
+	inbox chan inputPromise
 
-	tr := &topicRunner{
-		topic:    topic,
-		topicDir: topicDir,
+	// promote nudges startSchedulerLoop to re-evaluate after the ongoing thread
+	// frees its slot. It is signalled non-blockingly from the stdout goroutine
+	// (on a "result" line) and from a failed write; a buffer of one coalesces
+	// redundant nudges since at most one promotion is pending at a time.
+	promote chan struct{}
 
-		inbox:     make(chan inputPromise, 32),
-		promote:   make(chan struct{}, 1),
-		next:      make(chan *inputPromise),
-		scheduler: newInputScheduler(),
+	// next carries the single next input to write from startSchedulerLoop to
+	// startWriteLoop. It is unbuffered so that at most one input is ever in
+	// flight outside the scheduler, keeping shutdown accounting exact.
+	next chan *inputPromise
 
-		runnerCtx:    ctx,
-		runnerCancel: cancel,
-		stdin:        proc.stdin,
-		wait:         proc.wait,
+	// scheduler groups pending inputs by threadUuid. Inputs for the ongoing thread
+	// stream straight to stdin; inputs for other threads are buffered and
+	// promoted a whole group at a time once the ongoing thread frees its slot
+	// (signalled by a stream output line of type "result"). Hibernate(wait=true)
+	// uses it to block until the runner is idle or the subprocess has exited.
+	scheduler *inputScheduler
 
-		done: make(chan struct{}),
-	}
+	runnerCtx    context.Context
+	runnerCancel context.CancelFunc
 
-	go tr.startSchedulerLoop()
-	go tr.startWriteLoop()
-	go tr.readStdout(proc.stdout)
-	go tr.readStderr(proc.stderr)
-	go tr.waitCmd()
+	stdin io.WriteCloser
 
-	seedlog.Infof("topic %q: claude started (pid=%d, dir=%s)",
-		topic, proc.pid, topicDir)
+	// wait blocks until the claude process exits, returning its exit error.
+	// It abstracts over the two launch modes so waitCmd need not know whether
+	// claude runs as a host subprocess or inside the playpen container.
+	wait func() error
 
-	return tr, nil
+	handlerMutex sync.RWMutex
+	handler      brain.BrainStepHandler
+
+	done chan struct{}
 }
 
 // signalPromote nudges the scheduler loop to re-evaluate now that the ongoing
@@ -656,4 +614,46 @@ func (tr *topicRunner) Hibernate(wait bool) error {
 	tr.runnerCancel()
 	<-tr.done
 	return seederr.Wrap(err)
+}
+
+// newTopicRunner spawns the per-topic `claude` process in stream-json mode
+// under topicDir and returns a runner that serializes stdin writes and
+// dispatches stdout JSON lines as BrainSteps. When pc is non-nil the process
+// runs inside the playpen container instead of directly on the host.
+func newTopicRunner(topic string, topicDir string, pc *playpen.PlaypenController) (*topicRunner, error) {
+	ctx, cancel := context.WithCancel(context.Background())
+
+	proc, err := startBrainProc(ctx, topicDir, pc)
+	if err != nil {
+		cancel()
+		return nil, seederr.Wrap(err)
+	}
+
+	tr := &topicRunner{
+		topic:    topic,
+		topicDir: topicDir,
+
+		inbox:     make(chan inputPromise, 32),
+		promote:   make(chan struct{}, 1),
+		next:      make(chan *inputPromise),
+		scheduler: newInputScheduler(),
+
+		runnerCtx:    ctx,
+		runnerCancel: cancel,
+		stdin:        proc.stdin,
+		wait:         proc.wait,
+
+		done: make(chan struct{}),
+	}
+
+	go tr.startSchedulerLoop()
+	go tr.startWriteLoop()
+	go tr.readStdout(proc.stdout)
+	go tr.readStderr(proc.stderr)
+	go tr.waitCmd()
+
+	seedlog.Infof("topic %q: claude started (pid=%d, dir=%s)",
+		topic, proc.pid, topicDir)
+
+	return tr, nil
 }
