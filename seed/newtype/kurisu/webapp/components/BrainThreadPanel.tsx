@@ -21,6 +21,7 @@ import {
   type BrainStep,
   BrainStepSchema,
 } from "../../../gajetto/proto/brain_pb"
+import BrainThreadInput from "./BrainThreadInput"
 import KurisuPanel from "./KurisuPanel"
 
 export type BrainThread = {
@@ -459,9 +460,16 @@ const BrainStreamingStepItem: React.FC = () => {
 
 const BrainThreadPanel: React.FC<{
   thread: BrainThread
-}> = ({ thread }) => {
+  onSend?: (
+    topic: string,
+    threadUuid: string,
+    content: { text?: string },
+  ) => void
+  onFinish?: (pendingInputText: string) => void
+}> = ({ thread, onSend, onFinish }) => {
   const [steps, setSteps] = React.useState<BrainStep[]>([])
   const [streaming, setStreaming] = React.useState(false)
+  const [inputText, setInputText] = React.useState("")
   const startedRef = useRef(false)
   const spinnerRef = useRef<HTMLDivElement>(null)
   const spinnerVisibleRef = useRef(true)
@@ -513,6 +521,20 @@ const BrainThreadPanel: React.FC<{
   useEffect(() => {
     start()
   }, [start])
+
+  // When a thread stops streaming, hand its still-pending draft back so it is
+  // not lost. `streaming` is the only dependency: it flips false exactly once,
+  // when the live loop ends, so this fires a single time with the draft from
+  // that render. `startedRef` skips the initial not-yet-streaming render, and
+  // keeping onFinish/inputText out of the deps stops the fresh inline onFinish
+  // from re-firing it on every unrelated render.
+  useEffect(() => {
+    if (!startedRef.current || streaming) {
+      return
+    }
+    onFinish?.(inputText)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [streaming])
 
   const chain: React.ReactNode[] = useMemo(() => {
     const result: React.ReactNode[] = []
@@ -568,6 +590,18 @@ const BrainThreadPanel: React.FC<{
         <div ref={spinnerRef}>
           <BrainStreamingStepItem />
         </div>
+      )}
+      {streaming && (
+        <BrainThreadInput
+          value={inputText}
+          onChange={(e) => setInputText(e.target.value)}
+          onSend={() => {
+            onSend?.(thread.input.topic, thread.input.threadUuid, {
+              text: inputText,
+            })
+            setInputText("")
+          }}
+        />
       )}
     </KurisuPanel>
   )
