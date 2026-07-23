@@ -471,34 +471,36 @@ const BrainThreadPanel: React.FC<{
   const [streaming, setStreaming] = React.useState(false)
   const [inputText, setInputText] = React.useState("")
   const startedRef = useRef(false)
-  const spinnerRef = useRef<HTMLDivElement>(null)
-  const spinnerVisibleRef = useRef(true)
+  const inputRef = useRef<HTMLDivElement>(null)
+  const inputVisibleRef = useRef(true)
 
   useEffect(() => {
     setSteps(thread.steps)
   }, [thread])
 
-  // Track whether the streaming spinner is on screen so we only auto-scroll
-  // when the user is already following the tail (not when they've scrolled up).
+  // Track whether the input container is on screen so we only auto-scroll when
+  // the user is already following the tail (not when they've scrolled up). The
+  // container only exists while streaming, so re-run on `streaming` to attach
+  // when it mounts and disconnect when it unmounts.
   useEffect(() => {
-    const el = spinnerRef.current
-    if (!el) {
+    const inputContainer = inputRef.current
+    if (!inputContainer) {
       return
     }
     const observer = new IntersectionObserver(([entry]) => {
-      spinnerVisibleRef.current = entry?.isIntersecting ?? false
+      inputVisibleRef.current = entry?.isIntersecting ?? false
     })
-    observer.observe(el)
+    observer.observe(inputContainer)
     return () => {
       observer.disconnect()
     }
   }, [streaming])
 
-  // On new steps, keep the latest element in view only if the spinner was
-  // already visible.
+  // While the thread is alive, keep its end in view as new steps arrive — but
+  // only if the user was already following the tail.
   useEffect(() => {
-    if (streaming && spinnerVisibleRef.current) {
-      spinnerRef.current?.scrollIntoView({ behavior: "smooth", block: "end" })
+    if (streaming && inputVisibleRef.current) {
+      inputRef.current?.scrollIntoView({ behavior: "smooth", block: "end" })
     }
   }, [steps, streaming])
 
@@ -586,13 +588,10 @@ const BrainThreadPanel: React.FC<{
         <span>{thread.input.text}</span>
       </div>
       {chain}
-      {streaming && (
-        <div ref={spinnerRef}>
-          <BrainStreamingStepItem />
-        </div>
-      )}
+      {streaming && <BrainStreamingStepItem />}
       {streaming && (
         <BrainThreadInput
+          ref={inputRef}
           value={inputText}
           onChange={(e) => setInputText(e.target.value)}
           onSend={() => {
