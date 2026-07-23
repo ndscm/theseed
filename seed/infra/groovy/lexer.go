@@ -19,65 +19,6 @@ type lexer struct {
 	tokens []Token
 }
 
-func newLexer(src string) *lexer {
-	return &lexer{src: src, line: 1, col: 1}
-}
-
-func lex(src string) ([]Token, error) {
-	l := newLexer(src)
-	for l.off < len(l.src) {
-		start := l.position()
-		r := l.peek()
-		switch {
-		case r == '\r' || r == '\n':
-			literal := l.scanNewline()
-			l.emit(TokenNewline, literal, start)
-		case r == ' ' || r == '\t' || r == '\f':
-			literal := l.scanWhile(func(r rune) bool { return r == ' ' || r == '\t' || r == '\f' })
-			l.emit(TokenWhitespace, literal, start)
-		case r == '/' && l.peekN(1) == '/':
-			l.emit(TokenComment, l.scanLineComment(), start)
-		case r == '/' && l.peekN(1) == '*':
-			literal, err := l.scanBlockComment()
-			if err != nil {
-				return nil, err
-			}
-			l.emit(TokenComment, literal, start)
-		case r == '\'' || r == '"':
-			literal, err := l.scanQuotedString(r)
-			if err != nil {
-				return nil, err
-			}
-			l.emit(TokenString, literal, start)
-		case r == '$' && l.peekN(1) == '/':
-			literal, err := l.scanDollarSlashyString()
-			if err != nil {
-				return nil, err
-			}
-			l.emit(TokenString, literal, start)
-		case unicode.IsLetter(r) || r == '_' || r == '$':
-			literal := l.scanIdent()
-			kind := TokenIdentifier
-			if groovyKeywords[literal] {
-				kind = TokenKeyword
-			}
-			l.emit(kind, literal, start)
-		case unicode.IsDigit(r):
-			l.emit(TokenNumber, l.scanNumber(), start)
-		case r == '/' && l.canStartSlashyString():
-			literal, err := l.scanSlashyString()
-			if err != nil {
-				return nil, err
-			}
-			l.emit(TokenString, literal, start)
-		default:
-			l.emit(TokenSymbol, l.scanSymbol(), start)
-		}
-	}
-	l.emit(TokenEOF, "", l.position())
-	return l.tokens, nil
-}
-
 func (l *lexer) position() Position {
 	return Position{Offset: l.off, Line: l.line, Column: l.col}
 }
@@ -309,4 +250,63 @@ func (l *lexer) scanSymbol() string {
 	}
 	l.advance()
 	return l.src[start:l.off]
+}
+
+func newLexer(src string) *lexer {
+	return &lexer{src: src, line: 1, col: 1}
+}
+
+func lex(src string) ([]Token, error) {
+	l := newLexer(src)
+	for l.off < len(l.src) {
+		start := l.position()
+		r := l.peek()
+		switch {
+		case r == '\r' || r == '\n':
+			literal := l.scanNewline()
+			l.emit(TokenNewline, literal, start)
+		case r == ' ' || r == '\t' || r == '\f':
+			literal := l.scanWhile(func(r rune) bool { return r == ' ' || r == '\t' || r == '\f' })
+			l.emit(TokenWhitespace, literal, start)
+		case r == '/' && l.peekN(1) == '/':
+			l.emit(TokenComment, l.scanLineComment(), start)
+		case r == '/' && l.peekN(1) == '*':
+			literal, err := l.scanBlockComment()
+			if err != nil {
+				return nil, err
+			}
+			l.emit(TokenComment, literal, start)
+		case r == '\'' || r == '"':
+			literal, err := l.scanQuotedString(r)
+			if err != nil {
+				return nil, err
+			}
+			l.emit(TokenString, literal, start)
+		case r == '$' && l.peekN(1) == '/':
+			literal, err := l.scanDollarSlashyString()
+			if err != nil {
+				return nil, err
+			}
+			l.emit(TokenString, literal, start)
+		case unicode.IsLetter(r) || r == '_' || r == '$':
+			literal := l.scanIdent()
+			kind := TokenIdentifier
+			if groovyKeywords[literal] {
+				kind = TokenKeyword
+			}
+			l.emit(kind, literal, start)
+		case unicode.IsDigit(r):
+			l.emit(TokenNumber, l.scanNumber(), start)
+		case r == '/' && l.canStartSlashyString():
+			literal, err := l.scanSlashyString()
+			if err != nil {
+				return nil, err
+			}
+			l.emit(TokenString, literal, start)
+		default:
+			l.emit(TokenSymbol, l.scanSymbol(), start)
+		}
+	}
+	l.emit(TokenEOF, "", l.position())
+	return l.tokens, nil
 }
