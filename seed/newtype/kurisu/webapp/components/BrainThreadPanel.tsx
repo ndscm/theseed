@@ -211,8 +211,8 @@ const BrainStepItem: React.FC<{
   return (
     <div
       className={tw({
-        layout: "mt-3 flex flex-col",
-        appearance: "border-base-200 border-t pt-3",
+        layout: "flex flex-col pt-3 pb-3",
+        appearance: "border-base-200 border-t",
       })}
     >
       <button
@@ -243,6 +243,50 @@ const BrainStepItem: React.FC<{
   )
 }
 
+/**
+ * Renders a locally-recorded input step (`type: "input"`).
+ *
+ * This is the frontend's own record of what the user submitted, appended
+ * optimistically the moment they send — before any server round-trip. It is the
+ * "record the input" half of the pair; {@link BrainInputStepItem} is the
+ * "confirm the server received it" half, so both may show the same text by
+ * design.
+ *
+ * The step's `data` is a plain `{ text }` object created on the client (not a
+ * decoded Claude payload), so it is read directly rather than through
+ * {@link ClaudePayload.DecodeStreamInput}.
+ */
+const BrainInputView: React.FC<{ step: BrainStep }> = ({ step }) => {
+  if (typeof step.data !== "object") {
+    return <>error: missing data</>
+  }
+  const data = step.data as { text?: string }
+
+  return (
+    <div
+      className={tw({
+        layout: "flex items-center gap-2 pt-3 pb-3",
+        appearance: "border-base-200 text-base-content border-t text-sm",
+      })}
+    >
+      <ZapIcon className={tw({ layout: "size-4 shrink-0" })} />
+      <span>{data?.text ?? ""}</span>
+    </div>
+  )
+}
+
+/**
+ * Renders a server-confirmed input step (`type: "claudecli-input"`).
+ *
+ * The brain echoes each input it actually wrote to the Claude CLI back over the
+ * live stream (see `writeInput` in `topic_runner.go`), so this is the "confirm
+ * the server received it" half of the pair — the counterpart to
+ * {@link BrainInputView}'s optimistic local record. Both may show the same text
+ * by design.
+ *
+ * The step's `data` is a Claude stream-json input envelope, so it is decoded via
+ * {@link ClaudePayload.DecodeStreamInput} and narrowed to the `user` variant.
+ */
 const BrainInputStepItem: React.FC<{ step: BrainStep }> = ({ step }) => {
   const input = ClaudePayload.DecodeStreamInput(step.data)
   if (!input || input.type !== "user") {
@@ -286,7 +330,7 @@ const BrainSystemSteps: React.FC<{ steps: BrainStep[] }> = ({ steps }) => {
       <button
         type="button"
         className={tw({
-          layout: "mt-3 flex items-center justify-start gap-2 pt-3",
+          layout: "flex items-center justify-start gap-2 pt-3 pb-3",
           appearance:
             "border-base-200 text-neutral cursor-pointer border-t text-xs font-medium",
           state: "hover:text-base-content",
@@ -475,7 +519,15 @@ const BrainThreadPanel: React.FC<{
   const inputVisibleRef = useRef(true)
 
   useEffect(() => {
-    setSteps(thread.steps)
+    const initialSteps = [
+      Protobuf.create(BrainStepSchema, {
+        type: "input",
+        uuid: crypto.randomUUID(),
+        data: { text: thread.input.text },
+      }),
+      ...thread.steps,
+    ]
+    setSteps(initialSteps)
   }, [thread])
 
   // Track whether the input container is on screen so we only auto-scroll when
@@ -543,6 +595,10 @@ const BrainThreadPanel: React.FC<{
     for (let stepIndex = 0; stepIndex < steps.length; stepIndex++) {
       const step = steps[stepIndex]
       switch (step.type) {
+        case "input": {
+          result.push(<BrainInputView key={step.uuid} step={step} />)
+          break
+        }
         case "claudecli-input": {
           result.push(<BrainInputStepItem key={step.uuid} step={step} />)
           break
@@ -578,15 +634,6 @@ const BrainThreadPanel: React.FC<{
 
   return (
     <KurisuPanel title={thread.input.topic} subtitle={thread.input.threadUuid}>
-      <div
-        className={tw({
-          layout: "flex items-start gap-2",
-          appearance: "text-base-content text-sm",
-        })}
-      >
-        <ZapIcon className={tw({ layout: "mt-0.5 size-4 shrink-0" })} />
-        <span>{thread.input.text}</span>
-      </div>
       {chain}
       {streaming && <BrainStreamingStepItem />}
       {streaming && (
@@ -595,6 +642,14 @@ const BrainThreadPanel: React.FC<{
           value={inputText}
           onChange={(e) => setInputText(e.target.value)}
           onSend={() => {
+            setSteps((prev) => [
+              ...prev,
+              Protobuf.create(BrainStepSchema, {
+                type: "input",
+                uuid: crypto.randomUUID(),
+                data: { text: inputText },
+              }),
+            ])
             onSend?.(thread.input.topic, thread.input.threadUuid, {
               text: inputText,
             })
