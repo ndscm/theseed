@@ -6,6 +6,7 @@ import {
   CircleDotIcon,
   CircleEllipsisIcon,
   CircleIcon,
+  CirclePlusIcon,
   LoaderCircleIcon,
   ZapIcon,
 } from "lucide-react"
@@ -238,6 +239,26 @@ const BrainStepItem: React.FC<{
         </pre>
       )}
     </div>
+  )
+}
+
+const BrainInputStepItem: React.FC<{ step: BrainStep }> = ({ step }) => {
+  const input = ClaudePayload.DecodeStreamInput(step.data)
+  if (!input || input.type !== "user") {
+    return <>error: wrong type</>
+  }
+
+  const content = input.message?.content ?? ""
+
+  return (
+    <BrainStepItem
+      key={step.uuid}
+      prefix={<CirclePlusIcon className={tw({ layout: "size-4" })} />}
+      title={"Input"}
+      step={step}
+    >
+      <UserTextMessage text={content} />
+    </BrainStepItem>
   )
 }
 
@@ -498,6 +519,10 @@ const BrainThreadPanel: React.FC<{
     for (let stepIndex = 0; stepIndex < steps.length; stepIndex++) {
       const step = steps[stepIndex]
       switch (step.type) {
+        case "claudecli-input": {
+          result.push(<BrainInputStepItem key={step.uuid} step={step} />)
+          break
+        }
         case "system": {
           let nextStepIndex = stepIndex + 1
           while (
