@@ -24,6 +24,21 @@ type HooinCommuteClient struct {
 	client commutepbconnect.HooinCommuteServiceClient
 }
 
+// ReportBrainStep publishes a BrainStep emitted by the commuting agent.
+// See HooinCommuteService.ReportBrainStep.
+func (c *HooinCommuteClient) ReportBrainStep(
+	ctx context.Context,
+	step *brainpb.BrainStep,
+) error {
+	_, err := c.client.ReportBrainStep(ctx, connect.NewRequest(&commutepb.ReportBrainStepRequest{
+		BrainStep: step,
+	}))
+	if err != nil {
+		return seederr.Wrap(err)
+	}
+	return nil
+}
+
 type hooinCommuteClientOptions struct {
 	httpClient *http.Client
 	server     string
@@ -57,19 +72,4 @@ func NewHooinCommuteClient(opts ...HooinCommuteClientOption) *HooinCommuteClient
 		connect.WithInterceptors(grpclog.NewLogInterceptor()),
 	)
 	return &HooinCommuteClient{client}
-}
-
-// ReportBrainStep publishes a BrainStep emitted by the commuting agent.
-// See HooinCommuteService.ReportBrainStep.
-func (c *HooinCommuteClient) ReportBrainStep(
-	ctx context.Context,
-	step *brainpb.BrainStep,
-) error {
-	_, err := c.client.ReportBrainStep(ctx, connect.NewRequest(&commutepb.ReportBrainStepRequest{
-		BrainStep: step,
-	}))
-	if err != nil {
-		return seederr.Wrap(err)
-	}
-	return nil
 }
