@@ -24,18 +24,6 @@ type HooinDictateClient struct {
 	client dictatepbconnect.HooinDictateServiceClient
 }
 
-func NewHooinDictateClient(server string) *HooinDictateClient {
-	if server == "" {
-		server = HooinDictateServiceServer()
-	}
-	client := dictatepbconnect.NewHooinDictateServiceClient(
-		seedbearer.InterceptBearerTransport(http.DefaultClient),
-		server,
-		connect.WithInterceptors(grpclog.NewLogInterceptor()),
-	)
-	return &HooinDictateClient{client}
-}
-
 // SendBrainInput delivers a BrainInput and returns the terminal `result`
 // BrainStep once processing completes. Intermediate steps are dropped.
 // See HooinDictateService.SendBrainInput.
@@ -77,4 +65,16 @@ func (c *HooinDictateClient) SubscribeBrainStep(
 	return c.client.SubscribeBrainStep(ctx, connect.NewRequest(&dictatepb.SubscribeBrainStepRequest{
 		PersonTopics: personTopics,
 	}))
+}
+
+func NewHooinDictateClient(server string) *HooinDictateClient {
+	if server == "" {
+		server = HooinDictateServiceServer()
+	}
+	client := dictatepbconnect.NewHooinDictateServiceClient(
+		seedbearer.InterceptBearerTransport(http.DefaultClient),
+		server,
+		connect.WithInterceptors(grpclog.NewLogInterceptor()),
+	)
+	return &HooinDictateClient{client}
 }
