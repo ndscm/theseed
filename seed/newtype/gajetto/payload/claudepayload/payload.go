@@ -25,6 +25,23 @@ type StreamInputUser struct {
 	Message *StreamInputMessage `json:"message,omitempty"`
 }
 
+func (u StreamInputUser) Data() (*structpb.Struct, error) {
+	b, err := json.Marshal(u)
+	if err != nil {
+		return nil, seederr.Wrap(err)
+	}
+	raw := map[string]any{}
+	err = json.Unmarshal(b, &raw)
+	if err != nil {
+		return nil, seederr.Wrap(err)
+	}
+	s, err := structpb.NewStruct(raw)
+	if err != nil {
+		return nil, seederr.Wrap(err)
+	}
+	return s, nil
+}
+
 type StreamOutputEnvelope struct {
 	Type      string `json:"type"`
 	Subtype   string `json:"subtype,omitempty"`
