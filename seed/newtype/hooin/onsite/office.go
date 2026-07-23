@@ -28,14 +28,6 @@ type Office struct {
 	stepSubscribers      map[*StepSubscriber]struct{}
 }
 
-func NewOffice(t team.Team) (*Office, error) {
-	ofc := &Office{}
-	ofc.Team = t
-	ofc.duties = map[string]*PersonDuty{}
-	ofc.stepSubscribers = map[*StepSubscriber]struct{}{}
-	return ofc, nil
-}
-
 func (ofc *Office) GetDuty(person string) *PersonDuty {
 	ofc.dutiesMutex.Lock()
 	defer ofc.dutiesMutex.Unlock()
@@ -137,4 +129,12 @@ func (ofc *Office) DispatchBrainInput(ctx context.Context, personId string, brai
 		return seederr.Wrap(err)
 	}
 	return nil
+}
+
+func CreateOffice(t team.Team) (*Office, error) {
+	ofc := &Office{}
+	ofc.Team = t
+	ofc.duties = map[string]*PersonDuty{}
+	ofc.stepSubscribers = map[*StepSubscriber]struct{}{}
+	return ofc, nil
 }

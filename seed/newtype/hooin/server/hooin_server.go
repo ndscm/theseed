@@ -109,7 +109,7 @@ func run() error {
 		t = staticTeam
 	}
 
-	office, err := onsite.NewOffice(t)
+	office, err := onsite.CreateOffice(t)
 	if err != nil {
 		return seederr.Wrap(err)
 	}
