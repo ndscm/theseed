@@ -111,8 +111,8 @@ message BrainInput {
   // Topic this input belongs to.
   string topic = 4;
 
-  // Task UUID this input belongs to.
-  string task_uuid = 11;
+  // Thread UUID this input belongs to.
+  string thread_uuid = 11;
 
   // Whether to wait for the brain to process this input before returning.
   bool wait = 5;
@@ -160,8 +160,8 @@ message BrainStep {
   // Topic this step belongs to.
   string topic = 4;
 
-  // Task UUID this step belongs to.
-  string task_uuid = 6;
+  // Thread UUID this step belongs to.
+  string thread_uuid = 6;
 
   // Arbitrary key/value payload associated with the step.
   google.protobuf.Struct data = 5;
