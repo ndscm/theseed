@@ -27,23 +27,6 @@ type webhookHandler struct {
 	nextId      atomic.Uint64
 }
 
-// NewWebhookHandler returns a webhook fan-out handler intended for
-// single-instance deployment: subscriber set, event ids, and any future replay
-// buffer live in process memory and are not shared or persisted across restarts.
-//
-// broadcast() buffers the entire request body in memory via httputil.DumpRequest,
-// so an unbounded POST would OOM the process. Callers must wrap this handler
-// with body-limiting middleware (http.MaxBytesReader) and serve it from an
-// http.Server configured with ReadTimeout and MaxHeaderBytes.
-func NewWebhookHandler(broadcastPath string, subscribePath string) *webhookHandler {
-	// TODO(nagi): add external message queue support for scalability and durability.
-	return &webhookHandler{
-		broadcastPath: broadcastPath,
-		subscribePath: subscribePath,
-		subscribers:   make(map[*subscriber]struct{}),
-	}
-}
-
 func (h *webhookHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	switch {
 	case r.URL.Path == h.broadcastPath:
@@ -165,5 +148,24 @@ func (h *webhookHandler) subscribe(w http.ResponseWriter, r *http.Request) {
 			}
 			flusher.Flush()
 		}
+	}
+}
+
+var _ http.Handler = (*webhookHandler)(nil)
+
+// NewWebhookHandler returns a webhook fan-out handler intended for
+// single-instance deployment: subscriber set, event ids, and any future replay
+// buffer live in process memory and are not shared or persisted across restarts.
+//
+// broadcast() buffers the entire request body in memory via httputil.DumpRequest,
+// so an unbounded POST would OOM the process. Callers must wrap this handler
+// with body-limiting middleware (http.MaxBytesReader) and serve it from an
+// http.Server configured with ReadTimeout and MaxHeaderBytes.
+func NewWebhookHandler(broadcastPath string, subscribePath string) *webhookHandler {
+	// TODO(nagi): add external message queue support for scalability and durability.
+	return &webhookHandler{
+		broadcastPath: broadcastPath,
+		subscribePath: subscribePath,
+		subscribers:   make(map[*subscriber]struct{}),
 	}
 }
