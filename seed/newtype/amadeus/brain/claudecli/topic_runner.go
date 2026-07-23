@@ -30,25 +30,25 @@ type inputPromise struct {
 	err   chan error
 }
 
-// inputScheduler groups pending inputs by taskUuid so that inputs for the
-// task currently occupying stdin (the "ongoing" task) stream straight through,
-// while inputs for other tasks wait their turn. At most one task is ongoing at
+// inputScheduler groups pending inputs by threadUuid so that inputs for the
+// thread currently occupying stdin (the "ongoing" thread) stream straight through,
+// while inputs for other threads wait their turn. At most one thread is ongoing at
 // a time. The claude CLI emits a single "result" line for however many inputs
-// were streamed to it as one turn, so a "result" frees the whole ongoing task
-// rather than a single input; the freed slot is then handed to the next task.
-// Inputs for a non-ongoing task are buffered in their task's group, and the
-// groups are promoted in first-arrival order once the ongoing task frees the
+// were streamed to it as one turn, so a "result" frees the whole ongoing thread
+// rather than a single input; the freed slot is then handed to the next thread.
+// Inputs for a non-ongoing thread are buffered in their thread's group, and the
+// groups are promoted in first-arrival order once the ongoing thread frees the
 // slot.
 type inputScheduler struct {
 	mutex sync.Mutex
 	cond  *sync.Cond
 
-	// ongoingTaskUuid is the task currently allowed to write to stdin, or ""
+	// ongoingThreadUuid is the thread currently allowed to write to stdin, or ""
 	// when idle.
-	ongoingTaskUuid string
+	ongoingThreadUuid string
 
-	// order holds the taskUuids of buffered groups in first-arrival order;
-	// pending maps each to its buffered inputs. A task appears in order at most
+	// order holds the threadUuids of buffered groups in first-arrival order;
+	// pending maps each to its buffered inputs. A thread appears in order at most
 	// once, added when its first input is buffered.
 	order   []string
 	pending map[string][]inputPromise
@@ -56,18 +56,18 @@ type inputScheduler struct {
 	cmdExited bool
 }
 
-// ongoing returns the ongoing taskUuid so stdout lines can be tagged with
-// the task that produced them.
+// ongoing returns the ongoing threadUuid so stdout lines can be tagged with
+// the thread that produced them.
 func (s *inputScheduler) ongoing() string {
 	s.mutex.Lock()
 	defer s.mutex.Unlock()
-	return s.ongoingTaskUuid
+	return s.ongoingThreadUuid
 }
 
-// submit records req in its task's group so the scheduler loop can hand it to
-// stdin once the task is (or becomes) ongoing. It never writes to stdin itself;
+// submit records req in its thread's group so the scheduler loop can hand it to
+// stdin once the thread is (or becomes) ongoing. It never writes to stdin itself;
 // the scheduler loop pulls writable inputs out via popWritable. It returns an
-// error without recording anything when the input has no task uuid, or once the
+// error without recording anything when the input has no thread uuid, or once the
 // subprocess has exited, so the caller can fail the request rather than queue it
 // for a dead subprocess.
 func (s *inputScheduler) submit(req inputPromise) error {
@@ -76,56 +76,56 @@ func (s *inputScheduler) submit(req inputPromise) error {
 	if s.cmdExited {
 		return seederr.WrapErrorf("subprocess exited")
 	}
-	taskUuid := req.input.GetTaskUuid()
-	if taskUuid == "" {
-		return seederr.WrapErrorf("task uuid is empty")
+	threadUuid := req.input.GetThreadUuid()
+	if threadUuid == "" {
+		return seederr.WrapErrorf("thread uuid is empty")
 	}
-	// A task is listed in order exactly while it has buffered inputs and is not
+	// A thread is listed in order exactly while it has buffered inputs and is not
 	// the ongoing one; add it the first time such an input appears.
-	if taskUuid != s.ongoingTaskUuid && len(s.pending[taskUuid]) == 0 {
-		s.order = append(s.order, taskUuid)
+	if threadUuid != s.ongoingThreadUuid && len(s.pending[threadUuid]) == 0 {
+		s.order = append(s.order, threadUuid)
 	}
-	s.pending[taskUuid] = append(s.pending[taskUuid], req)
+	s.pending[threadUuid] = append(s.pending[threadUuid], req)
 	return nil
 }
 
 // popWritable removes and returns the next input to write. When the slot is
-// idle it promotes the first buffered task group to ongoing, so a whole group's
-// inputs are drained (and same-task inputs keep streaming) before any other
-// task takes over. It returns nil when nothing is writable right now: either a
-// task is ongoing but its group is momentarily empty because its inputs are in
+// idle it promotes the first buffered thread group to ongoing, so a whole group's
+// inputs are drained (and same-thread inputs keep streaming) before any other
+// thread takes over. It returns nil when nothing is writable right now: either a
+// thread is ongoing but its group is momentarily empty because its inputs are in
 // flight awaiting a "result", or nothing is buffered at all.
 func (s *inputScheduler) popWritable() *inputPromise {
 	s.mutex.Lock()
 	defer s.mutex.Unlock()
-	if s.ongoingTaskUuid == "" {
+	if s.ongoingThreadUuid == "" {
 		if len(s.order) == 0 {
 			return nil
 		}
-		s.ongoingTaskUuid = s.order[0]
+		s.ongoingThreadUuid = s.order[0]
 		s.order = s.order[1:]
 		s.cond.Broadcast()
 	}
-	group := s.pending[s.ongoingTaskUuid]
+	group := s.pending[s.ongoingThreadUuid]
 	if len(group) == 0 {
 		return nil
 	}
 	req := group[0]
 	rest := group[1:]
 	if len(rest) == 0 {
-		delete(s.pending, s.ongoingTaskUuid)
+		delete(s.pending, s.ongoingThreadUuid)
 	} else {
-		s.pending[s.ongoingTaskUuid] = rest
+		s.pending[s.ongoingThreadUuid] = rest
 	}
 	return &req
 }
 
 // claimWrite reports whether req may still be written. It is called just before
-// the write, with req already removed from its group by popWritable but its task
-// no longer guaranteed to be ongoing: a "result" for that task may have arrived,
-// or the slot may have been promoted to another task, in the window between
-// popWritable and here. When req's task is still ongoing the write proceeds
-// (true). Otherwise req is an un-written input for a task that is no longer
+// the write, with req already removed from its group by popWritable but its thread
+// no longer guaranteed to be ongoing: a "result" for that thread may have arrived,
+// or the slot may have been promoted to another thread, in the window between
+// popWritable and here. When req's thread is still ongoing the write proceeds
+// (true). Otherwise req is an un-written input for a thread that is no longer
 // ongoing, so it is put back at the front of its group — restoring the state
 // popWritable left — to be promoted and written as a fresh turn, and false is
 // returned so the caller skips the write and leaves req's caller waiting for
@@ -134,37 +134,37 @@ func (s *inputScheduler) popWritable() *inputPromise {
 func (s *inputScheduler) claimWrite(req *inputPromise) (bool, error) {
 	s.mutex.Lock()
 	defer s.mutex.Unlock()
-	taskUuid := req.input.GetTaskUuid()
-	if s.ongoingTaskUuid == taskUuid {
+	threadUuid := req.input.GetThreadUuid()
+	if s.ongoingThreadUuid == threadUuid {
 		return true, nil
 	}
 	if s.cmdExited {
 		return false, seederr.WrapErrorf("subprocess exited")
 	}
-	// A task is listed in order exactly while it has buffered inputs and is not
+	// A thread is listed in order exactly while it has buffered inputs and is not
 	// ongoing; re-add it only if popWritable's delete emptied the group.
-	if len(s.pending[taskUuid]) == 0 {
-		s.order = append(s.order, taskUuid)
+	if len(s.pending[threadUuid]) == 0 {
+		s.order = append(s.order, threadUuid)
 	}
-	s.pending[taskUuid] = append([]inputPromise{*req}, s.pending[taskUuid]...)
+	s.pending[threadUuid] = append([]inputPromise{*req}, s.pending[threadUuid]...)
 	s.cond.Broadcast()
 	return false, nil
 }
 
-// completeOngoing frees the ongoing task's slot when its "result" line arrives.
-// Inputs for that task that were submitted but not yet written form a fresh
-// turn, so they are re-queued rather than orphaned. It returns nil when a task
+// completeOngoing frees the ongoing thread's slot when its "result" line arrives.
+// Inputs for that thread that were submitted but not yet written form a fresh
+// turn, so they are re-queued rather than orphaned. It returns nil when a thread
 // was actually ongoing, so the caller can nudge the scheduler loop to promote
 // the next group; it returns an error when the slot was already free, which
 // means a "result" arrived that no in-flight input can account for.
 func (s *inputScheduler) completeOngoing() error {
 	s.mutex.Lock()
 	defer s.mutex.Unlock()
-	if s.ongoingTaskUuid == "" {
-		return seederr.WrapErrorf("result with no ongoing task")
+	if s.ongoingThreadUuid == "" {
+		return seederr.WrapErrorf("result with no ongoing thread")
 	}
-	old := s.ongoingTaskUuid
-	s.ongoingTaskUuid = ""
+	old := s.ongoingThreadUuid
+	s.ongoingThreadUuid = ""
 	if len(s.pending[old]) > 0 {
 		s.order = append(s.order, old)
 	}
@@ -172,18 +172,18 @@ func (s *inputScheduler) completeOngoing() error {
 	return nil
 }
 
-// abandonOngoing frees the ongoing task's slot after a write to it failed and
+// abandonOngoing frees the ongoing thread's slot after a write to it failed and
 // returns its remaining un-written inputs so the caller can fail them too. It
 // does not re-queue them, since the failed write means stdin is broken and
-// retrying would only spin. It returns nil when no task was ongoing.
+// retrying would only spin. It returns nil when no thread was ongoing.
 func (s *inputScheduler) abandonOngoing() []inputPromise {
 	s.mutex.Lock()
 	defer s.mutex.Unlock()
-	if s.ongoingTaskUuid == "" {
+	if s.ongoingThreadUuid == "" {
 		return nil
 	}
-	old := s.ongoingTaskUuid
-	s.ongoingTaskUuid = ""
+	old := s.ongoingThreadUuid
+	s.ongoingThreadUuid = ""
 	leftover := s.pending[old]
 	delete(s.pending, old)
 	s.cond.Broadcast()
@@ -203,7 +203,7 @@ func (s *inputScheduler) drain() []inputPromise {
 	}
 	s.order = nil
 	s.pending = make(map[string][]inputPromise)
-	s.ongoingTaskUuid = ""
+	s.ongoingThreadUuid = ""
 	s.cond.Broadcast()
 	return remains
 }
@@ -215,12 +215,12 @@ func (s *inputScheduler) onCmdExit() {
 	s.cond.Broadcast()
 }
 
-// waitIdle blocks until no task is ongoing and nothing is buffered, or the
+// waitIdle blocks until no thread is ongoing and nothing is buffered, or the
 // subprocess has exited.
 func (s *inputScheduler) waitIdle() {
 	s.mutex.Lock()
 	defer s.mutex.Unlock()
-	for (s.ongoingTaskUuid != "" || len(s.order) > 0) && !s.cmdExited {
+	for (s.ongoingThreadUuid != "" || len(s.order) > 0) && !s.cmdExited {
 		s.cond.Wait()
 	}
 }
@@ -243,7 +243,7 @@ type topicRunner struct {
 	// buffer fills, Input blocks until a slot frees or its context is cancelled.
 	inbox chan inputPromise
 
-	// promote nudges startSchedulerLoop to re-evaluate after the ongoing task
+	// promote nudges startSchedulerLoop to re-evaluate after the ongoing thread
 	// frees its slot. It is signalled non-blockingly from the stdout goroutine
 	// (on a "result" line) and from a failed write; a buffer of one coalesces
 	// redundant nudges since at most one promotion is pending at a time.
@@ -254,9 +254,9 @@ type topicRunner struct {
 	// flight outside the scheduler, keeping shutdown accounting exact.
 	next chan *inputPromise
 
-	// scheduler groups pending inputs by taskUuid. Inputs for the ongoing task
-	// stream straight to stdin; inputs for other tasks are buffered and
-	// promoted a whole group at a time once the ongoing task frees its slot
+	// scheduler groups pending inputs by threadUuid. Inputs for the ongoing thread
+	// stream straight to stdin; inputs for other threads are buffered and
+	// promoted a whole group at a time once the ongoing thread frees its slot
 	// (signalled by a stream output line of type "result"). Hibernate(wait=true)
 	// uses it to block until the runner is idle or the subprocess has exited.
 	scheduler *inputScheduler
@@ -414,7 +414,7 @@ func newTopicRunner(topic string, topicDir string, pc *playpen.PlaypenController
 }
 
 // signalPromote nudges the scheduler loop to re-evaluate now that the ongoing
-// task has freed its slot. The send is non-blocking because promote is
+// thread has freed its slot. The send is non-blocking because promote is
 // buffered and coalescing: a nudge already queued is enough.
 func (tr *topicRunner) signalPromote() {
 	select {
@@ -433,7 +433,7 @@ func (tr *topicRunner) signalFail(err error) {
 }
 
 // startSchedulerLoop owns the scheduler state. It records incoming inputs,
-// promotes task groups as the ongoing one frees the slot, and hands the next
+// promotes thread groups as the ongoing one frees the slot, and hands the next
 // writable input to startWriteLoop over tr.next. It never writes to stdin
 // itself. Sending to tr.next is one case of a select alongside tr.inbox, so a
 // startWriteLoop stuck on a stalled Write cannot stop this loop from continuing
@@ -458,7 +458,7 @@ func (tr *topicRunner) startSchedulerLoop() {
 				req.err <- seederr.WrapErrorf("topic %q: %w", tr.topic, err)
 			}
 		case <-tr.promote:
-			// The ongoing task freed its slot; loop to re-evaluate popWritable.
+			// The ongoing thread freed its slot; loop to re-evaluate popWritable.
 		case <-tr.runnerCtx.Done():
 			err := seederr.WrapErrorf("topic %q: runner closed", tr.topic)
 			if head != nil {
@@ -488,16 +488,16 @@ func (tr *topicRunner) startWriteLoop() {
 
 // writeInput marshals an input and writes it to stdin, answering req.err with
 // the outcome. A marshal failure fails only that input: stdin is still healthy,
-// so the ongoing task keeps its slot and its other inputs still flow. A write
-// failure means stdin is broken, so it abandons the ongoing task — failing its
+// so the ongoing thread keeps its slot and its other inputs still flow. A write
+// failure means stdin is broken, so it abandons the ongoing thread — failing its
 // remaining un-written inputs and nudging the scheduler loop to move on rather
 // than stall waiting for a "result" that will never come.
 //
-// Just before the write it re-checks, via claimWrite, that req's task is still
+// Just before the write it re-checks, via claimWrite, that req's thread is still
 // ongoing. popWritable removes req from its group but leaves the write to happen
-// outside the scheduler lock; a "result" for that task can arrive in that window
+// outside the scheduler lock; a "result" for that thread can arrive in that window
 // and free the slot. Without the re-check req would be written into whatever
-// task next holds the slot, mixing one task's input into another's turn. When
+// thread next holds the slot, mixing one thread's input into another's turn. When
 // claimWrite re-buffers req, this returns without answering req.err — its caller
 // stays blocked until req is promoted and written for real — and nudges the
 // scheduler loop to re-evaluate. The marshal happens first so the re-check sits
@@ -585,12 +585,12 @@ func (tr *topicRunner) dispatchLine(line []byte) {
 	}
 
 	step := &brainpb.BrainStep{
-		Uuid:      uuid.NewString(),
-		Timestamp: timestamppb.Now(),
-		Type:      stepType,
-		Topic:     tr.topic,
-		TaskUuid:  tr.scheduler.ongoing(),
-		Data:      data,
+		Uuid:       uuid.NewString(),
+		Timestamp:  timestamppb.Now(),
+		Type:       stepType,
+		Topic:      tr.topic,
+		ThreadUuid: tr.scheduler.ongoing(),
+		Data:       data,
 	}
 
 	if step.Type == "result" {
