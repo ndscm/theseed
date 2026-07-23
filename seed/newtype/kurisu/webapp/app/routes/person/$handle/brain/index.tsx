@@ -64,6 +64,25 @@ const PersonBrainPage: React.FC<{ params: { handle: string } }> = ({
     refOfThreadsEnd.current?.scrollIntoView({ behavior: "smooth" })
   }, [threads])
 
+  const sendThreadInput = useCallback(
+    async (topic: string, threadUuid: string, content: { text?: string }) => {
+      const text = (content.text || "").trim()
+      if (!text || !dictateService || !personId) {
+        return
+      }
+      const uuid = crypto.randomUUID()
+      const brainInput: BrainInput = Protobuf.create(BrainInputSchema, {
+        uuid,
+        threadUuid,
+        text,
+        topic,
+      })
+      const result = await dictateService.SendBrainInput(personId, brainInput)
+      return result
+    },
+    [dictateService, personId],
+  )
+
   const sendMessage = useCallback(() => {
     const text = inputText.trim()
     if (!text || !dictateService || !personId) {
@@ -125,7 +144,16 @@ const PersonBrainPage: React.FC<{ params: { handle: string } }> = ({
       <div className={tw({ layout: "min-h-0 flex-1 overflow-auto px-7 py-6" })}>
         <div className={tw({ layout: "flex max-w-3xl flex-col gap-4" })}>
           {threads.map((thread) => (
-            <BrainThreadPanel key={thread.input.uuid} thread={thread} />
+            <BrainThreadPanel
+              key={thread.input.uuid}
+              thread={thread}
+              onSend={sendThreadInput}
+              onFinish={(pendingInputText) => {
+                setInputText((prev) =>
+                  prev ? pendingInputText + "\n" + prev : pendingInputText,
+                )
+              }}
+            />
           ))}
           <div ref={refOfThreadsEnd} />
         </div>
