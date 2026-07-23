@@ -25,10 +25,6 @@ type claudeCliBrain struct {
 	topics      map[string]*topicRunner
 }
 
-func NewClaudeCliBrain() brain.Brain {
-	return &claudeCliBrain{}
-}
-
 func (b *claudeCliBrain) Initialize(playpenController *playpen.PlaypenController) error {
 	b.playpenController = playpenController
 	b.topics = map[string]*topicRunner{}
@@ -138,4 +134,10 @@ func (b *claudeCliBrain) Hibernate(topic string, wait bool) error {
 		return seederr.Wrap(err)
 	}
 	return nil
+}
+
+var _ brain.Brain = (*claudeCliBrain)(nil)
+
+func NewClaudeCliBrain() brain.Brain {
+	return &claudeCliBrain{}
 }
