@@ -82,7 +82,7 @@ func (ofc *Office) UnsubscribeSteps(sub *StepSubscriber) {
 // Callers must not hold stepSubscribersMutex when sending on the
 // returned subscribers' channels: the snapshot exists precisely so that
 // the lock can be released before any blocking send.
-func (ofc *Office) matchStepSubscribers(personId string, topic string, taskUuid string) []*StepSubscriber {
+func (ofc *Office) matchStepSubscribers(personId string, topic string, threadUuid string) []*StepSubscriber {
 	ofc.stepSubscribersMutex.Lock()
 	defer ofc.stepSubscribersMutex.Unlock()
 	targets := make([]*StepSubscriber, 0, len(ofc.stepSubscribers))
@@ -93,7 +93,7 @@ func (ofc *Office) matchStepSubscribers(personId string, topic string, taskUuid 
 		if sub.topic != "" && sub.topic != topic {
 			continue
 		}
-		if sub.taskUuid != "" && sub.taskUuid != taskUuid {
+		if sub.threadUuid != "" && sub.threadUuid != threadUuid {
 			continue
 		}
 		targets = append(targets, sub)
@@ -102,7 +102,7 @@ func (ofc *Office) matchStepSubscribers(personId string, topic string, taskUuid 
 }
 
 func (ofc *Office) BroadcastStep(personId string, step *brainpb.BrainStep) {
-	subscribers := ofc.matchStepSubscribers(personId, step.GetTopic(), step.GetTaskUuid())
+	subscribers := ofc.matchStepSubscribers(personId, step.GetTopic(), step.GetThreadUuid())
 
 	// Fanout must not block the reporting RPC on any one slow or
 	// disappearing subscriber, so the send is non-blocking: if the
