@@ -20,8 +20,8 @@ func prepareBrainInput(brainInput *brainpb.BrainInput) *brainpb.BrainInput {
 	if brainInput.GetTopic() == "" {
 		brainInput.Topic = "default"
 	}
-	if brainInput.GetTaskUuid() == "" {
-		brainInput.TaskUuid = brainInput.GetUuid()
+	if brainInput.GetThreadUuid() == "" {
+		brainInput.ThreadUuid = brainInput.GetUuid()
 	}
 	return brainInput
 }
@@ -49,7 +49,7 @@ func (svc *HooinDictateService) SendBrainInput(
 	}
 	brainInput = prepareBrainInput(brainInput)
 
-	sub := onsite.NewStepSubscriber(personId, brainInput.GetTopic(), brainInput.GetTaskUuid())
+	sub := onsite.NewStepSubscriber(personId, brainInput.GetTopic(), brainInput.GetThreadUuid())
 	svc.office.SubscribeSteps(sub)
 	defer svc.office.UnsubscribeSteps(sub)
 
@@ -91,7 +91,7 @@ func (svc *HooinDictateService) SendBrainInputStreamBrainStep(
 	}
 	brainInput = prepareBrainInput(brainInput)
 
-	sub := onsite.NewStepSubscriber(personId, brainInput.GetTopic(), brainInput.GetTaskUuid())
+	sub := onsite.NewStepSubscriber(personId, brainInput.GetTopic(), brainInput.GetThreadUuid())
 	svc.office.SubscribeSteps(sub)
 	defer svc.office.UnsubscribeSteps(sub)
 

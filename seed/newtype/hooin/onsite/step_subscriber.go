@@ -11,21 +11,21 @@ import (
 // lifetime by calling UnsubscribeSteps on return; broadcasters do not
 // consult the subscriber's context directly.
 type StepSubscriber struct {
-	personId string
-	topic    string
-	taskUuid string
-	channel  chan *brainpb.BrainStep
+	personId   string
+	topic      string
+	threadUuid string
+	channel    chan *brainpb.BrainStep
 }
 
 func (s *StepSubscriber) Receive() <-chan *brainpb.BrainStep {
 	return s.channel
 }
 
-func NewStepSubscriber(personId string, topic string, taskUuid string) *StepSubscriber {
+func NewStepSubscriber(personId string, topic string, threadUuid string) *StepSubscriber {
 	return &StepSubscriber{
-		personId: personId,
-		topic:    topic,
-		taskUuid: taskUuid,
-		channel:  make(chan *brainpb.BrainStep, 16),
+		personId:   personId,
+		topic:      topic,
+		threadUuid: threadUuid,
+		channel:    make(chan *brainpb.BrainStep, 16),
 	}
 }
