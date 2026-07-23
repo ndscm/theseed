@@ -19,18 +19,6 @@ type AmadeusWakeClient struct {
 	client wakepbconnect.AmadeusWakeServiceClient
 }
 
-func NewAmadeusWakeClient(server string) *AmadeusWakeClient {
-	if server == "" {
-		server = flagAmadeusServiceServer.Get()
-	}
-	client := wakepbconnect.NewAmadeusWakeServiceClient(
-		seedbearer.InterceptBearerTransport(http.DefaultClient),
-		server,
-		connect.WithInterceptors(grpclog.NewLogInterceptor()),
-	)
-	return &AmadeusWakeClient{client}
-}
-
 func (c *AmadeusWakeClient) Wake(
 	ctx context.Context,
 ) error {
@@ -67,4 +55,16 @@ func (c *AmadeusWakeClient) Hibernate(
 		return seederr.Wrap(err)
 	}
 	return nil
+}
+
+func NewAmadeusWakeClient(server string) *AmadeusWakeClient {
+	if server == "" {
+		server = flagAmadeusServiceServer.Get()
+	}
+	client := wakepbconnect.NewAmadeusWakeServiceClient(
+		seedbearer.InterceptBearerTransport(http.DefaultClient),
+		server,
+		connect.WithInterceptors(grpclog.NewLogInterceptor()),
+	)
+	return &AmadeusWakeClient{client}
 }
