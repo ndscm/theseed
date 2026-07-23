@@ -25,75 +25,241 @@ const (
 	stderrBufferMax     = 1 * 1024 * 1024
 )
 
-type ongoingTracker struct {
+type inputPromise struct {
+	input *brainpb.BrainInput
+	err   chan error
+}
+
+// inputScheduler groups pending inputs by taskUuid so that inputs for the
+// task currently occupying stdin (the "ongoing" task) stream straight through,
+// while inputs for other tasks wait their turn. At most one task is ongoing at
+// a time. The claude CLI emits a single "result" line for however many inputs
+// were streamed to it as one turn, so a "result" frees the whole ongoing task
+// rather than a single input; the freed slot is then handed to the next task.
+// Inputs for a non-ongoing task are buffered in their task's group, and the
+// groups are promoted in first-arrival order once the ongoing task frees the
+// slot.
+type inputScheduler struct {
 	mutex sync.Mutex
 	cond  *sync.Cond
 
-	taskUuid string
+	// ongoingTaskUuid is the task currently allowed to write to stdin, or ""
+	// when idle.
+	ongoingTaskUuid string
+
+	// order holds the taskUuids of buffered groups in first-arrival order;
+	// pending maps each to its buffered inputs. A task appears in order at most
+	// once, added when its first input is buffered.
+	order   []string
+	pending map[string][]inputPromise
 
 	cmdExited bool
 }
 
-func newOngoingTracker() *ongoingTracker {
-	tracker := &ongoingTracker{}
-	tracker.cond = sync.NewCond(&tracker.mutex)
-	return tracker
+// ongoing returns the ongoing taskUuid so stdout lines can be tagged with
+// the task that produced them.
+func (s *inputScheduler) ongoing() string {
+	s.mutex.Lock()
+	defer s.mutex.Unlock()
+	return s.ongoingTaskUuid
 }
 
-// waitAdmit blocks until no request is in flight, then reserves the single
-// in-flight slot and returns true, enforcing at most one simultaneous input
-// per topic. A second input therefore waits for the first to complete
-// instead of being rejected. It returns false without reserving when the
-// subprocess has already exited, so the caller can fail the request rather
-// than write to a dead subprocess.
-func (t *ongoingTracker) waitAdmit(taskUuid string) bool {
-	t.mutex.Lock()
-	defer t.mutex.Unlock()
-	for t.taskUuid != "" && !t.cmdExited {
-		t.cond.Wait()
+// submit records req in its task's group so the scheduler loop can hand it to
+// stdin once the task is (or becomes) ongoing. It never writes to stdin itself;
+// the scheduler loop pulls writable inputs out via popWritable. It returns an
+// error without recording anything when the input has no task uuid, or once the
+// subprocess has exited, so the caller can fail the request rather than queue it
+// for a dead subprocess.
+func (s *inputScheduler) submit(req inputPromise) error {
+	s.mutex.Lock()
+	defer s.mutex.Unlock()
+	if s.cmdExited {
+		return seederr.WrapErrorf("subprocess exited")
 	}
-	if t.cmdExited {
-		return false
+	taskUuid := req.input.GetTaskUuid()
+	if taskUuid == "" {
+		return seederr.WrapErrorf("task uuid is empty")
 	}
-	t.taskUuid = taskUuid
-	t.cond.Broadcast()
-	return true
+	// A task is listed in order exactly while it has buffered inputs and is not
+	// the ongoing one; add it the first time such an input appears.
+	if taskUuid != s.ongoingTaskUuid && len(s.pending[taskUuid]) == 0 {
+		s.order = append(s.order, taskUuid)
+	}
+	s.pending[taskUuid] = append(s.pending[taskUuid], req)
+	return nil
 }
 
-func (t *ongoingTracker) release() {
-	t.mutex.Lock()
-	defer t.mutex.Unlock()
-	if t.taskUuid != "" {
-		t.taskUuid = ""
+// popWritable removes and returns the next input to write. When the slot is
+// idle it promotes the first buffered task group to ongoing, so a whole group's
+// inputs are drained (and same-task inputs keep streaming) before any other
+// task takes over. It returns nil when nothing is writable right now: either a
+// task is ongoing but its group is momentarily empty because its inputs are in
+// flight awaiting a "result", or nothing is buffered at all.
+func (s *inputScheduler) popWritable() *inputPromise {
+	s.mutex.Lock()
+	defer s.mutex.Unlock()
+	if s.ongoingTaskUuid == "" {
+		if len(s.order) == 0 {
+			return nil
+		}
+		s.ongoingTaskUuid = s.order[0]
+		s.order = s.order[1:]
+		s.cond.Broadcast()
+	}
+	group := s.pending[s.ongoingTaskUuid]
+	if len(group) == 0 {
+		return nil
+	}
+	req := group[0]
+	rest := group[1:]
+	if len(rest) == 0 {
+		delete(s.pending, s.ongoingTaskUuid)
 	} else {
-		seedlog.Warnf("received result with no ongoing request")
+		s.pending[s.ongoingTaskUuid] = rest
 	}
-	t.cond.Broadcast()
+	return &req
 }
 
-func (t *ongoingTracker) onCmdExit() {
-	t.mutex.Lock()
-	defer t.mutex.Unlock()
-	t.cmdExited = true
-	t.cond.Broadcast()
+// claimWrite reports whether req may still be written. It is called just before
+// the write, with req already removed from its group by popWritable but its task
+// no longer guaranteed to be ongoing: a "result" for that task may have arrived,
+// or the slot may have been promoted to another task, in the window between
+// popWritable and here. When req's task is still ongoing the write proceeds
+// (true). Otherwise req is an un-written input for a task that is no longer
+// ongoing, so it is put back at the front of its group — restoring the state
+// popWritable left — to be promoted and written as a fresh turn, and false is
+// returned so the caller skips the write and leaves req's caller waiting for
+// that later write. It returns an error only once the subprocess has exited, so
+// the caller fails req rather than re-buffering it for a dead subprocess.
+func (s *inputScheduler) claimWrite(req *inputPromise) (bool, error) {
+	s.mutex.Lock()
+	defer s.mutex.Unlock()
+	taskUuid := req.input.GetTaskUuid()
+	if s.ongoingTaskUuid == taskUuid {
+		return true, nil
+	}
+	if s.cmdExited {
+		return false, seederr.WrapErrorf("subprocess exited")
+	}
+	// A task is listed in order exactly while it has buffered inputs and is not
+	// ongoing; re-add it only if popWritable's delete emptied the group.
+	if len(s.pending[taskUuid]) == 0 {
+		s.order = append(s.order, taskUuid)
+	}
+	s.pending[taskUuid] = append([]inputPromise{*req}, s.pending[taskUuid]...)
+	s.cond.Broadcast()
+	return false, nil
 }
 
-func (t *ongoingTracker) waitIdle() {
-	t.mutex.Lock()
-	defer t.mutex.Unlock()
-	for t.taskUuid != "" && !t.cmdExited {
-		t.cond.Wait()
+// completeOngoing frees the ongoing task's slot when its "result" line arrives.
+// Inputs for that task that were submitted but not yet written form a fresh
+// turn, so they are re-queued rather than orphaned. It returns nil when a task
+// was actually ongoing, so the caller can nudge the scheduler loop to promote
+// the next group; it returns an error when the slot was already free, which
+// means a "result" arrived that no in-flight input can account for.
+func (s *inputScheduler) completeOngoing() error {
+	s.mutex.Lock()
+	defer s.mutex.Unlock()
+	if s.ongoingTaskUuid == "" {
+		return seederr.WrapErrorf("result with no ongoing task")
+	}
+	old := s.ongoingTaskUuid
+	s.ongoingTaskUuid = ""
+	if len(s.pending[old]) > 0 {
+		s.order = append(s.order, old)
+	}
+	s.cond.Broadcast()
+	return nil
+}
+
+// abandonOngoing frees the ongoing task's slot after a write to it failed and
+// returns its remaining un-written inputs so the caller can fail them too. It
+// does not re-queue them, since the failed write means stdin is broken and
+// retrying would only spin. It returns nil when no task was ongoing.
+func (s *inputScheduler) abandonOngoing() []inputPromise {
+	s.mutex.Lock()
+	defer s.mutex.Unlock()
+	if s.ongoingTaskUuid == "" {
+		return nil
+	}
+	old := s.ongoingTaskUuid
+	s.ongoingTaskUuid = ""
+	leftover := s.pending[old]
+	delete(s.pending, old)
+	s.cond.Broadcast()
+	return leftover
+}
+
+// drain removes and returns every buffered input so callers blocked on
+// them can be failed when the runner is shutting down or the subprocess has
+// exited. Inputs already written are not returned; their callers have already
+// been answered.
+func (s *inputScheduler) drain() []inputPromise {
+	s.mutex.Lock()
+	defer s.mutex.Unlock()
+	remains := []inputPromise{}
+	for _, group := range s.pending {
+		remains = append(remains, group...)
+	}
+	s.order = nil
+	s.pending = make(map[string][]inputPromise)
+	s.ongoingTaskUuid = ""
+	s.cond.Broadcast()
+	return remains
+}
+
+func (s *inputScheduler) onCmdExit() {
+	s.mutex.Lock()
+	defer s.mutex.Unlock()
+	s.cmdExited = true
+	s.cond.Broadcast()
+}
+
+// waitIdle blocks until no task is ongoing and nothing is buffered, or the
+// subprocess has exited.
+func (s *inputScheduler) waitIdle() {
+	s.mutex.Lock()
+	defer s.mutex.Unlock()
+	for (s.ongoingTaskUuid != "" || len(s.order) > 0) && !s.cmdExited {
+		s.cond.Wait()
 	}
 }
 
-type thinkRequest struct {
-	input *brainpb.BrainInput
-	err   chan error
+func newInputScheduler() *inputScheduler {
+	s := &inputScheduler{pending: make(map[string][]inputPromise)}
+	s.cond = sync.NewCond(&s.mutex)
+	return s
 }
 
 type topicRunner struct {
 	topic    string
 	topicDir string
+
+	// inbox delivers inputs to startSchedulerLoop, which records them in scheduler.
+	// Using a channel instead of a mutex lets Input select on ctx.Done() when
+	// the subprocess stalls reading stdin, rather than queueing behind a stuck
+	// Write call that holds a lock. It is buffered so that a burst of Input
+	// callers can enqueue without blocking on the scheduler loop; once the
+	// buffer fills, Input blocks until a slot frees or its context is cancelled.
+	inbox chan inputPromise
+
+	// promote nudges startSchedulerLoop to re-evaluate after the ongoing task
+	// frees its slot. It is signalled non-blockingly from the stdout goroutine
+	// (on a "result" line) and from a failed write; a buffer of one coalesces
+	// redundant nudges since at most one promotion is pending at a time.
+	promote chan struct{}
+
+	// next carries the single next input to write from startSchedulerLoop to
+	// startWriteLoop. It is unbuffered so that at most one input is ever in
+	// flight outside the scheduler, keeping shutdown accounting exact.
+	next chan *inputPromise
+
+	// scheduler groups pending inputs by taskUuid. Inputs for the ongoing task
+	// stream straight to stdin; inputs for other tasks are buffered and
+	// promoted a whole group at a time once the ongoing task frees its slot
+	// (signalled by a stream output line of type "result"). Hibernate(wait=true)
+	// uses it to block until the runner is idle or the subprocess has exited.
+	scheduler *inputScheduler
 
 	runnerCtx    context.Context
 	runnerCancel context.CancelFunc
@@ -105,27 +271,8 @@ type topicRunner struct {
 	// claude runs as a host subprocess or inside the playpen container.
 	wait func() error
 
-	// thinkQueue serializes stdin writes through thinkLoop. Using a channel
-	// instead of a mutex lets Input select on ctx.Done() when the
-	// subprocess stalls reading stdin, rather than queueing behind a
-	// stuck Write call that holds the lock. It is buffered so that a burst
-	// of Input callers can enqueue without blocking on thinkLoop draining
-	// the previous request; once the buffer fills, Input blocks until a
-	// slot frees or its context is cancelled.
-	thinkQueue chan thinkRequest
-
 	handlerMutex sync.RWMutex
 	handler      brain.BrainStepHandler
-
-	// ongoing tracks the in-flight request: thinkLoop admits at most one at
-	// a time via waitAdmit (a second input blocks in thinkLoop until the
-	// first completes rather than being rejected), and releases the slot
-	// when a stream output line of type "result" is received. The slot must
-	// be reserved in thinkLoop (not after the caller reads req.err) so a fast
-	// "result" line can't release a slot that was never reserved.
-	// Hibernate(wait=true) uses it to block until the subprocess has drained
-	// or exited.
-	ongoing *ongoingTracker
 
 	done chan struct{}
 }
@@ -238,18 +385,24 @@ func newTopicRunner(topic string, topicDir string, pc *playpen.PlaypenController
 	}
 
 	tr := &topicRunner{
-		topic:        topic,
-		topicDir:     topicDir,
+		topic:    topic,
+		topicDir: topicDir,
+
+		inbox:     make(chan inputPromise, 32),
+		promote:   make(chan struct{}, 1),
+		next:      make(chan *inputPromise),
+		scheduler: newInputScheduler(),
+
 		runnerCtx:    ctx,
 		runnerCancel: cancel,
 		stdin:        proc.stdin,
 		wait:         proc.wait,
-		thinkQueue:   make(chan thinkRequest, 32),
-		ongoing:      newOngoingTracker(),
-		done:         make(chan struct{}),
+
+		done: make(chan struct{}),
 	}
 
-	go tr.thinkLoop()
+	go tr.startSchedulerLoop()
+	go tr.startWriteLoop()
 	go tr.readStdout(proc.stdout)
 	go tr.readStderr(proc.stderr)
 	go tr.waitCmd()
@@ -260,50 +413,130 @@ func newTopicRunner(topic string, topicDir string, pc *playpen.PlaypenController
 	return tr, nil
 }
 
-// thinkLoop serializes writes to tr.stdin so that Input callers never
-// share a live Write call. It exits when runnerCtx is cancelled; a Write
-// that is stuck on a stalled subprocess is unblocked by Close() closing
-// stdin.
-func (tr *topicRunner) thinkLoop() {
+// signalPromote nudges the scheduler loop to re-evaluate now that the ongoing
+// task has freed its slot. The send is non-blocking because promote is
+// buffered and coalescing: a nudge already queued is enough.
+func (tr *topicRunner) signalPromote() {
+	select {
+	case tr.promote <- struct{}{}:
+	default:
+	}
+}
+
+// signalFail answers every still-buffered input with err, so callers blocked
+// in Input do not hang once the runner is shutting down or the subprocess has
+// exited.
+func (tr *topicRunner) signalFail(err error) {
+	for _, req := range tr.scheduler.drain() {
+		req.err <- err
+	}
+}
+
+// startSchedulerLoop owns the scheduler state. It records incoming inputs,
+// promotes task groups as the ongoing one frees the slot, and hands the next
+// writable input to startWriteLoop over tr.next. It never writes to stdin
+// itself. Sending to tr.next is one case of a select alongside tr.inbox, so a
+// startWriteLoop stuck on a stalled Write cannot stop this loop from continuing
+// to buffer arriving inputs. It exits when runnerCtx is cancelled, failing the
+// input it was about to hand over along with everything still buffered.
+func (tr *topicRunner) startSchedulerLoop() {
+	head := (*inputPromise)(nil)
+	for {
+		if head == nil {
+			head = tr.scheduler.popWritable()
+		}
+		next := (chan *inputPromise)(nil)
+		if head != nil {
+			next = tr.next
+		}
+		select {
+		case next <- head:
+			head = nil
+		case req := <-tr.inbox:
+			err := tr.scheduler.submit(req)
+			if err != nil {
+				req.err <- seederr.WrapErrorf("topic %q: %w", tr.topic, err)
+			}
+		case <-tr.promote:
+			// The ongoing task freed its slot; loop to re-evaluate popWritable.
+		case <-tr.runnerCtx.Done():
+			err := seederr.WrapErrorf("topic %q: runner closed", tr.topic)
+			if head != nil {
+				head.err <- err
+			}
+			tr.signalFail(err)
+			return
+		}
+	}
+}
+
+// startWriteLoop is the single goroutine that writes to tr.stdin, so Input
+// callers never share a live Write call. It writes each input the scheduler
+// loop hands to it over tr.next and answers that input's caller. It exits when
+// runnerCtx is cancelled; a Write stuck on a stalled subprocess is unblocked by
+// Close() closing stdin.
+func (tr *topicRunner) startWriteLoop() {
 	for {
 		select {
-		case req := <-tr.thinkQueue:
-			// Block until any prior request has drained so at most one is
-			// ever in flight. The request stays held here rather than being
-			// rejected, preserving it for delivery once the slot frees.
-			taskUuid := req.input.GetTaskUuid()
-			if taskUuid == "" {
-				req.err <- seederr.WrapErrorf("task uuid is empty")
-				continue
-			}
-			if !tr.ongoing.waitAdmit(taskUuid) {
-				req.err <- seederr.WrapErrorf(
-					"topic %q: runner closed", tr.topic)
-				continue
-			}
-			payload := claudepayload.StreamInputUser{
-				StreamInputEnvelope: claudepayload.StreamInputEnvelope{Type: "user"},
-				Message: &claudepayload.StreamInputMessage{
-					Role:    "user",
-					Content: req.input.GetText(),
-				},
-			}
-			line, err := json.Marshal(payload)
-			if err != nil {
-				tr.ongoing.release()
-				req.err <- seederr.Wrap(err)
-				continue
-			}
-			line = append(line, '\n')
-			_, err = tr.stdin.Write(line)
-			if err != nil {
-				tr.ongoing.release()
-			}
-			req.err <- err
+		case req := <-tr.next:
+			tr.writeInput(req)
 		case <-tr.runnerCtx.Done():
 			return
 		}
 	}
+}
+
+// writeInput marshals an input and writes it to stdin, answering req.err with
+// the outcome. A marshal failure fails only that input: stdin is still healthy,
+// so the ongoing task keeps its slot and its other inputs still flow. A write
+// failure means stdin is broken, so it abandons the ongoing task — failing its
+// remaining un-written inputs and nudging the scheduler loop to move on rather
+// than stall waiting for a "result" that will never come.
+//
+// Just before the write it re-checks, via claimWrite, that req's task is still
+// ongoing. popWritable removes req from its group but leaves the write to happen
+// outside the scheduler lock; a "result" for that task can arrive in that window
+// and free the slot. Without the re-check req would be written into whatever
+// task next holds the slot, mixing one task's input into another's turn. When
+// claimWrite re-buffers req, this returns without answering req.err — its caller
+// stays blocked until req is promoted and written for real — and nudges the
+// scheduler loop to re-evaluate. The marshal happens first so the re-check sits
+// as close to the Write as possible, keeping the residual window minimal (it
+// cannot be closed entirely without holding the lock across the Write, which
+// would let a stalled subprocess wedge scheduling and stdout tagging).
+func (tr *topicRunner) writeInput(req *inputPromise) {
+	payload := claudepayload.StreamInputUser{
+		StreamInputEnvelope: claudepayload.StreamInputEnvelope{Type: "user"},
+		Message: &claudepayload.StreamInputMessage{
+			Role:    "user",
+			Content: req.input.GetText(),
+		},
+	}
+	line, err := json.Marshal(payload)
+	if err != nil {
+		req.err <- seederr.Wrap(err)
+		return
+	}
+	line = append(line, '\n')
+
+	proceed, err := tr.scheduler.claimWrite(req)
+	if err != nil {
+		req.err <- seederr.Wrap(err)
+		return
+	}
+	if !proceed {
+		tr.signalPromote()
+		return
+	}
+
+	_, err = tr.stdin.Write(line)
+	if err != nil {
+		for _, sibling := range tr.scheduler.abandonOngoing() {
+			sibling.err <- seederr.Wrap(err)
+		}
+		tr.signalPromote()
+	}
+	req.err <- err
 }
 
 func (tr *topicRunner) readStdout(stdout io.ReadCloser) {
@@ -328,10 +561,11 @@ func (tr *topicRunner) readStderr(stderr io.ReadCloser) {
 
 func (tr *topicRunner) waitCmd() {
 	defer func() {
-		// Wake any Hibernate(wait=true) callers blocked on ongoing so they
-		// don't deadlock when the subprocess exits without emitting the
-		// expected "result" lines.
-		tr.ongoing.onCmdExit()
+		// Wake any Hibernate(wait=true) caller blocked in the scheduler and
+		// fail any buffered inputs so their callers don't deadlock when the
+		// subprocess exits without emitting the expected "result" lines.
+		tr.scheduler.onCmdExit()
+		tr.signalFail(seederr.WrapErrorf("topic %q: subprocess exited", tr.topic))
 		close(tr.done)
 	}()
 	err := tr.wait()
@@ -355,12 +589,17 @@ func (tr *topicRunner) dispatchLine(line []byte) {
 		Timestamp: timestamppb.Now(),
 		Type:      stepType,
 		Topic:     tr.topic,
-		TaskUuid:  tr.ongoing.taskUuid,
+		TaskUuid:  tr.scheduler.ongoing(),
 		Data:      data,
 	}
 
 	if step.Type == "result" {
-		tr.ongoing.release()
+		err := tr.scheduler.completeOngoing()
+		if err != nil {
+			seedlog.Warnf("topic %q: %v", tr.topic, err)
+		} else {
+			tr.signalPromote()
+		}
 	}
 
 	tr.handlerMutex.RLock()
@@ -374,9 +613,9 @@ func (tr *topicRunner) dispatchLine(line []byte) {
 }
 
 func (tr *topicRunner) Input(ctx context.Context, input *brainpb.BrainInput) error {
-	req := thinkRequest{input: input, err: make(chan error, 1)}
+	req := inputPromise{input: input, err: make(chan error, 1)}
 	select {
-	case tr.thinkQueue <- req:
+	case tr.inbox <- req:
 	case <-ctx.Done():
 		return seederr.Wrap(ctx.Err())
 	case <-tr.runnerCtx.Done():
@@ -391,6 +630,8 @@ func (tr *topicRunner) Input(ctx context.Context, input *brainpb.BrainInput) err
 		return nil
 	case <-ctx.Done():
 		return seederr.Wrap(ctx.Err())
+	case <-tr.runnerCtx.Done():
+		return seederr.WrapErrorf("topic %q: runner closed", tr.topic)
 	}
 }
 
@@ -406,7 +647,7 @@ func (tr *topicRunner) RegisterStepHandler(handler brain.BrainStepHandler) error
 
 func (tr *topicRunner) Hibernate(wait bool) error {
 	if wait {
-		tr.ongoing.waitIdle()
+		tr.scheduler.waitIdle()
 	}
 	err := tr.stdin.Close()
 	if err != nil {
