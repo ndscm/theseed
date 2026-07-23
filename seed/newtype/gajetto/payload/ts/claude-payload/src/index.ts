@@ -100,6 +100,32 @@ export type StreamOutput =
   | StreamOutputUser
   | StreamOutputResult
 
+// decodeStreamInput narrows a parsed `BrainStep.data` struct into the typed
+// input envelope matching its `type` field, or undefined for an unrecognized
+// type.
+//
+// It is the frontend counterpart of the StreamInputUser payload the Go
+// claudepayload package echoes back as a "claudecli-input" step (see
+// writeInput in topic_runner.go). Only the "user" variant exists today, so
+// this mirrors DecodeStreamOutput but over the single-member input union.
+export const DecodeStreamInput = (
+  data: unknown,
+): StreamInputUser | undefined => {
+  if (data == null || typeof data !== "object") {
+    return undefined
+  }
+  const envelope = data as Partial<StreamInputEnvelope>
+  if (typeof envelope.type !== "string") {
+    return undefined
+  }
+  switch (envelope.type) {
+    case "user":
+      return envelope as StreamInputUser
+    default:
+      return undefined
+  }
+}
+
 // decodeStreamOutput narrows a parsed `BrainStep.data` struct into the typed
 // envelope matching its `type` field, or undefined for an unrecognized type.
 //
@@ -134,5 +160,6 @@ export const DecodeStreamOutput = (data: unknown): StreamOutput | undefined => {
 }
 
 export default {
+  DecodeStreamInput,
   DecodeStreamOutput,
 }
