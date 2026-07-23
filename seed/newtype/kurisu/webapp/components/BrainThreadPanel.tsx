@@ -227,7 +227,6 @@ const BrainStepItem: React.FC<{
         {prefix}
         {title && <span>{title}</span>}
       </button>
-      {children}
       {showRaw && (
         <pre
           className={tw({
@@ -239,6 +238,7 @@ const BrainStepItem: React.FC<{
           {Protobuf.toJsonString(BrainStepSchema, step, { prettySpaces: 2 })}
         </pre>
       )}
+      {children}
     </div>
   )
 }
