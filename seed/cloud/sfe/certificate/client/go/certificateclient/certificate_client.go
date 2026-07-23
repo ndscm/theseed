@@ -19,6 +19,16 @@ type SfeCertificateClient struct {
 	client certificatepbconnect.SfeCertificateServiceClient
 }
 
+func (c *SfeCertificateClient) RenewCertificate(ctx context.Context, domain string) ([]byte, []byte, error) {
+	resp, err := c.client.RenewCertificate(ctx, connect.NewRequest(&certificatepb.RenewCertificateRequest{
+		Domain: domain,
+	}))
+	if err != nil {
+		return nil, nil, seederr.Wrap(err)
+	}
+	return resp.Msg.Key, resp.Msg.Crt, nil
+}
+
 func NewSfeCertificateClient(server string) *SfeCertificateClient {
 	if server == "" {
 		server = flagSfeCertificateServiceServer.Get()
@@ -29,14 +39,4 @@ func NewSfeCertificateClient(server string) *SfeCertificateClient {
 		connect.WithInterceptors(grpclog.NewLogInterceptor()),
 	)
 	return &SfeCertificateClient{client}
-}
-
-func (c *SfeCertificateClient) RenewCertificate(ctx context.Context, domain string) ([]byte, []byte, error) {
-	resp, err := c.client.RenewCertificate(ctx, connect.NewRequest(&certificatepb.RenewCertificateRequest{
-		Domain: domain,
-	}))
-	if err != nil {
-		return nil, nil, seederr.Wrap(err)
-	}
-	return resp.Msg.Key, resp.Msg.Crt, nil
 }
