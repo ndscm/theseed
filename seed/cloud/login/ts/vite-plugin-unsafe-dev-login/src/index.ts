@@ -25,12 +25,14 @@ const isSafeRedirect = (url: string): boolean => {
 interface LoginOptions {
   discoveryUrl?: string
   clientId: string
+  clientSecret?: string
 }
 
 export const unsafeDevLogin = (options: LoginOptions): Plugin => {
   const discoveryUrl =
     options.discoveryUrl || process.env.SEED_OPENID_DISCOVERY_URL || ""
   const clientId = options.clientId
+  const clientSecret = options.clientSecret
 
   let openidConfiguration: OpenidConfiguration | null = null
 
@@ -126,6 +128,9 @@ export const unsafeDevLogin = (options: LoginOptions): Plugin => {
         redirect_uri: `${url.protocol}//${url.host}/auth/callback`,
         code_verifier: codeVerifier,
       })
+      if (clientSecret) {
+        body.set("client_secret", clientSecret)
+      }
 
       const tokenResp = await fetch(tokenEndpoint, {
         method: "POST",
@@ -177,6 +182,9 @@ export const unsafeDevLogin = (options: LoginOptions): Plugin => {
             client_id: clientId,
             refresh_token: cookies["refresh_token"],
           })
+          if (clientSecret) {
+            body.set("client_secret", clientSecret)
+          }
           const refreshResp = await fetch(config.token_endpoint, {
             method: "POST",
             headers: { "Content-Type": "application/x-www-form-urlencoded" },
