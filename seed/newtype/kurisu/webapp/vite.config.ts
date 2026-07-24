@@ -1,3 +1,5 @@
+import fs from "node:fs"
+
 import { reactRouter } from "@react-router/dev/vite"
 import tailwindcss from "@tailwindcss/vite"
 import { defineConfig } from "vite"
@@ -8,6 +10,11 @@ import unsafeDevLogin from "../../../cloud/login/ts/vite-plugin-unsafe-dev-login
 const DEFAULT_LANGUAGE = process.env.DEFAULT_LANGUAGE || "en"
 const BUILD_LANGUAGE = process.env.BUILD_LANGUAGE || DEFAULT_LANGUAGE
 
+const OPENID_CLIENT_ID = process.env.OPENID_CLIENT_ID || "kurisu-webapp-dev"
+const OPENID_CLIENT_SECRET =
+  process.env.OPENID_CLIENT_SECRET_FILE &&
+  fs.readFileSync(process.env.OPENID_CLIENT_SECRET_FILE, "utf8").trim()
+
 export default defineConfig({
   base: BUILD_LANGUAGE == DEFAULT_LANGUAGE ? "/" : `/${BUILD_LANGUAGE}/`,
   plugins: [
@@ -15,7 +22,10 @@ export default defineConfig({
     reactRouter(),
     tailwindcss(),
     tsconfigPaths(),
-    unsafeDevLogin({ clientId: "kurisu-webapp-dev" }),
+    unsafeDevLogin({
+      clientId: OPENID_CLIENT_ID,
+      clientSecret: OPENID_CLIENT_SECRET,
+    }),
   ],
   define: {
     BUILD_LANGUAGE: JSON.stringify(BUILD_LANGUAGE),
