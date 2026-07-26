@@ -4,13 +4,13 @@ import (
 	"context"
 	"net/http"
 	"os"
+	"strings"
 
 	"github.com/ndscm/theseed/seed/cloud/bidirequest/go/bidirequest"
 	"github.com/ndscm/theseed/seed/cloud/bidirequest/go/bidirequestservice"
 	"github.com/ndscm/theseed/seed/infra/auth/go/openid"
 	"github.com/ndscm/theseed/seed/infra/auth/go/openidverify"
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
-	"github.com/ndscm/theseed/seed/infra/flag/go/ageflag"
 	"github.com/ndscm/theseed/seed/infra/flag/go/seedflag"
 	"github.com/ndscm/theseed/seed/infra/grpc/go/seedgrpc"
 	"github.com/ndscm/theseed/seed/infra/http/go/seedbearer"
@@ -40,7 +40,7 @@ var flagOpenidClientId = seedflag.DefineString(
 	"openid_client_id", "",
 	"Client ID for OpenID Connect",
 )
-var flagOpenidClientSecret = ageflag.DefineSecret(
+var flagOpenidClientSecret = seedflag.DefineSecret(
 	"openid_client_secret",
 	"Client Secret for OpenID Connect",
 )
@@ -93,6 +93,7 @@ func run() error {
 		if err != nil {
 			return seederr.Wrap(err)
 		}
+		openidClientSecret = strings.TrimSpace(openidClientSecret)
 		openidClient := openid.NewOpenidClient(
 			openid.OpenidDiscoveryUrlFlag(), openidClientId, openidClientSecret,
 		)
