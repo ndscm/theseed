@@ -2,9 +2,12 @@ package openid
 
 import (
 	"context"
+	"encoding/json/v2"
 	"io"
 	"net/http"
 	"net/url"
+	"strings"
+	"time"
 
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
 	"golang.org/x/oauth2"
@@ -138,6 +141,74 @@ func (provider *OpenidProvider) WrapExternalTokenStorage(
 		return nil, seederr.Wrap(err)
 	}
 	return userTokenSource, nil
+}
+
+// UmaGrant exchanges a subject's access token for a Requesting Party Token (RPT)
+// via the UMA ticket grant, persists the RPT to storage, and returns a
+// TokenSource that refreshes it through the standard refresh_token grant. The
+// RPT carries the authorization claim, so services need not fetch it
+// themselves. Keycloak hands back another RPT on refresh, so the stored bearer
+// keeps its claim without re-running the exchange.
+//
+// The exchange requests no particular permission, so Keycloak returns every
+// grant the subject holds on the audience's resources. It authenticates as the
+// subject through the access token in the Authorization header, not as the
+// client.
+func (provider *OpenidProvider) UmaGrant(
+	ctx context.Context,
+	subjectToken string,
+	audience string,
+	storage ExternalTokenStorage,
+) (oauth2.TokenSource, error) {
+	configuration, err := provider.GetOpenidConfiguration(ctx)
+	if err != nil {
+		return nil, seederr.Wrap(err)
+	}
+
+	form := url.Values{}
+	form.Set("grant_type", "urn:ietf:params:oauth:grant-type:uma-ticket")
+	form.Set("audience", audience)
+
+	request, err := http.NewRequestWithContext(
+		ctx, http.MethodPost, configuration.TokenEndpoint, strings.NewReader(form.Encode()),
+	)
+	if err != nil {
+		return nil, seederr.Wrap(err)
+	}
+	request.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	request.Header.Set("Authorization", "Bearer "+subjectToken)
+
+	response, err := http.DefaultClient.Do(request)
+	if err != nil {
+		return nil, seederr.Wrap(err)
+	}
+	defer response.Body.Close()
+	responseBodyBytes, err := io.ReadAll(response.Body)
+	if err != nil {
+		return nil, seederr.Wrap(err)
+	}
+	if response.StatusCode != http.StatusOK {
+		return nil, seederr.WrapErrorf("uma ticket grant failed: status %d, body: %s",
+			response.StatusCode, string(responseBodyBytes))
+	}
+
+	// oauth2.Token carries the token endpoint's wire tags (access_token,
+	// refresh_token, expires_in, ...), so the reply decodes straight into it.
+	// Populating Expiry from the relative expires_in is left to the caller.
+	token := &oauth2.Token{}
+	err = json.Unmarshal(responseBodyBytes, token)
+	if err != nil {
+		return nil, seederr.Wrap(err)
+	}
+	if token.ExpiresIn > 0 {
+		token.Expiry = time.Now().Add(time.Duration(token.ExpiresIn) * time.Second)
+	}
+
+	tokenSource, err := provider.WrapExternalTokenStorage(ctx, nil, storage, token)
+	if err != nil {
+		return nil, seederr.Wrap(err)
+	}
+	return tokenSource, nil
 }
 
 func (provider *OpenidProvider) Client(
