@@ -26,6 +26,22 @@ interface LoginOptions {
   discoveryUrl?: string
   clientId: string
   clientSecret?: string
+  // When set, exchange the access token for a Keycloak Requesting Party Token
+  // before handing it out, so the bearer already carries the authorization
+  // claim and services (e.g. hooin) need not fetch the RPT themselves. The
+  // audience defaults to clientId, the resource server that owns the resources.
+  uma?: boolean
+  umaAudience?: string
+}
+
+// TokenResponse is the subset of a token endpoint reply we carry between
+// requests, whether it came from a code exchange, a refresh, or a uma-ticket
+// grant. An RPT is returned like any other token, with its own refresh token.
+interface TokenResponse {
+  access_token: string
+  refresh_token?: string
+  expires_in?: number
+  refresh_expires_in?: number
 }
 
 export const unsafeDevLogin = (options: LoginOptions): Plugin => {
@@ -33,6 +49,8 @@ export const unsafeDevLogin = (options: LoginOptions): Plugin => {
     options.discoveryUrl || process.env.SEED_OPENID_DISCOVERY_URL || ""
   const clientId = options.clientId
   const clientSecret = options.clientSecret
+  const uma = options.uma || false
+  const umaAudience = options.umaAudience || clientId
 
   let openidConfiguration: OpenidConfiguration | null = null
 
@@ -51,6 +69,42 @@ export const unsafeDevLogin = (options: LoginOptions): Plugin => {
     }
     openidConfiguration = await response.json()
     return openidConfiguration!
+  }
+
+  // umaGrant turns a token response into a Requesting Party Token so
+  // the bearer already carries the authorization claim. It requests no specific
+  // permission, so Keycloak returns every grant the subject holds on the
+  // audience's resources. A subject with no grant is denied the exchange (403),
+  // in which case the plain token response is kept so unprotected routes still
+  // work — the protected ones are refused later all the same.
+  //
+  // The whole RPT response is returned, including its own refresh token, so the
+  // session can refresh the RPT directly rather than re-running this exchange.
+  const umaGrant = async (
+    authnToken: TokenResponse,
+  ): Promise<TokenResponse> => {
+    const config = await getOpenidConfiguration()
+    const body = new URLSearchParams({
+      grant_type: "urn:ietf:params:oauth:grant-type:uma-ticket",
+      audience: umaAudience,
+    })
+    const response = await fetch(config.token_endpoint, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+        Authorization: `Bearer ${authnToken.access_token}`,
+      },
+      body: body.toString(),
+    })
+    if (!response.ok) {
+      const text = await response.text()
+      console.warn(
+        `party token request failed, using plain access token: ${response.status} ${text}`,
+      )
+      return authnToken
+    }
+    const authzToken: TokenResponse = await response.json()
+    return authzToken
   }
 
   const configureServer = (server: ViteDevServer) => {
@@ -145,21 +199,17 @@ export const unsafeDevLogin = (options: LoginOptions): Plugin => {
         return
       }
 
-      const tokens: {
-        access_token: string
-        refresh_token?: string
-        expires_in?: number
-        refresh_expires_in?: number
-      } = await tokenResp.json()
-      const accessMaxAge = tokens.expires_in || 3600
+      const authnToken: TokenResponse = await tokenResp.json()
+      const authzToken = uma ? await umaGrant(authnToken) : authnToken
+      const accessMaxAge = authzToken.expires_in || 3600
       const setCookies: string[] = [
-        `access_token=${tokens.access_token}; Path=/; HttpOnly; SameSite=Lax; Max-Age=${accessMaxAge}`,
+        `access_token=${authzToken.access_token}; Path=/; HttpOnly; SameSite=Lax; Max-Age=${accessMaxAge}`,
         "pkce_code_verifier=; Path=/; Max-Age=0",
       ]
-      if (tokens.refresh_token) {
-        const refreshMaxAge = tokens.refresh_expires_in || 7 * 24 * 3600
+      if (authzToken.refresh_token) {
+        const refreshMaxAge = authzToken.refresh_expires_in || 7 * 24 * 3600
         setCookies.push(
-          `refresh_token=${tokens.refresh_token}; Path=/; HttpOnly; SameSite=Lax; Max-Age=${refreshMaxAge}`,
+          `refresh_token=${authzToken.refresh_token}; Path=/; HttpOnly; SameSite=Lax; Max-Age=${refreshMaxAge}`,
         )
       }
 
@@ -172,9 +222,9 @@ export const unsafeDevLogin = (options: LoginOptions): Plugin => {
 
     server.middlewares.use(async (req, res, next) => {
       const cookies = parseCookies(req.headers.cookie || "")
-      let token = cookies["access_token"]
+      let accessToken = cookies["access_token"]
 
-      if (!token && cookies["refresh_token"]) {
+      if (!accessToken && cookies["refresh_token"]) {
         try {
           const config = await getOpenidConfiguration()
           const body = new URLSearchParams({
@@ -191,21 +241,22 @@ export const unsafeDevLogin = (options: LoginOptions): Plugin => {
             body: body.toString(),
           })
           if (refreshResp.ok) {
-            const tokens: {
-              access_token: string
-              refresh_token?: string
-              expires_in?: number
-              refresh_expires_in?: number
-            } = await refreshResp.json()
-            token = tokens.access_token
-            const accessMaxAge = tokens.expires_in || 3600
+            // The refresh token in the cookie is the RPT's own, so refreshing it
+            // should hand back another RPT — that is what we are testing. We use
+            // the result as is rather than re-running the uma-ticket exchange, so
+            // a token that came back without the authorization claim would show
+            // up as hooin fetching the RPT itself again.
+            const authzToken: TokenResponse = await refreshResp.json()
+            accessToken = authzToken.access_token
+            const accessMaxAge = authzToken.expires_in || 3600
             const setCookies: string[] = [
-              `access_token=${tokens.access_token}; Path=/; HttpOnly; SameSite=Lax; Max-Age=${accessMaxAge}`,
+              `access_token=${authzToken.access_token}; Path=/; HttpOnly; SameSite=Lax; Max-Age=${accessMaxAge}`,
             ]
-            if (tokens.refresh_token) {
-              const refreshMaxAge = tokens.refresh_expires_in || 7 * 24 * 3600
+            if (authzToken.refresh_token) {
+              const refreshMaxAge =
+                authzToken.refresh_expires_in || 7 * 24 * 3600
               setCookies.push(
-                `refresh_token=${tokens.refresh_token}; Path=/; HttpOnly; SameSite=Lax; Max-Age=${refreshMaxAge}`,
+                `refresh_token=${authzToken.refresh_token}; Path=/; HttpOnly; SameSite=Lax; Max-Age=${refreshMaxAge}`,
               )
             }
             res.setHeader("Set-Cookie", setCookies)
@@ -223,8 +274,8 @@ export const unsafeDevLogin = (options: LoginOptions): Plugin => {
         }
       }
 
-      if (token) {
-        req.headers["Authorization"] = `Bearer ${token}`
+      if (accessToken) {
+        req.headers["Authorization"] = `Bearer ${accessToken}`
       }
       next()
     })
