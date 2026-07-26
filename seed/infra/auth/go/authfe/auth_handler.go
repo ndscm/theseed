@@ -1,6 +1,7 @@
 package authfe
 
 import (
+	"context"
 	"crypto/rand"
 	"fmt"
 	"net/http"
@@ -11,6 +12,7 @@ import (
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
 	"github.com/ndscm/theseed/seed/infra/http/go/seedsession"
 	"github.com/ndscm/theseed/seed/infra/log/go/seedlog"
+	"golang.org/x/oauth2"
 )
 
 func sanitizeReturnUrl(raw string) string {
@@ -46,6 +48,10 @@ func guessOrigin(r *http.Request) string {
 
 type AuthHandler struct {
 	provider *openid.OpenidProvider
+
+	uma bool
+
+	umaAudience string
 }
 
 func (h *AuthHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -100,6 +106,32 @@ func (h *AuthHandler) handleLogin(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, authUrl, http.StatusFound)
 }
 
+// grantUmaToken exchanges the freshly obtained access token for a Requesting
+// Party Token and persists it to the session, so the stored bearer already
+// carries the authorization claim. The audience defaults to the client id, the
+// resource server that owns the resources.
+func (h *AuthHandler) grantUmaToken(
+	ctx context.Context,
+	tokenSource oauth2.TokenSource,
+	storage openid.ExternalTokenStorage,
+) error {
+	token, err := tokenSource.Token()
+	if err != nil {
+		return seederr.Wrap(err)
+	}
+
+	audience := h.umaAudience
+	if audience == "" {
+		audience = h.provider.ClientId()
+	}
+
+	_, err = h.provider.UmaGrant(ctx, token.AccessToken, audience, storage)
+	if err != nil {
+		return seederr.Wrap(err)
+	}
+	return nil
+}
+
 func (h *AuthHandler) handleCallback(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
@@ -132,11 +164,20 @@ func (h *AuthHandler) handleCallback(w http.ResponseWriter, r *http.Request) {
 	}
 
 	origin := guessOrigin(r)
-	_, err = h.provider.CodeGrant(ctx, origin, code, nil, session)
+	tokenSource, err := h.provider.CodeGrant(ctx, origin, code, nil, session)
 	if err != nil {
 		seedlog.Errorf("Failed to exchange code: %v", err)
 		http.Error(w, "Failed to exchange authorization code", http.StatusInternalServerError)
 		return
+	}
+
+	if h.uma {
+		err = h.grantUmaToken(ctx, tokenSource, session)
+		if err != nil {
+			// The code grant already stored the plain access token, so unprotected
+			// routes still work; the protected ones are refused later all the same.
+			seedlog.Warnf("Failed to grant UMA token, keeping plain access token: %v", err)
+		}
 	}
 
 	returnUrlRaw, err := session.Get(ctx, "oidc_return_url")
@@ -159,6 +200,31 @@ func (h *AuthHandler) handleCallback(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, returnUrl, http.StatusFound)
 }
 
-func NewAuthHandler(provider *openid.OpenidProvider) *AuthHandler {
-	return &AuthHandler{provider: provider}
+type authHandlerOptions struct {
+	uma bool
+
+	umaAudience string
+}
+
+type AuthHandlerOption func(*authHandlerOptions)
+
+func WithUma(audience string) AuthHandlerOption {
+	return func(opts *authHandlerOptions) {
+		opts.uma = true
+		opts.umaAudience = audience
+	}
+}
+
+func NewAuthHandler(provider *openid.OpenidProvider, opts ...AuthHandlerOption) *AuthHandler {
+	options := &authHandlerOptions{}
+	for _, opt := range opts {
+		opt(options)
+	}
+	return &AuthHandler{
+		provider: provider,
+
+		uma: options.uma,
+
+		umaAudience: options.umaAudience,
+	}
 }

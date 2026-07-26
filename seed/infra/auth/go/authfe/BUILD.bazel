@@ -13,5 +13,6 @@ go_library(
         "//seed/infra/error/go/seederr",
         "//seed/infra/http/go/seedsession",
         "//seed/infra/log/go/seedlog",
+        "@org_golang_x_oauth2//:oauth2",
     ],
 )
