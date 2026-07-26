@@ -8,6 +8,8 @@
     "brainInputPlaceholder": "Raw Brain Input",
     "multilineOffTooltip": "Use <Enter> to send messages",
     "multilineOnTooltip": "Multi-line enabled. Use <Ctrl> + <Enter> to send messages",
+    "threadInputPlaceholder": "Additional Brain Input",
+    "threadStepsTitle": "Steps",
     "title": "Brain",
     "topicPlaceholder": "Topic"
   },

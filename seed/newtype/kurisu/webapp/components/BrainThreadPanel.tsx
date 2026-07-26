@@ -1,5 +1,6 @@
 import * as Protobuf from "@bufbuild/protobuf"
 import React, { useCallback, useEffect, useMemo, useRef } from "react"
+import { useTranslation } from "react-i18next"
 
 import {
   CircleCheckIcon,
@@ -491,7 +492,7 @@ const BrainStreamingStepItem: React.FC = () => {
   return (
     <div
       className={tw({
-        layout: "mt-3 flex items-center justify-start gap-2 pt-3",
+        layout: "flex items-center justify-start gap-2 pt-3 pb-3",
         appearance: "border-base-200 text-neutral border-t text-xs font-medium",
       })}
     >
@@ -511,6 +512,7 @@ const BrainThreadPanel: React.FC<{
   ) => void
   onFinish?: (pendingInputText: string) => void
 }> = ({ thread, onSend, onFinish }) => {
+  const { t } = useTranslation("person")
   const [steps, setSteps] = React.useState<BrainStep[]>([])
   const [streaming, setStreaming] = React.useState(false)
   const [inputText, setInputText] = React.useState("")
@@ -634,6 +636,14 @@ const BrainThreadPanel: React.FC<{
 
   return (
     <KurisuPanel title={thread.input.topic} subtitle={thread.input.threadUuid}>
+      <div
+        className={tw({
+          layout: "pb-3",
+          appearance: "text-neutral text-xs font-semibold uppercase",
+        })}
+      >
+        {t("brain.threadStepsTitle", "Steps")}
+      </div>
       {chain}
       {streaming && <BrainStreamingStepItem />}
       {streaming && (
