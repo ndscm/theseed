@@ -10,13 +10,14 @@
 
 _decrypt_user_key() {
   local key_path
-  local decrypted_key
+  local tmp_path
   local key_fd
 
   key_path="$(ndscm secret --user get-path key.age)" || return 1
-  decrypted_key="$(age -d "${key_path}")" || return 1
-
-  exec {key_fd}<<<"${decrypted_key}"
+  tmp_path="$(mktemp)" || return 1
+  exec {key_fd}<>"${tmp_path}" || return 1
+  rm -f "${tmp_path}"
+  age -d "${key_path}" >&"${key_fd}" || return 1
 
   export AGE_KEY_FILE="/proc/$$/fd/${key_fd}"
   printf "export AGE_KEY_FILE=%s\n" "${AGE_KEY_FILE}" >&2
