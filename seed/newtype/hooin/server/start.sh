@@ -1,18 +1,18 @@
-#!/bin/bash
+#!/usr/bin/env bash
 set -eux
 set -o pipefail
 cd "$(dirname "${BASH_SOURCE[0]}")/../../../.."
 
 set +x
+age_key_file="${AGE_KEY_FILE:-""}"
+if [[ -z "${age_key_file}" ]]; then
+  age_key_file="$(ndscm secret --user get-path key.age)"
+fi
 openid_client_secret="$(
   age -d \
-    -i "$(ndscm secret --user get-path key.age)" \
+    -i "${age_key_file}" \
     "$(ndscm secret --user get-path seed/newtype/hooin/server/OPENID_CLIENT_SECRET.age)"
 )"
-# Hand the decrypted secret to the server over a pipe fd. The pipe is
-# single-use: once the server reads it, the plaintext is drained and no other
-# process can re-read it from /proc/$$/fd. unset drops the shell's own copy so
-# the cleartext doesn't linger in this process's memory for the server's life.
 exec {openid_client_secret_fd}< <(printf "%s" "${openid_client_secret}")
 unset openid_client_secret
 set -x
