@@ -59,8 +59,8 @@ const BrainThreadInput: React.FC<{
     <div
       ref={ref}
       className={tw({
-        layout: "mt-3 flex flex-col items-stretch pt-3",
-        appearance: "border-base-200 border-t",
+        layout: "flex flex-col items-stretch p-1",
+        appearance: "border-base-300 rounded-lg border p-1",
       })}
     >
       <div className={tw({ layout: "flex" })}>

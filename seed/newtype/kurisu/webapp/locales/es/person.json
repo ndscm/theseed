@@ -8,6 +8,8 @@
     "brainInputPlaceholder": "Entrada cruda del cerebro",
     "multilineOffTooltip": "Usa <Enter> para enviar mensajes",
     "multilineOnTooltip": "Multilínea habilitada. Usa <Ctrl> + <Enter> para enviar mensajes",
+    "threadInputPlaceholder": "Entrada adicional del cerebro",
+    "threadStepsTitle": "Pasos",
     "title": "Cerebro",
     "topicPlaceholder": "Tema"
   },
