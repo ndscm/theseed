@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"io"
+	"net/url"
 
 	"connectrpc.com/connect"
 	"github.com/ndscm/theseed/seed/cloud/login/go/keycloaklogin"
@@ -42,11 +43,20 @@ func (svc *HooinInvadeService) StartTerminal(
 	if req.Msg.GetPersonId() == "" {
 		return seederr.CodeErrorf(codes.InvalidArgument, "person_id is required")
 	}
-	// Who may invade whom is a keycloak role for now: one role per person that
-	// may be invaded, named after them. The empty client id asks for the role
-	// under the client the token was issued to, which is the one that sent the
-	// caller here.
-	err = keycloaklogin.VerifyRole(loginUser, "", "invade:"+req.Msg.GetPersonId())
+	// Who may invade whom is a keycloak permission: the InvadeWorkstation scope on
+	// the person's workstation resource. The gateway has already exchanged the
+	// subject's access token for a Requesting Party Token and forwarded it, so the
+	// grant travels in the token's authorization claim; this checks the scope on it
+	// without fetching anything.
+	err = keycloaklogin.VerifyResourceUrlPermission(
+		loginUser,
+		func(resourceUrl *url.URL) bool {
+			return resourceUrl.Path == "/people/"+req.Msg.GetPersonId()+"/workstations/default"
+		},
+		func(scope string) bool {
+			return scope == "hooin:InvadeWorkstation"
+		},
+	)
 	if err != nil {
 		return seederr.Wrap(err)
 	}
@@ -109,7 +119,7 @@ func (svc *HooinInvadeService) SendTerminalInput(
 	if req.Msg.GetPersonId() == "" {
 		return nil, seederr.CodeErrorf(codes.InvalidArgument, "person_id is required")
 	}
-	// The role is not checked again here, on every keystroke. StartTerminal
+	// The permission is not checked again here, on every keystroke. StartTerminal
 	// checked it, and a caller who failed that check has no terminal to type at:
 	// the GetTerminal below is what stands in for the check, and it is a lookup
 	// this call has to do anyway.
