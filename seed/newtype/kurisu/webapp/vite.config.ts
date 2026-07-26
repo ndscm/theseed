@@ -25,6 +25,7 @@ export default defineConfig({
     unsafeDevLogin({
       clientId: OPENID_CLIENT_ID,
       clientSecret: OPENID_CLIENT_SECRET,
+      uma: true,
     }),
   ],
   define: {
