@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"net/url"
 
 	"connectrpc.com/connect"
 	"github.com/ndscm/theseed/seed/cloud/login/go/keycloaklogin"
@@ -34,11 +35,12 @@ type HooinRaidService struct {
 // through a session nobody else can name, a path is named afresh every time.
 // There is nothing held between two calls to stand in for the check.
 //
-// The role checked is the one a terminal asks for — invading a workstation is
-// invading it, whether by shell or by editor, and a person who may sit at the
-// one may read what the other would have shown them. What their file system
-// then allows is decided on the workstation, where the agent runs each call as
-// them.
+// The scope checked is RaidWorkstation on the person's workstation resource. The
+// gateway has already exchanged the subject's access token for a Requesting
+// Party Token and forwarded it, so the grant travels in the token's
+// authorization claim and this checks the scope on it without fetching anything.
+// What the file system then allows is decided on the workstation, where the
+// agent runs each call as the person.
 func (svc *HooinRaidService) connectFileSystem(
 	ctx context.Context, personId string,
 ) (*commuteclient.AmadeusCommuteClient, error) {
@@ -50,7 +52,15 @@ func (svc *HooinRaidService) connectFileSystem(
 	if personId == "" {
 		return nil, seederr.CodeErrorf(codes.InvalidArgument, "person_id is required")
 	}
-	err = keycloaklogin.VerifyRole(loginUser, "", "raid:"+personId)
+	err = keycloaklogin.VerifyResourceUrlPermission(
+		loginUser,
+		func(resourceUrl *url.URL) bool {
+			return resourceUrl.Path == "/people/"+personId+"/workstations/default"
+		},
+		func(scope string) bool {
+			return scope == "hooin:RaidWorkstation"
+		},
+	)
 	if err != nil {
 		return nil, seederr.Wrap(err)
 	}
