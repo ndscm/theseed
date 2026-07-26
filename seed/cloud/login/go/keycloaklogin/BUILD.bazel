@@ -2,7 +2,10 @@ load("@rules_go//go:def.bzl", "go_library")
 
 go_library(
     name = "keycloaklogin",
-    srcs = ["role.go"],
+    srcs = [
+        "permission.go",
+        "role.go",
+    ],
     importpath = "github.com/ndscm/theseed/seed/cloud/login/go/keycloaklogin",
     visibility = ["//visibility:public"],
     deps = [
