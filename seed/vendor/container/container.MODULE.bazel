@@ -10,3 +10,5 @@ oci.pull(
     tag = "12-slim",
 )
 use_repo(oci, "debian_12_slim", "debian_12_slim_linux_amd64")
+
+include("//:container.MODULE.bazel")
