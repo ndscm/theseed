@@ -1,17 +1,12 @@
 import %workspace%/seed/vendor/boost/boost.bazelrc
 import %workspace%/seed/vendor/cc/cc.bazelrc
+import %workspace%/seed/vendor/java/java.bazelrc
 import %workspace%/seed/vendor/ts/ts.bazelrc
 
 common --build_event_binary_file=.bep
 common --experimental_isolated_extension_usages
 common --incompatible_strict_action_env
 common --remote_cache=http://cache.rbe.ndscm.com:22243 --remote_timeout=60
-
-# Java
-build --java_language_version=21
-build --java_runtime_version=remotejdk_21
-build --tool_java_language_version=21
-build --tool_java_runtime_version=remotejdk_21
 
 # Python
 common --@rules_python//python/config_settings:bootstrap_impl=script
