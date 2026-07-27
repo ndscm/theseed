@@ -1,3 +1,4 @@
+import %workspace%/seed/vendor/boost/boost.bazelrc
 import %workspace%/seed/vendor/cc/cc.bazelrc
 import %workspace%/seed/vendor/ts/ts.bazelrc
 
@@ -5,8 +6,6 @@ common --build_event_binary_file=.bep
 common --experimental_isolated_extension_usages
 common --incompatible_strict_action_env
 common --remote_cache=http://cache.rbe.ndscm.com:22243 --remote_timeout=60
-
-build --@boost.asio//:ssl=boringssl
 
 # Java
 build --java_language_version=21
