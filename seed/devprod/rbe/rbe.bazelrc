@@ -1,0 +1,3 @@
+common --build_event_binary_file=.bep
+common --incompatible_strict_action_env
+common --remote_timeout=60
