@@ -2,14 +2,15 @@
 Theseed
 
 The monorepo of Theseed
+
+The include statements must not be consecutive, because buildifier and
+`bazel mod tidy` fight over the empty lines between them.
 """
 
 module(
     name = "theseed",
     version = "1.0",
 )
-
-bazel_dep(name = "platforms", version = "1.1.0")
 
 # Android
 
@@ -32,6 +33,10 @@ include("//seed/vendor/abseil:abseil.MODULE.bazel")
 ## Boost
 
 include("//seed/vendor/boost:boost.MODULE.bazel")
+
+# Common
+
+include("//seed/vendor/bazel:common.MODULE.bazel")
 
 # Container
 
@@ -56,10 +61,6 @@ include("//seed/vendor/ts:ts.MODULE.bazel")
 # LLVM
 
 include("//seed/vendor/llvm:llvm.MODULE.bazel")
-
-# Pkg
-
-bazel_dep(name = "rules_pkg", version = "1.1.0")
 
 # Proto
 
