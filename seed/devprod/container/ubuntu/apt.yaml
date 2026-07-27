@@ -1,0 +1,27 @@
+# APT packages layered onto the ubuntu 26.04 (resolute) base image.
+#
+# This replaces the `RUN apt install` steps of the Containerfile. rules_img
+# cannot execute RUN steps, so the packages are resolved and downloaded as
+# .debs by rules_distroless and composed into a layer.
+#
+# Whenever this file changes, regenerate the lockfile:
+#
+#     bazel run @seed_devprod_container_ubuntu_2604_apt//:lock
+version: 1
+
+sources:
+  - channel: resolute main
+    url: https://snapshot.ubuntu.com/ubuntu/20260701T000000Z
+  - channel: resolute-security main
+    url: https://snapshot.ubuntu.com/ubuntu/20260701T000000Z
+  - channel: resolute-updates main
+    url: https://snapshot.ubuntu.com/ubuntu/20260701T000000Z
+
+archs:
+  - "amd64"
+
+packages:
+  - "ca-certificates"
+  - "curl"
+  - "iproute2"
+  - "iputils-ping"
