@@ -1,4 +1,5 @@
 import %workspace%/contrib/vendor/hedronvision/bazel-compile-commands-extractor/bazel-compile-commands-extractor.bazelrc
+import %workspace%/seed/devprod/rbe/rbe.bazelrc
 import %workspace%/seed/vendor/bazel/bazel.bazelrc
 import %workspace%/seed/vendor/boost/boost.bazelrc
 import %workspace%/seed/vendor/cc/cc.bazelrc
@@ -6,8 +7,6 @@ import %workspace%/seed/vendor/java/java.bazelrc
 import %workspace%/seed/vendor/python/python.bazelrc
 import %workspace%/seed/vendor/ts/ts.bazelrc
 
-common --build_event_binary_file=.bep
-common --incompatible_strict_action_env
-common --remote_cache=http://cache.rbe.ndscm.com:22243 --remote_timeout=60
+common --remote_cache=http://cache.rbe.ndscm.com:22243
 
 build --workspace_status_command=./seed/infra/buildinfo/bazel/generate-workspace-status.sh
