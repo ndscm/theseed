@@ -43,8 +43,7 @@ include("//seed/vendor/go:go.MODULE.bazel")
 
 # Grpc
 
-bazel_dep(name = "grpc", version = "1.80.0")
-bazel_dep(name = "grpc-java", version = "1.78.0")
+include("//seed/vendor/grpc:grpc.MODULE.bazel")
 
 # Java
 
