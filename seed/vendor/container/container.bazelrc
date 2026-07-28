@@ -1,0 +1,1 @@
+common --@rules_img//img/settings:load_daemon=podman
