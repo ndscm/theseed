@@ -3,6 +3,7 @@ import %workspace%/seed/devprod/rbe/rbe.bazelrc
 import %workspace%/seed/vendor/bazel/bazel.bazelrc
 import %workspace%/seed/vendor/boost/boost.bazelrc
 import %workspace%/seed/vendor/cc/cc.bazelrc
+import %workspace%/seed/vendor/container/container.bazelrc
 import %workspace%/seed/vendor/java/java.bazelrc
 import %workspace%/seed/vendor/python/python.bazelrc
 import %workspace%/seed/vendor/ts/ts.bazelrc
