@@ -12,6 +12,10 @@
 import { type DirConfig } from "@//seed/devprod/ndscm/config/DIR"
 
 export default {
+  granularity: {
+    style: "linux",
+    prefix: "repo: ",
+  },
   format: {
     ts: {
       watch: [
@@ -128,16 +132,19 @@ export default {
       target: "MODULE.bazel.lock",
       watch: "(^|/)BUILD.bazel$",
       run: "bazel mod tidy",
+      granularity: true,
     },
     cargo: {
       target: "Cargo.lock",
       watch: "(^|/)Cargo.toml$",
       run: "bazel run @rules_rust//tools/upstream_wrapper:cargo -- build",
+      granularity: true,
     },
     go: {
       target: "go.sum",
       watch: "^go.mod$",
       run: "bazel run @rules_go//go -- mod tidy -e",
+      granularity: true,
     },
     pnpm: {
       target: "pnpm-lock.yaml",
@@ -147,6 +154,7 @@ export default {
         "^pnpm-workspace.yaml$",
       ],
       run: 'bazel run @pnpm//:pnpm -- --dir "$(pwd)" install',
+      granularity: true,
     },
     requirements: {
       target: "requirements.txt",
@@ -157,6 +165,7 @@ export default {
       target: "uv.lock",
       watch: "^pyproject.toml$",
       run: "uv sync",
+      granularity: true,
     },
   },
   test: {
