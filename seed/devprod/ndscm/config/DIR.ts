@@ -98,6 +98,45 @@
  */
 export type DirConfig = {
   /**
+   * Commit granularity for changes in this directory.
+   *
+   * When set, changes to this directory are grouped into a single separate
+   * commit rather than folded into a shared commit with other directories.
+   *
+   * @example
+   * ```ts
+   * granularity: {
+   *   convention: "linux",
+   *   prefix: "seed: ndscm: ",
+   * }
+   * ```
+   */
+  granularity?: {
+    /**
+     * Commit message style the commit in this directory should follow.
+     *
+     * - `"linux"` — Linux-kernel style, `<project>: <sub>: verb summary`.
+     * - `"conventional"` — Conventional Commits, `type(scope/sub): verb summary`.
+     * - `"freedom"` — No enforced convention.
+     */
+    style: "linux" | "conventional" | "freedom"
+
+    /**
+     * Prefix prepended to the commit message for this directory's commit.
+     *
+     * Only used for the `"linux"` {@link style}, and usually end with `: `
+     */
+    prefix?: string
+
+    /**
+     * Scope inserted into the commit message for this directory's commit.
+     *
+     * Only used for the `"conventional"` {@link style}.
+     */
+    scope?: string
+  }
+
+  /**
    * Auto-format individual changed files in place.
    *
    * Standalone — must not depend on bootstrap outputs or heavy setup
@@ -332,6 +371,13 @@ export type DirConfig = {
 
       /** Shell command(s) to run. An array is executed sequentially. */
       run: string | string[]
+
+      /**
+       * When `true`, this task's regenerated lock file is committed in a
+       * separate commit rather than combined with the directory's other
+       * changes.
+       */
+      granularity?: boolean
     }
   }
 
