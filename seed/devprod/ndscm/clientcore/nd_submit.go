@@ -25,7 +25,7 @@ func NdSubmit(scmProvider scm.Provider, options NdSubmitOptions) error {
 	if seedshell.ShellEval() {
 		return seederr.WrapErrorf("nd-submit should not run with --shell-eval")
 	}
-	remoteMain := options.Remote + "/main"
+
 	currentUserHandle, err := user.CurrentUserHandle()
 	if err != nil {
 		return seederr.Wrap(err)
@@ -62,6 +62,15 @@ func NdSubmit(scmProvider scm.Provider, options NdSubmitOptions) error {
 	if err != nil {
 		return seederr.Wrap(err)
 	}
+	baseBranch, err := scm.GetBaseBranchName(devBranch)
+	if err != nil {
+		return seederr.Wrap(err)
+	}
+	baseTracking, err := scmProvider.GetBranchTracking(baseBranch)
+	if err != nil {
+		return seederr.WrapErrorf("tracking upstream is missing for %v", baseBranch)
+	}
+
 	worktreePath := filepath.Join(monorepoHome, submitBranch)
 	_, err = os.Stat(worktreePath)
 	if err != nil && !os.IsNotExist(err) {
@@ -86,11 +95,11 @@ func NdSubmit(scmProvider scm.Provider, options NdSubmitOptions) error {
 	if err != nil {
 		return seederr.WrapErrorf("tracking upstream is missing for %v", changeBranch)
 	}
-	mergeBaseCommitId, err := scmProvider.GetMergeBaseCommitId(remoteMain, changeBranch)
+	mergeBaseCommitId, err := scmProvider.GetMergeBaseCommitId(baseTracking, changeBranch)
 	if err != nil {
 		return seederr.WrapErrorf("merge base is missing for %v", changeBranch)
 	}
-	err = scmProvider.CreateBranch(submitBranch, mergeBaseCommitId, remoteMain)
+	err = scmProvider.CreateBranch(submitBranch, mergeBaseCommitId, baseTracking)
 	if err != nil {
 		return seederr.Wrap(err)
 	}
