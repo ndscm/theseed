@@ -31,9 +31,17 @@ changed.
 
 ### Produce private information
 
-The true competitive edge of a company, a human, or a newman is the same: to act
-as the consultant who holds private information. It might be where to find a
-supply chain, how to win a buyer's trust, or how to make the product itself.
+The true competitive edge of a company, a human, or a newman is the same: to be
+the consultant who holds private information. It might be where to source a
+supply chain, how to earn a buyer's trust, or how to build the product itself.
+
+The product manager is a concrete example. One view holds that every boss will
+simply become their own product manager — but that will never happen. There is a
+wide gap between what a boss thinks and the instructions an agent can act on. A
+boss's core value is to make money for the team; mastering the craft of agent
+management is not part of that job. The private information that translates a
+boss's tone and expression, read against the company's circumstances, into the
+right instructions for an agent is what keeps the product manager valuable.
 
 ### Become an educator of newmen
 
