@@ -48,6 +48,7 @@ go_library(
     deps = [
         "//seed/devprod/ndscm/clientcore",
         "//seed/devprod/ndscm/scm/git",
+        "//seed/devprod/ndscm/secret/age",
         "//seed/infra/error/go/seederr",
         "//seed/infra/flag/go/seedflag",
         "//seed/infra/init/go/seedinit",
