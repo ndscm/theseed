@@ -9,6 +9,7 @@ import (
 	"strings"
 
 	"github.com/ndscm/theseed/seed/devprod/ndscm/scm"
+	"github.com/ndscm/theseed/seed/devprod/ndscm/secret"
 	"github.com/ndscm/theseed/seed/devprod/ndscm/user"
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
 	"github.com/ndscm/theseed/seed/infra/shell/go/seedshell"
@@ -92,6 +93,40 @@ func createSecretWorktree(
 		return "", seederr.WrapErrorf("unexpected new worktree path: %v (expected: %v)", newWorktreePath, worktreePath)
 	}
 	return newWorktreePath, nil
+}
+
+// resolveSecretPath cleans a user-supplied secret path and validates it against
+// the secret worktree, failing if the worktree is not yet initialized or the
+// path escapes it. It returns the worktree root and the secret path relative to
+// it.
+func resolveSecretPath(
+	monorepoHome string, userHandle string, space string, secretPath string,
+) (string, string, error) {
+	secretPath = strings.TrimSpace(secretPath)
+	_, worktreePath, exists := getSecretWorktree(monorepoHome, userHandle, space)
+	if !exists {
+		syncCommand := "nd secret"
+		if userHandle != "" {
+			syncCommand += " --user"
+		}
+		if space != "" && space != "main" {
+			syncCommand += " --space \"" + space + "\""
+		}
+		syncCommand += " sync"
+		return "", "", seederr.WrapErrorf("secret worktree is not initialized, run `%s` first.", syncCommand)
+	}
+	if filepath.IsAbs(secretPath) {
+		return "", "", seederr.WrapErrorf("secret path must be relative: %v", secretPath)
+	}
+	secretAbsPath := filepath.Join(worktreePath, secretPath)
+	secretRelPath, err := filepath.Rel(worktreePath, secretAbsPath)
+	if err != nil {
+		return "", "", seederr.Wrap(err)
+	}
+	if strings.HasPrefix(secretRelPath, "..") {
+		return "", "", seederr.WrapErrorf("secret path escapes the secret worktree: %v", secretPath)
+	}
+	return worktreePath, secretRelPath, nil
 }
 
 // bfsChangedFiles returns the changed file paths in breadth-first order from
@@ -199,31 +234,34 @@ func NdSecretGetPath(
 	if len(args) != 1 {
 		return seederr.WrapErrorf("nd-secret usage: nd secret [--space=<space>] [--user] get-path <secret-path>")
 	}
-	secretPath := strings.TrimSpace(args[0])
-	_, worktreePath, exists := getSecretWorktree(monorepoHome, userHandle, space)
-	if !exists {
-		syncCommand := "nd secret"
-		if userHandle != "" {
-			syncCommand += " --user"
-		}
-		if space != "" && space != "main" {
-			syncCommand += " --space \"" + space + "\""
-		}
-		syncCommand += " sync"
-		return seederr.WrapErrorf("secret worktree is not initialized, run `%s` first.", syncCommand)
-	}
-	if filepath.IsAbs(secretPath) {
-		return seederr.WrapErrorf("secret path must be relative: %v", secretPath)
-	}
-	secretAbsPath := filepath.Join(worktreePath, secretPath)
-	secretRelPath, err := filepath.Rel(worktreePath, secretAbsPath)
+	worktreePath, secretPath, err := resolveSecretPath(monorepoHome, userHandle, space, args[0])
 	if err != nil {
 		return seederr.Wrap(err)
 	}
-	if strings.HasPrefix(secretRelPath, "..") {
-		return seederr.WrapErrorf("secret path escapes the secret worktree: %v", secretPath)
+	fmt.Printf("%v\n", filepath.Join(worktreePath, secretPath))
+	return nil
+}
+
+func NdSecretDecrypt(
+	monorepoHome string, userHandle string, space string,
+	args []string,
+) error {
+	if len(args) != 1 {
+		return seederr.WrapErrorf("nd-secret usage: nd secret [--space=<space>] [--user] decrypt <secret-path>")
 	}
-	fmt.Printf("%v\n", secretAbsPath)
+	worktreePath, secretPath, err := resolveSecretPath(monorepoHome, userHandle, space, args[0])
+	if err != nil {
+		return seederr.Wrap(err)
+	}
+	// The decryption backend is selected by the secret's file extension.
+	provider, err := secret.GetProvider(secretPath)
+	if err != nil {
+		return seederr.Wrap(err)
+	}
+	err = provider.Decrypt(worktreePath, secretPath)
+	if err != nil {
+		return seederr.Wrap(err)
+	}
 	return nil
 }
 
@@ -267,6 +305,11 @@ func NdSecret(scmProvider scm.Provider, options NdSecretOptions) error {
 		}
 	case "get-path":
 		err := NdSecretGetPath(monorepoHome, userHandle, space, options.Args[1:])
+		if err != nil {
+			return seederr.Wrap(err)
+		}
+	case "decrypt":
+		err := NdSecretDecrypt(monorepoHome, userHandle, space, options.Args[1:])
 		if err != nil {
 			return seederr.Wrap(err)
 		}
