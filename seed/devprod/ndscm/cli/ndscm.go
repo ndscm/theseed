@@ -5,6 +5,7 @@ import (
 	"os"
 
 	_ "github.com/ndscm/theseed/seed/devprod/ndscm/scm/git"
+	_ "github.com/ndscm/theseed/seed/devprod/ndscm/secret/age"
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
 	"github.com/ndscm/theseed/seed/infra/init/go/seedinit"
 	"github.com/ndscm/theseed/seed/infra/log/go/seedlog"
