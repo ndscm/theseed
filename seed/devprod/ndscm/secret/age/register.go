@@ -5,5 +5,5 @@ import (
 )
 
 func init() {
-	secret.Register(".age", &AgeProvider{})
+	secret.Register("age", []string{".age"}, &AgeProvider{})
 }
