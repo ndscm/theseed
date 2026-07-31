@@ -12,6 +12,7 @@ import (
 	"github.com/ndscm/theseed/seed/devprod/ndscm/secret"
 	"github.com/ndscm/theseed/seed/devprod/ndscm/user"
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
+	"github.com/ndscm/theseed/seed/infra/log/go/seedlog"
 	"github.com/ndscm/theseed/seed/infra/shell/go/seedshell"
 )
 
@@ -244,6 +245,32 @@ func NdSecretGetPath(
 	return nil
 }
 
+func NdSecretKeygen(
+	monorepoHome string, userHandle string, space string, providerName string,
+	args []string,
+) error {
+	if len(args) != 0 {
+		return seederr.WrapErrorf("nd-secret usage: nd secret [--space=<space>] [--user] --provider=<provider> keygen")
+	}
+	if providerName == "" {
+		providerName = "age"
+		seedlog.Warnf("nd-secret keygen: --provider not specified, defaulting to %v", providerName)
+	}
+	worktreePath, _, err := resolveSecretPath(monorepoHome, userHandle, space, "")
+	if err != nil {
+		return seederr.Wrap(err)
+	}
+	provider, err := secret.GetProvider(providerName)
+	if err != nil {
+		return seederr.Wrap(err)
+	}
+	err = provider.Keygen(worktreePath)
+	if err != nil {
+		return seederr.Wrap(err)
+	}
+	return nil
+}
+
 func NdSecretDecrypt(
 	monorepoHome string, userHandle string, space string, providerName string,
 	args []string,
@@ -312,6 +339,11 @@ func NdSecret(scmProvider scm.Provider, options NdSecretOptions) error {
 		}
 	case "get-path":
 		err := NdSecretGetPath(monorepoHome, userHandle, space, options.Args[1:])
+		if err != nil {
+			return seederr.Wrap(err)
+		}
+	case "keygen":
+		err := NdSecretKeygen(monorepoHome, userHandle, space, options.Provider, options.Args[1:])
 		if err != nil {
 			return seederr.Wrap(err)
 		}
