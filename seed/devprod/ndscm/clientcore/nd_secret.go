@@ -254,7 +254,11 @@ func NdSecretDecrypt(
 		return seederr.Wrap(err)
 	}
 	// The decryption backend is selected by the secret's file extension.
-	provider, err := secret.GetProvider(secretPath)
+	providerName, err := secret.InferProvider(secretPath)
+	if err != nil {
+		return seederr.Wrap(err)
+	}
+	provider, err := secret.GetProvider(providerName)
 	if err != nil {
 		return seederr.Wrap(err)
 	}
