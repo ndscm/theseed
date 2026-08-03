@@ -2,6 +2,7 @@ package age
 
 import (
 	"bytes"
+	"fmt"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -11,6 +12,7 @@ import (
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
 	"github.com/ndscm/theseed/seed/infra/log/go/seedlog"
 	"github.com/ndscm/theseed/seed/infra/shell/go/seedshell"
+	"golang.org/x/term"
 )
 
 // `age-keygen -pq | age -p -a > key.age`
@@ -174,6 +176,55 @@ func (a *AgeProvider) Keygen(worktreePath string) error {
 		return seederr.Wrap(err)
 	}
 	err = seedshell.PureRun("age-inspect", "--json", keyPath)
+	if err != nil {
+		return seederr.Wrap(err)
+	}
+	return nil
+}
+
+func (a *AgeProvider) Encrypt(worktreePath string, secretPath string) error {
+	recipientsAbsPath := filepath.Join(worktreePath, "recipients.txt")
+	secretAbsPath := filepath.Join(worktreePath, secretPath)
+	if seedshell.Dry() {
+		seedlog.Infof("Dry mode skip: encrypt %v", secretAbsPath)
+		return nil
+	}
+	err := os.MkdirAll(filepath.Dir(secretAbsPath), 0o755)
+	if err != nil {
+		return seederr.Wrap(err)
+	}
+
+	// When stdin is a terminal, disable echoing while age reads the secret (like
+	// sudo) so it never appears on screen. The plaintext still streams straight
+	// from stdin into age and never lands in a Go buffer; input ends at EOF
+	// (Ctrl-D). When stdin is piped there is nothing to echo.
+	stdinFd := os.Stdin.Fd()
+	if term.IsTerminal(int(stdinFd)) {
+		_, err := fmt.Fprint(os.Stderr, "Enter secret (Use Ctrl-D twice to end):")
+		if err != nil {
+			return seederr.Wrap(err)
+		}
+		restore, err := disableEcho(stdinFd)
+		if err != nil {
+			return seederr.Wrap(err)
+		}
+		defer restore()
+	}
+	stdinOption := func(cmd *exec.Cmd) {
+		cmd.Stdin = os.Stdin
+	}
+	err = seedshell.ImpureOptionsRun(
+		[]seedshell.RunOption{stdinOption},
+		"age", "-e", "-R", recipientsAbsPath, "-o", secretAbsPath,
+	)
+	if err != nil {
+		return seederr.Wrap(err)
+	}
+	_, err = fmt.Fprintln(os.Stderr, "")
+	if err != nil {
+		return seederr.Wrap(err)
+	}
+	err = seedshell.PureRun("age-inspect", "--json", secretAbsPath)
 	if err != nil {
 		return seederr.Wrap(err)
 	}
