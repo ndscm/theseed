@@ -93,3 +93,7 @@ func (cc *ClientCore) NdSync(options NdSyncOptions) error {
 func (cc *ClientCore) NdUncut(options NdUncutOptions) error {
 	return NdUncut(cc.scmProvider, options)
 }
+
+func (cc *ClientCore) NdUser(options NdUserOptions) error {
+	return NdUser(options)
+}

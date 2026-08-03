@@ -159,6 +159,11 @@ func run() error {
 		if err != nil {
 			return seederr.Wrap(err)
 		}
+	case "user":
+		err := ndUser(args[1:])
+		if err != nil {
+			return seederr.Wrap(err)
+		}
 	case "vendor":
 		err := ndVendor(args[1:])
 		if err != nil {
