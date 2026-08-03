@@ -271,6 +271,34 @@ func NdSecretKeygen(
 	return nil
 }
 
+func NdSecretEncrypt(
+	monorepoHome string, userHandle string, space string, providerName string,
+	args []string,
+) error {
+	if len(args) != 1 {
+		return seederr.WrapErrorf("nd-secret usage: nd secret [--space=<space>] [--user] encrypt <secret-path>")
+	}
+	worktreePath, secretPath, err := resolveSecretPath(monorepoHome, userHandle, space, args[0])
+	if err != nil {
+		return seederr.Wrap(err)
+	}
+	if providerName == "" {
+		providerName, err = secret.InferProvider(secretPath)
+		if err != nil {
+			return seederr.Wrap(err)
+		}
+	}
+	provider, err := secret.GetProvider(providerName)
+	if err != nil {
+		return seederr.Wrap(err)
+	}
+	err = provider.Encrypt(worktreePath, secretPath)
+	if err != nil {
+		return seederr.Wrap(err)
+	}
+	return nil
+}
+
 func NdSecretDecrypt(
 	monorepoHome string, userHandle string, space string, providerName string,
 	args []string,
@@ -344,6 +372,11 @@ func NdSecret(scmProvider scm.Provider, options NdSecretOptions) error {
 		}
 	case "keygen":
 		err := NdSecretKeygen(monorepoHome, userHandle, space, options.Provider, options.Args[1:])
+		if err != nil {
+			return seederr.Wrap(err)
+		}
+	case "encrypt":
+		err := NdSecretEncrypt(monorepoHome, userHandle, space, options.Provider, options.Args[1:])
 		if err != nil {
 			return seederr.Wrap(err)
 		}
