@@ -19,6 +19,8 @@ type NdSecretOptions struct {
 	Space string
 	User  bool
 
+	Provider string
+
 	Args []string
 }
 
@@ -243,7 +245,7 @@ func NdSecretGetPath(
 }
 
 func NdSecretDecrypt(
-	monorepoHome string, userHandle string, space string,
+	monorepoHome string, userHandle string, space string, providerName string,
 	args []string,
 ) error {
 	if len(args) != 1 {
@@ -253,10 +255,11 @@ func NdSecretDecrypt(
 	if err != nil {
 		return seederr.Wrap(err)
 	}
-	// The decryption backend is selected by the secret's file extension.
-	providerName, err := secret.InferProvider(secretPath)
-	if err != nil {
-		return seederr.Wrap(err)
+	if providerName == "" {
+		providerName, err = secret.InferProvider(secretPath)
+		if err != nil {
+			return seederr.Wrap(err)
+		}
 	}
 	provider, err := secret.GetProvider(providerName)
 	if err != nil {
@@ -313,7 +316,7 @@ func NdSecret(scmProvider scm.Provider, options NdSecretOptions) error {
 			return seederr.Wrap(err)
 		}
 	case "decrypt":
-		err := NdSecretDecrypt(monorepoHome, userHandle, space, options.Args[1:])
+		err := NdSecretDecrypt(monorepoHome, userHandle, space, options.Provider, options.Args[1:])
 		if err != nil {
 			return seederr.Wrap(err)
 		}

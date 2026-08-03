@@ -9,6 +9,8 @@ import (
 type ndSecretFlags struct {
 	space *seedflag.StringFlag
 	user  *seedflag.BoolFlag
+
+	provider *seedflag.StringFlag
 }
 
 func parseNdSecretFlags(args []string) (ndSecretFlags, []string, error) {
@@ -16,6 +18,7 @@ func parseNdSecretFlags(args []string) (ndSecretFlags, []string, error) {
 	cmdFlags := ndSecretFlags{}
 	cmdFlags.space = cf.DefineString("space", "main", "The secret space; the worktree is secret/<space>")
 	cmdFlags.user = cf.DefineBool("user", false, "Scope the secret worktree to the current user: <user-handle>/secret/<space>")
+	cmdFlags.provider = cf.DefineString("provider", "", "The secret provider for keygen, e.g. age")
 	cmdArgs, err := cf.Parse(args,
 		seedflag.WithAnywhereFlag(true),
 	)
@@ -39,6 +42,8 @@ func ndSecret(args []string) error {
 	err = cc.NdSecret(clientcore.NdSecretOptions{
 		Space: cmdFlags.space.Get(),
 		User:  cmdFlags.user.Get(),
+
+		Provider: cmdFlags.provider.Get(),
 
 		Args: cmdArgs,
 	})
