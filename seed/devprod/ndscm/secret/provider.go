@@ -10,6 +10,16 @@ type Provider interface {
 	// string or buffer inside this process.
 	Keygen(worktreePath string) error
 
+	// Encrypt reads plaintext from stdin and writes the encrypted secret to
+	// secretPath — relative to worktreePath — using the recipients material in
+	// worktreePath, the root of the secret worktree.
+	//
+	// As with Decrypt, implementations should avoid loading the plaintext into
+	// ndscm's own memory. Prefer streaming stdin straight into the underlying
+	// tool (e.g. hand stdin to the age process), so the secret never lands in a
+	// Go string or buffer inside this process.
+	Encrypt(worktreePath string, secretPath string) error
+
 	// Decrypt decrypts the secret at secretPath — relative to worktreePath —
 	// and writes its plaintext to stdout. worktreePath is the root of the
 	// secret worktree, so providers can locate both the secret and sibling
