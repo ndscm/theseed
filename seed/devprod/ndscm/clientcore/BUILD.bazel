@@ -23,6 +23,7 @@ go_library(
         "nd_submit.go",
         "nd_sync.go",
         "nd_uncut.go",
+        "nd_user.go",
     ],
     importpath = "github.com/ndscm/theseed/seed/devprod/ndscm/clientcore",
     visibility = ["//visibility:public"],

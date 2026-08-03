@@ -40,6 +40,7 @@ go_library(
         "nd_testable.go",
         "nd_tidy.go",
         "nd_uncut.go",
+        "nd_user.go",
         "nd_vendor.go",
         "ndscm.go",
     ],
