@@ -71,7 +71,7 @@ const BrainThreadInput: React.FC<{
               "field-sizing-content max-h-48 min-h-0 flex-1 resize-none overflow-y-auto",
             state: "focus:outline-none",
           })}
-          rows={2}
+          rows={1}
           placeholder={t(
             "brain.threadInputPlaceholder",
             "Additional Brain Input",
