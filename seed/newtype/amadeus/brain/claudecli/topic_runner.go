@@ -569,7 +569,7 @@ func (tr *topicRunner) waitCmd() {
 }
 
 func (tr *topicRunner) dispatchLine(line []byte) {
-	stepType, data, err := claudepayload.DecodeStreamOutputData(line)
+	claudeDataType, data, err := claudepayload.DecodeStreamOutputData(line)
 	if err != nil {
 		seedlog.Warnf("topic %q: unparsable stdout line: %v: %s",
 			tr.topic, err, string(line))
@@ -579,13 +579,13 @@ func (tr *topicRunner) dispatchLine(line []byte) {
 	step := &brainpb.BrainStep{
 		Uuid:       uuid.NewString(),
 		Timestamp:  timestamppb.Now(),
-		Type:       stepType,
+		Type:       "claudecli-" + claudeDataType,
 		Topic:      tr.topic,
 		ThreadUuid: tr.scheduler.ongoing(),
 		Data:       data,
 	}
 
-	if step.Type == "result" {
+	if claudeDataType == "result" {
 		err := tr.scheduler.completeOngoing()
 		if err != nil {
 			seedlog.Warnf("topic %q: %v", tr.topic, err)
