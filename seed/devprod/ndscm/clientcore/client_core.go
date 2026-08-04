@@ -90,6 +90,10 @@ func (cc *ClientCore) NdSync(options NdSyncOptions) error {
 	return NdSync(cc.scmProvider, options)
 }
 
+func (cc *ClientCore) NdTicket(options NdTicketOptions) error {
+	return NdTicket(cc.scmProvider, options)
+}
+
 func (cc *ClientCore) NdUncut(options NdUncutOptions) error {
 	return NdUncut(cc.scmProvider, options)
 }

@@ -38,6 +38,7 @@ go_library(
         "nd_sync.go",
         "nd_t.go",
         "nd_testable.go",
+        "nd_ticket.go",
         "nd_tidy.go",
         "nd_uncut.go",
         "nd_user.go",
