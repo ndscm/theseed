@@ -1,0 +1,62 @@
+#!/usr/bin/env dotslash
+
+{
+  "name": "atlas",
+  "platforms": {
+    "linux-aarch64": {
+      "path": "atlas",
+      "size": 116631776,
+      "hash": "blake3",
+      "digest": "c76057c46300255fe7652b3e18b713894a1ad31dacdefdd1ad2f34a3198f7ac7",
+      "providers": [
+        {
+          "url": "https://release.ariga.io/atlas/atlas-linux-arm64-v1.3.0"
+        }
+      ]
+    },
+    "linux-x86_64": {
+      "path": "atlas",
+      "size": 125569080,
+      "hash": "blake3",
+      "digest": "7fde8c2eab586c22d453a7a396d8153b319d4345e60a6a13c7199bb8412e9358",
+      "providers": [
+        {
+          "url": "https://release.ariga.io/atlas/atlas-linux-amd64-v1.3.0"
+        }
+      ]
+    },
+    "macos-aarch64": {
+      "path": "atlas",
+      "size": 118064578,
+      "hash": "blake3",
+      "digest": "118956b1e4ac25e9b7c6dad875934a10604a74ad3002c5c306dcd565eb8f0ae7",
+      "providers": [
+        {
+          "url": "https://release.ariga.io/atlas/atlas-darwin-arm64-v1.3.0"
+        }
+      ]
+    },
+    "macos-x86_64": {
+      "path": "atlas",
+      "size": 126058408,
+      "hash": "blake3",
+      "digest": "265fab5fe3b099c51d3993bb59205ed5f6ad9023838f66d8140af0fc22ed6848",
+      "providers": [
+        {
+          "url": "https://release.ariga.io/atlas/atlas-darwin-amd64-v1.3.0"
+        }
+      ]
+    },
+    "windows-x86_64": {
+      "path": "atlas.exe",
+      "size": 128139272,
+      "hash": "blake3",
+      "digest": "b5ba2a08335e49d6e84fb4936638dc61a61d3b1c3701b59320078b4fa0724295",
+      "providers": [
+        {
+          "url": "https://release.ariga.io/atlas/atlas-windows-amd64-v1.3.0.exe"
+        }
+      ]
+    }
+  }
+}
