@@ -63,7 +63,7 @@ func (svc *HooinDictateService) SendBrainInput(
 		case <-ctx.Done():
 			return nil, seederr.Wrap(ctx.Err())
 		case step := <-sub.Receive():
-			if step.GetType() != "result" {
+			if step.GetType() != "result" && step.GetType() != "claudecli-result" {
 				continue
 			}
 			return connect.NewResponse(step), nil
@@ -108,7 +108,7 @@ func (svc *HooinDictateService) SendBrainInputStreamBrainStep(
 			if err := stream.Send(step); err != nil {
 				return seederr.Wrap(err)
 			}
-			if step.GetType() == "result" {
+			if step.GetType() == "result" || step.GetType() == "claudecli-result" {
 				return nil
 			}
 		}
