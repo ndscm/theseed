@@ -1,0 +1,20 @@
+load("@rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "steinsdb",
+    srcs = ["steins_database_client.go"],
+    importpath = "github.com/ndscm/theseed/seed/newtype/steins/database/steinsdb",
+    visibility = [
+        "//seed/newtype/hooin:__subpackages__",
+        "//seed/newtype/steins:__subpackages__",
+    ],
+    deps = [
+        "//seed/infra/error/go/seederr",
+        "//seed/infra/flag/go/seedflag",
+        "//seed/infra/log/go/seedlog",
+        "//seed/newtype/steins/database:ent",
+        "@com_github_jackc_pgx_v5//stdlib",
+        "@io_entgo_ent//dialect",
+        "@io_entgo_ent//dialect/sql",
+    ],
+)
