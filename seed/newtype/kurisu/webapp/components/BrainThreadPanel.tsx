@@ -605,11 +605,13 @@ const BrainThreadPanel: React.FC<{
           result.push(<BrainInputStepItem key={step.uuid} step={step} />)
           break
         }
+        case "claudecli-system":
         case "system": {
           let nextStepIndex = stepIndex + 1
           while (
             nextStepIndex < steps.length &&
-            steps[nextStepIndex].type === "system"
+            (steps[nextStepIndex].type === "system" ||
+              steps[nextStepIndex].type === "claudecli-system")
           ) {
             nextStepIndex++
           }
@@ -618,17 +620,25 @@ const BrainThreadPanel: React.FC<{
           stepIndex = nextStepIndex - 1
           break
         }
-        case "assistant":
+        case "claudecli-assistant":
+        case "assistant": {
           result.push(<BrainAssistantStepItem key={step.uuid} step={step} />)
           break
-        case "user":
+        }
+        case "claudecli-user":
+        case "user": {
           result.push(<BrainUserStepItem key={step.uuid} step={step} />)
           break
-        case "result":
+        }
+        case "claudecli-result":
+        case "result": {
           result.push(<BrainResultStepItem key={step.uuid} step={step} />)
           break
-        default:
+        }
+        default: {
           result.push(<BrainUnknownStepItem key={step.uuid} step={step} />)
+          break
+        }
       }
     }
     return result
