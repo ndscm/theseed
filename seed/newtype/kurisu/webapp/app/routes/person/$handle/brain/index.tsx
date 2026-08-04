@@ -200,10 +200,11 @@ const PersonBrainPage: React.FC<{ params: { handle: string } }> = ({
             <textarea
               className={tw({
                 component: "textarea textarea-ghost",
-                layout: "flex-1 resize-none",
+                layout:
+                  "field-sizing-content max-h-48 min-h-0 flex-1 resize-none overflow-y-auto",
                 state: "focus:outline-none",
               })}
-              rows={3}
+              rows={1}
               placeholder={t("brain.brainInputPlaceholder", "Raw Brain Input")}
               value={inputText}
               onChange={(e) => setInputText(e.target.value)}
