@@ -142,7 +142,9 @@ const PersonBrainPage: React.FC<{ params: { handle: string } }> = ({
   return (
     <main className={tw({ layout: "flex min-h-0 flex-1 flex-col" })}>
       <div className={tw({ layout: "min-h-0 flex-1 overflow-auto px-7 py-6" })}>
-        <div className={tw({ layout: "flex max-w-3xl flex-col gap-4" })}>
+        <div
+          className={tw({ layout: "mx-auto flex max-w-3xl flex-col gap-4" })}
+        >
           {threads.map((thread) => (
             <BrainThreadPanel
               key={thread.input.uuid}
@@ -167,7 +169,7 @@ const PersonBrainPage: React.FC<{ params: { handle: string } }> = ({
       >
         <div
           className={tw({
-            layout: "flex max-w-3xl flex-col items-stretch",
+            layout: "mx-auto flex max-w-3xl flex-col items-stretch",
             appearance: "border-base-300 rounded-lg border p-1",
           })}
         >
