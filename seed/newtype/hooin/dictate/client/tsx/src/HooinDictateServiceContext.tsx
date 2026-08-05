@@ -10,6 +10,9 @@ import {
 } from "../../../../../gajetto/proto/brain_pb"
 import {
   HooinDictateService,
+  type ListBrainStepsRequest,
+  ListBrainStepsRequestSchema,
+  type ListBrainStepsResponse,
   type PersonTopic,
   type SendBrainInputRequest,
   SendBrainInputRequestSchema,
@@ -18,6 +21,14 @@ import {
 } from "../../../proto/dictate_pb"
 
 interface HooinDictateServiceInterface {
+  ListBrainSteps: (
+    personId: string,
+    options?: {
+      pageToken?: string
+      filter?: string
+      orderBy?: string
+    },
+  ) => Promise<ListBrainStepsResponse>
   SendBrainInput: (
     personId: string,
     brainInput: BrainInput,
@@ -49,6 +60,32 @@ export const HooinDictateServiceProvider: React.FC<{
     const client = createClient(HooinDictateService, grpcWebTransport)
     setClientGrpcWeb(client)
   }, [])
+
+  const ListBrainSteps = useCallback(
+    async (
+      personId: string,
+      options?: {
+        pageToken?: string
+        filter?: string
+        orderBy?: string
+      },
+    ): Promise<ListBrainStepsResponse> => {
+      if (!clientGrpcWeb) {
+        throw new Error("Hooin Dictate service not initialized")
+      }
+      const requestPb: ListBrainStepsRequest = Protobuf.create(
+        ListBrainStepsRequestSchema,
+        {
+          parent: `people/${personId}`,
+          pageToken: options?.pageToken ?? "",
+          filter: options?.filter ?? "",
+          orderBy: options?.orderBy ?? "",
+        },
+      )
+      return await clientGrpcWeb.listBrainSteps(requestPb)
+    },
+    [clientGrpcWeb],
+  )
 
   const SendBrainInput = useCallback(
     async (personId: string, brainInput: BrainInput): Promise<BrainStep> => {
@@ -97,12 +134,14 @@ export const HooinDictateServiceProvider: React.FC<{
       return null
     }
     return {
+      ListBrainSteps,
       SendBrainInput,
       SendBrainInputStreamBrainStep,
       SubscribeBrainStep,
     }
   }, [
     clientGrpcWeb,
+    ListBrainSteps,
     SendBrainInput,
     SendBrainInputStreamBrainStep,
     SubscribeBrainStep,
