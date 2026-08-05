@@ -1,5 +1,6 @@
 import * as Protobuf from "@bufbuild/protobuf"
-import React, { useCallback, useEffect, useMemo, useRef } from "react"
+import * as ProtobufWkt from "@bufbuild/protobuf/wkt"
+import React, { useEffect, useMemo, useRef } from "react"
 import { useTranslation } from "react-i18next"
 
 import {
@@ -18,7 +19,6 @@ import ClaudePayload, {
   type StreamOutputMessage,
 } from "../../../gajetto/payload/ts/claude-payload"
 import {
-  type BrainInput,
   type BrainStep,
   BrainStepSchema,
 } from "../../../gajetto/proto/brain_pb"
@@ -26,11 +26,29 @@ import BrainThreadInput from "./BrainThreadInput"
 import KurisuPanel from "./KurisuPanel"
 
 export type BrainThread = {
-  personId: string
-  input: BrainInput
-  steps: BrainStep[]
-  live: AsyncIterable<BrainStep>
+  threadUuid: string
+  emitTime: ProtobufWkt.Timestamp
+  topic: string
+  steps: { [stepUuid: string]: BrainStep | undefined }
 }
+
+const getStepEmitTime = (step: BrainStep): number => {
+  const emitTime = step.emitTime
+  return emitTime ? ProtobufWkt.timestampMs(emitTime) : 0
+}
+
+// A thread whose last non-result step is older than this is treated as no
+// longer streaming: an active run emits steps continuously, so a trailing
+// non-result step this stale is almost certainly an interrupted run rather
+// than a live one.
+const STREAMING_STALE_MS = 10 * 60 * 1000
+
+const sortStepsByEmitTime = (steps: {
+  [stepUuid: string]: BrainStep | undefined
+}): BrainStep[] =>
+  Object.values(steps)
+    .filter((step): step is BrainStep => step !== undefined)
+    .sort((a, b) => getStepEmitTime(a) - getStepEmitTime(b))
 
 const markdownClassNames = {
   a: tw({ appearance: "text-primary underline", state: "hover:opacity-80" }),
@@ -510,27 +528,42 @@ const BrainThreadPanel: React.FC<{
     threadUuid: string,
     content: { text?: string },
   ) => void
-  onFinish?: (pendingInputText: string) => void
-}> = ({ thread, onSend, onFinish }) => {
+}> = ({ thread, onSend }) => {
   const { t } = useTranslation("person")
-  const [steps, setSteps] = React.useState<BrainStep[]>([])
-  const [streaming, setStreaming] = React.useState(false)
+  const { steps } = thread
   const [inputText, setInputText] = React.useState("")
-  const startedRef = useRef(false)
   const inputRef = useRef<HTMLDivElement>(null)
   const inputVisibleRef = useRef(true)
 
-  useEffect(() => {
-    const initialSteps = [
-      Protobuf.create(BrainStepSchema, {
-        type: "input",
-        uuid: crypto.randomUUID(),
-        data: { text: thread.input.text },
-      }),
-      ...thread.steps,
-    ]
-    setSteps(initialSteps)
-  }, [thread])
+  // steps is a uuid-keyed map; render in emit-time order.
+  const sortedSteps = useMemo(() => sortStepsByEmitTime(steps), [steps])
+
+  // NOTE: There is no actual liveness signal available here — this panel
+  // only sees the steps it has been handed, not whether the thread is
+  // still receiving from the live subscription. So "streaming" is inferred
+  // purely from the last step's type: anything other than a terminal
+  // result is treated as still in progress. This is a heuristic, and it is
+  // wrong for a thread whose last known step legitimately isn't a result —
+  // e.g. an interrupted/abandoned run, or a history thread whose trailing
+  // result page hasn't loaded yet — where it shows a perpetual streaming
+  // spinner (and keeps the input in tail-follow mode). Fixing this
+  // properly requires threading real liveness state down from the live
+  // subscription instead of guessing from the last step type.
+  //
+  // As a bound on the false positives above, also treat the thread as not
+  // streaming once its last step is older than STREAMING_STALE_MS: a live
+  // run emits steps continuously, so a long-idle trailing non-result step
+  // is far more likely an interrupted/abandoned run than an active one.
+  const streaming = useMemo(() => {
+    const lastStep = sortedSteps[sortedSteps.length - 1]
+    if (!lastStep) {
+      return false
+    }
+    if (lastStep.type === "result" || lastStep.type === "claudecli-result") {
+      return false
+    }
+    return Date.now() - getStepEmitTime(lastStep) < STREAMING_STALE_MS
+  }, [sortedSteps])
 
   // Track whether the input container is on screen so we only auto-scroll when
   // the user is already following the tail (not when they've scrolled up). The
@@ -556,46 +589,12 @@ const BrainThreadPanel: React.FC<{
     if (streaming && inputVisibleRef.current) {
       inputRef.current?.scrollIntoView({ behavior: "smooth", block: "end" })
     }
-  }, [steps, streaming])
-
-  const start = useCallback(async () => {
-    if (!thread.live || startedRef.current) {
-      return
-    }
-    startedRef.current = true
-
-    setStreaming(true)
-    try {
-      for await (const step of thread.live) {
-        setSteps((prev) => [...prev, step])
-      }
-    } finally {
-      setStreaming(false)
-    }
-  }, [thread.live])
-
-  useEffect(() => {
-    start()
-  }, [start])
-
-  // When a thread stops streaming, hand its still-pending draft back so it is
-  // not lost. `streaming` is the only dependency: it flips false exactly once,
-  // when the live loop ends, so this fires a single time with the draft from
-  // that render. `startedRef` skips the initial not-yet-streaming render, and
-  // keeping onFinish/inputText out of the deps stops the fresh inline onFinish
-  // from re-firing it on every unrelated render.
-  useEffect(() => {
-    if (!startedRef.current || streaming) {
-      return
-    }
-    onFinish?.(inputText)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [streaming])
+  }, [sortedSteps, streaming])
 
   const chain: React.ReactNode[] = useMemo(() => {
     const result: React.ReactNode[] = []
-    for (let stepIndex = 0; stepIndex < steps.length; stepIndex++) {
-      const step = steps[stepIndex]
+    for (let stepIndex = 0; stepIndex < sortedSteps.length; stepIndex++) {
+      const step = sortedSteps[stepIndex]
       switch (step.type) {
         case "input": {
           result.push(<BrainInputView key={step.uuid} step={step} />)
@@ -609,13 +608,13 @@ const BrainThreadPanel: React.FC<{
         case "system": {
           let nextStepIndex = stepIndex + 1
           while (
-            nextStepIndex < steps.length &&
-            (steps[nextStepIndex].type === "system" ||
-              steps[nextStepIndex].type === "claudecli-system")
+            nextStepIndex < sortedSteps.length &&
+            (sortedSteps[nextStepIndex].type === "system" ||
+              sortedSteps[nextStepIndex].type === "claudecli-system")
           ) {
             nextStepIndex++
           }
-          const group = steps.slice(stepIndex, nextStepIndex)
+          const group = sortedSteps.slice(stepIndex, nextStepIndex)
           result.push(<BrainSystemSteps key={group[0].uuid} steps={group} />)
           stepIndex = nextStepIndex - 1
           break
@@ -642,10 +641,10 @@ const BrainThreadPanel: React.FC<{
       }
     }
     return result
-  }, [steps])
+  }, [sortedSteps])
 
   return (
-    <KurisuPanel title={thread.input.topic} subtitle={thread.input.threadUuid}>
+    <KurisuPanel title={thread.topic} subtitle={thread.threadUuid}>
       <div
         className={tw({
           layout: "pb-3",
@@ -656,27 +655,17 @@ const BrainThreadPanel: React.FC<{
       </div>
       {chain}
       {streaming && <BrainStreamingStepItem />}
-      {streaming && (
-        <BrainThreadInput
-          ref={inputRef}
-          value={inputText}
-          onChange={(e) => setInputText(e.target.value)}
-          onSend={() => {
-            setSteps((prev) => [
-              ...prev,
-              Protobuf.create(BrainStepSchema, {
-                type: "input",
-                uuid: crypto.randomUUID(),
-                data: { text: inputText },
-              }),
-            ])
-            onSend?.(thread.input.topic, thread.input.threadUuid, {
-              text: inputText,
-            })
-            setInputText("")
-          }}
-        />
-      )}
+      <BrainThreadInput
+        ref={inputRef}
+        value={inputText}
+        onChange={(e) => setInputText(e.target.value)}
+        onSend={() => {
+          onSend?.(thread.topic, thread.threadUuid, {
+            text: inputText,
+          })
+          setInputText("")
+        }}
+      />
     </KurisuPanel>
   )
 }
