@@ -152,7 +152,7 @@ message BrainStep {
   string uuid = 1;
 
   // When the step was emitted.
-  google.protobuf.Timestamp timestamp = 2;
+  google.protobuf.Timestamp emit_time = 2;
 
   // Step type discriminator.
   string type = 3;
