@@ -502,7 +502,7 @@ func (tr *topicRunner) writeInput(req *inputPromise) {
 	}
 	step := &brainpb.BrainStep{
 		Uuid:       uuid.NewString(),
-		Timestamp:  timestamppb.Now(),
+		EmitTime:   timestamppb.Now(),
 		Type:       "claudecli-input",
 		Topic:      tr.topic,
 		ThreadUuid: req.input.GetThreadUuid(),
@@ -578,7 +578,7 @@ func (tr *topicRunner) dispatchLine(line []byte) {
 
 	step := &brainpb.BrainStep{
 		Uuid:       uuid.NewString(),
-		Timestamp:  timestamppb.Now(),
+		EmitTime:   timestamppb.Now(),
 		Type:       "claudecli-" + claudeDataType,
 		Topic:      tr.topic,
 		ThreadUuid: tr.scheduler.ongoing(),
