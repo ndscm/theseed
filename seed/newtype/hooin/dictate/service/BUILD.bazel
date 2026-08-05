@@ -4,16 +4,30 @@ package(default_visibility = ["//seed/newtype/hooin:__subpackages__"])
 
 go_library(
     name = "service",
-    srcs = ["dictate_service.go"],
+    srcs = [
+        "brain_step_cel_filter.go",
+        "brain_step_common.go",
+        "brain_step_order_by.go",
+        "cel.go",
+        "dictate_service.go",
+    ],
     importpath = "github.com/ndscm/theseed/seed/newtype/hooin/dictate/service",
     deps = [
         "//seed/cloud/login/go/login",
         "//seed/infra/error/go/seederr",
+        "//seed/infra/grpc/go/aips",
         "//seed/newtype/gajetto/proto:brain_go_proto",
         "//seed/newtype/hooin/dictate/proto:dictate_go_proto",
         "//seed/newtype/hooin/onsite",
+        "//seed/newtype/steins/database:ent",
+        "//seed/newtype/steins/database:ent/brainstep",
         "@com_connectrpc_connect//:connect",
+        "@com_github_google_cel_go//cel:go_default_library",
         "@com_github_google_uuid//:uuid",
+        "@io_entgo_ent//dialect/sql",
+        "@org_golang_google_genproto_googleapis_api//expr/v1alpha1",
         "@org_golang_google_grpc//codes",
+        "@org_golang_google_protobuf//types/known/structpb",
+        "@org_golang_google_protobuf//types/known/timestamppb",
     ],
 )
