@@ -1,0 +1,15 @@
+load("@rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "aips",
+    srcs = ["resource_name.go"],
+    importpath = "github.com/ndscm/theseed/seed/infra/grpc/go/aips",
+    visibility = ["//visibility:public"],
+    deps = ["//seed/infra/error/go/seederr"],
+)
+
+go_test(
+    name = "aips_test",
+    srcs = ["resource_name_test.go"],
+    embed = [":aips"],
+)
