@@ -1,5 +1,6 @@
 import * as Protobuf from "@bufbuild/protobuf"
-import React, { useCallback, useEffect, useRef, useState } from "react"
+import * as ProtobufWkt from "@bufbuild/protobuf/wkt"
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { useTranslation } from "react-i18next"
 
 import { BracketsIcon, CornerDownLeftIcon, SendIcon } from "lucide-react"
@@ -8,12 +9,21 @@ import tw from "../../../../../../../../devprod/ts/grouping-tailwind"
 import {
   type BrainInput,
   BrainInputSchema,
+  type BrainStep,
+  BrainStepSchema,
 } from "../../../../../../../gajetto/proto/brain_pb"
 import { useHooinDictateService } from "../../../../../../../hooin/dictate/client/tsx/HooinDictateServiceContext"
+import { PersonTopicSchema } from "../../../../../../../hooin/dictate/proto/dictate_pb"
 import { useHooinRosterService } from "../../../../../../../hooin/roster/client/tsx/HooinRosterServiceContext"
 import BrainThreadPanel, {
   type BrainThread,
 } from "../../../../../components/BrainThreadPanel"
+
+const sortThreadsByEmitTime = (threads: BrainThread[]): BrainThread[] =>
+  [...threads].sort(
+    (a, b) =>
+      ProtobufWkt.timestampMs(a.emitTime) - ProtobufWkt.timestampMs(b.emitTime),
+  )
 
 const PersonBrainPage: React.FC<{ params: { handle: string } }> = ({
   params,
@@ -24,7 +34,9 @@ const PersonBrainPage: React.FC<{ params: { handle: string } }> = ({
   const dictateService = useHooinDictateService()
 
   const [personId, setPersonId] = useState<string>("")
-  const [threads, setThreads] = useState<BrainThread[]>([])
+  const [threads, setThreads] = useState<{
+    [threadUuid: string]: BrainThread | undefined
+  }>({})
   const [isTopicShown, setIsTopicShown] = useState(false)
   const [inputTopic, setInputTopic] = useState("")
   const [inputText, setInputText] = useState("")
@@ -50,15 +62,91 @@ const PersonBrainPage: React.FC<{ params: { handle: string } }> = ({
     })()
   }, [rosterService, personHandle])
 
-  const reload = useCallback(async () => {
-    if (!rosterService) {
-      return
-    }
-  }, [rosterService])
+  const showStep = useCallback((step: BrainStep) => {
+    setThreads((prev) => {
+      const existing = prev[step.threadUuid]
+      if (!existing) {
+        return {
+          ...prev,
+          [step.threadUuid]: {
+            threadUuid: step.threadUuid,
+            emitTime: step.emitTime ?? ProtobufWkt.timestampNow(),
+            topic: step.topic,
+            steps: { [step.uuid]: step },
+          },
+        }
+      }
+      // A given server step can reach us from both the live subscription and a
+      // ListBrainSteps history page; ignore the duplicate. (Optimistic input
+      // steps carry a distinct client uuid, so they are never dropped here.)
+      if (existing.steps[step.uuid]) {
+        return prev
+      }
+      // A thread's emitTime is the earliest emitTime among its steps, so
+      // the thread is ordered by when it started (its first step), not by
+      // last activity. Keep the smaller of the incoming step's time and
+      // the thread's current time. Because steps can arrive out of order
+      // (a live/newest step before history backfills earlier ones), this
+      // value only drifts downward toward the true start as pages load.
+      const threadEmitTime =
+        step.emitTime &&
+        ProtobufWkt.timestampMs(step.emitTime) <
+          ProtobufWkt.timestampMs(existing.emitTime)
+          ? step.emitTime
+          : existing.emitTime
+      return {
+        ...prev,
+        [step.threadUuid]: {
+          ...existing,
+          emitTime: threadEmitTime,
+          topic: existing.topic || step.topic,
+          steps: { ...existing.steps, [step.uuid]: step },
+        },
+      }
+    })
+  }, [])
+
+  const reload = useCallback(
+    async (cancelled: () => boolean) => {
+      if (!dictateService || !personId) {
+        return
+      }
+      const personTopic = Protobuf.create(PersonTopicSchema, {
+        personId,
+        topic: "",
+      })
+      const stream = dictateService.SubscribeBrainStep([personTopic])
+      try {
+        for await (const step of stream) {
+          if (cancelled()) {
+            break
+          }
+          showStep(step)
+        }
+      } catch (err: unknown) {
+        if (cancelled()) {
+          return
+        }
+        throw err
+      }
+    },
+    [dictateService, personId, showStep],
+  )
 
   useEffect(() => {
-    reload()
+    let cancelled = false
+    void reload(() => cancelled)
+    return () => {
+      cancelled = true
+    }
   }, [reload])
+
+  const sortedThreads = useMemo(() => {
+    const threadList = Object.values(threads).filter(
+      (thread): thread is BrainThread => thread !== undefined,
+    )
+    return sortThreadsByEmitTime(threadList)
+  }, [threads])
 
   useEffect(() => {
     refOfThreadsEnd.current?.scrollIntoView({ behavior: "smooth" })
@@ -77,38 +165,50 @@ const PersonBrainPage: React.FC<{ params: { handle: string } }> = ({
         text,
         topic,
       })
+      showStep(
+        Protobuf.create(BrainStepSchema, {
+          type: "input",
+          uuid: crypto.randomUUID(),
+          threadUuid,
+          topic,
+          emitTime: ProtobufWkt.timestampNow(),
+          data: { text },
+        }),
+      )
       const result = await dictateService.SendBrainInput(personId, brainInput)
       return result
     },
-    [dictateService, personId],
+    [dictateService, personId, showStep],
   )
 
-  const sendMessage = useCallback(() => {
+  const sendMessage = useCallback(async () => {
     const text = inputText.trim()
     if (!text || !dictateService || !personId) {
       return
     }
 
     const uuid = crypto.randomUUID()
+    const topic = (isTopicShown && inputTopic) || "default"
     const brainInput: BrainInput = Protobuf.create(BrainInputSchema, {
       uuid,
       threadUuid: uuid,
       text,
-      topic: (isTopicShown && inputTopic) || "default",
+      topic,
     })
-    const stream = dictateService.SendBrainInputStreamBrainStep(
-      personId,
-      brainInput,
+    showStep(
+      Protobuf.create(BrainStepSchema, {
+        type: "input",
+        uuid: crypto.randomUUID(),
+        threadUuid: uuid,
+        topic,
+        emitTime: ProtobufWkt.timestampNow(),
+        data: { text },
+      }),
     )
-    const newThread: BrainThread = {
-      personId,
-      input: brainInput,
-      steps: [],
-      live: stream,
-    }
-    setThreads((prev) => [...prev, newThread])
     setInputText("")
-  }, [inputText, dictateService, personId, isTopicShown, inputTopic])
+    const result = await dictateService.SendBrainInput(personId, brainInput)
+    return result
+  }, [inputText, dictateService, personId, isTopicShown, inputTopic, showStep])
 
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -145,16 +245,11 @@ const PersonBrainPage: React.FC<{ params: { handle: string } }> = ({
         <div
           className={tw({ layout: "mx-auto flex max-w-3xl flex-col gap-4" })}
         >
-          {threads.map((thread) => (
+          {sortedThreads.map((thread) => (
             <BrainThreadPanel
-              key={thread.input.uuid}
+              key={thread.threadUuid}
               thread={thread}
               onSend={sendThreadInput}
-              onFinish={(pendingInputText) => {
-                setInputText((prev) =>
-                  prev ? pendingInputText + "\n" + prev : pendingInputText,
-                )
-              }}
             />
           ))}
           <div ref={refOfThreadsEnd} />
