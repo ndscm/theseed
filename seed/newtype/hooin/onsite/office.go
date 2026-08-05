@@ -3,17 +3,21 @@ package onsite
 import (
 	"context"
 	"sync"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
 	"github.com/ndscm/theseed/seed/infra/log/go/seedlog"
 	"github.com/ndscm/theseed/seed/newtype/gajetto/proto/brainpb"
 	"github.com/ndscm/theseed/seed/newtype/gajetto/team"
+	"github.com/ndscm/theseed/seed/newtype/steins/database/ent"
 	"google.golang.org/grpc/codes"
 )
 
 type Office struct {
 	Team team.Team
+
+	db *ent.Client
 
 	dutiesMutex sync.Mutex
 	duties      map[string]*PersonDuty
@@ -26,6 +30,12 @@ type Office struct {
 	// for cheap unsubscribe.
 	stepSubscribersMutex sync.Mutex
 	stepSubscribers      map[*StepSubscriber]struct{}
+}
+
+// DB returns the ent client backing persisted BrainSteps. It may be nil
+// when the office was created without a database.
+func (ofc *Office) GetDatabase() *ent.Client {
+	return ofc.db
 }
 
 func (ofc *Office) GetDuty(person string) *PersonDuty {
@@ -67,6 +77,33 @@ func (ofc *Office) UnsubscribeSteps(sub *StepSubscriber) {
 	delete(ofc.stepSubscribers, sub)
 }
 
+// saveStep persists step to the database. It is intended to run in its
+// own goroutine off the reporting RPC path, so it uses a fresh timeout
+// ctx rather than the request ctx and only logs failures.
+func (ofc *Office) saveStep(personId string, step *brainpb.BrainStep) {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
+	defer cancel()
+
+	create := ofc.db.BrainStep.Create()
+	stepUuid, err := uuid.Parse(step.GetUuid())
+	if err != nil {
+		seedlog.Warnf("Failed to parse BrainStep uuid %q: %v", step.GetUuid(), err)
+	} else {
+		create.SetID(stepUuid)
+	}
+	create.SetPersonID(personId)
+	create.SetEmitTime(step.GetEmitTime().AsTime())
+	create.SetType(step.GetType())
+	create.SetTopic(step.GetTopic())
+	create.SetThreadUUID(step.GetThreadUuid())
+	create.SetData(step.GetData().AsMap())
+
+	_, err = create.Save(ctx)
+	if err != nil {
+		seedlog.Warnf("Failed to save BrainStep to database: %v", err)
+	}
+}
+
 // matchStepSubscribers returns a snapshot of step subscribers matching
 // the given person and topic. An empty subscriber personId matches any
 // person; an empty subscriber topic matches any topic.
@@ -94,6 +131,13 @@ func (ofc *Office) matchStepSubscribers(personId string, topic string, threadUui
 }
 
 func (ofc *Office) BroadcastStep(personId string, step *brainpb.BrainStep) {
+	// Persist asynchronously: this runs on the reporting RPC path, and a
+	// slow or stalled database must not block the RPC response nor delay
+	// live-subscriber fanout below. saveStep uses its own timeout ctx,
+	// independent of the request lifetime.
+	if ofc.db != nil {
+		go ofc.saveStep(personId, step)
+	}
 	subscribers := ofc.matchStepSubscribers(personId, step.GetTopic(), step.GetThreadUuid())
 
 	// Fanout must not block the reporting RPC on any one slow or
@@ -131,10 +175,11 @@ func (ofc *Office) DispatchBrainInput(ctx context.Context, personId string, brai
 	return nil
 }
 
-func CreateOffice(t team.Team) (*Office, error) {
+func CreateOffice(t team.Team, db *ent.Client) (*Office, error) {
 	ofc := &Office{}
 	ofc.Team = t
 	ofc.duties = map[string]*PersonDuty{}
 	ofc.stepSubscribers = map[*StepSubscriber]struct{}{}
+	ofc.db = db
 	return ofc, nil
 }

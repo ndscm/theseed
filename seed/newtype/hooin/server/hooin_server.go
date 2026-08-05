@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"os"
 	"strings"
+	"time"
 
 	"github.com/ndscm/theseed/seed/cloud/bidirequest/go/bidirequest"
 	"github.com/ndscm/theseed/seed/cloud/bidirequest/go/bidirequestservice"
@@ -30,6 +31,7 @@ import (
 	raidservice "github.com/ndscm/theseed/seed/newtype/hooin/raid/service"
 	"github.com/ndscm/theseed/seed/newtype/hooin/roster/proto/rosterpbconnect"
 	rosterservice "github.com/ndscm/theseed/seed/newtype/hooin/roster/service"
+	"github.com/ndscm/theseed/seed/newtype/steins/database/steinsdb"
 )
 
 var flagPort = seedflag.DefineString(
@@ -86,6 +88,36 @@ func run() error {
 		return seederr.Wrap(err)
 	}
 
+	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
+	defer cancel()
+
+	// DB startup policy is intentionally asymmetric. Connecting is
+	// optional: for backward compatibility the server can run without a
+	// database (persistence is simply disabled, db stays nil), so a
+	// connection failure only warns and degrades. But once a database is
+	// reachable, its schema must be correct — running against a database
+	// with the wrong schema is not allowed, so a migration failure is
+	// fatal rather than degrading to a half-working persistence layer.
+	db, err := steinsdb.Open(ctx)
+	if err != nil {
+		seedlog.Warnf("Failed to connect to database: %v", err)
+		db = nil
+	}
+	defer func() {
+		if db != nil {
+			err := db.Close()
+			if err != nil {
+				seedlog.Warnf("Failed to close database: %v", err)
+			}
+		}
+	}()
+	if db != nil {
+		err := db.Schema.Create(ctx)
+		if err != nil {
+			return seederr.Wrap(err)
+		}
+	}
+
 	t := (team.Team)(nil)
 	openidClientId := flagOpenidClientId.Get()
 	if openidClientId != "" {
@@ -110,7 +142,7 @@ func run() error {
 		t = staticTeam
 	}
 
-	office, err := onsite.CreateOffice(t)
+	office, err := onsite.CreateOffice(t, db)
 	if err != nil {
 		return seederr.Wrap(err)
 	}
