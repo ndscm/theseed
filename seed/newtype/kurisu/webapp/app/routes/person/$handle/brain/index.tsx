@@ -1,6 +1,13 @@
 import * as Protobuf from "@bufbuild/protobuf"
 import * as ProtobufWkt from "@bufbuild/protobuf/wkt"
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react"
+import React, {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react"
 import { useTranslation } from "react-i18next"
 
 import { BracketsIcon, CornerDownLeftIcon, SendIcon } from "lucide-react"
@@ -37,11 +44,30 @@ const PersonBrainPage: React.FC<{ params: { handle: string } }> = ({
   const [threads, setThreads] = useState<{
     [threadUuid: string]: BrainThread | undefined
   }>({})
+  const [historyFilter, setHistoryFilter] = useState<string>("")
+  const [historyPageToken, setHistoryPageToken] = useState<string>("")
   const [isTopicShown, setIsTopicShown] = useState(false)
   const [inputTopic, setInputTopic] = useState("")
   const [inputText, setInputText] = useState("")
   const [isMultilineEnabled, setIsMultilineEnabled] = useState(true)
+
+  const refOfThreadsContainer = useRef<HTMLDivElement>(null)
+  const refOfThreadsStart = useRef<HTMLDivElement>(null)
   const refOfThreadsEnd = useRef<HTMLDivElement>(null)
+  const refOfThreadsEndVisible = useRef(true)
+
+  // Gates history paging on the top sentinel actually leaving and re-entering
+  // the viewport. The observer is recreated whenever historyPageToken changes,
+  // and a freshly observed target delivers an immediate callback with its
+  // current intersection state; without this gate, a page whose steps all dedup
+  // away (or land in already-open threads without growing the scroll area)
+  // leaves the sentinel intersecting, so the new observer fires again at once
+  // and burst-fetches the whole history. Starts armed so the first intersection
+  // still fetches; disarmed on fetch; re-armed only once the sentinel is
+  // observed out of view.
+  const refOfHistoryArmed = useRef(true)
+
+  const refOfPreLoadScrollHeight = useRef<number | null>(null)
 
   const personHandle = handle
     .trim()
@@ -111,6 +137,20 @@ const PersonBrainPage: React.FC<{ params: { handle: string } }> = ({
       if (!dictateService || !personId) {
         return
       }
+      const now = new Date().toISOString()
+      const filter = `emit_time < timestamp("${now}")`
+      setHistoryFilter(filter)
+      const firstPage = await dictateService.ListBrainSteps(personId, {
+        filter,
+        orderBy: "emit_time desc",
+      })
+      if (cancelled()) {
+        return
+      }
+      for (const step of firstPage.brainSteps) {
+        showStep(step)
+      }
+      setHistoryPageToken(firstPage.nextPageToken)
       const personTopic = Protobuf.create(PersonTopicSchema, {
         personId,
         topic: "",
@@ -148,8 +188,101 @@ const PersonBrainPage: React.FC<{ params: { handle: string } }> = ({
     return sortThreadsByEmitTime(threadList)
   }, [threads])
 
+  // Load older threads whenever the top sentinel scrolls into view. The first
+  // page is loaded by reload; this fetches successively older pages, advancing
+  // `historyPageToken` and re-subscribing each time so the next intersection
+  // gets the following page. It unobserves the moment it fires so a single page
+  // is in flight at a time. An empty `historyPageToken` means there is nothing
+  // to fetch — the first page hasn't loaded yet, or history is exhausted — so
+  // the effect stays idle. ListBrainSteps returns steps newest-first (order_by);
+  // showStep dedups against live steps.
   useEffect(() => {
-    refOfThreadsEnd.current?.scrollIntoView({ behavior: "smooth" })
+    const startEl = refOfThreadsStart.current
+    if (
+      !startEl ||
+      !dictateService ||
+      !personId ||
+      !historyFilter ||
+      !historyPageToken
+    ) {
+      return
+    }
+    const observer = new IntersectionObserver(([entry]) => {
+      if (!entry) {
+        return
+      }
+      if (!entry.isIntersecting) {
+        // Sentinel left the viewport; re-arm so the next entry fetches.
+        refOfHistoryArmed.current = true
+        return
+      }
+      // Intersecting but not armed means the sentinel never left since the last
+      // fetch (e.g. the loaded page didn't grow the scroll area). Wait for a
+      // genuine leave/re-enter instead of burst-fetching.
+      if (!refOfHistoryArmed.current) {
+        return
+      }
+      // Single-flight: disarm until the sentinel leaves and re-enters. The
+      // effect also re-subscribes once the cursor advances.
+      refOfHistoryArmed.current = false
+      observer.unobserve(startEl)
+      void (async () => {
+        const response = await dictateService.ListBrainSteps(personId, {
+          pageToken: historyPageToken,
+          filter: historyFilter,
+          orderBy: "emit_time desc",
+        })
+        // Remember the pre-prepend height so the layout effect can hold the
+        // viewport steady over the older threads about to be inserted above.
+        refOfPreLoadScrollHeight.current =
+          refOfThreadsContainer.current?.scrollHeight ?? null
+        for (const step of response.brainSteps) {
+          showStep(step)
+        }
+        // "" marks exhaustion; any other token is the next page's cursor.
+        setHistoryPageToken(response.nextPageToken)
+      })()
+    })
+    observer.observe(startEl)
+    return () => {
+      observer.disconnect()
+    }
+  }, [dictateService, personId, historyFilter, historyPageToken, showStep])
+
+  // Track whether the tail is on screen so live steps only auto-scroll when the
+  // user is already at the bottom, and never while they are reading history up
+  // top.
+  useEffect(() => {
+    const endEl = refOfThreadsEnd.current
+    if (!endEl) {
+      return
+    }
+    const observer = new IntersectionObserver(([entry]) => {
+      refOfThreadsEndVisible.current = entry?.isIntersecting ?? false
+    })
+    observer.observe(endEl)
+    return () => {
+      observer.disconnect()
+    }
+  }, [])
+
+  // After an older page is prepended, restore the scroll offset by the amount
+  // the content grew, so the threads the user was reading stay in place instead
+  // of jumping. Runs before paint to avoid a visible flicker.
+  useLayoutEffect(() => {
+    const container = refOfThreadsContainer.current
+    const preLoadScrollHeight = refOfPreLoadScrollHeight.current
+    if (!container || preLoadScrollHeight === null) {
+      return
+    }
+    container.scrollTop += container.scrollHeight - preLoadScrollHeight
+    refOfPreLoadScrollHeight.current = null
+  }, [threads])
+
+  useEffect(() => {
+    if (refOfThreadsEndVisible.current) {
+      refOfThreadsEnd.current?.scrollIntoView({ behavior: "smooth" })
+    }
   }, [threads])
 
   const sendThreadInput = useCallback(
@@ -241,10 +374,14 @@ const PersonBrainPage: React.FC<{ params: { handle: string } }> = ({
 
   return (
     <main className={tw({ layout: "flex min-h-0 flex-1 flex-col" })}>
-      <div className={tw({ layout: "min-h-0 flex-1 overflow-auto px-7 py-6" })}>
+      <div
+        ref={refOfThreadsContainer}
+        className={tw({ layout: "min-h-0 flex-1 overflow-auto px-7 py-6" })}
+      >
         <div
           className={tw({ layout: "mx-auto flex max-w-3xl flex-col gap-4" })}
         >
+          <div ref={refOfThreadsStart} />
           {sortedThreads.map((thread) => (
             <BrainThreadPanel
               key={thread.threadUuid}
