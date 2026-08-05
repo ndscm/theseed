@@ -4,12 +4,17 @@ import (
 	"context"
 
 	"connectrpc.com/connect"
+	"entgo.io/ent/dialect/sql"
 	"github.com/google/uuid"
 	"github.com/ndscm/theseed/seed/cloud/login/go/login"
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
+	"github.com/ndscm/theseed/seed/infra/grpc/go/aips"
 	"github.com/ndscm/theseed/seed/newtype/gajetto/proto/brainpb"
 	"github.com/ndscm/theseed/seed/newtype/hooin/dictate/proto/dictatepb"
+	"github.com/ndscm/theseed/seed/newtype/hooin/dictate/proto/dictatepbconnect"
 	"github.com/ndscm/theseed/seed/newtype/hooin/onsite"
+	"github.com/ndscm/theseed/seed/newtype/steins/database/ent/brainstep"
+	"github.com/ndscm/theseed/seed/newtype/steins/database/steinsdb"
 	"google.golang.org/grpc/codes"
 )
 
@@ -28,6 +33,93 @@ func prepareBrainInput(brainInput *brainpb.BrainInput) *brainpb.BrainInput {
 
 type HooinDictateService struct {
 	office *onsite.Office
+}
+
+func (svc *HooinDictateService) ListBrainSteps(
+	ctx context.Context,
+	req *connect.Request[dictatepb.ListBrainStepsRequest],
+) (*connect.Response[dictatepb.ListBrainStepsResponse], error) {
+	_, err := login.EnsureLoginUser(ctx)
+	if err != nil {
+		return nil, seederr.Wrap(err)
+	}
+	// TODO(nagi): add fine-grained authorization
+	parent, err := aips.ParseResourceName(req.Msg.GetParent())
+	if err != nil {
+		return nil, seederr.CodeErrorf(codes.InvalidArgument, "%v", err)
+	}
+	personId := parent.Ids["people"]
+	if personId == "" {
+		return nil, seederr.CodeErrorf(codes.InvalidArgument, "parent must have the form %q", "people/{person_id}")
+	}
+	db := svc.office.GetDatabase()
+	if db == nil {
+		return nil, seederr.CodeErrorf(codes.FailedPrecondition, "brain step history is not available")
+	}
+
+	filters := []*sql.Predicate{sql.EQ(brainstep.FieldPersonID, personId)}
+	if req.Msg.GetFilter() != "" {
+		filterPred, err := compileBrainStepCelFilter(req.Msg.GetFilter())
+		if err != nil {
+			return nil, err
+		}
+		if filterPred != nil {
+			filters = append(filters, filterPred)
+		}
+	}
+
+	orders, err := parseBrainStepOrderBy(req.Msg.GetOrderBy())
+	if err != nil {
+		return nil, seederr.Wrap(err)
+	}
+
+	cursor := (*sql.Predicate)(nil)
+	if req.Msg.GetPageToken() != "" {
+		cursorId, err := decodeBrainStepPageToken(req.Msg.GetPageToken())
+		if err != nil {
+			return nil, seederr.CodeErrorf(codes.InvalidArgument, "%v", err)
+		}
+		// Scope the cursor lookup to personId, not just the raw UUID: an
+		// unscoped Get by ID would resolve (and thus reveal the existence
+		// of) another person's BrainStep, and would become a real
+		// cross-person read seam if the parent scoping above is tightened.
+		cursorRow, err := db.BrainStep.Query().
+			Where(brainstep.ID(cursorId), brainstep.PersonID(personId)).
+			Only(ctx)
+		if err != nil {
+			return nil, seederr.CodeErrorf(codes.InvalidArgument, "invalid page_token: cursor row not found")
+		}
+		cursor = buildBrainStepCursorPredicate(cursorRow, orders)
+	}
+
+	pageSize := int(req.Msg.GetPageSize())
+	if pageSize <= 0 {
+		pageSize = defaultPageSize
+	} else if pageSize > maxPageSize {
+		pageSize = maxPageSize
+	}
+
+	rows, totalSize, err := steinsdb.SelectBrainStepRows(ctx, db, filters, orders, cursor, pageSize)
+	if err != nil {
+		return nil, seederr.Wrap(err)
+	}
+
+	brainSteps := make([]*brainpb.BrainStep, 0, len(rows))
+	for _, row := range rows {
+		brainSteps = append(brainSteps, getBrainStepProtoFromEnt(row))
+	}
+
+	nextPageToken := ""
+	if len(rows) == pageSize {
+		nextPageToken = encodeBrainStepPageToken(rows[len(rows)-1].ID)
+	}
+
+	response := &dictatepb.ListBrainStepsResponse{
+		BrainSteps:    brainSteps,
+		NextPageToken: nextPageToken,
+		TotalSize:     totalSize,
+	}
+	return connect.NewResponse(response), nil
 }
 
 func (svc *HooinDictateService) SendBrainInput(
@@ -173,6 +265,8 @@ func (svc *HooinDictateService) SubscribeBrainStep(
 		}
 	}
 }
+
+var _ dictatepbconnect.HooinDictateServiceHandler = (*HooinDictateService)(nil)
 
 func NewHooinDictateService(office *onsite.Office) *HooinDictateService {
 	return &HooinDictateService{
