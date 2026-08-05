@@ -36,6 +36,7 @@ go_library(
         "//seed/newtype/hooin/raid/service",
         "//seed/newtype/hooin/roster/proto:roster_go_connect",
         "//seed/newtype/hooin/roster/service",
+        "//seed/newtype/steins/database/steinsdb",
     ],
 )
 
