@@ -59,10 +59,16 @@ func Open(ctx context.Context) (*ent.Client, error) {
 	db.SetConnMaxLifetime(dbConnMaxLifetime)
 	db.SetConnMaxIdleTime(dbConnMaxIdleTime)
 
+	err = db.PingContext(ctx)
+	if err != nil {
+		db.Close()
+		return nil, seederr.Wrap(err)
+	}
+
 	client := ent.NewClient(ent.Driver(entsql.OpenDB(dialect.Postgres, db)))
-	seedlog.Infof("Connected to database: %s", connectUrl.Host+connectUrl.Path)
 	if flagSteinsDatabaseDebug.Get() {
 		client = client.Debug()
 	}
+	seedlog.Infof("Connected to database: %s", connectUrl.Host+connectUrl.Path)
 	return client, nil
 }
