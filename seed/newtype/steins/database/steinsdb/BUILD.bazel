@@ -2,7 +2,10 @@ load("@rules_go//go:def.bzl", "go_library")
 
 go_library(
     name = "steinsdb",
-    srcs = ["steins_database_client.go"],
+    srcs = [
+        "brain_step.go",
+        "steins_database_client.go",
+    ],
     importpath = "github.com/ndscm/theseed/seed/newtype/steins/database/steinsdb",
     visibility = [
         "//seed/newtype/hooin:__subpackages__",
@@ -11,6 +14,7 @@ go_library(
     deps = [
         "//seed/infra/error/go/seederr",
         "//seed/infra/flag/go/seedflag",
+        "//seed/infra/grpc/go/aips",
         "//seed/infra/log/go/seedlog",
         "//seed/newtype/steins/database:ent",
         "@com_github_jackc_pgx_v5//stdlib",
