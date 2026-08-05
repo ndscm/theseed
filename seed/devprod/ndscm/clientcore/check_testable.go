@@ -70,51 +70,67 @@ func CheckTestable(scmProvider scm.Provider, commit string) (bool, error) {
 			currentBranch = currentTrackingBranch
 		}
 		if !found {
-			seedlog.Warnf("Target is not found on worktree branch, guess on the trunk. target=%v, commit=%v, worktree=%v", targetCommit, targetCommitId, worktreeName)
+			// currentBranch is the trunk, a branch without a tracking branch that
+			// may itself be a remote branch such as origin/main. The delta walk
+			// above never inspects its own [root, currentBranch] range, so check
+			// whether the target is reachable from it before concluding the commit
+			// has no belong branch (e.g. a detached HEAD during a rebase).
+			mergeBaseCommitId, err := scmProvider.GetMergeBaseCommitId(targetCommitId, currentBranch)
+			if err == nil && mergeBaseCommitId == targetCommitId {
+				found = true
+			}
 		}
-		belong = currentBranch
+		if found {
+			belong = currentBranch
+		} else {
+			seedlog.Warnf("Target is not found on worktree branch. target=%v, commit=%v, worktree=%v", targetCommit, targetCommitId, worktreeName)
+			belong = ""
+		}
 	}
 	seedlog.Debugf("Checking testable. target=%v belong=%v", targetCommitId, belong)
 
-	belongTrackingBranch, err := scmProvider.GetBranchTracking(belong)
-	if err != nil {
-		belongTrackingBranch = ""
-	}
-	belongBranchCommitIds, err := scmProvider.ListCommitIds(belongTrackingBranch, belong)
-	if err != nil {
-		return false, seederr.Wrap(err)
-	}
-
-	found := false
-	untestableRange := map[string]string{}
-	for i := len(belongBranchCommitIds) - 1; i >= 0; i-- {
-		commitId := belongBranchCommitIds[i]
-		commitMetadata, err := scmProvider.GetCommitMetadata(commitId)
+	testable := true
+	if belong != "" {
+		belongTrackingBranch, err := scmProvider.GetBranchTracking(belong)
+		if err != nil {
+			belongTrackingBranch = ""
+		}
+		belongBranchCommitIds, err := scmProvider.ListCommitIds(belongTrackingBranch, belong)
 		if err != nil {
 			return false, seederr.Wrap(err)
 		}
-		seedlog.Debugf("Checked untestable status. commit=%v change=%v untestable=%v",
-			commitId, commitMetadata.ChangeUuid, untestableRange,
-		)
-		if targetCommitId == commitId ||
-			(targetCommitMetadata.ChangeUuid != "" &&
-				targetCommitMetadata.ChangeUuid == commitMetadata.ChangeUuid) {
-			found = true
-			break
-		}
-		for _, extended := range commitMetadata.Extended {
-			if extended.Key == "side-effect-of-change-uuid" {
-				untestableRange[extended.Value] = commitMetadata.ChangeUuid
+
+		found := false
+		untestableRange := map[string]string{}
+		for i := len(belongBranchCommitIds) - 1; i >= 0; i-- {
+			commitId := belongBranchCommitIds[i]
+			commitMetadata, err := scmProvider.GetCommitMetadata(commitId)
+			if err != nil {
+				return false, seederr.Wrap(err)
 			}
+			seedlog.Debugf("Checked untestable status. commit=%v change=%v untestable=%v",
+				commitId, commitMetadata.ChangeUuid, untestableRange,
+			)
+			if targetCommitId == commitId ||
+				(targetCommitMetadata.ChangeUuid != "" &&
+					targetCommitMetadata.ChangeUuid == commitMetadata.ChangeUuid) {
+				found = true
+				break
+			}
+			for _, extended := range commitMetadata.Extended {
+				if extended.Key == "side-effect-of-change-uuid" {
+					untestableRange[extended.Value] = commitMetadata.ChangeUuid
+				}
+			}
+			delete(untestableRange, commitMetadata.ChangeUuid)
 		}
-		delete(untestableRange, commitMetadata.ChangeUuid)
-	}
-	if !found {
-		return false, seederr.WrapErrorf("target is not found on belong branch. target=%v uid=%v belong=%v", targetCommit, targetCommitId, belong)
-	}
-	testable := len(untestableRange) == 0
-	if !testable {
-		seedlog.Infof("Commit is not testable. commit=%v, untestable=%v", targetCommitId, untestableRange)
+		if !found {
+			return false, seederr.WrapErrorf("target is not found on belong branch. target=%v uid=%v belong=%v", targetCommit, targetCommitId, belong)
+		}
+		testable = len(untestableRange) == 0
+		if !testable {
+			seedlog.Infof("Commit is not testable. commit=%v, untestable=%v", targetCommitId, untestableRange)
+		}
 	}
 	return testable, nil
 }
