@@ -15,6 +15,27 @@ message PersonTopic {
   string topic = 2;
 }
 
+message ListBrainStepsRequest {
+  // Format: people/{person_id}
+  string parent = 1;
+
+  int32 page_size = 2;
+
+  string page_token = 3;
+
+  string filter = 4;
+
+  string order_by = 5;
+}
+
+message ListBrainStepsResponse {
+  repeated seed.newtype.gajetto.proto.BrainStep brain_steps = 1;
+
+  string next_page_token = 2;
+
+  int64 total_size = 3;
+}
+
 // SendBrainInputRequest submits a single `BrainInput` on behalf of a person
 // to the hooin service.
 message SendBrainInputRequest {
@@ -37,6 +58,8 @@ message SubscribeBrainStepRequest {
 // Agent-facing RPCs (commute and step reporting) live on
 // `HooinCommuteService`.
 service HooinDictateService {
+  rpc ListBrainSteps(ListBrainStepsRequest) returns (ListBrainStepsResponse) {}
+
   // SendBrainInput delivers a single `BrainInput` and returns the
   // terminal `result` `BrainStep` once processing completes.
   rpc SendBrainInput(SendBrainInputRequest)
