@@ -1,0 +1,14 @@
+load("@bazel_skylib//rules:common_settings.bzl", "string_flag")
+
+exports_files([
+    "apt-mirror-use.sh",
+    "apt-mirror-restore.sh",
+])
+
+# The container engine used by build_freedom_image. Override with
+# `--//seed/devprod/container/starlark:engine=docker`.
+string_flag(
+    name = "engine",
+    build_setting_default = "podman",
+    visibility = ["//visibility:public"],
+)

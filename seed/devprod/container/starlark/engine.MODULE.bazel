@@ -1,0 +1,10 @@
+# Container engine detection
+#
+# Probes the host for a local container engine so build_freedom_image can gate
+# itself with target_compatible_with (see //seed/devprod/container/starlark:engine.bzl).
+
+engine_detect = use_repo_rule("//seed/devprod/container/starlark:engine.bzl", "engine_detect")
+
+engine_detect(
+    name = "seed_devprod_container_starlark_engine_detect",
+)
