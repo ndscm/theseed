@@ -6,7 +6,7 @@
 #
 # Whenever this file changes, regenerate the lockfile:
 #
-#     bazel run @seed_devprod_container_ubuntu_2604_apt//:lock
+#     bazel run @seed_devprod_container_ubuntu_apt_2604//:lock
 version: 1
 
 sources:
