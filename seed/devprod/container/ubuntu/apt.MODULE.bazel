@@ -10,8 +10,8 @@ pull(
 
 apt = use_extension("@rules_distroless//apt:extensions.bzl", "apt")
 apt.install(
-    name = "seed_devprod_container_ubuntu_2604_apt",
+    name = "seed_devprod_container_ubuntu_apt_2604",
     lock = "//seed/devprod/container/ubuntu:apt.lock.json",
     manifest = "//seed/devprod/container/ubuntu:apt.yaml",
 )
-use_repo(apt, "seed_devprod_container_ubuntu_2604_apt")
+use_repo(apt, "seed_devprod_container_ubuntu_apt_2604")
