@@ -10,7 +10,6 @@ import (
 	"sync"
 
 	"github.com/ndscm/theseed/seed/cloud/keycloak/client/go/keycloak"
-	"github.com/ndscm/theseed/seed/cloud/login/go/login"
 	"github.com/ndscm/theseed/seed/infra/auth/go/openid"
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
 	"github.com/ndscm/theseed/seed/newtype/gajetto/team"
@@ -149,14 +148,6 @@ func (t *KeycloakTeam) ListMembers(ctx context.Context) (map[string]team.Person,
 		}
 	}
 	return members, nil
-}
-
-func (t *KeycloakTeam) Auth(ctx context.Context) (string, error) {
-	openidUser, err := login.EnsureLoginUser(ctx)
-	if err != nil {
-		return "", seederr.CodeErrorf(codes.Unauthenticated, "user not logged in")
-	}
-	return openidUser.Sub, nil
 }
 
 var _ team.Team = (*KeycloakTeam)(nil)
