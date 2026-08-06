@@ -655,17 +655,19 @@ const BrainThreadPanel: React.FC<{
       </div>
       {chain}
       {streaming && <BrainStreamingStepItem />}
-      <BrainThreadInput
-        ref={inputRef}
-        value={inputText}
-        onChange={(e) => setInputText(e.target.value)}
-        onSend={() => {
-          onSend?.(thread.topic, thread.threadUuid, {
-            text: inputText,
-          })
-          setInputText("")
-        }}
-      />
+      {!!(streaming || inputText) && (
+        <BrainThreadInput
+          ref={inputRef}
+          value={inputText}
+          onChange={(e) => setInputText(e.target.value)}
+          onSend={() => {
+            onSend?.(thread.topic, thread.threadUuid, {
+              text: inputText,
+            })
+            setInputText("")
+          }}
+        />
+      )}
     </KurisuPanel>
   )
 }
