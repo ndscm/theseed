@@ -1,0 +1,28 @@
+load("//seed/devprod/container/starlark:apt.bzl", "apt_mirror")
+load("//seed/devprod/container/starlark:container.bzl", "build_freedom_image")
+
+alias(
+    name = "debian",
+    actual = ":debian_13_freedom",
+    visibility = ["//visibility:public"],
+)
+
+apt_mirror(
+    name = "debian_13_freedom_apt_mirror",
+    dists = "@seed_devprod_container_debian_13_apt_dists",
+    pool = "@seed_devprod_container_debian_13_apt_pool",
+    sources = "//seed/devprod/container/debian:debian.sources",
+)
+
+build_freedom_image(
+    name = "debian_13_freedom",
+    srcs = [
+        "debian.sources",
+        ":debian_13_freedom_apt_mirror",
+    ],
+    base = "@seed_devprod_container_debian_13_oci",
+    containerfile = "Containerfile",
+    image_tag = "ghcr.io/ndscm/debian:13-freedom",
+    squash = True,
+    visibility = ["//visibility:public"],
+)
