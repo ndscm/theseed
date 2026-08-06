@@ -1,3 +1,7 @@
 # //seed/devprod/container/ubuntu
 
 include("//seed/devprod/container/ubuntu:apt.MODULE.bazel")
+
+# //seed/newtype/hooin/container
+
+include("//seed/newtype/hooin/container:apt.MODULE.bazel")
