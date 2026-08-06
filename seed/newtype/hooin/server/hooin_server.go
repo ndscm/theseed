@@ -9,6 +9,7 @@ import (
 
 	"github.com/ndscm/theseed/seed/cloud/bidirequest/go/bidirequest"
 	"github.com/ndscm/theseed/seed/cloud/bidirequest/go/bidirequestservice"
+	"github.com/ndscm/theseed/seed/cloud/login/go/login"
 	"github.com/ndscm/theseed/seed/infra/auth/go/openid"
 	"github.com/ndscm/theseed/seed/infra/auth/go/openidverify"
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
@@ -32,6 +33,7 @@ import (
 	"github.com/ndscm/theseed/seed/newtype/hooin/roster/proto/rosterpbconnect"
 	rosterservice "github.com/ndscm/theseed/seed/newtype/hooin/roster/service"
 	"github.com/ndscm/theseed/seed/newtype/steins/database/steinsdb"
+	"google.golang.org/grpc/codes"
 )
 
 var flagPort = seedflag.DefineString(
@@ -56,11 +58,11 @@ type OfficeConnectHandler struct {
 func (h *OfficeConnectHandler) HandleConnect(
 	ctx context.Context, stream bidirequest.PayloadStream,
 ) error {
-
-	personId, err := h.office.Team.Auth(ctx)
+	openidUser, err := login.EnsureLoginUser(ctx)
 	if err != nil {
-		return seederr.Wrap(err)
+		return seederr.CodeErrorf(codes.Unauthenticated, "user not logged in")
 	}
+	personId := openidUser.Sub
 
 	duty := onsite.CreatePersonDuty(stream, h.personHandler)
 	err = h.office.SetDuty(personId, duty)
