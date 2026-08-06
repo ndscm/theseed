@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"connectrpc.com/connect"
+	"github.com/ndscm/theseed/seed/cloud/login/go/login"
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
 	"github.com/ndscm/theseed/seed/newtype/hooin/commute/proto/commutepb"
 	"github.com/ndscm/theseed/seed/newtype/hooin/onsite"
@@ -19,10 +20,11 @@ func (svc *HooinCommuteService) ReportBrainStep(
 	ctx context.Context,
 	req *connect.Request[commutepb.ReportBrainStepRequest],
 ) (*connect.Response[emptypb.Empty], error) {
-	personId, err := svc.office.Team.Auth(ctx)
+	openidUser, err := login.EnsureLoginUser(ctx)
 	if err != nil {
-		return nil, seederr.Wrap(err)
+		return nil, seederr.CodeErrorf(codes.Unauthenticated, "user not logged in")
 	}
+	personId := openidUser.Sub
 
 	step := req.Msg.GetBrainStep()
 	if step == nil {

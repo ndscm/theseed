@@ -7,6 +7,7 @@ go_library(
     srcs = ["commute_service.go"],
     importpath = "github.com/ndscm/theseed/seed/newtype/hooin/commute/service",
     deps = [
+        "//seed/cloud/login/go/login",
         "//seed/infra/error/go/seederr",
         "//seed/newtype/hooin/commute/proto:commute_go_proto",
         "//seed/newtype/hooin/onsite",
