@@ -56,17 +56,6 @@ const PersonBrainPage: React.FC<{ params: { handle: string } }> = ({
   const refOfThreadsEnd = useRef<HTMLDivElement>(null)
   const refOfThreadsEndVisible = useRef(true)
 
-  // Gates history paging on the top sentinel actually leaving and re-entering
-  // the viewport. The observer is recreated whenever historyPageToken changes,
-  // and a freshly observed target delivers an immediate callback with its
-  // current intersection state; without this gate, a page whose steps all dedup
-  // away (or land in already-open threads without growing the scroll area)
-  // leaves the sentinel intersecting, so the new observer fires again at once
-  // and burst-fetches the whole history. Starts armed so the first intersection
-  // still fetches; disarmed on fetch; re-armed only once the sentinel is
-  // observed out of view.
-  const refOfHistoryArmed = useRef(true)
-
   const refOfPreLoadScrollHeight = useRef<number | null>(null)
 
   const personHandle = handle
@@ -208,23 +197,16 @@ const PersonBrainPage: React.FC<{ params: { handle: string } }> = ({
       return
     }
     const observer = new IntersectionObserver(([entry]) => {
-      if (!entry) {
+      if (!entry?.isIntersecting) {
         return
       }
-      if (!entry.isIntersecting) {
-        // Sentinel left the viewport; re-arm so the next entry fetches.
-        refOfHistoryArmed.current = true
-        return
-      }
-      // Intersecting but not armed means the sentinel never left since the last
-      // fetch (e.g. the loaded page didn't grow the scroll area). Wait for a
-      // genuine leave/re-enter instead of burst-fetching.
-      if (!refOfHistoryArmed.current) {
-        return
-      }
-      // Single-flight: disarm until the sentinel leaves and re-enters. The
-      // effect also re-subscribes once the cursor advances.
-      refOfHistoryArmed.current = false
+      // Single-flight: stop observing until the cursor advances and this effect
+      // re-subscribes for the next page. If the loaded page doesn't push the
+      // sentinel out of view (e.g. many system events collapse into one
+      // counter, or steps dedup away), the recreated observer intersects again
+      // and fetches the next page, so history keeps loading until enough
+      // content fills the viewport above the sentinel or the cursor is
+      // exhausted — rather than stalling until the user scrolls.
       observer.unobserve(startEl)
       void (async () => {
         const response = await dictateService.ListBrainSteps(personId, {
