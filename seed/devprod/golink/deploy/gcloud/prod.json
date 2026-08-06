@@ -1,0 +1,17 @@
+{
+  "config": {
+    "Cmd": [
+      "--port",
+      "8080",
+      "--trust_openid_issuers_file",
+      "/opt/golink/openid_issuers.json",
+      "--golink_database",
+      "postgres:///golink_prod?host=/cloudsql/ndscm-prod:us-west1:ndscm-cloudsql-prod&sslmode=disable",
+      "--golink_database_login",
+      "golink_prod",
+      "--golink_database_secret_file",
+      "/etc/secret/GOLINK_DATABASE_SECRET",
+      "--verbose"
+    ]
+  }
+}
