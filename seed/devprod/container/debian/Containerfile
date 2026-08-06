@@ -1,10 +1,18 @@
-FROM docker.io/library/debian:trixie
+FROM index.docker.io/library/debian:latest
 
 ENV DEBIAN_FRONTEND=noninteractive
 ENV LANG=C.UTF-8
 ENV LC_ALL=C.UTF-8
 
+COPY --chown=root:root debian.sources /etc/apt/sources.list.d/debian.sources
+COPY --chown=root:root mirror /apt/mirror
+RUN /apt/mirror/use.sh
+
 RUN apt update
 RUN apt install -y ca-certificates
 RUN apt install -y curl
 RUN apt install -y iputils-ping
+RUN apt clean
+
+RUN /apt/mirror/restore.sh
+RUN rm -rf /apt
