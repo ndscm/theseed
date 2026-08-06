@@ -1,3 +1,7 @@
+# //seed/devprod/container/debian
+
+include("//seed/devprod/container/debian:debian.MODULE.bazel")
+
 # //seed/devprod/container/starlark:engine
 
 include("//seed/devprod/container/starlark:engine.MODULE.bazel")
