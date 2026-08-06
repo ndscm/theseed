@@ -140,10 +140,172 @@ const AssistantThinkingMessage: React.FC<{ thinking: string }> = ({
   )
 }
 
+const AssistantToolUseBash: React.FC<{
+  description: string
+  command: string
+  unknown?: Record<string, unknown>
+}> = ({ description, command, unknown }) => {
+  return (
+    <div
+      className={tw({
+        layout: "mt-3 p-3",
+        appearance: "bg-base-200 rounded-lg",
+      })}
+    >
+      <span
+        className={tw({
+          appearance: "text-base-content font-mono text-xs font-medium",
+        })}
+      >
+        {description}
+      </span>
+      <pre
+        className={tw({
+          layout: "m-0 mt-2 overflow-x-auto",
+          appearance: "text-neutral font-mono text-xs",
+        })}
+      >
+        {command}
+      </pre>
+      {unknown && Object.keys(unknown).length > 0 && (
+        <pre
+          className={tw({
+            layout: "m-0 mt-2 overflow-x-auto",
+            appearance: "text-neutral font-mono text-xs",
+          })}
+        >
+          {JSON.stringify(unknown ?? {}, null, 2)}
+        </pre>
+      )}
+    </div>
+  )
+}
+
+const AssistantToolUseRead: React.FC<{
+  filePath: string
+  unknown?: Record<string, unknown>
+}> = ({ filePath, unknown }) => {
+  return (
+    <div
+      className={tw({
+        layout: "mt-3 p-3",
+        appearance: "bg-base-200 rounded-lg",
+      })}
+    >
+      <span
+        className={tw({
+          appearance: "text-base-content font-mono text-xs font-medium",
+        })}
+      >
+        {filePath}
+      </span>
+      {unknown && Object.keys(unknown).length > 0 && (
+        <pre
+          className={tw({
+            layout: "m-0 mt-2 overflow-x-auto",
+            appearance: "text-neutral font-mono text-xs",
+          })}
+        >
+          {JSON.stringify(unknown ?? {}, null, 2)}
+        </pre>
+      )}
+    </div>
+  )
+}
+
+const AssistantToolUseWrite: React.FC<{
+  filePath: string
+  content: string
+  unknown?: Record<string, unknown>
+}> = ({ filePath, content, unknown }) => {
+  return (
+    <div
+      className={tw({
+        layout: "mt-3 p-3",
+        appearance: "bg-base-200 rounded-lg",
+      })}
+    >
+      <span
+        className={tw({
+          appearance: "text-base-content font-mono text-xs font-medium",
+        })}
+      >
+        {filePath}
+      </span>
+      <pre
+        className={tw({
+          layout: "m-0 mt-2 overflow-x-auto",
+          appearance: "text-neutral font-mono text-xs",
+        })}
+      >
+        {content}
+      </pre>
+      {unknown && Object.keys(unknown).length > 0 && (
+        <pre
+          className={tw({
+            layout: "m-0 mt-2 overflow-x-auto",
+            appearance: "text-neutral font-mono text-xs",
+          })}
+        >
+          {JSON.stringify(unknown ?? {}, null, 2)}
+        </pre>
+      )}
+    </div>
+  )
+}
+
 const AssistantToolUseMessage: React.FC<{ name: string; input: unknown }> = ({
   name,
   input,
 }) => {
+  const inputObject =
+    typeof input === "object" && input !== null
+      ? (input as Record<string, unknown>)
+      : {}
+
+  switch (name.trim()) {
+    case "Bash": {
+      const { description, command, ...unknown } = inputObject as {
+        description?: string
+        command?: string
+        [key: string]: unknown
+      }
+      return (
+        <AssistantToolUseBash
+          description={description ?? "Bash"}
+          command={command ?? ""}
+          unknown={unknown}
+        />
+      )
+    }
+    case "Read": {
+      const { file_path, ...unknown } = inputObject as {
+        file_path?: string
+        [key: string]: unknown
+      }
+      return (
+        <AssistantToolUseRead
+          filePath={file_path ?? "Read"}
+          unknown={unknown}
+        />
+      )
+    }
+    case "Write": {
+      const { file_path, content, ...unknown } = inputObject as {
+        file_path?: string
+        content?: string
+        [key: string]: unknown
+      }
+      return (
+        <AssistantToolUseWrite
+          filePath={file_path ?? "Write"}
+          content={content ?? ""}
+          unknown={unknown}
+        />
+      )
+    }
+  }
+
   return (
     <div
       className={tw({
