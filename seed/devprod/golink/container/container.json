@@ -1,0 +1,6 @@
+{
+  "config": {
+    "Entrypoint": ["/opt/golink/golink-server"],
+    "User": "golink"
+  }
+}
