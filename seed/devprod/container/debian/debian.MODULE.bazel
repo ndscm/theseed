@@ -1,0 +1,39 @@
+apt_dists = use_repo_rule("//seed/devprod/container/starlark:apt.bzl", "apt_dists")
+
+apt_pool = use_repo_rule("//seed/devprod/container/starlark:apt.bzl", "apt_pool")
+
+oci = use_extension("@rules_oci//oci:extensions.bzl", "oci")
+oci.pull(
+    name = "seed_devprod_container_debian_13_oci",
+    digest = "sha256:34cd9e9fd437c0a095ec39cb2e73422c9f30821b0d0848ed74fd0d43bae4d958",
+    image = "index.docker.io/library/debian",
+    platforms = ["linux/amd64"],
+    tag = "13",
+)
+use_repo(
+    oci,
+    "seed_devprod_container_debian_13_oci",
+    "seed_devprod_container_debian_13_oci_linux_amd64",
+)
+
+# run `bazel run seed_devprod_container_debian_13_apt_dists//:lock` to update the lockfile.
+apt_dists(
+    name = "seed_devprod_container_debian_13_apt_dists",
+    archs = ["amd64"],
+    lock = "//seed/devprod/container/debian:13_apt_dists.lock.json",
+    sources = "//seed/devprod/container/debian:debian.sources",
+)
+
+# run `bazel run seed_devprod_container_debian_13_apt_pool//:lock` to update the lockfile.
+apt_pool(
+    name = "seed_devprod_container_debian_13_apt_pool",
+    archs = ["amd64"],
+    dists = "@seed_devprod_container_debian_13_apt_dists",
+    lock = "//seed/devprod/container/debian:13_apt_pool.lock.json",
+    packages = [
+        "ca-certificates",
+        "curl",
+        "iputils-ping",
+    ],
+    sources = "//seed/devprod/container/debian:debian.sources",
+)

@@ -1,0 +1,20 @@
+{
+  "https://snapshot.debian.org/archive/debian-security/20260801T000000Z/dists/trixie-security/InRelease": {
+    "integrity": "sha256-X769qGhsrNrq42sBoM1H9TYJIUg9AVjdjQ52ZxFRxXI="
+  },
+  "https://snapshot.debian.org/archive/debian-security/20260801T000000Z/dists/trixie-security/main/binary-amd64/Packages.xz": {
+    "integrity": "sha256-fUYqQ3SoCqZDbcFKAr6wwbkyiBkuo6nH78gzzbkcXLg="
+  },
+  "https://snapshot.debian.org/archive/debian/20260801T000000Z/dists/trixie-updates/InRelease": {
+    "integrity": "sha256-2uv3kmXhYN6g/J4wD7XGhNkQnvHWiT3lxGqNvdhdHu0="
+  },
+  "https://snapshot.debian.org/archive/debian/20260801T000000Z/dists/trixie-updates/main/binary-amd64/Packages.xz": {
+    "integrity": "sha256-EAEss4TcJhNYbXs9OR2SpWN8n6o2AXI5c58qYQmg1F8="
+  },
+  "https://snapshot.debian.org/archive/debian/20260801T000000Z/dists/trixie/InRelease": {
+    "integrity": "sha256-mLJbXNGFxZ00qm5MPptbjwG76dEE/i3PvNMNwKFKWe0="
+  },
+  "https://snapshot.debian.org/archive/debian/20260801T000000Z/dists/trixie/main/binary-amd64/Packages.xz": {
+    "integrity": "sha256-OrToEc9PPlozXTgsWMwZ2F8avnpO9GiRYMofY3+g6bM="
+  }
+}
