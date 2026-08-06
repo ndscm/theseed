@@ -1,0 +1,7 @@
+apt = use_extension("@rules_distroless//apt:extensions.bzl", "apt")
+apt.install(
+    name = "seed_newtype_hooin_container_apt",
+    lock = "//seed/newtype/hooin/container:apt.lock.json",
+    manifest = "//seed/newtype/hooin/container:apt.yaml",
+)
+use_repo(apt, "seed_newtype_hooin_container_apt")
