@@ -48,14 +48,14 @@ const TeamHeader: React.FC = () => {
       />
       <div
         className={tw({
-          layout: "shrink-0 px-7 pt-5",
+          layout: "shrink-0 px-6 pt-5 pb-3",
           appearance: "bg-base-100",
-          state: "max-sm:px-5 max-sm:pt-4",
+          state: "max-sm:px-4 max-sm:pt-4 max-sm:pb-2",
         })}
       >
         <div
           className={tw({
-            layout: "mb-5 flex flex-wrap items-center gap-5",
+            layout: "flex items-center gap-5",
           })}
         >
           <KurisuAvatar size="large">
@@ -64,7 +64,7 @@ const TeamHeader: React.FC = () => {
           <div className={tw({ layout: "min-w-60 flex-1" })}>
             <div
               className={tw({
-                layout: "flex flex-wrap items-baseline gap-2",
+                layout: "flex items-baseline gap-2",
               })}
             >
               <h2
@@ -94,17 +94,31 @@ const TeamHeader: React.FC = () => {
             </button>
           </div>
         </div>
-        <div role="tablist" className={tw({ component: "tabs tabs-border" })}>
-          <NavLink
-            to="/team/members"
-            role="tab"
-            className={({ isActive }) =>
-              tw({ component: "tab" }, isActive && { component: "tab-active" })
-            }
-          >
-            {t("members.title", "Members")}
-          </NavLink>
-        </div>
+      </div>
+      <div
+        role="tablist"
+        className={tw({
+          component: "tabs tabs-border",
+          layout: "flex-nowrap overflow-x-auto border-b px-4",
+          appearance: "bg-base-100 border-base-300",
+          state: "max-sm:px-2",
+        })}
+      >
+        <NavLink
+          to="/team/members"
+          role="tab"
+          className={({ isActive }) =>
+            tw(
+              { component: "tab" },
+              isActive && {
+                component: "tab-active",
+                appearance: "text-primary border-primary",
+              },
+            )
+          }
+        >
+          {t("members.title", "Members")}
+        </NavLink>
       </div>
     </header>
   )

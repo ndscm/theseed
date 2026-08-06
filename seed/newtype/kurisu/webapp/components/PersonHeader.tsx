@@ -70,14 +70,14 @@ const PersonHeader: React.FC = () => {
       />
       <div
         className={tw({
-          layout: "shrink-0 px-7 pt-5",
+          layout: "shrink-0 px-6 pt-5 pb-3",
           appearance: "bg-base-100",
-          state: "max-sm:px-5 max-sm:pt-4",
+          state: "max-sm:px-4 max-sm:pt-4 max-sm:pb-2",
         })}
       >
         <div
           className={tw({
-            layout: "mb-5 flex flex-wrap items-center gap-5",
+            layout: "flex items-center gap-5",
           })}
         >
           <KurisuAvatar
@@ -97,7 +97,7 @@ const PersonHeader: React.FC = () => {
           <div className={tw({ layout: "min-w-60 flex-1" })}>
             <div
               className={tw({
-                layout: "flex flex-wrap items-center gap-3",
+                layout: "flex items-center gap-3",
               })}
             >
               <h2
@@ -140,62 +140,106 @@ const PersonHeader: React.FC = () => {
             </div>
           </div>
         </div>
-        <div role="tablist" className={tw({ component: "tabs tabs-border" })}>
-          <NavLink
-            to={`/person/${handle}/chat`}
-            role="tab"
-            className={({ isActive }) =>
-              tw({ component: "tab" }, isActive && { component: "tab-active" })
-            }
-          >
-            {t("chat.title", "Chat")}
-          </NavLink>
-          <NavLink
-            to={`/person/${handle}/brain`}
-            role="tab"
-            className={({ isActive }) =>
-              tw({ component: "tab" }, isActive && { component: "tab-active" })
-            }
-          >
-            {t("brain.title", "Brain")}
-          </NavLink>
-          <NavLink
-            to={`/person/${handle}/memory`}
-            role="tab"
-            className={({ isActive }) =>
-              tw({ component: "tab" }, isActive && { component: "tab-active" })
-            }
-          >
-            {t("memory.title", "Memory")}
-          </NavLink>
-          <NavLink
-            to={`/person/${handle}/workstation`}
-            role="tab"
-            className={({ isActive }) =>
-              tw({ component: "tab" }, isActive && { component: "tab-active" })
-            }
-          >
-            {t("workstation.title", "Workstation")}
-          </NavLink>
-          <NavLink
-            to={`/person/${handle}/terminal`}
-            role="tab"
-            className={({ isActive }) =>
-              tw({ component: "tab" }, isActive && { component: "tab-active" })
-            }
-          >
-            {t("terminal.title", "Terminal")}
-          </NavLink>
-          <NavLink
-            to={`/person/${handle}/attendance`}
-            role="tab"
-            className={({ isActive }) =>
-              tw({ component: "tab" }, isActive && { component: "tab-active" })
-            }
-          >
-            {t("attendance.title", "Attendance")}
-          </NavLink>
-        </div>
+      </div>
+      <div
+        role="tablist"
+        className={tw({
+          component: "tabs tabs-border",
+          layout: "flex-nowrap overflow-x-auto border-b px-4",
+          appearance: "bg-base-100 border-base-300",
+          state: "max-sm:px-2",
+        })}
+      >
+        <NavLink
+          to={`/person/${handle}/chat`}
+          role="tab"
+          className={({ isActive }) =>
+            tw(
+              { component: "tab" },
+              isActive && {
+                component: "tab-active",
+                appearance: "text-primary border-primary",
+              },
+            )
+          }
+        >
+          {t("chat.title", "Chat")}
+        </NavLink>
+        <NavLink
+          to={`/person/${handle}/brain`}
+          role="tab"
+          className={({ isActive }) =>
+            tw(
+              { component: "tab" },
+              isActive && {
+                component: "tab-active",
+                appearance: "text-primary border-primary",
+              },
+            )
+          }
+        >
+          {t("brain.title", "Brain")}
+        </NavLink>
+        <NavLink
+          to={`/person/${handle}/memory`}
+          role="tab"
+          className={({ isActive }) =>
+            tw(
+              { component: "tab" },
+              isActive && {
+                component: "tab-active",
+                appearance: "text-primary border-primary",
+              },
+            )
+          }
+        >
+          {t("memory.title", "Memory")}
+        </NavLink>
+        <NavLink
+          to={`/person/${handle}/workstation`}
+          role="tab"
+          className={({ isActive }) =>
+            tw(
+              { component: "tab" },
+              isActive && {
+                component: "tab-active",
+                appearance: "text-primary border-primary",
+              },
+            )
+          }
+        >
+          {t("workstation.title", "Workstation")}
+        </NavLink>
+        <NavLink
+          to={`/person/${handle}/terminal`}
+          role="tab"
+          className={({ isActive }) =>
+            tw(
+              { component: "tab" },
+              isActive && {
+                component: "tab-active",
+                appearance: "text-primary border-primary",
+              },
+            )
+          }
+        >
+          {t("terminal.title", "Terminal")}
+        </NavLink>
+        <NavLink
+          to={`/person/${handle}/attendance`}
+          role="tab"
+          className={({ isActive }) =>
+            tw(
+              { component: "tab" },
+              isActive && {
+                component: "tab-active",
+                appearance: "text-primary border-primary",
+              },
+            )
+          }
+        >
+          {t("attendance.title", "Attendance")}
+        </NavLink>
       </div>
     </header>
   )
