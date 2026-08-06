@@ -10,7 +10,10 @@ region="us-west1"
 service="seed-newtype-kurisu-prod"
 image_package="us-docker.pkg.dev/ndscm-prod/container-us/seed-newtype-kurisu-deploy-gcloud"
 
-bazel run --stamp //seed/newtype/kurisu/deploy/gcloud:push-prod
+bazel run --stamp \
+  --@rules_img//img/settings:load_daemon="${container_engine}" \
+  //seed/newtype/kurisu/deploy/gcloud:load-prod
+"${container_engine}" push "${image_package}:prod"
 
 image_digest=$(crane digest "${image_package}:prod")
 gcloud run services update \
