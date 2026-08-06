@@ -1074,7 +1074,7 @@
     "@@rules_oci+//oci:extensions.bzl%oci": {
       "general": {
         "bzlTransitiveDigest": "wbLB05mJA/Lx4ubnkmK5PGzkRvDO3BJanxygTcxsB9s=",
-        "usagesDigest": "xcaBeqPkBPHB3S48w/+u/cIDKO1My646e1voIM0PEO8=",
+        "usagesDigest": "6Hz5YnG9W7B49VDsH3NLosFHR2ft0Gi6QKhJkBJCqrM=",
         "recordedFileInputs": {},
         "recordedDirentsInputs": {},
         "envVariables": {},
@@ -1105,6 +1105,35 @@
                 "@@platforms//cpu:x86_64": "@debian_12_slim_linux_amd64"
               },
               "bzlmod_repository": "debian_12_slim",
+              "reproducible": true
+            }
+          },
+          "seed_devprod_container_debian_13_oci_linux_amd64": {
+            "repoRuleId": "@@rules_oci+//oci/private:pull.bzl%oci_pull",
+            "attributes": {
+              "www_authenticate_challenges": {},
+              "scheme": "https",
+              "registry": "index.docker.io",
+              "repository": "library/debian",
+              "identifier": "sha256:34cd9e9fd437c0a095ec39cb2e73422c9f30821b0d0848ed74fd0d43bae4d958",
+              "platform": "linux/amd64",
+              "target_name": "seed_devprod_container_debian_13_oci_linux_amd64",
+              "bazel_tags": []
+            }
+          },
+          "seed_devprod_container_debian_13_oci": {
+            "repoRuleId": "@@rules_oci+//oci/private:pull.bzl%oci_alias",
+            "attributes": {
+              "target_name": "seed_devprod_container_debian_13_oci",
+              "www_authenticate_challenges": {},
+              "scheme": "https",
+              "registry": "index.docker.io",
+              "repository": "library/debian",
+              "identifier": "sha256:34cd9e9fd437c0a095ec39cb2e73422c9f30821b0d0848ed74fd0d43bae4d958",
+              "platforms": {
+                "@@platforms//cpu:x86_64": "@seed_devprod_container_debian_13_oci_linux_amd64"
+              },
+              "bzlmod_repository": "seed_devprod_container_debian_13_oci",
               "reproducible": true
             }
           },
@@ -1225,7 +1254,9 @@
         "moduleExtensionMetadata": {
           "explicitRootModuleDirectDeps": [
             "debian_12_slim",
-            "debian_12_slim_linux_amd64"
+            "debian_12_slim_linux_amd64",
+            "seed_devprod_container_debian_13_oci",
+            "seed_devprod_container_debian_13_oci_linux_amd64"
           ],
           "explicitRootModuleDirectDevDeps": [],
           "useAllRepos": "NO",
