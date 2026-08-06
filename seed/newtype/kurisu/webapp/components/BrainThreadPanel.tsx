@@ -474,24 +474,7 @@ const BrainResultStepItem: React.FC<{ step: BrainStep }> = ({ step }) => {
       prefix={<CircleCheckIcon className={tw({ layout: "size-4" })} />}
       title={"Result"}
       step={step}
-    >
-      <div
-        className={tw({
-          layout: "mt-3 p-3",
-          appearance:
-            "border-base-200 text-base-content rounded-lg border text-sm",
-        })}
-      >
-        <MarkdownView
-          content={output.result ?? ""}
-          className={tw({
-            layout: "[&>*:first-child]:mt-0 [&>*:last-child]:mb-0",
-            appearance: "break-words",
-          })}
-          htmlClassNames={markdownClassNames}
-        />
-      </div>
-    </BrainStepItem>
+    ></BrainStepItem>
   )
 }
 
