@@ -1,0 +1,14 @@
+load("@rules_img//img:image.bzl", "image_manifest")
+load("@rules_img//img:load.bzl", "image_load")
+
+image_manifest(
+    name = "prod",
+    base = "//seed/newtype/hooin/container",
+    config_fragment = "prod.json",
+)
+
+image_load(
+    name = "load-prod",
+    image = ":prod",
+    tag = "us-docker.pkg.dev/ndscm-prod/container-us/seed-newtype-hooin-deploy-gcloud:prod",
+)
