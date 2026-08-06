@@ -8,19 +8,10 @@ RUN apt install -y lsb-release
 
 COPY ./hooin-server /opt/hooin/hooin-server
 
-COPY --chmod=0755 ./entrypoint.sh /opt/hooin/entrypoint.sh
-
-RUN mkdir -p /etc/steins
-# The default team file is only used for demo purposes.
-# In production, you should mount your own team file with proper random tokens.
-COPY ./team.json /etc/steins/team.json
-
 RUN useradd --shell /bin/bash --create-home hooin
 USER hooin
 WORKDIR /home/hooin
 
-ENTRYPOINT [ "/opt/hooin/entrypoint.sh" ]
-CMD [ \
-  "--static_team_file", "/etc/steins/team.json", \
-  "--trust_openid_issuers_file", "/etc/steins/openid_issuers.json", \
-  "--verbose"]
+ENTRYPOINT [ "/opt/hooin/hooin-server" ]
+
+CMD [ "--verbose" ]
