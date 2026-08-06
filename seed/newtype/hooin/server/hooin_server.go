@@ -18,9 +18,7 @@ import (
 	"github.com/ndscm/theseed/seed/infra/http/go/seedbearer"
 	"github.com/ndscm/theseed/seed/infra/init/go/seedinit"
 	"github.com/ndscm/theseed/seed/infra/log/go/seedlog"
-	"github.com/ndscm/theseed/seed/newtype/gajetto/team"
 	"github.com/ndscm/theseed/seed/newtype/gajetto/team/keycloakteam"
-	"github.com/ndscm/theseed/seed/newtype/gajetto/team/staticteam"
 	"github.com/ndscm/theseed/seed/newtype/hooin/commute/proto/commutepbconnect"
 	commuteservice "github.com/ndscm/theseed/seed/newtype/hooin/commute/service"
 	"github.com/ndscm/theseed/seed/newtype/hooin/dictate/proto/dictatepbconnect"
@@ -120,31 +118,21 @@ func run() error {
 		}
 	}
 
-	t := (team.Team)(nil)
 	openidClientId := flagOpenidClientId.Get()
-	if openidClientId != "" {
-		openidClientSecret, err := flagOpenidClientSecret.LoadString()
-		if err != nil {
-			return seederr.Wrap(err)
-		}
-		openidClientSecret = strings.TrimSpace(openidClientSecret)
-		openidClient := openid.NewOpenidClient(
-			openid.OpenidDiscoveryUrlFlag(), openidClientId, openidClientSecret,
-		)
-		keycloakTeam, err := keycloakteam.ConnectTeam(openidClient)
-		if err != nil {
-			return seederr.Wrap(err)
-		}
-		t = keycloakTeam
-	} else {
-		staticTeam, err := staticteam.LoadTeam()
-		if err != nil {
-			return seederr.Wrap(err)
-		}
-		t = staticTeam
+	openidClientSecret, err := flagOpenidClientSecret.LoadString()
+	if err != nil {
+		return seederr.Wrap(err)
+	}
+	openidClientSecret = strings.TrimSpace(openidClientSecret)
+	openidClient := openid.NewOpenidClient(
+		openid.OpenidDiscoveryUrlFlag(), openidClientId, openidClientSecret,
+	)
+	keycloakTeam, err := keycloakteam.ConnectTeam(openidClient)
+	if err != nil {
+		return seederr.Wrap(err)
 	}
 
-	office, err := onsite.CreateOffice(t, db)
+	office, err := onsite.CreateOffice(keycloakTeam, db)
 	if err != nil {
 		return seederr.Wrap(err)
 	}
