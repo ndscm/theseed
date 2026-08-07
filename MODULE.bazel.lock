@@ -1074,7 +1074,7 @@
     "@@rules_oci+//oci:extensions.bzl%oci": {
       "general": {
         "bzlTransitiveDigest": "wbLB05mJA/Lx4ubnkmK5PGzkRvDO3BJanxygTcxsB9s=",
-        "usagesDigest": "6Hz5YnG9W7B49VDsH3NLosFHR2ft0Gi6QKhJkBJCqrM=",
+        "usagesDigest": "iWIOhgT1djuA8DP2GkdtBjxNUXyQRz2axc9knAgQGQw=",
         "recordedFileInputs": {},
         "recordedDirentsInputs": {},
         "envVariables": {},
@@ -1134,6 +1134,35 @@
                 "@@platforms//cpu:x86_64": "@seed_devprod_container_debian_13_oci_linux_amd64"
               },
               "bzlmod_repository": "seed_devprod_container_debian_13_oci",
+              "reproducible": true
+            }
+          },
+          "seed_devprod_container_ubuntu_2604_oci_linux_amd64": {
+            "repoRuleId": "@@rules_oci+//oci/private:pull.bzl%oci_pull",
+            "attributes": {
+              "www_authenticate_challenges": {},
+              "scheme": "https",
+              "registry": "index.docker.io",
+              "repository": "library/ubuntu",
+              "identifier": "sha256:3131b4cc82a783df6c9df078f86e01819a13594b865c2cad47bd1bca2b7063bb",
+              "platform": "linux/amd64",
+              "target_name": "seed_devprod_container_ubuntu_2604_oci_linux_amd64",
+              "bazel_tags": []
+            }
+          },
+          "seed_devprod_container_ubuntu_2604_oci": {
+            "repoRuleId": "@@rules_oci+//oci/private:pull.bzl%oci_alias",
+            "attributes": {
+              "target_name": "seed_devprod_container_ubuntu_2604_oci",
+              "www_authenticate_challenges": {},
+              "scheme": "https",
+              "registry": "index.docker.io",
+              "repository": "library/ubuntu",
+              "identifier": "sha256:3131b4cc82a783df6c9df078f86e01819a13594b865c2cad47bd1bca2b7063bb",
+              "platforms": {
+                "@@platforms//cpu:x86_64": "@seed_devprod_container_ubuntu_2604_oci_linux_amd64"
+              },
+              "bzlmod_repository": "seed_devprod_container_ubuntu_2604_oci",
               "reproducible": true
             }
           },
@@ -1256,7 +1285,9 @@
             "debian_12_slim",
             "debian_12_slim_linux_amd64",
             "seed_devprod_container_debian_13_oci",
-            "seed_devprod_container_debian_13_oci_linux_amd64"
+            "seed_devprod_container_debian_13_oci_linux_amd64",
+            "seed_devprod_container_ubuntu_2604_oci",
+            "seed_devprod_container_ubuntu_2604_oci_linux_amd64"
           ],
           "explicitRootModuleDirectDevDeps": [],
           "useAllRepos": "NO",
