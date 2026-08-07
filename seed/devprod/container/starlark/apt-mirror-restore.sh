@@ -8,9 +8,10 @@ rm -f /etc/apt/apt.conf.d/00mirror
 
 # apt names each list file after its source URI (file:///apt/mirror -> the
 # `_apt_mirror_` prefix). Map each suite back to its original archive URI and
-# rename.
+# rename. The real source file is distro-specific (debian.sources, ubuntu.sources,
+# ...), so read whatever deb822 sources the image ships rather than a fixed name.
 awk '/^URIs:/{u=$2} /^Suites:/{for(i=2;i<=NF;i++)m[$i]=u} END{for(s in m)print s,m[s]}' \
-  /etc/apt/sources.list.d/debian.sources |
+  /etc/apt/sources.list.d/*.sources |
   while read suite uri; do
     prefix=$(printf '%s' "$uri" | sed 's|^[a-z]\+://||; s|/|_|g')
     for f in /var/lib/apt/lists/_apt_mirror_dists_"$suite"_*; do
