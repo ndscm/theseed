@@ -4,21 +4,21 @@ load("@rules_img//img:layer.bzl", "layer_from_tar")
 load("@rules_img//img:load.bzl", "image_load")
 
 layer_from_tar(
-    name = "apt_layer_2604",
-    src = "@seed_devprod_container_ubuntu_apt_2604//:flat",
+    name = "2604_apt_layer",
+    src = "@seed_devprod_container_ubuntu_2604_apt//:flat",
 )
 
 # rules_distroless installs the `ca-certificates` .deb but does not run its
 # postinst (`update-ca-certificates`), so the /etc/ssl/certs/ca-certificates.crt
 # bundle that TLS clients read is never generated. Build it explicitly.
 cacerts(
-    name = "cacerts_2604",
-    package = "@seed_devprod_container_ubuntu_apt_2604//ca-certificates:data",
+    name = "2604_cacerts",
+    package = "@seed_devprod_container_ubuntu_2604_apt//ca-certificates:data",
 )
 
 layer_from_tar(
-    name = "cacerts_layer_2604",
-    src = ":cacerts_2604",
+    name = "2604_cacerts_layer",
+    src = ":2604_cacerts",
 )
 
 image_manifest(
@@ -30,8 +30,8 @@ image_manifest(
         "LC_ALL": "C.UTF-8",
     },
     layers = [
-        ":apt_layer_2604",
-        ":cacerts_layer_2604",
+        ":2604_apt_layer",
+        ":2604_cacerts_layer",
     ],
     visibility = ["//visibility:public"],
 )
