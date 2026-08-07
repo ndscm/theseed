@@ -2,6 +2,8 @@ load("@rules_distroless//distroless:defs.bzl", "cacerts")
 load("@rules_img//img:image.bzl", "image_manifest")
 load("@rules_img//img:layer.bzl", "layer_from_tar")
 load("@rules_img//img:load.bzl", "image_load")
+load("//seed/devprod/container/starlark:apt.bzl", "apt_mirror")
+load("//seed/devprod/container/starlark:container.bzl", "build_freedom_image")
 
 layer_from_tar(
     name = "2604_apt_layer",
@@ -46,4 +48,25 @@ image_load(
     name = "load",
     image = ":ubuntu",
     tag = "ghcr.io/ndscm/ubuntu:latest",
+)
+
+apt_mirror(
+    name = "ubuntu_2604_freedom_apt_mirror",
+    dists = "@seed_devprod_container_ubuntu_2604_apt_dists",
+    pool = "@seed_devprod_container_ubuntu_2604_apt_pool",
+    sources = "ubuntu.sources",
+)
+
+build_freedom_image(
+    name = "ubuntu_2604_freedom",
+    srcs = [
+        "ubuntu.sources",
+        ":ubuntu_2604_freedom_apt_mirror",
+    ],
+    base = "@seed_devprod_container_ubuntu_2604_oci",
+    containerfile = "Containerfile",
+    image_tag = "ghcr.io/ndscm/ubuntu:2604-freedom",
+    normalize_xattrs = True,
+    squash = True,
+    visibility = ["//visibility:public"],
 )
