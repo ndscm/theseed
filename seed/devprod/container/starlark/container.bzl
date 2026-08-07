@@ -27,6 +27,19 @@ def _build_freedom_image_impl(ctx):
     else:
         fail("Unsupported engine: {engine}".format(engine = engine))
 
+    # When enabled, rewrite the saved tar's file-capability xattrs to a portable
+    # form so the image loads under any user namespace. See
+    # //seed/devprod/container/starlark/normalize-xattrs.
+    tools = []
+    normalize_cmd = ""
+    if ctx.attr.normalize_xattrs:
+        normalize_xattrs = ctx.executable._normalize_xattrs
+        tools = [normalize_xattrs]
+        normalize_cmd = '"{normalize_xattrs}" "{out}"'.format(
+            normalize_xattrs = normalize_xattrs.path,
+            out = out.path,
+        )
+
     # Load the Bazel-built base OCI layout into the engine's storage and pass its
     # image id to `--from`, overriding the first FROM. This keeps the base
     # hermetic instead of pulling from a registry; `--pull=never` ensures the
@@ -34,6 +47,7 @@ def _build_freedom_image_impl(ctx):
     ctx.actions.run_shell(
         outputs = [out],
         inputs = [containerfile, base] + ctx.files.srcs,
+        tools = tools,
         # Assemble a build context from the Containerfile plus srcs. srcs come
         # from all over the build graph, so stage them by basename into a scratch
         # context dir where `podman build` can COPY them.
@@ -67,12 +81,15 @@ base_id="$("{engine}" pull -q "oci:{base}")"
   -t "{image_tag}" \\
   "$context_dir"
 "{engine}" save -o "{out}" "{image_tag}"
+
+{normalize_cmd}
 """.format(
             engine = engine,
             base = base.path,
             build_opts = build_opts,
             containerfile = containerfile.path,
             image_tag = image_tag,
+            normalize_cmd = normalize_cmd,
             srcs = "\n".join([f.path for f in ctx.files.srcs]),
             out = out.path,
         ),
@@ -114,10 +131,21 @@ _build_freedom_image = rule(
             default = False,
             doc = "Pass podman --squash to collapse the built layers into one.",
         ),
+        "normalize_xattrs": attr.bool(
+            default = False,
+            doc = "Run the normalize-xattrs tool on the saved tar.",
+        ),
         "_engine": attr.label(
             default = "//seed/devprod/container/starlark:engine",
             providers = [BuildSettingInfo],
             doc = "The container engine build setting (only podman is supported yet).",
+        ),
+        "_normalize_xattrs": attr.label(
+            default = "//seed/devprod/container/starlark/normalize-xattrs",
+            executable = True,
+            cfg = "exec",
+            doc = "Tool that rewrites namespaced v3 file-capability xattrs in " +
+                  "the saved tar to the portable v2 form.",
         ),
     },
     doc = "Builds a container image with the system engine and saves it to a tar.",
@@ -130,6 +158,7 @@ def build_freedom_image(
         image_tag,
         srcs = [],
         squash = False,
+        normalize_xattrs = False,
         **kwargs):
     """Builds a "freedom image": a non-hermetic container image.
 
@@ -152,6 +181,7 @@ def build_freedom_image(
         image_tag: Tag applied to the built image.
         srcs: Additional files staged into the build context.
         squash: Pass podman --squash to collapse the built layers into one (default False).
+        normalize_xattrs: Run the normalize-xattrs tool on the saved tar (default False).
         **kwargs: Passed through to the underlying rule (e.g. visibility).
     """
     _build_freedom_image(
@@ -161,6 +191,7 @@ def build_freedom_image(
         image_tag = image_tag,
         srcs = srcs,
         squash = squash,
+        normalize_xattrs = normalize_xattrs,
         target_compatible_with = _ENGINE_COMPATIBLE_WITH,
         **kwargs
     )
