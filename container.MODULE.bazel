@@ -8,7 +8,7 @@ include("//seed/devprod/container/starlark:engine.MODULE.bazel")
 
 # //seed/devprod/container/ubuntu
 
-include("//seed/devprod/container/ubuntu:apt.MODULE.bazel")
+include("//seed/devprod/container/ubuntu:ubuntu.MODULE.bazel")
 
 # //seed/newtype/hooin/container
 
