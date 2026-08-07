@@ -1,0 +1,18 @@
+load("@rules_go//go:def.bzl", "go_binary", "go_library")
+
+go_library(
+    name = "normalize-xattrs_lib",
+    srcs = ["main.go"],
+    importpath = "github.com/ndscm/theseed/seed/devprod/container/starlark/normalize-xattrs",
+    deps = [
+        "//seed/infra/error/go/seederr",
+        "//seed/infra/init/go/seedinit",
+        "//seed/infra/log/go/seedlog",
+    ],
+)
+
+go_binary(
+    name = "normalize-xattrs",
+    embed = [":normalize-xattrs_lib"],
+    visibility = ["//visibility:public"],
+)

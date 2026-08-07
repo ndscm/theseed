@@ -1,0 +1,58 @@
+pull = use_repo_rule("@rules_img//img:pull.bzl", "pull")
+
+apt_dists = use_repo_rule("//seed/devprod/container/starlark:apt.bzl", "apt_dists")
+
+apt_pool = use_repo_rule("//seed/devprod/container/starlark:apt.bzl", "apt_pool")
+
+pull(
+    name = "seed_devprod_container_ubuntu_2604",
+    digest = "sha256:3131b4cc82a783df6c9df078f86e01819a13594b865c2cad47bd1bca2b7063bb",
+    registry = "index.docker.io",
+    repository = "library/ubuntu",
+    tag = "26.04",
+)
+
+apt = use_extension("@rules_distroless//apt:extensions.bzl", "apt")
+apt.install(
+    name = "seed_devprod_container_ubuntu_2604_apt",
+    lock = "//seed/devprod/container/ubuntu:2604_apt.lock.json",
+    manifest = "//seed/devprod/container/ubuntu:2604_apt.yaml",
+)
+use_repo(apt, "seed_devprod_container_ubuntu_2604_apt")
+
+oci = use_extension("@rules_oci//oci:extensions.bzl", "oci")
+oci.pull(
+    name = "seed_devprod_container_ubuntu_2604_oci",
+    digest = "sha256:3131b4cc82a783df6c9df078f86e01819a13594b865c2cad47bd1bca2b7063bb",
+    image = "index.docker.io/library/ubuntu",
+    platforms = ["linux/amd64"],
+    tag = "26.04",
+)
+use_repo(
+    oci,
+    "seed_devprod_container_ubuntu_2604_oci",
+    "seed_devprod_container_ubuntu_2604_oci_linux_amd64",
+)
+
+# run `bazel run @seed_devprod_container_ubuntu_2604_apt_dists//:lock` to update the lockfile.
+apt_dists(
+    name = "seed_devprod_container_ubuntu_2604_apt_dists",
+    archs = ["amd64"],
+    lock = "//seed/devprod/container/ubuntu:2604_apt_dists.lock.json",
+    sources = "//seed/devprod/container/ubuntu:ubuntu.sources",
+)
+
+# run `bazel run @seed_devprod_container_ubuntu_2604_apt_pool//:lock` to update the lockfile.
+apt_pool(
+    name = "seed_devprod_container_ubuntu_2604_apt_pool",
+    archs = ["amd64"],
+    dists = "@seed_devprod_container_ubuntu_2604_apt_dists",
+    lock = "//seed/devprod/container/ubuntu:2604_apt_pool.lock.json",
+    packages = [
+        "ca-certificates",
+        "curl",
+        "iproute2",
+        "iputils-ping",
+    ],
+    sources = "//seed/devprod/container/ubuntu:ubuntu.sources",
+)

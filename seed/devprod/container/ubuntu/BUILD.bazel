@@ -2,23 +2,25 @@ load("@rules_distroless//distroless:defs.bzl", "cacerts")
 load("@rules_img//img:image.bzl", "image_manifest")
 load("@rules_img//img:layer.bzl", "layer_from_tar")
 load("@rules_img//img:load.bzl", "image_load")
+load("//seed/devprod/container/starlark:apt.bzl", "apt_mirror")
+load("//seed/devprod/container/starlark:container.bzl", "build_freedom_image")
 
 layer_from_tar(
-    name = "apt_layer_2604",
-    src = "@seed_devprod_container_ubuntu_apt_2604//:flat",
+    name = "2604_apt_layer",
+    src = "@seed_devprod_container_ubuntu_2604_apt//:flat",
 )
 
 # rules_distroless installs the `ca-certificates` .deb but does not run its
 # postinst (`update-ca-certificates`), so the /etc/ssl/certs/ca-certificates.crt
 # bundle that TLS clients read is never generated. Build it explicitly.
 cacerts(
-    name = "cacerts_2604",
-    package = "@seed_devprod_container_ubuntu_apt_2604//ca-certificates:data",
+    name = "2604_cacerts",
+    package = "@seed_devprod_container_ubuntu_2604_apt//ca-certificates:data",
 )
 
 layer_from_tar(
-    name = "cacerts_layer_2604",
-    src = ":cacerts_2604",
+    name = "2604_cacerts_layer",
+    src = ":2604_cacerts",
 )
 
 image_manifest(
@@ -30,8 +32,8 @@ image_manifest(
         "LC_ALL": "C.UTF-8",
     },
     layers = [
-        ":apt_layer_2604",
-        ":cacerts_layer_2604",
+        ":2604_apt_layer",
+        ":2604_cacerts_layer",
     ],
     visibility = ["//visibility:public"],
 )
@@ -46,4 +48,25 @@ image_load(
     name = "load",
     image = ":ubuntu",
     tag = "ghcr.io/ndscm/ubuntu:latest",
+)
+
+apt_mirror(
+    name = "ubuntu_2604_freedom_apt_mirror",
+    dists = "@seed_devprod_container_ubuntu_2604_apt_dists",
+    pool = "@seed_devprod_container_ubuntu_2604_apt_pool",
+    sources = "ubuntu.sources",
+)
+
+build_freedom_image(
+    name = "ubuntu_2604_freedom",
+    srcs = [
+        "ubuntu.sources",
+        ":ubuntu_2604_freedom_apt_mirror",
+    ],
+    base = "@seed_devprod_container_ubuntu_2604_oci",
+    containerfile = "Containerfile",
+    image_tag = "ghcr.io/ndscm/ubuntu:2604-freedom",
+    normalize_xattrs = True,
+    squash = True,
+    visibility = ["//visibility:public"],
 )
