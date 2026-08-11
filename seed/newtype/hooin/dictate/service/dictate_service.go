@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"time"
 
 	"connectrpc.com/connect"
 	"entgo.io/ent/dialect/sql"
@@ -13,6 +14,7 @@ import (
 	"github.com/ndscm/theseed/seed/newtype/hooin/dictate/proto/dictatepb"
 	"github.com/ndscm/theseed/seed/newtype/hooin/dictate/proto/dictatepbconnect"
 	"github.com/ndscm/theseed/seed/newtype/hooin/onsite"
+	"github.com/ndscm/theseed/seed/newtype/steins/database/ent"
 	"github.com/ndscm/theseed/seed/newtype/steins/database/ent/brainstep"
 	"github.com/ndscm/theseed/seed/newtype/steins/database/steinsdb"
 	"google.golang.org/grpc/codes"
@@ -254,6 +256,28 @@ func (svc *HooinDictateService) SubscribeBrainStep(
 		}
 	}()
 
+	// Backfill before draining the live channel. The subscribers above are
+	// already registered, so steps emitted during the backfill are buffered and
+	// delivered right after; steps that appear in both the persisted backlog and
+	// the live buffer are deduplicated on the client by step uuid. If `since` is
+	// unset there is nothing to backfill and we serve live steps only.
+	//
+	// This buffering only spans the bounded channels (`sub.channel` and
+	// `merged`, 16 each): while this goroutine is busy in sendBackfillSteps it
+	// isn't draining `merged`, so a backfill that outruns those buffers lets
+	// BroadcastStep's non-blocking fanout drop further live steps. A dropped
+	// step is still persisted asynchronously by saveStep, so the backfill
+	// recovers it *if* that write commits before the keyset cursor pages past
+	// its emit_time; a tail step persisted after that is missed until the next
+	// reconnect. Reconnect gaps are normally small, so this is rare, but it is
+	// not the hard "not lost" guarantee a naive reading would assume.
+	if since := req.Msg.GetSince(); since != nil {
+		err := svc.sendBackfillSteps(ctx, stream, personTopics, since.AsTime())
+		if err != nil {
+			return err
+		}
+	}
+
 	for {
 		select {
 		case <-ctx.Done():
@@ -264,6 +288,72 @@ func (svc *HooinDictateService) SubscribeBrainStep(
 			}
 		}
 	}
+}
+
+// sendBackfillSteps streams every persisted BrainStep emitted at or after
+// `since` that matches any of the subscribed (person, topic) pairs, oldest
+// first. It pages through the backlog by keyset so a large gap does not load
+// the whole history into memory. An empty person_id or topic on a pair is a
+// wildcard, mirroring Office.matchStepSubscribers.
+func (svc *HooinDictateService) sendBackfillSteps(
+	ctx context.Context,
+	stream *connect.ServerStream[brainpb.BrainStep],
+	personTopics []*dictatepb.PersonTopic,
+	since time.Time,
+) error {
+	db := svc.office.GetDatabase()
+	if db == nil {
+		// No history store; nothing to backfill. Live steps still serve.
+		return nil
+	}
+
+	filters := []*sql.Predicate{sql.GTE(brainstep.FieldEmitTime, since)}
+	pairPredicates := make([]*sql.Predicate, 0, len(personTopics))
+	matchesAnyPair := false
+	for _, pt := range personTopics {
+		conditions := make([]*sql.Predicate, 0, 2)
+		if pt.GetPersonId() != "" {
+			conditions = append(conditions, sql.EQ(brainstep.FieldPersonID, pt.GetPersonId()))
+		}
+		if pt.GetTopic() != "" {
+			conditions = append(conditions, sql.EQ(brainstep.FieldTopic, pt.GetTopic()))
+		}
+		if len(conditions) == 0 {
+			// A fully-wildcard pair matches every step, so the pair
+			// restriction adds nothing; drop it entirely.
+			matchesAnyPair = true
+			break
+		}
+		pairPredicates = append(pairPredicates, sql.And(conditions...))
+	}
+	if !matchesAnyPair {
+		filters = append(filters, sql.Or(pairPredicates...))
+	}
+
+	// Order by (emit_time, id) so the backlog streams in stable chronological
+	// order and the keyset cursor below is well defined.
+	orders := []aips.FieldOrder{
+		{Field: brainstep.FieldEmitTime, Desc: false},
+		{Field: brainstep.FieldID, Desc: false},
+	}
+	var cursorRow *ent.BrainStep
+	for {
+		cursor := buildBrainStepCursorPredicate(cursorRow, orders)
+		rows, _, err := steinsdb.SelectBrainStepRows(ctx, db, filters, orders, cursor, maxPageSize)
+		if err != nil {
+			return seederr.Wrap(err)
+		}
+		for _, row := range rows {
+			if err := stream.Send(getBrainStepProtoFromEnt(row)); err != nil {
+				return seederr.Wrap(err)
+			}
+		}
+		if len(rows) < maxPageSize {
+			break
+		}
+		cursorRow = rows[len(rows)-1]
+	}
+	return nil
 }
 
 var _ dictatepbconnect.HooinDictateServiceHandler = (*HooinDictateService)(nil)
