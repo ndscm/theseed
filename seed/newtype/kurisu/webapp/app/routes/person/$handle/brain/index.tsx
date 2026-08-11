@@ -26,6 +26,8 @@ import BrainThreadPanel, {
   type BrainThread,
 } from "../../../../../components/BrainThreadPanel"
 
+const RECONNECT_RETRY_DELAY_MS = 10 * 60 * 1000
+
 const sortThreadsByEmitTime = (threads: BrainThread[]): BrainThread[] =>
   [...threads].sort(
     (a, b) =>
@@ -56,6 +58,7 @@ const PersonBrainPage: React.FC<{ params: { handle: string } }> = ({
   const refOfThreadsEnd = useRef<HTMLDivElement>(null)
   const refOfThreadsEndVisible = useRef(true)
 
+  const refOfLatestStepEmitTime = useRef<ProtobufWkt.Timestamp | null>(null)
   const refOfPreLoadScrollHeight = useRef<number | null>(null)
 
   const personHandle = handle
@@ -126,8 +129,9 @@ const PersonBrainPage: React.FC<{ params: { handle: string } }> = ({
       if (!dictateService || !personId) {
         return
       }
-      const now = new Date().toISOString()
-      const filter = `emit_time < timestamp("${now}")`
+      const now = new Date()
+      refOfLatestStepEmitTime.current = ProtobufWkt.timestampFromDate(now)
+      const filter = `emit_time < timestamp("${now.toISOString()}")`
       setHistoryFilter(filter)
       const firstPage = await dictateService.ListBrainSteps(personId, {
         filter,
@@ -144,19 +148,50 @@ const PersonBrainPage: React.FC<{ params: { handle: string } }> = ({
         personId,
         topic: "",
       })
-      const stream = dictateService.SubscribeBrainStep([personTopic])
-      try {
-        for await (const step of stream) {
+
+      // Keep the live feed alive across drops: consume the subscription, and
+      // when it ends or errors reconnect until this effect is cancelled. Each
+      // subscribe passes the newest step we've shown as `since`, so the server
+      // backfills the steps emitted while we were disconnected (and the gap
+      // between the history page above and the first subscribe). A stream that
+      // delivered a step is healthy, so the retry delay resets on delivery and
+      // only applies to reconnects that deliver nothing.
+      let retryDelayMs = 0
+      while (!cancelled()) {
+        if (retryDelayMs > 0) {
+          await new Promise((resolve) => setTimeout(resolve, retryDelayMs))
           if (cancelled()) {
-            break
+            return
           }
-          showStep(step)
         }
-      } catch (err: unknown) {
-        if (cancelled()) {
-          return
+        let delivered = false
+        const since = refOfLatestStepEmitTime.current ?? undefined
+        const stream = dictateService.SubscribeBrainStep([personTopic], {
+          since,
+        })
+        try {
+          for await (const step of stream) {
+            if (cancelled()) {
+              return
+            }
+            delivered = true
+            showStep(step)
+            if (
+              step.emitTime &&
+              (!refOfLatestStepEmitTime.current ||
+                ProtobufWkt.timestampMs(step.emitTime) >
+                  ProtobufWkt.timestampMs(refOfLatestStepEmitTime.current))
+            ) {
+              refOfLatestStepEmitTime.current = step.emitTime
+            }
+          }
+        } catch (err: unknown) {
+          if (cancelled()) {
+            return
+          }
+          console.error("SubscribeBrainStep stream error", err)
         }
-        throw err
+        retryDelayMs = delivered ? 0 : RECONNECT_RETRY_DELAY_MS
       }
     },
     [dictateService, personId, showStep],
