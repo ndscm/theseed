@@ -16,6 +16,7 @@ proto_library(
     srcs = ["dictate.proto"],
     deps = [
         "//seed/newtype/gajetto/proto:brain_proto",
+        "@protobuf//:timestamp_proto",
     ],
 )
 
