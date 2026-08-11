@@ -1,4 +1,5 @@
 import * as Protobuf from "@bufbuild/protobuf"
+import * as ProtobufWkt from "@bufbuild/protobuf/wkt"
 import { createClient } from "@connectrpc/connect"
 import type { Client as ConnectClient } from "@connectrpc/connect"
 import { createGrpcWebTransport } from "@connectrpc/connect-web"
@@ -37,7 +38,12 @@ interface HooinDictateServiceInterface {
     personId: string,
     brainInput: BrainInput,
   ) => AsyncIterable<BrainStep>
-  SubscribeBrainStep: (personTopics: PersonTopic[]) => AsyncIterable<BrainStep>
+  SubscribeBrainStep: (
+    personTopics: PersonTopic[],
+    options?: {
+      since?: ProtobufWkt.Timestamp
+    },
+  ) => AsyncIterable<BrainStep>
 }
 
 export const HooinDictateServiceContext =
@@ -116,13 +122,18 @@ export const HooinDictateServiceProvider: React.FC<{
   )
 
   const SubscribeBrainStep = useCallback(
-    (personTopics: PersonTopic[]): AsyncIterable<BrainStep> => {
+    (
+      personTopics: PersonTopic[],
+      options?: {
+        since?: ProtobufWkt.Timestamp
+      },
+    ): AsyncIterable<BrainStep> => {
       if (!clientGrpcWeb) {
         throw new Error("Hooin Dictate service not initialized")
       }
       const requestPb: SubscribeBrainStepRequest = Protobuf.create(
         SubscribeBrainStepRequestSchema,
-        { personTopics },
+        { personTopics, since: options?.since },
       )
       return clientGrpcWeb.subscribeBrainStep(requestPb)
     },
