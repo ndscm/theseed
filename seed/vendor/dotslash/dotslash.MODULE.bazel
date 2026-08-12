@@ -1,0 +1,8 @@
+http_archive = use_repo_rule("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
+
+http_archive(
+    name = "dotslash_release_linux_x86_64",
+    build_file = "//seed/vendor/dotslash:dotslash.BUILD.bazel",
+    integrity = "sha256-XO+g8ljgpYrlPHqaW+OJBXTd0z1XxmvJwUPLQRAS1yo=",
+    url = "https://github.com/facebook/dotslash/releases/download/v0.5.9/dotslash-linux-musl.x86_64.tar.gz",
+)
