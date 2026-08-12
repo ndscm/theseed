@@ -1,0 +1,7 @@
+{
+  "config": {
+    "Env": ["LANG=C.UTF-8", "LC_ALL=C.UTF-8", "TZ=Etc/UTC", "USER=builder"],
+    "WorkingDir": "/home/builder",
+    "User": "builder"
+  }
+}
