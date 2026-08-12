@@ -1,0 +1,43 @@
+apt = use_extension("@rules_distroless//apt:extensions.bzl", "apt")
+apt.sources_list(
+    architectures = ["amd64"],
+    components = ["main"],
+    suites = [
+        "trixie",
+        "trixie-updates",
+    ],
+    types = ["deb"],
+    uris = ["https://snapshot.debian.org/archive/debian/20260901T000000Z"],
+)
+apt.sources_list(
+    architectures = ["amd64"],
+    components = ["main"],
+    suites = ["trixie-security"],
+    types = ["deb"],
+    uris = ["https://snapshot.debian.org/archive/debian-security/20260901T000000Z"],
+)
+apt.install(
+    dependency_set = "seed_devprod_workflow_builder_container_apt",
+    packages = [
+        "build-essential",
+        "direnv",
+        "fontconfig",
+        "git",
+        "gnupg2",
+        "less",
+        "lsb-release",
+        "netbase",
+        "openjdk-25-jdk",
+        "openssh-client",
+        "patch",
+        "procps",
+        "rsync",
+        "tzdata",
+    ],
+    suites = [
+        "trixie",
+        "trixie-security",
+        "trixie-updates",
+    ],
+)
+use_repo(apt, "seed_devprod_workflow_builder_container_apt")
