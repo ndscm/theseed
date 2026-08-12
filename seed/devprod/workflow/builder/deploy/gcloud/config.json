@@ -1,0 +1,7 @@
+{
+  "config": {
+    "Env": ["USER=root"],
+    "WorkingDir": "/workspace",
+    "User": "root"
+  }
+}
