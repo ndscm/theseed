@@ -10,6 +10,10 @@ include("//seed/devprod/container/starlark:engine.MODULE.bazel")
 
 include("//seed/devprod/container/ubuntu:ubuntu.MODULE.bazel")
 
+# //seed/devprod/workflow/builder/container
+
+include("//seed/devprod/workflow/builder/container:container.MODULE.bazel")
+
 # //seed/newtype/hooin/container
 
 include("//seed/newtype/hooin/container:apt.MODULE.bazel")
