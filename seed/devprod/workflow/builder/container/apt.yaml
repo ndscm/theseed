@@ -1,0 +1,40 @@
+# APT packages layered onto the check workflow container on top of the debian
+# base.
+#
+# These replace the `RUN apt install` steps of the Containerfile. rules_img
+# cannot execute RUN steps, so the packages are resolved and downloaded as
+# .debs by rules_distroless and composed into a layer. `ca-certificates`,
+# `curl` and `iputils-ping` already ship in the debian base image, so only the
+# packages missing from it live here.
+#
+# Whenever this file changes, regenerate the lockfile:
+#
+#     bazel run @seed_devprod_workflow_check_container_apt//:lock
+version: 1
+
+sources:
+  - channel: trixie main
+    url: https://snapshot.debian.org/archive/debian/20260801T000000Z
+  - channel: trixie-updates main
+    url: https://snapshot.debian.org/archive/debian/20260801T000000Z
+  - channel: trixie-security main
+    url: https://snapshot.debian.org/archive/debian-security/20260801T000000Z
+
+archs:
+  - "amd64"
+
+packages:
+  - "build-essential"
+  - "direnv"
+  - "fontconfig"
+  - "git"
+  - "gnupg2"
+  - "less"
+  - "lsb-release"
+  - "netbase"
+  - "openjdk-25-jdk"
+  - "openssh-client"
+  - "patch"
+  - "procps"
+  - "rsync"
+  - "tzdata"

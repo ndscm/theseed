@@ -1,0 +1,7 @@
+apt = use_extension("@rules_distroless//apt:extensions.bzl", "apt")
+apt.install(
+    name = "seed_devprod_workflow_builder_container_apt",
+    lock = "//seed/devprod/workflow/builder/container:apt.lock.json",
+    manifest = "//seed/devprod/workflow/builder/container:apt.yaml",
+)
+use_repo(apt, "seed_devprod_workflow_builder_container_apt")
