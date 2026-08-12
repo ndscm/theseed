@@ -1,0 +1,187 @@
+{
+  "substitutions": {
+    "_BUILDER_IMAGE": "us-docker.pkg.dev/ndscm-prod/container-us/seed-devprod-workflow-builder-deploy-gcloud:prod",
+    "_GH_OAUTH_SECRET": ""
+  },
+  "options": {
+    "machineType": "E2_HIGHCPU_8",
+    "diskSizeGb": 200,
+    "logging": "CLOUD_LOGGING_ONLY"
+  },
+  "availableSecrets": {
+    "secretManager": [
+      {
+        "versionName": "${_GH_OAUTH_SECRET}",
+        "env": "GH_TOKEN"
+      }
+    ]
+  },
+  "timeout": "3600s",
+  "steps": [
+    {
+      "id": "pwd",
+      "name": "${_BUILDER_IMAGE}",
+      "entrypoint": "bash",
+      "args": ["-c", "pwd"]
+    },
+    {
+      "id": "prepare",
+      "name": "${_BUILDER_IMAGE}",
+      "entrypoint": "bash",
+      "args": ["seed/devprod/workflow/check/gcloud/check.sh", "prepare"],
+      "env": ["BRANCH_NAME=${BRANCH_NAME}"]
+    },
+    {
+      "id": "pending",
+      "name": "${_BUILDER_IMAGE}",
+      "entrypoint": "bash",
+      "args": ["seed/devprod/workflow/check/gcloud/report.sh", "pending"],
+      "env": [
+        "COMMIT_SHA=${COMMIT_SHA}",
+        "CLOUD_BUILD_URL=https://console.cloud.google.com/cloud-build/builds;region=${LOCATION}/${BUILD_ID}?project=${PROJECT_ID}"
+      ],
+      "secretEnv": ["GH_TOKEN"]
+    },
+    {
+      "id": "run-format",
+      "name": "${_BUILDER_IMAGE}",
+      "entrypoint": "bash",
+      "args": ["seed/devprod/workflow/check/gcloud/check.sh", "run", "format"]
+    },
+    {
+      "id": "report-format",
+      "name": "${_BUILDER_IMAGE}",
+      "entrypoint": "bash",
+      "args": [
+        "seed/devprod/workflow/check/gcloud/report.sh",
+        "report",
+        "format"
+      ],
+      "env": [
+        "COMMIT_SHA=${COMMIT_SHA}",
+        "CLOUD_BUILD_URL=https://console.cloud.google.com/cloud-build/builds;region=${LOCATION}/${BUILD_ID}?project=${PROJECT_ID}"
+      ],
+      "secretEnv": ["GH_TOKEN"]
+    },
+    {
+      "id": "run-bootstrap",
+      "name": "${_BUILDER_IMAGE}",
+      "entrypoint": "bash",
+      "args": [
+        "seed/devprod/workflow/check/gcloud/check.sh",
+        "run",
+        "bootstrap"
+      ]
+    },
+    {
+      "id": "report-bootstrap",
+      "name": "${_BUILDER_IMAGE}",
+      "entrypoint": "bash",
+      "args": [
+        "seed/devprod/workflow/check/gcloud/report.sh",
+        "report",
+        "bootstrap"
+      ],
+      "env": [
+        "COMMIT_SHA=${COMMIT_SHA}",
+        "CLOUD_BUILD_URL=https://console.cloud.google.com/cloud-build/builds;region=${LOCATION}/${BUILD_ID}?project=${PROJECT_ID}"
+      ],
+      "secretEnv": ["GH_TOKEN"]
+    },
+    {
+      "id": "run-tidy",
+      "name": "${_BUILDER_IMAGE}",
+      "entrypoint": "bash",
+      "args": ["seed/devprod/workflow/check/gcloud/check.sh", "run", "tidy"]
+    },
+    {
+      "id": "report-tidy",
+      "name": "${_BUILDER_IMAGE}",
+      "entrypoint": "bash",
+      "args": [
+        "seed/devprod/workflow/check/gcloud/report.sh",
+        "report",
+        "tidy"
+      ],
+      "env": [
+        "COMMIT_SHA=${COMMIT_SHA}",
+        "CLOUD_BUILD_URL=https://console.cloud.google.com/cloud-build/builds;region=${LOCATION}/${BUILD_ID}?project=${PROJECT_ID}"
+      ],
+      "secretEnv": ["GH_TOKEN"]
+    },
+    {
+      "id": "run-lock",
+      "name": "${_BUILDER_IMAGE}",
+      "entrypoint": "bash",
+      "args": ["seed/devprod/workflow/check/gcloud/check.sh", "run", "lock"]
+    },
+    {
+      "id": "report-lock",
+      "name": "${_BUILDER_IMAGE}",
+      "entrypoint": "bash",
+      "args": [
+        "seed/devprod/workflow/check/gcloud/report.sh",
+        "report",
+        "lock"
+      ],
+      "env": [
+        "COMMIT_SHA=${COMMIT_SHA}",
+        "CLOUD_BUILD_URL=https://console.cloud.google.com/cloud-build/builds;region=${LOCATION}/${BUILD_ID}?project=${PROJECT_ID}"
+      ],
+      "secretEnv": ["GH_TOKEN"]
+    },
+    {
+      "id": "run-build",
+      "name": "${_BUILDER_IMAGE}",
+      "entrypoint": "bash",
+      "args": ["seed/devprod/workflow/check/gcloud/check.sh", "run", "build"]
+    },
+    {
+      "id": "report-build",
+      "name": "${_BUILDER_IMAGE}",
+      "entrypoint": "bash",
+      "args": [
+        "seed/devprod/workflow/check/gcloud/report.sh",
+        "report",
+        "build"
+      ],
+      "env": [
+        "COMMIT_SHA=${COMMIT_SHA}",
+        "CLOUD_BUILD_URL=https://console.cloud.google.com/cloud-build/builds;region=${LOCATION}/${BUILD_ID}?project=${PROJECT_ID}"
+      ],
+      "secretEnv": ["GH_TOKEN"]
+    },
+    {
+      "id": "run-test",
+      "name": "${_BUILDER_IMAGE}",
+      "entrypoint": "bash",
+      "args": ["seed/devprod/workflow/check/gcloud/check.sh", "run", "test"]
+    },
+    {
+      "id": "report-test",
+      "name": "${_BUILDER_IMAGE}",
+      "entrypoint": "bash",
+      "args": [
+        "seed/devprod/workflow/check/gcloud/report.sh",
+        "report",
+        "test"
+      ],
+      "env": [
+        "COMMIT_SHA=${COMMIT_SHA}",
+        "CLOUD_BUILD_URL=https://console.cloud.google.com/cloud-build/builds;region=${LOCATION}/${BUILD_ID}?project=${PROJECT_ID}"
+      ],
+      "secretEnv": ["GH_TOKEN"]
+    },
+    {
+      "id": "finalize",
+      "name": "${_BUILDER_IMAGE}",
+      "entrypoint": "bash",
+      "args": ["seed/devprod/workflow/check/gcloud/report.sh", "finalize"],
+      "env": [
+        "COMMIT_SHA=${COMMIT_SHA}",
+        "CLOUD_BUILD_URL=https://console.cloud.google.com/cloud-build/builds;region=${LOCATION}/${BUILD_ID}?project=${PROJECT_ID}"
+      ],
+      "secretEnv": ["GH_TOKEN"]
+    }
+  ]
+}
