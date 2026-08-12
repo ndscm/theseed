@@ -80,6 +80,10 @@ include("//seed/vendor/shell:shell.MODULE.bazel")
 
 include("//seed/vendor/bazel:bazel.MODULE.bazel")
 
+## Dotslash
+
+include("//seed/vendor/dotslash:dotslash.MODULE.bazel")
+
 ## Hedronvision Bazel Compile Commands Extractor
 
 include("//contrib/vendor/hedronvision/bazel-compile-commands-extractor:bazel-compile-commands-extractor.MODULE.bazel")
