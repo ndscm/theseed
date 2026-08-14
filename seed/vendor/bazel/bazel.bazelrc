@@ -1,1 +1,3 @@
+startup --host_jvm_args=-Djava.net.useSystemProxies=true
+
 common --experimental_isolated_extension_usages
