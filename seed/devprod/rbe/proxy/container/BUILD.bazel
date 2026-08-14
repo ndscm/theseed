@@ -1,0 +1,93 @@
+load("@rules_distroless//distroless:defs.bzl", "group", "home", "passwd")
+load("@rules_img//img:image.bzl", "image_manifest")
+load("@rules_img//img:layer.bzl", "layer_from_binary", "layer_from_tar")
+load("@rules_img//img:load.bzl", "image_load")
+
+layer_from_binary(
+    name = "opt_rbe_layer",
+    binary = "//seed/devprod/rbe/proxy/server:rbe-proxy-server",
+    path = "/opt/rbe/rbe-proxy-server",
+)
+
+passwd(
+    name = "etc_passwd",
+    entries = [
+        {
+            "gid": 0,
+            "home": "/root",
+            "shell": "/bin/bash",
+            "uid": 0,
+            "username": "root",
+        },
+        {
+            "gid": 1000,
+            "home": "/home/rbe",
+            "shell": "/bin/bash",
+            "uid": 1000,
+            "username": "rbe",
+        },
+    ],
+)
+
+layer_from_tar(
+    name = "etc_passwd_layer",
+    src = ":etc_passwd",
+)
+
+group(
+    name = "etc_group",
+    entries = [
+        {
+            "name": "root",
+            "gid": 0,
+        },
+        {
+            "name": "rbe",
+            "gid": 1000,
+        },
+    ],
+)
+
+layer_from_tar(
+    name = "etc_group_layer",
+    src = ":etc_group",
+)
+
+home(
+    name = "home_rbe",
+    dirs = [
+        {
+            "gid": 1000,
+            "home": "/home/rbe",
+            "uid": 1000,
+        },
+    ],
+)
+
+layer_from_tar(
+    name = "home_rbe_layer",
+    src = ":home_rbe",
+)
+
+image_manifest(
+    name = "container",
+    base = "//seed/devprod/container/ubuntu:ubuntu",
+    config_fragment = "container.json",
+    layers = [
+        ":opt_rbe_layer",
+        ":etc_passwd_layer",
+        ":etc_group_layer",
+        ":home_rbe_layer",
+    ],
+    visibility = ["//visibility:public"],
+    # Explicit override: opt_rbe_layer (layer_from_binary) sets working_dir to
+    # the binary's runfiles root, and layer config beats config_fragment. Only a
+    # rule attr wins over the layer, so working_dir stays here.
+    working_dir = "/home/rbe",
+)
+
+image_load(
+    name = "load",
+    image = ":container",
+    tag = "ghcr.io/ndscm/seed-devprod-rbe-proxy-container:latest",
+)
