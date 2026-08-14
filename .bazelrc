@@ -8,6 +8,8 @@ import %workspace%/seed/vendor/java/java.bazelrc
 import %workspace%/seed/vendor/python/python.bazelrc
 import %workspace%/seed/vendor/ts/ts.bazelrc
 
-common --remote_cache=http://cache.rbe.ndscm.com:22243
+common --remote_cache=https://ndscm-prod-rbe-cache-prod.storage.googleapis.com/
+common --google_default_credentials
+try-import %workspace%/rbe.local.bazelrc
 
 build --workspace_status_command=./seed/infra/buildinfo/bazel/generate-workspace-status.sh
