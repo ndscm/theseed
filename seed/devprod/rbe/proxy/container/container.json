@@ -1,0 +1,6 @@
+{
+  "config": {
+    "Entrypoint": ["/opt/rbe/rbe-proxy-server"],
+    "User": "rbe"
+  }
+}
