@@ -9,7 +9,7 @@ import %workspace%/seed/vendor/python/python.bazelrc
 import %workspace%/seed/vendor/ts/ts.bazelrc
 
 common --remote_cache=https://ndscm-prod-rbe-cache-prod.storage.googleapis.com/
-common --google_default_credentials
+common --credential_helper=*.storage.googleapis.com=%workspace%/seed/cloud/gcloud/tool/bazel-gcloud-credential-helper.sh
 try-import %workspace%/rbe.local.bazelrc
 
 build --workspace_status_command=./seed/infra/buildinfo/bazel/generate-workspace-status.sh
