@@ -8,34 +8,36 @@ directly.
 
 ## Why this exists
 
-Bazel's remote cache client **cannot use an HTTP proxy**. It connects directly
-to the `--remote_cache` host; the only "proxy" it supports is a Unix domain
-socket (`--remote_proxy=unix:/path`). See
-`CombinedCacheClientFactory.createHttp` in the Bazel source: a non-`unix:` proxy
-is rejected outright, and there is no `http_proxy`/`https_proxy` handling
-anywhere in the remote HTTP cache path.
+Pointing every Bazel client at the cloud build cache (a GCS bucket) directly
+means every action-cache lookup and CAS upload crosses the WAN to Google. On an
+on-prem build network with many clients that is a lot of egress traffic, plus a
+round-trip to the cloud on the critical path of every cache hit.
 
-On a proxy-only build network (all external egress via `HTTPS_PROXY`), that
-means `--remote_cache=https://<bucket>.storage.googleapis.com/` times out —
-Bazel dials GCS directly and never uses the proxy.
-
-`rbe-proxy-server` bridges the gap. Bazel talks to it over a Unix socket
-(unauthenticated, local), and the proxy reaches GCS over its HTTPS endpoint
-using Go's default transport, which **does** honor `HTTPS_PROXY`. It keeps the
-bucket in the raw `/cas`, `/ac` object layout, so the same bucket also works
-with a direct `--remote_cache` configuration from a network that can reach GCS
-(e.g. CI on GCP).
+`rbe-proxy-server` is meant to run on-prem, close to the clients, as a
+read-through/write-through front for the cloud cache. Bazel talks to a nearby
+instance over its HTTP cache protocol; the proxy serves hits from its local disk
+cache and only reaches GCS on a miss, so repeated fan-out from many clients
+collapses into one shared local cache — less cloud egress and lower latency on
+the hot path. The proxy reaches GCS over its HTTPS endpoint using Go's default
+transport, which honors `HTTPS_PROXY` if the on-prem network needs one to leave.
+It keeps the bucket in the raw `/cas`, `/ac` object layout, so the same bucket
+also works with a direct `--remote_cache` configuration from a network that can
+reach GCS directly (e.g. CI on GCP).
 
 ## Usage
 
-Run `start.sh`. It builds the proxy, starts it on a Unix socket backed by
-`~/.cache/bazel/remote`, and writes `rbe.local.bazelrc` (git-ignored, loaded via
-`try-import`) pointing Bazel at the socket. The file and socket are removed on
-exit.
+Build and run the binary directly:
 
 ```
-seed/devprod/rbe/proxy/server/start.sh
+bazel run //seed/devprod/rbe/proxy/server -- \
+  --remote_cache=https://<bucket>.storage.googleapis.com/ \
+  --local_cache=/var/cache/rbe-proxy \
+  --listen=:8080 \
+  --google_default_credentials
 ```
+
+Then point Bazel at it with `--remote_cache=http://<host>:<port>/`, or with
+`--remote_proxy=unix:/path/to/socket` when listening on a Unix socket.
 
 Flags (env prefix `RBE_PROXY_`, falling back to `SEED_`):
 
@@ -55,16 +57,17 @@ cache.
 ## Caveats
 
 - **Bazel's `--google_default_credentials` must be disabled on the Bazel side.**
-  The proxy socket is local and unauthenticated, and the proxy does the GCS
-  auth. If Bazel is left with `--google_default_credentials` (the workspace
-  default), it tries to fetch ADC and hangs on the GCE metadata server off-GCP
-  ("Error initializing RemoteModule"). `rbe.local.bazelrc` sets
-  `--google_default_credentials=false`.
+  The proxy endpoint is unauthenticated, and the proxy does the GCS auth. If
+  Bazel is left with `--google_default_credentials` (the workspace default), it
+  tries to fetch ADC and hangs on the GCE metadata server off-GCP ("Error
+  initializing RemoteModule"). Set `--google_default_credentials=false` on the
+  Bazel side.
 
-- **`.bazelrc` override ordering.** `rbe.local.bazelrc` must be `try-import`ed
-  _after_ the workspace's own `--remote_cache` default, or that later default
-  wins and the proxy is bypassed. Bazel applies rc options in file order, and
-  the last value of a single-valued flag takes effect.
+- **`.bazelrc` override ordering.** The `--remote_cache` that points Bazel at
+  the proxy must be applied _after_ the workspace's own `--remote_cache`
+  default, or that later default wins and the proxy is bypassed. Bazel applies
+  rc options in file order, and the last value of a single-valued flag takes
+  effect.
 
 - **GCS auth needs a service account, not user credentials.** With
   `--google_default_credentials`, the proxy uses ADC. User credentials
@@ -82,9 +85,7 @@ cache.
   umask around the bind, not a racy post-bind `chmod`). The socket is
   unauthenticated but the proxy behind it holds ADC read/write to the shared
   bucket, so a world-connectable socket would let any local user read and poison
-  the cache through the proxy's credentials. This is a single-user-workstation
-  tool, so the perm is cheap defense-in-depth rather than a real multi-tenant
-  boundary.
+  the cache through the proxy's credentials.
 
 - **CAS contents are not verified.** On `PUT /cas/<digest>` the proxy tees the
   body straight to the backend without checking that it hashes to `<digest>`, so
@@ -95,19 +96,16 @@ cache.
   CAS write path would make the proxy poisoning-resistant on its own; it is left
   out for now to keep the write path a pure stream.
 
-- **Bootstrapping.** `start.sh` writes `rbe.local.bazelrc` before building the
-  proxy, so the build that produces the proxy is run with `--remote_cache=` to
-  disable the (not-yet-running) cache for that one command.
-
 ## Alternatives considered
 
 - **Bazel direct to GCS**
   (`--remote_cache=https://storage.googleapis.com/<bucket>`
   `--google_default_credentials`). Simplest — no server at all, and GCS's XML
-  API _is_ the Bazel HTTP cache protocol. Rejected for the build network because
-  Bazel can't traverse the HTTP proxy (see _Why this exists_). This is the right
-  choice where GCS is directly reachable, and it shares the bucket with this
-  proxy because both use the raw `/cas`, `/ac` layout.
+  API _is_ the Bazel HTTP cache protocol. This is the right choice where the WAN
+  round-trip to GCS is acceptable, but every client then hits the cloud on every
+  lookup with no shared local cache in front — which is what this proxy exists
+  to avoid (see _Why this exists_). It shares the bucket with this proxy because
+  both use the raw `/cas`, `/ac` layout.
 
 - **bazel-remote** (buchgr/bazel-remote). Mature, with a local disk cache, a GCS
   proxy backend, and Unix-socket listening. Rejected as the primary because it
@@ -119,7 +117,6 @@ cache.
 - **A deployed cache server** (`../server` with `--storage=gcloud`, on Cloud Run
   or on-prem). Uses the GCS client library and preserves the raw layout. Cloud
   Run is a poor fit as a cache: its 32 MiB request limit rejects large CAS
-  blobs, and clients on the build network reach it only through the same HTTP
-  proxy Bazel can't use. An on-prem instance works, but this proxy is the
-  lighter local-dev front: no service to operate, just a socket and a disk
-  cache.
+  blobs, and being cloud-hosted it puts the WAN round-trip back on every lookup
+  that this proxy is meant to remove. An on-prem instance works, but this proxy
+  is the lighter front: no service to operate, just a socket and a disk cache.
