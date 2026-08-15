@@ -1,21 +1,24 @@
 package main
 
 import (
+	"bytes"
 	"context"
+	"encoding/json/v2"
 	"errors"
 	"io"
 	"net"
 	"net/http"
 	"net/url"
 	"os"
+	"os/exec"
 	"os/signal"
 	"path/filepath"
 	"strconv"
 	"strings"
+	"sync"
 	"syscall"
 
 	"golang.org/x/oauth2"
-	"golang.org/x/oauth2/google"
 	"golang.org/x/sync/errgroup"
 
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
@@ -23,10 +26,6 @@ import (
 	"github.com/ndscm/theseed/seed/infra/init/go/seedinit"
 	"github.com/ndscm/theseed/seed/infra/log/go/seedlog"
 )
-
-// storageScope is the OAuth scope requested for the Google ADC bearer token,
-// scoped to Cloud Storage since that is the usual backend.
-const storageScope = "https://www.googleapis.com/auth/devstorage.read_write"
 
 var flagRemoteCache = seedflag.DefineString(
 	"remote_cache", "",
@@ -36,13 +35,28 @@ var flagLocalCache = seedflag.DefineString(
 	"local_cache", "",
 	"Local disk cache directory, checked before the backend and populated from it; usable alone as a local-only cache",
 )
+var flagLocalPut = seedflag.DefineBool(
+	"local_put", false,
+	"Accept uploads with no Authorization header by writing them only to the "+
+		"local cache, never forwarding them to the backend (requires local_cache). "+
+		"When false such uploads are rejected.",
+)
 var flagListen = seedflag.DefineString(
 	"listen", ":8080",
 	"Address to listen on: [host]:port or unix:/path/to/socket.path",
 )
-var flagGoogleDefaultCredentials = seedflag.DefineBool(
-	"google_default_credentials", false,
-	"Attach a bearer token from Google Application Default Credentials to backend requests",
+var flagCredentialHelper = seedflag.DefineString(
+	"credential_helper", "",
+	"Command run to obtain a backend bearer token; its stdout is interpreted per "+
+		"credential_helper_format. Empty leaves the backend unauthenticated except "+
+		"for a client-supplied Authorization header.",
+)
+var flagCredentialHelperFormat = seedflag.DefineString(
+	"credential_helper_format", "",
+	`How to read the credential_helper output: empty uses stdout as the bearer `+
+		`token verbatim; "oauth2" parses stdout as a JSON oauth2.Token and uses its `+
+		`access token until it expires, then serializes the token back to the helper `+
+		`on stdin to obtain a refreshed one.`,
 )
 
 // objectKey maps a request path to its cache object key, rejecting anything that
@@ -125,11 +139,15 @@ type ProxyHandler struct {
 	client *http.Client
 
 	local string
+
+	// localPut accepts uploads with no Authorization header into the local cache
+	// only, without forwarding them to the backend.
+	localPut bool
 }
 
 // requestRemote issues method against the backend object, attaching the object
 // path to the backend base URL. A client-supplied Authorization header is
-// forwarded unchanged; otherwise the transport may add a default-credentials
+// forwarded unchanged; otherwise the transport may add a credential-helper
 // token.
 func (h *ProxyHandler) requestRemote(
 	r *http.Request, method string, object string, body io.Reader,
@@ -251,10 +269,26 @@ func (h *ProxyHandler) serveHead(w http.ResponseWriter, r *http.Request, object 
 }
 
 func (h *ProxyHandler) servePut(w http.ResponseWriter, r *http.Request, object string) {
+	// Uploads forwarded to the backend must carry the client's own Authorization.
+	// The proxy's credential-helper credential is used only to serve
+	// unauthenticated reads (GET/HEAD) from the shared backend; it is never lent
+	// to an unauthenticated writer, which could otherwise poison the shared cache
+	// anonymously. An unauthenticated upload is instead confined to the local disk
+	// cache when localPut is set — never forwarded to the backend —
+	// so a local build can still populate the read-through cache; otherwise it is
+	// rejected outright. Local-only mode (no backend) has no such credential to
+	// protect and always writes locally.
+	unauthorized := r.Header.Get("Authorization") == ""
+	if h.remote != nil && unauthorized && !h.localPut {
+		http.Error(w, "authorization required for uploads", http.StatusForbidden)
+		return
+	}
+
 	local := h.newLocalWriter(object)
 
-	// Local-only: store the body on disk with no backend to forward to.
-	if h.remote == nil {
+	// Store the body on disk without forwarding when there is no backend, or when
+	// an unauthenticated upload is confined to the local cache.
+	if h.remote == nil || unauthorized {
 		_, err := io.Copy(local, r.Body)
 		if err != nil {
 			local.discard()
@@ -262,7 +296,13 @@ func (h *ProxyHandler) servePut(w http.ResponseWriter, r *http.Request, object s
 			http.Error(w, "internal error", http.StatusInternalServerError)
 			return
 		}
-		local.commit()
+		// Commit only a complete object, mirroring the forwarded branch, so a body
+		// shorter than its Content-Length never lands in the cache.
+		if local.complete(r.ContentLength) {
+			local.commit()
+		} else {
+			local.discard()
+		}
 		w.WriteHeader(http.StatusNoContent)
 		return
 	}
@@ -330,11 +370,14 @@ func (h *ProxyHandler) newLocalWriter(object string) *localWriter {
 
 var _ http.Handler = (*ProxyHandler)(nil)
 
-func newProxyHandler(backend *url.URL, client *http.Client, localCache string) *ProxyHandler {
+func newProxyHandler(
+	remote *url.URL, client *http.Client, localCache string, localPut bool,
+) *ProxyHandler {
 	return &ProxyHandler{
-		remote: backend,
-		client: client,
-		local:  localCache,
+		remote:   remote,
+		client:   client,
+		local:    localCache,
+		localPut: localPut,
 	}
 }
 
@@ -359,19 +402,95 @@ func (t *conditionalAuthTransport) RoundTrip(req *http.Request) (*http.Response,
 	return t.base.RoundTrip(req)
 }
 
-// backendTransport returns the transport used for backend requests, optionally
-// attaching a Google Application Default Credentials bearer token when the
-// request has no Authorization header. Its base is the default transport, which
-// honors HTTPS_PROXY so the backend is reachable through a corporate proxy.
-func backendTransport() (http.RoundTripper, error) {
-	transport := (http.RoundTripper)(http.DefaultTransport)
-	if flagGoogleDefaultCredentials.Get() {
-		tokenSource, err := google.DefaultTokenSource(context.Background(), storageScope)
+var _ http.RoundTripper = (*conditionalAuthTransport)(nil)
+
+// credentialHelperTokenSource obtains a backend bearer token by running an
+// external credential helper command. With an empty format the command's stdout
+// is the bearer token verbatim and the helper is run for every token, since a
+// raw token carries no expiry. With the "oauth2" format the stdout is a
+// JSON-encoded oauth2.Token whose access token is reused until it expires; on
+// expiry the current token is serialized back to the helper on stdin so it can
+// refresh it.
+type credentialHelperTokenSource struct {
+	command string
+	format  string
+
+	mu    sync.Mutex
+	token *oauth2.Token
+}
+
+// runHelper runs the credential helper command through the shell, writing input
+// to its stdin when non-nil, and returns its stdout.
+func (s *credentialHelperTokenSource) runHelper(input []byte) ([]byte, error) {
+	cmd := exec.Command("sh", "-c", s.command)
+	if input != nil {
+		cmd.Stdin = bytes.NewReader(input)
+	}
+	output, err := cmd.Output()
+	if err != nil {
+		return nil, seederr.Wrap(err)
+	}
+	return output, nil
+}
+
+func (s *credentialHelperTokenSource) Token() (*oauth2.Token, error) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	// Raw format: stdout is the bearer token and carries no expiry, so run the
+	// helper for each request rather than caching a token that never lapses.
+	if s.format == "" {
+		output, err := s.runHelper(nil)
 		if err != nil {
 			return nil, seederr.Wrap(err)
 		}
+		return &oauth2.Token{AccessToken: strings.TrimSpace(string(output))}, nil
+	}
+
+	// oauth2 format: reuse the cached token until it lapses, then refresh it by
+	// handing the current token (if any) back to the helper on stdin.
+	token := s.token
+	if !token.Valid() {
+		input := []byte(nil)
+		if token != nil {
+			marshaled, err := json.Marshal(token)
+			if err != nil {
+				return nil, seederr.Wrap(err)
+			}
+			input = marshaled
+		}
+		output, err := s.runHelper(input)
+		if err != nil {
+			return nil, seederr.Wrap(err)
+		}
+		refreshed := &oauth2.Token{}
+		err = json.Unmarshal(output, refreshed)
+		if err != nil {
+			return nil, seederr.Wrap(err)
+		}
+		s.token = refreshed
+		token = refreshed
+	}
+	return token, nil
+}
+
+var _ oauth2.TokenSource = (*credentialHelperTokenSource)(nil)
+
+// backendTransport returns the transport used for backend requests, optionally
+// attaching a credential-helper bearer token when the request has no
+// Authorization header. Its base is the default transport, which honors
+// HTTPS_PROXY so the backend is reachable through a corporate proxy.
+func backendTransport() (http.RoundTripper, error) {
+	transport := (http.RoundTripper)(http.DefaultTransport)
+	credentialHelper := flagCredentialHelper.Get()
+	if credentialHelper != "" {
+		format := flagCredentialHelperFormat.Get()
+		if format != "" && format != "oauth2" {
+			return nil, seederr.WrapErrorf(
+				"unknown credential_helper_format: %q (want empty or oauth2)", format)
+		}
 		transport = &conditionalAuthTransport{
-			source: tokenSource,
+			source: &credentialHelperTokenSource{command: credentialHelper, format: format},
 			base:   http.DefaultTransport,
 		}
 	}
@@ -393,9 +512,10 @@ func listen(address string) (net.Listener, error) {
 			return nil, seederr.Wrap(err)
 		}
 		// Bind the socket owner-only (0700). The socket is unauthenticated, but
-		// the proxy behind it holds ADC credentials to the shared cache bucket,
-		// so a world-connectable socket would let any local user read and poison
-		// the cache through the proxy. Tightening the umask around the bind
+		// the proxy behind it holds credential-helper credentials to the shared
+		// cache backend, so a world-connectable socket would let any local user
+		// read and poison the cache through the proxy. Tightening the umask around
+		// the bind
 		// avoids the window a post-bind chmod would leave open.
 		old := syscall.Umask(0o077)
 		defer syscall.Umask(old)
@@ -422,6 +542,11 @@ func run() error {
 		return seederr.WrapErrorf("remote_cache or local_cache is required")
 	}
 
+	localPut := flagLocalPut.Get()
+	if localPut && localCache == "" {
+		return seederr.WrapErrorf("local_put requires local_cache")
+	}
+
 	if localCache != "" {
 		err := os.MkdirAll(localCache, 0o755)
 		if err != nil {
@@ -429,14 +554,14 @@ func run() error {
 		}
 	}
 
-	backend := (*url.URL)(nil)
+	remoteUrl := (*url.URL)(nil)
 	client := (*http.Client)(nil)
 	if remoteCache != "" {
-		backend, err = url.Parse(remoteCache)
+		remoteUrl, err = url.Parse(remoteCache)
 		if err != nil {
 			return seederr.Wrap(err)
 		}
-		if backend.Scheme != "http" && backend.Scheme != "https" {
+		if remoteUrl.Scheme != "http" && remoteUrl.Scheme != "https" {
 			return seederr.WrapErrorf("remote_cache must be an http(s) URL: %s", remoteCache)
 		}
 		transport, err := backendTransport()
@@ -446,7 +571,7 @@ func run() error {
 		client = &http.Client{Transport: transport}
 	}
 
-	handler := newProxyHandler(backend, client, localCache)
+	handler := newProxyHandler(remoteUrl, client, localCache, localPut)
 	httpServer := &http.Server{Handler: handler}
 
 	listener, err := listen(flagListen.Get())

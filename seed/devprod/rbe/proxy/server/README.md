@@ -33,7 +33,8 @@ bazel run //seed/devprod/rbe/proxy/server -- \
   --remote_cache=https://<bucket>.storage.googleapis.com/ \
   --local_cache=/var/cache/rbe-proxy \
   --listen=:8080 \
-  --google_default_credentials
+  --credential_helper=/path/to/credential-helper \
+  --credential_helper_format=oauth2
 ```
 
 Then point Bazel at it with `--remote_cache=http://<host>:<port>/`, or with
@@ -45,14 +46,48 @@ Flags (env prefix `RBE_PROXY_`, falling back to `SEED_`):
   `https://<bucket>.storage.googleapis.com/`). Optional.
 - `--local_cache` — local disk cache directory, checked before the backend and
   populated from it. Optional.
+- `--local_put` — accept uploads with no `Authorization` header by writing them
+  only to the local cache, never forwarding them to the backend (requires
+  `--local_cache`). When unset, such uploads are rejected.
 - `--listen` — `[host]:port` or `unix:/path/to/socket` (matches Bazel's
   `--remote_proxy=unix:` form).
-- `--google_default_credentials` — attach an ADC bearer token to backend
-  requests. A client-supplied `Authorization` header is never overridden.
+- `--credential_helper` — command run to mint a backend bearer token, attached
+  to backend _reads_ (`GET`/`HEAD`) when the client sends no `Authorization`
+  header. A client-supplied header is never overridden. Empty leaves the backend
+  unauthenticated except for a client-supplied header.
+- `--credential_helper_format` — how to read the helper's stdout: empty uses it
+  as the bearer token verbatim (re-run every request, since a raw token carries
+  no expiry); `oauth2` parses it as a JSON `oauth2.Token` and reuses the access
+  token until it expires, then re-runs the helper to refresh.
 
 At least one of `--remote_cache` / `--local_cache` is required, giving three
 modes: pure forwarder, read-through/write-through, or self-contained local
 cache.
+
+## Authentication model
+
+The proxy authenticates to the backend asymmetrically, so that an
+unauthenticated client can read the shared cache but never write to it with the
+proxy's credentials:
+
+- **Reads (`GET`/`HEAD`).** A client `Authorization` header is forwarded
+  unchanged. If the client sends none, the proxy attaches a backend bearer token
+  from its `--credential_helper`, so unauthenticated clients still get
+  read-through hits from the backend. This keeps the backend credential inside
+  the proxy's trust domain — untrusted callers (CI jobs, dev machines) read the
+  cache without ever holding the key.
+- **Writes (`PUT`).** The proxy never lends its credential-helper token to a
+  write. An upload must carry the client's own `Authorization`; without it the
+  proxy forwards nothing to the backend, so an unauthenticated caller cannot
+  poison the shared cache. With `--local_put` such an upload is instead confined
+  to the local cache (never forwarded), so a local build can still populate the
+  read-through cache; without it the upload is rejected with `403`. Only
+  trusted, authenticated writers populate the backend. (Local-only mode has no
+  backend credential to protect and always writes locally.)
+
+Without `--local_put`, unauthenticated clients will see their cache uploads fail
+with `403`; set `--remote_upload_local_results=false` on those clients to skip
+the attempt and avoid the warning noise.
 
 ## Caveats
 
@@ -69,12 +104,14 @@ cache.
   rc options in file order, and the last value of a single-valued flag takes
   effect.
 
-- **GCS auth needs a service account, not user credentials.** With
-  `--google_default_credentials`, the proxy uses ADC. User credentials
-  (`gcloud auth application-default login`) are subject to org reauth policies
-  and fail non-interactively with `invalid_rapt`. Point
-  `GOOGLE_APPLICATION_CREDENTIALS` at a service-account key with
-  `roles/storage.objectAdmin` on the bucket.
+- **The backend token comes from `--credential_helper`.** The proxy runs the
+  configured helper to mint the backend bearer token (with
+  `--credential_helper_format=oauth2` it reuses the token until it expires, then
+  re-runs the helper to refresh). For a GCS backend the helper must yield a
+  token for an identity with `roles/storage.objectAdmin` on the bucket. Avoid
+  user credentials (`gcloud auth application-default login`): they are subject
+  to org reauth policies and fail non-interactively with `invalid_rapt`. Use a
+  service account or workload-identity federation instead.
 
 - **The local cache is not revalidated.** A local hit for `/ac/<hash>` is served
   without checking the backend. This is always safe for content-addressed
@@ -83,9 +120,10 @@ cache.
 
 - **The Unix socket is owner-only.** `listen` binds it `0700` (by tightening the
   umask around the bind, not a racy post-bind `chmod`). The socket is
-  unauthenticated but the proxy behind it holds ADC read/write to the shared
-  bucket, so a world-connectable socket would let any local user read and poison
-  the cache through the proxy's credentials.
+  unauthenticated, and the proxy lends its ADC token to reads, so a
+  world-connectable socket would let any local user read the shared bucket
+  through the proxy. Writes still require the caller's own `Authorization`, so
+  the proxy's credential cannot be used to poison the cache.
 
 - **CAS contents are not verified.** On `PUT /cas/<digest>` the proxy tees the
   body straight to the backend without checking that it hashes to `<digest>`, so
