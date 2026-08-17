@@ -9,6 +9,18 @@ layer_from_binary(
     path = "/opt/rbe/rbe-proxy-server",
 )
 
+layer_from_binary(
+    name = "opt_login_openid_credential_helper_layer",
+    binary = "//seed/cloud/login/tool/openid-credential-helper",
+    path = "/opt/login/openid-credential-helper",
+)
+
+layer_from_binary(
+    name = "opt_gcloud_credential_helper_layer",
+    binary = "//seed/cloud/gcloud/tool/gcloud-credential-helper",
+    path = "/opt/gcloud/gcloud-credential-helper",
+)
+
 passwd(
     name = "etc_passwd",
     entries = [
@@ -72,17 +84,17 @@ layer_from_tar(
 image_manifest(
     name = "container",
     base = "//seed/devprod/container/ubuntu:ubuntu",
-    config_fragment = "container.json",
+    entrypoint = ["/opt/rbe/rbe-proxy-server"],
     layers = [
         ":opt_rbe_layer",
+        ":opt_login_openid_credential_helper_layer",
+        ":opt_gcloud_credential_helper_layer",
         ":etc_passwd_layer",
         ":etc_group_layer",
         ":home_rbe_layer",
     ],
+    user = "rbe",
     visibility = ["//visibility:public"],
-    # Explicit override: opt_rbe_layer (layer_from_binary) sets working_dir to
-    # the binary's runfiles root, and layer config beats config_fragment. Only a
-    # rule attr wins over the layer, so working_dir stays here.
     working_dir = "/home/rbe",
 )
 
