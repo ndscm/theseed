@@ -1,0 +1,32 @@
+load("@rules_img//img:image.bzl", "image_manifest")
+load("@rules_img//img:layer.bzl", "layer_from_tar")
+load("@rules_img//img:load.bzl", "image_load")
+load("@rules_pkg//pkg:tar.bzl", "pkg_tar")
+
+pkg_tar(
+    name = "opt_rbe_credential_helper_tar",
+    files = {
+        "rbe-credential-helper.sh": "/opt/rbe/rbe-credential-helper.sh",
+        "gcloud-credentials.json": "/opt/rbe/gcloud-credentials.json",
+    },
+    mode = "0755",
+)
+
+layer_from_tar(
+    name = "opt_rbe_credential_helper_layer",
+    src = ":opt_rbe_credential_helper_tar",
+)
+
+image_manifest(
+    name = "container",
+    base = "//seed/devprod/rbe/proxy/container",
+    layers = [
+        ":opt_rbe_credential_helper_layer",
+    ],
+)
+
+image_load(
+    name = "load",
+    image = ":container",
+    tag = "ghcr.io/ndscm/seed-devprod-rbe-proxy-deploy-quadlet:latest",
+)

@@ -3,18 +3,21 @@ set -eux
 set -o pipefail
 cd "$(dirname "${BASH_SOURCE[0]}")/../../../../../.."
 
-server=${1:-"cache.rbe.ndscm.biz"}
-service_user=${2:-"rbe"}
+server="${1:-"cache.rbe.ndscm.biz"}"
+service_user="${2:-"rbe"}"
 port="${3:-"22243"}"
 remote_cache="${4:-"https://ndscm-prod-rbe-cache-prod.storage.googleapis.com/"}"
+set +x
+openid_client_secret="${5:-""}"
+set -x
 
 mount_cache=${MOUNT_CACHE:-"/mnt/data/rbe/cache"}
 
 # Stage the container image on the remote.
 bazel run --stamp \
   --@rules_img//img/settings:load_daemon=tar \
-  //seed/devprod/rbe/proxy/container:load |
-  ssh "${server}" "cat > ~/seed-devprod-rbe-proxy-container.tar"
+  //seed/devprod/rbe/proxy/deploy/quadlet:load |
+  ssh "${server}" "cat > ~/seed-devprod-rbe-proxy-deploy-quadlet.tar"
 
 # Deploy quadlet unit, then start the service.
 #
@@ -30,17 +33,34 @@ if ! id '${service_user}' &>/dev/null; then
   sudo loginctl enable-linger '${service_user}'
 fi
 "
+
+set +x
+if [[ -n "${openid_client_secret}" ]]; then
+  printf 'Updating openid client secret...' >&2
+  printf '%s' "${openid_client_secret}" | ssh "${server}" "cat >~/OPENID_CLIENT_SECRET"
+  ssh -t "${server}" "#!/usr/bin/env bash
+set -eux
+set -o pipefail
+
+sudo mv ~/OPENID_CLIENT_SECRET ~${service_user}/OPENID_CLIENT_SECRET
+sudo chown '${service_user}:${service_user}' ~${service_user}/OPENID_CLIENT_SECRET
+trap 'sudo rm -f ~${service_user}/OPENID_CLIENT_SECRET' EXIT
+sudo machinectl shell '${service_user}@' /bin/bash -c 'podman secret create --replace OPENID_CLIENT_SECRET ~/OPENID_CLIENT_SECRET'
+"
+fi
+set -x
+
 cat <<END | ssh "${server}" "cat > ~/install-rbe-proxy.sh"
 #!/usr/bin/env bash
 set -eux
 set -o pipefail
 
 printf 'Loading container image...\n' >&2
-sudo mv ~/seed-devprod-rbe-proxy-container.tar ~${service_user}/seed-devprod-rbe-proxy-container.tar
-sudo chown '${service_user}:${service_user}' ~${service_user}/seed-devprod-rbe-proxy-container.tar
-trap 'sudo rm -f ~${service_user}/seed-devprod-rbe-proxy-container.tar' EXIT
-sudo machinectl shell '${service_user}@' /bin/bash -c 'podman load --input ~/seed-devprod-rbe-proxy-container.tar'
-sudo machinectl shell '${service_user}@' /bin/bash -c 'podman image exists ghcr.io/ndscm/seed-devprod-rbe-proxy-container:latest'
+sudo mv ~/seed-devprod-rbe-proxy-deploy-quadlet.tar ~${service_user}/seed-devprod-rbe-proxy-deploy-quadlet.tar
+sudo chown '${service_user}:${service_user}' ~${service_user}/seed-devprod-rbe-proxy-deploy-quadlet.tar
+trap 'sudo rm -f ~${service_user}/seed-devprod-rbe-proxy-deploy-quadlet.tar' EXIT
+sudo machinectl shell '${service_user}@' /bin/bash -c 'podman load --input ~/seed-devprod-rbe-proxy-deploy-quadlet.tar'
+sudo machinectl shell '${service_user}@' /bin/bash -c 'podman image exists ghcr.io/ndscm/seed-devprod-rbe-proxy-deploy-quadlet:latest'
 
 printf 'Creating quadlets...\n' >&2
 service_user_home=\$(eval printf ~'${service_user}')
@@ -55,11 +75,12 @@ Description=RBE Proxy Container
 
 [Container]
 ContainerName=rbe-proxy
-Image=ghcr.io/ndscm/seed-devprod-rbe-proxy-container:latest
+Image=ghcr.io/ndscm/seed-devprod-rbe-proxy-deploy-quadlet:latest
 PidsLimit=-1
 RunInit=true
 Network=host
 EnvironmentFile=%S/rbe-proxy/env
+Secret=OPENID_CLIENT_SECRET
 Volume=${mount_cache}:/var/cache/rbe/cache:U,Z
 
 [Service]
@@ -74,7 +95,10 @@ EOF
 cat <<EOF | sudo tee "\${state_dir}/env"
 RBE_PROXY_REMOTE_CACHE=${remote_cache}
 RBE_PROXY_LOCAL_CACHE=/var/cache/rbe/cache
+RBE_PROXY_LOCAL_PUT=true
 RBE_PROXY_LISTEN=:${port}
+RBE_PROXY_CREDENTIAL_HELPER=/opt/rbe/rbe-credential-helper.sh
+RBE_PROXY_CREDENTIAL_HELPER_FORMAT=oauth2
 EOF
 
 printf 'Creating quadlet volumes...\n' >&2
