@@ -1,0 +1,23 @@
+{
+  "name": "gcloud",
+  "platforms": {
+    "linux-aarch64": {
+      "path": "google-cloud-sdk/bin/gcloud",
+      "format": "tar.gz",
+      "providers": [
+        {
+          "url": "https://storage.googleapis.com/cloud-sdk-release/google-cloud-cli-{{VERSION}}-linux-arm.tar.gz"
+        }
+      ]
+    },
+    "linux-x86_64": {
+      "path": "google-cloud-sdk/bin/gcloud",
+      "format": "tar.gz",
+      "providers": [
+        {
+          "url": "https://storage.googleapis.com/cloud-sdk-release/google-cloud-cli-{{VERSION}}-linux-x86_64.tar.gz"
+        }
+      ]
+    }
+  }
+}
