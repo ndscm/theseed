@@ -1,0 +1,22 @@
+load("@rules_go//go:def.bzl", "go_binary", "go_library")
+
+go_library(
+    name = "gcloud-credential-helper_lib",
+    srcs = ["main.go"],
+    importpath = "github.com/ndscm/theseed/seed/cloud/gcloud/tool/gcloud-credential-helper",
+    visibility = ["//visibility:private"],
+    deps = [
+        "//seed/infra/error/go/seederr",
+        "//seed/infra/flag/go/seedflag",
+        "//seed/infra/init/go/seedinit",
+        "//seed/infra/log/go/seedlog",
+        "@org_golang_x_oauth2//:oauth2",
+        "@org_golang_x_oauth2//google",
+    ],
+)
+
+go_binary(
+    name = "gcloud-credential-helper",
+    embed = [":gcloud-credential-helper_lib"],
+    visibility = ["//visibility:public"],
+)
