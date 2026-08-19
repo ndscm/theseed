@@ -2,6 +2,7 @@ syntax = "proto3";
 
 package seed.newtype.hooin.dictate.proto;
 
+import "google/protobuf/timestamp.proto";
 import "seed/newtype/gajetto/proto/brain.proto";
 
 option go_package = "github.com/ndscm/theseed/seed/newtype/hooin/dictate/proto/dictatepb";
@@ -51,6 +52,8 @@ message SendBrainInputRequest {
 // emitted while processing inputs associated with one or more persons.
 message SubscribeBrainStepRequest {
   repeated PersonTopic person_topics = 1;
+
+  google.protobuf.Timestamp since = 2;
 }
 
 // HooinDictateService is the external-facing side of the hooin portal.
