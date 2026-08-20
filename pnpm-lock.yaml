@@ -23,7 +23,7 @@ overrides:
   '@react-router/serve@catalog:': 7.18.2
   '@tailwindcss/vite@catalog:': 4.3.3
   '@trivago/prettier-plugin-sort-imports@catalog:': 6.0.2
-  '@types/debug@catalog:': 4.1.12
+  '@types/debug@catalog:': 4.1.13
   '@types/js-yaml@catalog:': 4.0.9
   '@types/node@catalog:': 25.6.0
   '@types/react-dom@catalog:': 19.2.4
@@ -347,8 +347,8 @@ importers:
         version: 4.1.1
     devDependencies:
       '@types/debug':
-        specifier: 4.1.12
-        version: 4.1.12
+        specifier: 4.1.13
+        version: 4.1.13
       '@types/js-yaml':
         specifier: 4.0.9
         version: 4.0.9
@@ -3042,8 +3042,8 @@ packages:
       svelte:
         optional: true
 
-  '@types/debug@4.1.12':
-    resolution: {integrity: sha512-vIChWdVG3LG1SMxEvI/AK+FWJthlrqlTu7fbrlywTkkaONwk/UAGaULXRlf8vkzFBLVm0zkMdCquhL5aOjhXPQ==}
+  '@types/debug@4.1.13':
+    resolution: {integrity: sha512-KSVgmQmzMwPlmtljOomayoR89W4FynCAi3E8PPs7vmDVPe84hT+vGPKkJfThkmXs0x0jAaa9U8uW8bbfyS2fWw==}
 
   '@types/estree@1.0.8':
     resolution: {integrity: sha512-dWHzHa2WqEXI/O1E9OjrocMTKJl2mSrEolh1Iomrv6U+JuNwaHXsXx9bLu5gG7BUWFIN0skIQJQ/L1rIex4X6w==}
@@ -7388,7 +7388,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@types/debug@4.1.12':
+  '@types/debug@4.1.13':
     dependencies:
       '@types/ms': 2.1.0
 
