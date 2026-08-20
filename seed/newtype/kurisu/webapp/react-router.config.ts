@@ -7,7 +7,7 @@ const DEFAULT_LANGUAGE = process.env.DEFAULT_LANGUAGE || "en"
 const BUILD_LANGUAGE = process.env.BUILD_LANGUAGE || DEFAULT_LANGUAGE
 
 export default {
-  basename: BUILD_LANGUAGE == DEFAULT_LANGUAGE ? "/" : `/${BUILD_LANGUAGE}`,
+  basename: BUILD_LANGUAGE == DEFAULT_LANGUAGE ? "/" : `/${BUILD_LANGUAGE}/`,
   buildDirectory: "dist/" + BUILD_LANGUAGE,
   ssr: false,
   prerender: true,
