@@ -5,7 +5,7 @@ settings:
   excludeLinksFromLockfile: false
 
 overrides:
-  '@ariga/atlas@catalog:': 1.2.0
+  '@ariga/atlas@catalog:': 1.3.1
   '@bufbuild/protobuf@catalog:': 2.14.0
   '@bufbuild/protoc-gen-es@catalog:': 2.14.0
   '@connectrpc/connect-node@catalog:': 2.1.2
@@ -76,8 +76,8 @@ importers:
   .:
     dependencies:
       '@ariga/atlas':
-        specifier: 1.2.0
-        version: 1.2.0
+        specifier: 1.3.1
+        version: 1.3.1
       '@bufbuild/protobuf':
         specifier: 2.14.0
         version: 2.14.0
@@ -953,8 +953,8 @@ importers:
 
 packages:
 
-  '@ariga/atlas@1.2.0':
-    resolution: {integrity: sha512-Seks3c8qWR8zDQdIj/k0PwX3VmUapVccbvuPaN/lKHXlTbg5zBUyM81TrsFcmjG3k8inaMpX4yJHFN8k9fLSoQ==}
+  '@ariga/atlas@1.3.1':
+    resolution: {integrity: sha512-ui7Yiuuxp0h8O7tMxvizo4roN6126H+nz3EABWh2ku7G175nGsQQHBuo2XIpzmRZADSDuhNjiKNg3h57YPlh7g==}
     engines: {node: '>=18.0.0'}
     hasBin: true
 
@@ -5040,7 +5040,7 @@ packages:
 
 snapshots:
 
-  '@ariga/atlas@1.2.0': {}
+  '@ariga/atlas@1.3.1': {}
 
   '@azu/format-text@1.0.2': {}
 
