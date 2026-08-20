@@ -9,11 +9,11 @@ allowBuilds:
   "protobufjs": true
 catalog:
   "@ariga/atlas": "^1.2.0"
-  "@bufbuild/protobuf": "^2.12.0"
-  "@bufbuild/protoc-gen-es": "^2.12.0"
-  "@connectrpc/connect": "^2.1.1"
-  "@connectrpc/connect-node": "^2.1.1"
-  "@connectrpc/connect-web": "^2.1.1"
+  "@bufbuild/protobuf": "^2.14.0"
+  "@bufbuild/protoc-gen-es": "^2.14.0"
+  "@connectrpc/connect": "^2.1.2"
+  "@connectrpc/connect-node": "^2.1.2"
+  "@connectrpc/connect-web": "^2.1.2"
   "@emotion/cache": "^11.14.0"
   "@emotion/react": "^11.14.0"
   "@emotion/styled": "^11.14.1"
@@ -76,11 +76,11 @@ catalog:
 overrides:
   # Avoid unexpected upgrade of direct dependencies
   "@ariga/atlas@catalog:": "1.2.0"
-  "@bufbuild/protobuf@catalog:": "2.12.0"
-  "@bufbuild/protoc-gen-es@catalog:": "2.12.0"
-  "@connectrpc/connect-node@catalog:": "2.1.1"
-  "@connectrpc/connect-web@catalog:": "2.1.1"
-  "@connectrpc/connect@catalog:": "2.1.1"
+  "@bufbuild/protobuf@catalog:": "2.14.0"
+  "@bufbuild/protoc-gen-es@catalog:": "2.14.0"
+  "@connectrpc/connect-node@catalog:": "2.1.2"
+  "@connectrpc/connect-web@catalog:": "2.1.2"
+  "@connectrpc/connect@catalog:": "2.1.2"
   "@emotion/cache@catalog:": "11.14.0"
   "@emotion/react@catalog:": "11.14.0"
   "@emotion/styled@catalog:": "11.14.1"
