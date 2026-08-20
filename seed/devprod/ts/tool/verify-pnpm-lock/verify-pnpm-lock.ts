@@ -2,7 +2,7 @@ import fs from "node:fs/promises"
 import process from "node:process"
 
 import DebugModule from "debug"
-import JsYaml from "js-yaml"
+import * as JsYaml from "js-yaml"
 
 const debug = DebugModule("verify-pnpm-lock")
 
