@@ -2,7 +2,7 @@ import crypto from "node:crypto"
 
 import { type Plugin, type ViteDevServer } from "vite"
 
-import { type OpenidConfiguration } from "../../../../../infra/auth/ts/openid"
+import { type OpenidConfiguration } from "../../../../../infra/auth/ts/dist/openid.js"
 
 const parseCookies = (header: string): Record<string, string> => {
   const result: Record<string, string> = {}
