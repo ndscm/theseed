@@ -2,8 +2,7 @@
   "name": "@theseed/seed-cloud-login-ts-vite-plugin-unsafe-dev-login",
   "version": "0.0.0",
   "private": true,
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "type": "module",
   "files": [
     "/dist"
   ],
