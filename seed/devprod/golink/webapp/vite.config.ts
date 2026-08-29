@@ -1,8 +1,7 @@
 import { reactRouter } from "@react-router/dev/vite"
 import { defineConfig } from "vite"
-import tsconfigPaths from "vite-tsconfig-paths"
 
-import unsafeDevLogin from "../../../cloud/login/ts/vite-plugin-unsafe-dev-login"
+import unsafeDevLogin from "../../../cloud/login/ts/vite-plugin-unsafe-dev-login/dist/index.js"
 
 const DEFAULT_LANGUAGE = process.env.DEFAULT_LANGUAGE || "en"
 const BUILD_LANGUAGE = process.env.BUILD_LANGUAGE || DEFAULT_LANGUAGE
@@ -12,11 +11,13 @@ export default defineConfig({
   plugins: [
     //sort
     reactRouter(),
-    tsconfigPaths(),
     unsafeDevLogin({ clientId: "webapp-dev" }),
   ],
   define: {
     BUILD_LANGUAGE: JSON.stringify(BUILD_LANGUAGE),
+  },
+  resolve: {
+    tsconfigPaths: true,
   },
   build: {
     assetsDir: ".assets",
