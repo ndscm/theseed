@@ -1,8 +1,7 @@
 import { reactRouter } from "@react-router/dev/vite"
 import { defineConfig } from "vite"
-import tsconfigPaths from "vite-tsconfig-paths"
 
-import unsafeDevLogin from "../../../cloud/login/ts/vite-plugin-unsafe-dev-login"
+import unsafeDevLogin from "../../../cloud/login/ts/vite-plugin-unsafe-dev-login/dist/index.js"
 
 const DEFAULT_LANGUAGE = process.env.DEFAULT_LANGUAGE || "en"
 const BUILD_LANGUAGE = process.env.BUILD_LANGUAGE || DEFAULT_LANGUAGE
@@ -12,7 +11,6 @@ export default defineConfig({
   plugins: [
     //sort
     reactRouter(),
-    tsconfigPaths(),
     unsafeDevLogin({ clientId: "webapp-dev" }),
   ],
   define: {
@@ -23,6 +21,7 @@ export default defineConfig({
       "opentype.js/dist/opentype.module.js": "opentype.js/dist/opentype.mjs",
       "opentype.js/dist/opentype.module": "opentype.js/dist/opentype.mjs",
     },
+    tsconfigPaths: true,
   },
   ssr: {
     noExternal: ["@univerjs/*"],
