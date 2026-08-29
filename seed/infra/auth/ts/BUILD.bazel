@@ -28,9 +28,7 @@ ts_project(
 js_library(
     name = "ts",
     srcs = [
-        "openid/index.d.ts",
-        "openid/index.js",
-        ":package.json",
+        "package.json",
     ],
     visibility = ["//visibility:public"],
     deps = [":ts_project"],
