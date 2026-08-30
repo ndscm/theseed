@@ -17,10 +17,6 @@ export default defineConfig({
     BUILD_LANGUAGE: JSON.stringify(BUILD_LANGUAGE),
   },
   resolve: {
-    alias: {
-      "opentype.js/dist/opentype.module.js": "opentype.js/dist/opentype.mjs",
-      "opentype.js/dist/opentype.module": "opentype.js/dist/opentype.mjs",
-    },
     tsconfigPaths: true,
   },
   ssr: {
