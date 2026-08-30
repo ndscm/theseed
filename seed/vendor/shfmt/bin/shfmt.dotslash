@@ -5,56 +5,56 @@
   "platforms": {
     "linux-aarch64": {
       "path": "shfmt",
-      "size": 3014818,
+      "size": 3342496,
       "hash": "blake3",
-      "digest": "a420d2abc7599f358f59c64dd8fc45b83739f9771610ce9df7febb8c6db416d3",
+      "digest": "f312dad84ff39fd18705fd645bc9b15af2e362f82c25f52595cd68807fd7fe03",
       "providers": [
         {
-          "url": "https://github.com/mvdan/sh/releases/download/v3.13.1/shfmt_v3.13.1_linux_arm64"
+          "url": "https://github.com/mvdan/sh/releases/download/v3.14.0/shfmt_v3.14.0_linux_arm64"
         }
       ]
     },
     "linux-x86_64": {
       "path": "shfmt",
-      "size": 3117218,
+      "size": 3567776,
       "hash": "blake3",
-      "digest": "1604fdcc6ff12355ff08004de88ab083b7e61a48517555d06b5cbd0d5b63fff2",
+      "digest": "c700a685341575c056991b1f595c6bb1be9062f0c67bdcb6f79e19323cad60c3",
       "providers": [
         {
-          "url": "https://github.com/mvdan/sh/releases/download/v3.13.1/shfmt_v3.13.1_linux_amd64"
+          "url": "https://github.com/mvdan/sh/releases/download/v3.14.0/shfmt_v3.14.0_linux_amd64"
         }
       ]
     },
     "macos-aarch64": {
       "path": "shfmt",
-      "size": 2975650,
+      "size": 3391650,
       "hash": "blake3",
-      "digest": "b205ddbbbae9aeed80f89f12b9d4c200a47bcafe8d9c3e56e8ef1f8a2a1af31e",
+      "digest": "b53d092d16a43225195a4971528c6a7526a372b2232f0952fb22cb32af6e9103",
       "providers": [
         {
-          "url": "https://github.com/mvdan/sh/releases/download/v3.13.1/shfmt_v3.13.1_darwin_arm64"
+          "url": "https://github.com/mvdan/sh/releases/download/v3.14.0/shfmt_v3.14.0_darwin_arm64"
         }
       ]
     },
     "macos-x86_64": {
       "path": "shfmt",
-      "size": 3124544,
+      "size": 3578208,
       "hash": "blake3",
-      "digest": "e397709bd38358a3d1a5c0c336cf3bf0088c3d27b8636b393f470b083f54005b",
+      "digest": "026364142c327460d1ab90abbce75a1fd4d172b29d889954ca2e31558b4d8fe0",
       "providers": [
         {
-          "url": "https://github.com/mvdan/sh/releases/download/v3.13.1/shfmt_v3.13.1_darwin_amd64"
+          "url": "https://github.com/mvdan/sh/releases/download/v3.14.0/shfmt_v3.14.0_darwin_amd64"
         }
       ]
     },
     "windows-x86_64": {
       "path": "shfmt.exe",
-      "size": 3323904,
+      "size": 3800576,
       "hash": "blake3",
-      "digest": "7fa40f925d72262bfe9c25f21146e63734bfaeedae2173ec877697740495235a",
+      "digest": "69e42503a7df78bf17e58c17ce5d5d7e6e357c79914c90828cd53636eeca1835",
       "providers": [
         {
-          "url": "https://github.com/mvdan/sh/releases/download/v3.13.1/shfmt_v3.13.1_windows_amd64.exe"
+          "url": "https://github.com/mvdan/sh/releases/download/v3.14.0/shfmt_v3.14.0_windows_amd64.exe"
         }
       ]
     }
