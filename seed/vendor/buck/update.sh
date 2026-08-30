@@ -3,8 +3,8 @@ set -eux
 set -o pipefail
 cd "$(dirname "${BASH_SOURCE[0]}")/../../.."
 
-buck2="${1:-"2026-05-01"}"
-reindeer="${2:-"v2026.04.27.00"}"
+buck2="${1:-"2026-08-22"}"
+reindeer="${2:-"v2026.08.24.00"}"
 
 bazel run //seed/devprod/dotslash/update -- \
   --skeleton "$(pwd)/seed/vendor/buck/buck2.dotslash.json" \
