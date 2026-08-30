@@ -3,7 +3,7 @@ set -eux
 set -o pipefail
 cd "$(dirname "${BASH_SOURCE[0]}")/../../.."
 
-kubectl="${1:-"v1.36.2"}"
+kubectl="${1:-"v1.37.0"}"
 minikube="${2:-"v1.38.1"}"
 
 bazel run //seed/devprod/dotslash/update -- \
