@@ -5,73 +5,61 @@
   "platforms": {
     "linux-aarch64": {
       "path": "bin/podman-remote-static-linux_arm64",
-      "size": 20912350,
+      "size": 21482036,
       "hash": "blake3",
-      "digest": "19dd8e6e9c52ec6d6f08ab7fd4871b35d73b3e2257ae6ab98e4ddfd37a59203a",
+      "digest": "b7b809ce97c7c23b9652c8299132cedd6721b3672b5ea7a569a2db3444d19487",
       "format": "tar.gz",
       "providers": [
         {
-          "url": "https://github.com/containers/podman/releases/download/v5.8.3/podman-remote-static-linux_arm64.tar.gz"
+          "url": "https://github.com/containers/podman/releases/download/v6.1.0/podman-remote-static-linux_arm64.tar.gz"
         }
       ]
     },
     "linux-x86_64": {
       "path": "bin/podman-remote-static-linux_amd64",
-      "size": 22770547,
+      "size": 23436817,
       "hash": "blake3",
-      "digest": "4d0a1b90eab5e88f90a16956e017facae454d68e98df5ac4c98c66c10acab172",
+      "digest": "5f7a0650ecda35e12acaded0b04c54ec95dbf017ac6bc4154d459c12e111071d",
       "format": "tar.gz",
       "providers": [
         {
-          "url": "https://github.com/containers/podman/releases/download/v5.8.3/podman-remote-static-linux_amd64.tar.gz"
+          "url": "https://github.com/containers/podman/releases/download/v6.1.0/podman-remote-static-linux_amd64.tar.gz"
         }
       ]
     },
     "macos-aarch64": {
-      "path": "podman-5.8.3/usr/bin/podman",
-      "size": 24737014,
+      "path": "podman-6.1.0/usr/bin/podman",
+      "size": 25374988,
       "hash": "blake3",
-      "digest": "d7b3ca59b2de487b77681d09cd59813fc27811b1d59de34e73aa5d0bed29547a",
+      "digest": "19a1976cd4ef2b3d4ee87a75854c0fe91c8e142a2285d8dd17051e8293cdb37f",
       "format": "zip",
       "providers": [
         {
-          "url": "https://github.com/containers/podman/releases/download/v5.8.3/podman-remote-release-darwin_arm64.zip"
-        }
-      ]
-    },
-    "macos-x86_64": {
-      "path": "podman-5.8.3/usr/bin/podman",
-      "size": 26228418,
-      "hash": "blake3",
-      "digest": "8d89db0e6f58b14f664ae1585c1856ae963420305f08e23e11cce23e175137cc",
-      "format": "zip",
-      "providers": [
-        {
-          "url": "https://github.com/containers/podman/releases/download/v5.8.3/podman-remote-release-darwin_amd64.zip"
+          "url": "https://github.com/containers/podman/releases/download/v6.1.0/podman-remote-release-darwin_arm64.zip"
         }
       ]
     },
     "windows-aarch64": {
-      "path": "podman-5.8.3/usr/bin/podman.exe",
-      "size": 28277399,
+      "path": "podman-6.1.0/usr/bin/podman.exe",
+      "size": 28606092,
       "hash": "blake3",
-      "digest": "3877c60c2cb740addadf7bdc2dbc4cde716134700b2414cafd6d83e66127f020",
+      "digest": "2069b6265c0b5a82ee66804f4b101a14612aa6940b8db445e4ace7c548ef1b8a",
       "format": "zip",
       "providers": [
         {
-          "url": "https://github.com/containers/podman/releases/download/v5.8.3/podman-remote-release-windows_arm64.zip"
+          "url": "https://github.com/containers/podman/releases/download/v6.1.0/podman-remote-release-windows_arm64.zip"
         }
       ]
     },
     "windows-x86_64": {
-      "path": "podman-5.8.3/usr/bin/podman.exe",
-      "size": 30946902,
+      "path": "podman-6.1.0/usr/bin/podman.exe",
+      "size": 31368755,
       "hash": "blake3",
-      "digest": "64dc05be6a7b0999d9b99079d2acced2362a99435bd81a10cc9d3f12e0df9a53",
+      "digest": "84a2bf181964624d390ab0db3547d0b62d4381e683a8cce79f1516b493ba9650",
       "format": "zip",
       "providers": [
         {
-          "url": "https://github.com/containers/podman/releases/download/v5.8.3/podman-remote-release-windows_amd64.zip"
+          "url": "https://github.com/containers/podman/releases/download/v6.1.0/podman-remote-release-windows_amd64.zip"
         }
       ]
     }

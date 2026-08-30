@@ -28,15 +28,6 @@
         }
       ]
     },
-    "macos-x86_64": {
-      "path": "podman-{{TAG}}/usr/bin/podman",
-      "format": "zip",
-      "providers": [
-        {
-          "url": "https://github.com/containers/podman/releases/download/v{{TAG}}/podman-remote-release-darwin_amd64.zip"
-        }
-      ]
-    },
     "windows-aarch64": {
       "path": "podman-{{TAG}}/usr/bin/podman.exe",
       "format": "zip",
