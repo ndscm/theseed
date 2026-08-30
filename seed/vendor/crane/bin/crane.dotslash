@@ -5,73 +5,73 @@
   "platforms": {
     "linux-aarch64": {
       "path": "crane",
-      "size": 14842040,
+      "size": 14516314,
       "hash": "blake3",
-      "digest": "2589081e4e672813f68a35027663d78710ad40eab1e1d5ea94a508e11d36f9b0",
+      "digest": "6ed7f47989399bb5861ac8f8ded895106b146b27bd93bb2039ec833705b6d8a9",
       "format": "tar.gz",
       "providers": [
         {
-          "url": "https://github.com/google/go-containerregistry/releases/download/v0.21.6/go-containerregistry_Linux_arm64.tar.gz"
+          "url": "https://github.com/google/go-containerregistry/releases/download/v0.22.0/go-containerregistry_Linux_arm64.tar.gz"
         }
       ]
     },
     "linux-x86_64": {
       "path": "crane",
-      "size": 16463798,
+      "size": 16075919,
       "hash": "blake3",
-      "digest": "49f5c13f94f8c093a2fdc77c7586eb703ece02e52ef517c6b0bc80eabe554f73",
+      "digest": "fc2938c7241a9c56e8b4d59e3fc25a97f6f3ecbe0a5bb3c3650bd2aef4745442",
       "format": "tar.gz",
       "providers": [
         {
-          "url": "https://github.com/google/go-containerregistry/releases/download/v0.21.6/go-containerregistry_Linux_x86_64.tar.gz"
+          "url": "https://github.com/google/go-containerregistry/releases/download/v0.22.0/go-containerregistry_Linux_x86_64.tar.gz"
         }
       ]
     },
     "macos-aarch64": {
       "path": "crane",
-      "size": 15439167,
+      "size": 15099540,
       "hash": "blake3",
-      "digest": "9a35c32c68bbd5a051fcc060c9939c75db19825bcde6c034b5303ca7bd1a2cb1",
+      "digest": "af474c0ef649bf41773e98e0ae060bff04b4a99046dc7b5fa232926b5b878511",
       "format": "tar.gz",
       "providers": [
         {
-          "url": "https://github.com/google/go-containerregistry/releases/download/v0.21.6/go-containerregistry_Darwin_arm64.tar.gz"
+          "url": "https://github.com/google/go-containerregistry/releases/download/v0.22.0/go-containerregistry_Darwin_arm64.tar.gz"
         }
       ]
     },
     "macos-x86_64": {
       "path": "crane",
-      "size": 16746300,
+      "size": 16337593,
       "hash": "blake3",
-      "digest": "1fddc045fbb623752ae01d01be86bb4e5f545826a06483b00f3761964fe3844f",
+      "digest": "78a33493a3605e7b3d6b806427437d92b43ef9b1d7478822d9c8e54b45c54225",
       "format": "tar.gz",
       "providers": [
         {
-          "url": "https://github.com/google/go-containerregistry/releases/download/v0.21.6/go-containerregistry_Darwin_x86_64.tar.gz"
+          "url": "https://github.com/google/go-containerregistry/releases/download/v0.22.0/go-containerregistry_Darwin_x86_64.tar.gz"
         }
       ]
     },
     "windows-aarch64": {
       "path": "crane.exe",
-      "size": 15047523,
+      "size": 14724405,
       "hash": "blake3",
-      "digest": "5ae0b550770ea3e82898bfcf8205c86ca43a1ec650d00b3ef361983f0249f340",
+      "digest": "93a5d055340294889fe2f685440eb360e3abe863442d1ebf0132e10aff4d585a",
       "format": "tar.gz",
       "providers": [
         {
-          "url": "https://github.com/google/go-containerregistry/releases/download/v0.21.6/go-containerregistry_Windows_arm64.tar.gz"
+          "url": "https://github.com/google/go-containerregistry/releases/download/v0.22.0/go-containerregistry_Windows_arm64.tar.gz"
         }
       ]
     },
     "windows-x86_64": {
       "path": "crane.exe",
-      "size": 16936314,
+      "size": 16537478,
       "hash": "blake3",
-      "digest": "1c8b0b4cd95c62b3eac3edc61205698aa9b7fc7e875fc5d72b1af1d07cdc44d2",
+      "digest": "8b4a0844dd7b5730d02bac27e1ed4a27450e4506ac82f382ca3e2e8b540ab007",
       "format": "tar.gz",
       "providers": [
         {
-          "url": "https://github.com/google/go-containerregistry/releases/download/v0.21.6/go-containerregistry_Windows_x86_64.tar.gz"
+          "url": "https://github.com/google/go-containerregistry/releases/download/v0.22.0/go-containerregistry_Windows_x86_64.tar.gz"
         }
       ]
     }
