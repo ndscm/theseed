@@ -2,6 +2,7 @@
   "exclude": [
     "**/__pycache__",
     "**/.*",
+    "**/.venv",
     "**/bazel-bin",
     "**/bazel-out",
     "**/bazel-testlogs",
