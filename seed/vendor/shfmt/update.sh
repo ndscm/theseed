@@ -3,7 +3,7 @@ set -eux
 set -o pipefail
 cd "$(dirname "${BASH_SOURCE[0]}")/../../.."
 
-tag="${1:-"v3.13.1"}"
+tag="${1:-"v3.14.0"}"
 
 bazel run //seed/devprod/dotslash/update -- \
   --skeleton "$(pwd)/seed/vendor/shfmt/shfmt.dotslash.json" \
