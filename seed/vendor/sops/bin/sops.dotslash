@@ -7,65 +7,65 @@
       "path": "sops",
       "size": 48300194,
       "hash": "blake3",
-      "digest": "c0a616fe478bf308aab71a1306914b5f17cdeeef5e40e8658d7c68a51eb845e6",
+      "digest": "9213c5ad5ce6b89d14b34c67191a4aa6887283b89b057950915f50db03312037",
       "providers": [
         {
-          "url": "https://github.com/getsops/sops/releases/download/v3.13.2/sops-v3.13.2.linux.arm64"
+          "url": "https://github.com/getsops/sops/releases/download/v3.13.3/sops-v3.13.3.linux.arm64"
         }
       ]
     },
     "linux-x86_64": {
       "path": "sops",
-      "size": 52129954,
+      "size": 52121762,
       "hash": "blake3",
-      "digest": "05867fac4425aa864d40212f4e0f707fb32184ed4c5acd5460b3b7e3e072dfc1",
+      "digest": "2e0d82a8f6389f7a5340c187bc86eeefc9b4cf06b7a4604bbdbc32a5346bb052",
       "providers": [
         {
-          "url": "https://github.com/getsops/sops/releases/download/v3.13.2/sops-v3.13.2.linux.amd64"
+          "url": "https://github.com/getsops/sops/releases/download/v3.13.3/sops-v3.13.3.linux.amd64"
         }
       ]
     },
     "macos-aarch64": {
       "path": "sops",
-      "size": 50122210,
+      "size": 50168146,
       "hash": "blake3",
-      "digest": "0816efdf75cb3d59bf1e663cab3d81b79eeabe5af55b1fd90b56620ebc3c6004",
+      "digest": "b8f673ec1ffffe8afe7a73bca84ca150e1fd63c200da0f786456faa39e9c2d60",
       "providers": [
         {
-          "url": "https://github.com/getsops/sops/releases/download/v3.13.2/sops-v3.13.2.darwin.arm64"
+          "url": "https://github.com/getsops/sops/releases/download/v3.13.3/sops-v3.13.3.darwin.arm64"
         }
       ]
     },
     "macos-x86_64": {
       "path": "sops",
-      "size": 53666192,
+      "size": 53674896,
       "hash": "blake3",
-      "digest": "ef623420ac2a8ecf614e6c361b2ceb789e7d305187c662950df4534b00cb0112",
+      "digest": "1dce484327fb525c5a1fc395664b519db2221bd1d281cc9314cfc52e38b4e349",
       "providers": [
         {
-          "url": "https://github.com/getsops/sops/releases/download/v3.13.2/sops-v3.13.2.darwin.amd64"
+          "url": "https://github.com/getsops/sops/releases/download/v3.13.3/sops-v3.13.3.darwin.amd64"
         }
       ]
     },
     "windows-aarch64": {
       "path": "sops.exe",
-      "size": 48925696,
+      "size": 48963072,
       "hash": "blake3",
-      "digest": "c4eb3bc5626a43da4af0b76a31d58b5edcb8ede82398265bd128b610c319b74c",
+      "digest": "2f65a553a088f6a9d7b37648800ea1bb50cdaebfa23ca5ca10cf7e77ca354565",
       "providers": [
         {
-          "url": "https://github.com/getsops/sops/releases/download/v3.13.2/sops-v3.13.2.arm64.exe"
+          "url": "https://github.com/getsops/sops/releases/download/v3.13.3/sops-v3.13.3.arm64.exe"
         }
       ]
     },
     "windows-x86_64": {
       "path": "sops.exe",
-      "size": 53494784,
+      "size": 53497856,
       "hash": "blake3",
-      "digest": "da3d23a20fcddbbcff8ffaf1597ba70dea45ea2ab30af164b5859176e441b993",
+      "digest": "f0116aa44a3d13fc2877eb3fc0ff0083c888c8147528c70b2c73a9b152a2903c",
       "providers": [
         {
-          "url": "https://github.com/getsops/sops/releases/download/v3.13.2/sops-v3.13.2.amd64.exe"
+          "url": "https://github.com/getsops/sops/releases/download/v3.13.3/sops-v3.13.3.amd64.exe"
         }
       ]
     }
