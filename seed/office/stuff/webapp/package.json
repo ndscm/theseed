@@ -56,6 +56,7 @@
     "react-dom": "catalog:",
     "react-i18next": "catalog:",
     "react-router": "catalog:",
+    "rxjs": "catalog:",
     "typescript": "catalog:",
     "vite": "catalog:",
     "vite-tsconfig-paths": "catalog:"
