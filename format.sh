@@ -1,6 +1,0 @@
-#!/usr/bin/env bash
-set -eux
-set -o pipefail
-cd "$(dirname "${BASH_SOURCE[0]}")"
-
-ndscm format
