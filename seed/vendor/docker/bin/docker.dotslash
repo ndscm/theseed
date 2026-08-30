@@ -5,61 +5,61 @@
   "platforms": {
     "linux-aarch64": {
       "path": "docker/docker",
-      "size": 78118790,
+      "size": 77323501,
       "hash": "blake3",
-      "digest": "520212ad1af41edb3d644f29a8275b1c56924a6453b174376829caf7f2d21cda",
+      "digest": "566fb46bc1035deb5d1bef9529a45fa1fb0c4a3e3ad62c3c40a1479fbd4743c6",
       "format": "tar.gz",
       "providers": [
         {
-          "url": "https://download.docker.com/linux/static/stable/aarch64/docker-29.5.3.tgz"
+          "url": "https://download.docker.com/linux/static/stable/aarch64/docker-29.7.2.tgz"
         }
       ]
     },
     "linux-x86_64": {
       "path": "docker/docker",
-      "size": 86681999,
+      "size": 85700518,
       "hash": "blake3",
-      "digest": "7ae13893cd1fd46f955d551a258b1c57b2de87d402ea80e7486a1db75de1538b",
+      "digest": "89d808dcd84f4fa20664091dfd1eec4e1aab00d32ec84fec8286f2030712ce6a",
       "format": "tar.gz",
       "providers": [
         {
-          "url": "https://download.docker.com/linux/static/stable/x86_64/docker-29.5.3.tgz"
+          "url": "https://download.docker.com/linux/static/stable/x86_64/docker-29.7.2.tgz"
         }
       ]
     },
     "macos-aarch64": {
       "path": "docker/docker",
-      "size": 18712719,
+      "size": 18920558,
       "hash": "blake3",
-      "digest": "a2b494bf21c79d16c2ee7c33645a323f6dabc8b76b21fecb3bc50ddee2e39ea1",
+      "digest": "c8ca1f8853af6be97265b4a9ea68a3edc34cf844d4a7485a9420fd574ad3404a",
       "format": "tar.gz",
       "providers": [
         {
-          "url": "https://download.docker.com/mac/static/stable/aarch64/docker-29.5.3.tgz"
+          "url": "https://download.docker.com/mac/static/stable/aarch64/docker-29.7.2.tgz"
         }
       ]
     },
     "macos-x86_64": {
       "path": "docker/docker",
-      "size": 19928870,
+      "size": 20157447,
       "hash": "blake3",
-      "digest": "23e5e4ee9644ea24c2cc1f6f2d6e66a6508d97f49f2b479a56ae81c52a0dfdb5",
+      "digest": "bf0cb51dedcd728a45b9802e7c72ec080bc08ae41bd744adf9a16803fe691d58",
       "format": "tar.gz",
       "providers": [
         {
-          "url": "https://download.docker.com/mac/static/stable/x86_64/docker-29.5.3.tgz"
+          "url": "https://download.docker.com/mac/static/stable/x86_64/docker-29.7.2.tgz"
         }
       ]
     },
     "windows-x86_64": {
       "path": "docker/docker.exe",
-      "size": 47155020,
+      "size": 48486467,
       "hash": "blake3",
-      "digest": "ff031c9d1ea4b2194067f82d424c1a4a09f4d9ecd2df3b85e79c46a9495c73ea",
+      "digest": "fd6503f2755a0cb6f3723aeedd94b3bb674fe524f238014bfc4ccc4bad0a9556",
       "format": "zip",
       "providers": [
         {
-          "url": "https://download.docker.com/win/static/stable/x86_64/docker-29.5.3.zip"
+          "url": "https://download.docker.com/win/static/stable/x86_64/docker-29.7.2.zip"
         }
       ]
     }

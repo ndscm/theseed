@@ -3,7 +3,7 @@ set -eux
 set -o pipefail
 cd "$(dirname "${BASH_SOURCE[0]}")/../../.."
 
-tag="${1:-"29.5.3"}"
+tag="${1:-"29.7.2"}"
 
 bazel run //seed/devprod/dotslash/update -- \
   --skeleton "$(pwd)/seed/vendor/docker/docker.dotslash.json" \
