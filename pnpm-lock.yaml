@@ -63,6 +63,7 @@ overrides:
   'react-router@catalog:': 8.3.1
   'react@catalog:': 19.2.8
   'rollup@catalog:': 4.62.4
+  'rxjs@catalog:': 7.8.2
   'tailwind-merge@catalog:': 3.6.0
   'tailwindcss@catalog:': 4.3.3
   'tslib@catalog:': 2.8.1
