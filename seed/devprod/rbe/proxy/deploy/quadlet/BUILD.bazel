@@ -23,6 +23,7 @@ image_manifest(
     layers = [
         ":opt_rbe_credential_helper_layer",
     ],
+    platform = "//seed/devprod/platform:linux-x64",
 )
 
 image_load(
