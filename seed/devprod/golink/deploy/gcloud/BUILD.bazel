@@ -17,6 +17,7 @@ image_manifest(
     layers = [
         ":opt_golink_openid_issuers_layer",
     ],
+    platform = "//seed/devprod/platform:linux-x64",
 )
 
 image_load(
