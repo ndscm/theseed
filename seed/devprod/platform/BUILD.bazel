@@ -1,3 +1,7 @@
+package(default_visibility = [
+    "//visibility:public",
+])
+
 platform(
     name = "android-arm32",
     constraint_values = [
@@ -26,6 +30,38 @@ platform(
     name = "android-x64",
     constraint_values = [
         "@platforms//os:android",
+        "@platforms//cpu:x86_64",
+    ],
+)
+
+platform(
+    name = "linux-arm32",
+    constraint_values = [
+        "@platforms//os:linux",
+        "@platforms//cpu:armv7",
+    ],
+)
+
+platform(
+    name = "linux-arm64",
+    constraint_values = [
+        "@platforms//os:linux",
+        "@platforms//cpu:aarch64",
+    ],
+)
+
+platform(
+    name = "linux-x86",
+    constraint_values = [
+        "@platforms//os:linux",
+        "@platforms//cpu:x86_32",
+    ],
+)
+
+platform(
+    name = "linux-x64",
+    constraint_values = [
+        "@platforms//os:linux",
         "@platforms//cpu:x86_64",
     ],
 )
