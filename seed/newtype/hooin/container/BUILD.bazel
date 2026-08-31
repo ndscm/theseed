@@ -2,6 +2,7 @@ load("@rules_distroless//distroless:defs.bzl", "group", "home", "passwd")
 load("@rules_img//img:image.bzl", "image_manifest")
 load("@rules_img//img:layer.bzl", "layer_from_binary", "layer_from_tar")
 load("@rules_img//img:load.bzl", "image_load")
+load("//seed/devprod/container/starlark:transition.bzl", "layer_linux_x64")
 
 # Debug tooling (gnupg2, lsb-release) resolved as .debs by rules_distroless.
 # `curl` already ships in the ubuntu base, so it is not repeated here. See
@@ -9,6 +10,12 @@ load("@rules_img//img:load.bzl", "image_load")
 layer_from_tar(
     name = "apt_layer",
     src = "@seed_newtype_hooin_container_apt//:flat",
+    target_compatible_with = ["@platforms//os:linux"],
+)
+
+layer_linux_x64(
+    name = "apt_layer_linux_x64",
+    actual = ":apt_layer",
 )
 
 layer_from_binary(
@@ -87,12 +94,13 @@ image_manifest(
     base = "//seed/devprod/container/ubuntu:ubuntu",
     config_fragment = "container.json",
     layers = [
-        ":apt_layer",
+        ":apt_layer_linux_x64",
         ":opt_hooin_layer",
         ":etc_passwd_layer",
         ":etc_group_layer",
         ":home_hooin_layer",
     ],
+    platform = "//seed/devprod/platform:linux-x64",
     visibility = ["//visibility:public"],
     # Explicit override: opt_hooin_layer (layer_from_binary) sets working_dir
     # to the binary's runfiles root, and layer config beats config_fragment.
