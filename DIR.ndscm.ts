@@ -101,11 +101,7 @@ export default {
         "gazelle_python_modules_mapping_darwin.json",
         "gazelle_python_modules_mapping_linux.json",
       ],
-      watch: [
-        "^pyproject.toml$",
-        "^requirements_darwin.txt$",
-        "^requirements.txt$",
-      ],
+      watch: ["^pyproject.toml$", "^requirements.txt$"],
       run: "bazel run //seed/devprod/python/modules_mapping:generate",
     },
     gazelle_python: {
@@ -149,9 +145,9 @@ export default {
       run: 'bazel run @pnpm//:pnpm -- --dir "$(pwd)" install',
     },
     requirements: {
-      target: ["requirements.txt", "requirements_darwin.txt"],
-      watch: "^pyproject.toml$",
-      run: 'uv sync; if [[ "$(uname)" == "Darwin" ]]; then uv pip freeze --color never >./requirements_darwin.txt; else uv pip freeze --color never >./requirements.txt; fi',
+      target: "requirements.txt",
+      watch: "^uv.lock$",
+      run: "uv sync && uv export --format requirements-txt > ./requirements.txt",
     },
     uv: {
       target: "uv.lock",
