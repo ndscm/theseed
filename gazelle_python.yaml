@@ -180,6 +180,10 @@ manifest:
     mypy_extensions: mypy_extensions
     networkx: networkx
     numpy: numpy
+    nvidia.cu13.lib.libcheckpoint: nvidia_cuda_cupti
+    nvidia.cu13.lib.libnvperf_host: nvidia_cuda_cupti
+    nvidia.cu13.lib.libnvperf_target: nvidia_cuda_cupti
+    nvidia.cu13.lib.libpcsamplingutil: nvidia_cuda_cupti
     oauthlib: oauthlib
     objc: pyobjc_core
     openai: openai
@@ -262,4 +266,4 @@ manifest:
     zipp: zipp
   pip_repository:
     name: pypi
-integrity: 114b35797d2e1f39ddd2c4ed11028c403566b4400e50cfe57293bf22127fc7e0
+integrity: d62535a90599c1e138a079e9682f1c0e7145679a108c362b3fc651eae6175208
