@@ -11,6 +11,22 @@ Based on https://github.com/aspect-build/rules_js/blob/v3.1.0/js/private/js_run_
 
 load("@aspect_rules_js//js:providers.bzl", "JsInfo")
 
+# The webapp bundler (e.g. react-router/rolldown) is a `cfg = "exec"` tool, so it
+# runs on the host/exec platform and loads its native bindings for that platform.
+# Its inputs (srcs + node_modules), however, are built in the target platform,
+# which in this repo defaults to linux/amd64. On a non-linux host that mismatch
+# is fatal: node resolves the target-config node_modules and finds a linux
+# binding it can't load. The build output is platform-independent JS, so force
+# the whole action into the host platform to match the tool that processes it.
+def _host_platform_transition_impl(_settings, _attr):
+    return {"//command_line_option:platforms": str(_settings["//command_line_option:host_platform"])}
+
+_host_platform_transition = transition(
+    implementation = _host_platform_transition_impl,
+    inputs = ["//command_line_option:host_platform"],
+    outputs = ["//command_line_option:platforms"],
+)
+
 def _js_run_binary_tar_impl(ctx):
     out_dir = ctx.actions.declare_directory(ctx.attr.out_dir)
     out_tar = ctx.actions.declare_file(ctx.attr.out_tar)
@@ -94,7 +110,11 @@ _js_run_binary_tar = rule(
             executable = True,
             cfg = "exec",
         ),
+        "_allowlist_function_transition": attr.label(
+            default = "@bazel_tools//tools/allowlists/function_transition_allowlist",
+        ),
     },
+    cfg = _host_platform_transition,
     doc = "Runs a js_binary tool and archives its output directory into a tarball.",
 )
 
