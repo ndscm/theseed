@@ -16,6 +16,6 @@ py_library(
     name = "mcp_client",
     srcs = ["mcp_client.py"],
     deps = [
-        "@pypi//fastmcp",
+        "@pypi//fastmcp_slim",
     ],
 )
