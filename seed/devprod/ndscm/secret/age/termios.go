@@ -10,19 +10,19 @@ import (
 // the previous terminal state. Canonical line editing is preserved, so the
 // secret can still be typed and edited; it simply does not appear on screen.
 func disableEcho(fd uintptr) (func(), error) {
-	termios, err := unix.IoctlGetTermios(int(fd), unix.TCGETS)
+	termios, err := unix.IoctlGetTermios(int(fd), ioctlGetTermios)
 	if err != nil {
 		return nil, seederr.Wrap(err)
 	}
 	restore := func() {
-		err := unix.IoctlSetTermios(int(fd), unix.TCSETS, termios)
+		err := unix.IoctlSetTermios(int(fd), ioctlSetTermios, termios)
 		if err != nil {
 			seedlog.Warnf("failed to restore terminal echo: %v", err)
 		}
 	}
 	updated := *termios
 	updated.Lflag &^= unix.ECHO
-	err = unix.IoctlSetTermios(int(fd), unix.TCSETS, &updated)
+	err = unix.IoctlSetTermios(int(fd), ioctlSetTermios, &updated)
 	if err != nil {
 		return nil, seederr.Wrap(err)
 	}
