@@ -84,6 +84,7 @@ image_manifest(
         ":etc_group_layer",
         ":home_kurisu_layer",
     ],
+    platform = "//seed/devprod/platform:linux-x64",
     visibility = ["//visibility:public"],
     # Explicit override: opt_kurisu_layer (layer_from_binary) sets working_dir
     # to the binary's runfiles root, and layer config beats config_fragment.

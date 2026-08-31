@@ -5,6 +5,7 @@ image_manifest(
     name = "prod",
     base = "//seed/newtype/kurisu/container",
     config_fragment = "prod.json",
+    platform = "//seed/devprod/platform:linux-x64",
 )
 
 image_load(
