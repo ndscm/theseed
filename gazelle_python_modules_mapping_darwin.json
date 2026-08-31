@@ -27,7 +27,6 @@
   "attr": "attrs",
   "attrs": "attrs",
   "authlib": "authlib",
-  "backports": "backports.tarfile",
   "beartype": "beartype",
   "bs4": "beautifulsoup4",
   "bson": "pymongo",
