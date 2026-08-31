@@ -4,10 +4,17 @@ load("@rules_img//img:layer.bzl", "layer_from_tar")
 load("@rules_img//img:load.bzl", "image_load")
 load("//seed/devprod/container/starlark:apt.bzl", "apt_mirror")
 load("//seed/devprod/container/starlark:container.bzl", "build_freedom_image")
+load("//seed/devprod/container/starlark:transition.bzl", "layer_linux_x64")
 
 layer_from_tar(
     name = "2604_apt_layer",
     src = "@seed_devprod_container_ubuntu_2604_apt//:flat",
+    target_compatible_with = ["@platforms//os:linux"],
+)
+
+layer_linux_x64(
+    name = "2604_apt_layer_linux_x64",
+    actual = ":2604_apt_layer",
 )
 
 # rules_distroless installs the `ca-certificates` .deb but does not run its
@@ -16,11 +23,18 @@ layer_from_tar(
 cacerts(
     name = "2604_cacerts",
     package = "@seed_devprod_container_ubuntu_2604_apt//ca-certificates:data",
+    target_compatible_with = ["@platforms//os:linux"],
 )
 
 layer_from_tar(
     name = "2604_cacerts_layer",
     src = ":2604_cacerts",
+    target_compatible_with = ["@platforms//os:linux"],
+)
+
+layer_linux_x64(
+    name = "2604_cacerts_layer_linux_x64",
+    actual = ":2604_cacerts_layer",
 )
 
 image_manifest(
@@ -32,9 +46,10 @@ image_manifest(
         "LC_ALL": "C.UTF-8",
     },
     layers = [
-        ":2604_apt_layer",
-        ":2604_cacerts_layer",
+        ":2604_apt_layer_linux_x64",
+        ":2604_cacerts_layer_linux_x64",
     ],
+    platform = "//seed/devprod/platform:linux-x64",
     visibility = ["//visibility:public"],
 )
 
