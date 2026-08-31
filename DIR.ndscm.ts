@@ -101,12 +101,20 @@ export default {
         "gazelle_python_modules_mapping_darwin.json",
         "gazelle_python_modules_mapping_linux.json",
       ],
-      watch: "^pyproject.toml$",
+      watch: [
+        "^pyproject.toml$",
+        "^requirements_darwin.txt$",
+        "^requirements.txt$",
+      ],
       run: "bazel run //seed/devprod/python/modules_mapping:generate",
     },
     gazelle_python: {
       target: "gazelle_python.yaml",
-      watch: "^pyproject.toml$",
+      watch: [
+        "^gazelle_python_modules_mapping_darwin.json$",
+        "^gazelle_python_modules_mapping_linux.json$",
+        "^pyproject.toml$",
+      ],
       run: "bazel run //:gazelle_python_manifest.update",
     },
     gazelle_build: {
