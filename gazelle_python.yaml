@@ -6,6 +6,7 @@
 ---
 manifest:
   modules_mapping:
+    24eba0d76380778f559b__mypyc: isort
     81d243bd2c585b0f4821__mypyc: charset_normalizer
     AppKit: pyobjc_framework_cocoa
     ApplicationServices: pyobjc_framework_applicationservices
@@ -50,7 +51,6 @@ manifest:
     cuda.pathfinder: cuda_pathfinder
     cyclopts: cyclopts
     dateutil: python_dateutil
-    distro: distro
     dns: dnspython
     docstring_parser: docstring_parser
     docutils: docutils
@@ -59,7 +59,7 @@ manifest:
     evdev: evdev
     exceptiongroup: exceptiongroup
     fastapi: fastapi
-    fastmcp: fastmcp
+    fastmcp: fastmcp_slim
     filelock: filelock
     fsspec: fsspec
     functorch: torch
@@ -141,13 +141,15 @@ manifest:
     googlesearch: google
     greenlet: greenlet
     gridfs: pymongo
+    griffe: griffelib
     grpc: grpcio
     grpc_tools: grpcio_tools
     h11: h11
     httpcore: httpcore
+    httpcore2: httpcore2
     httplib2: httplib2
     httpx: httpx
-    httpx_sse: httpx_sse
+    httpx2: httpx2
     idna: idna
     importlib_metadata: importlib_metadata
     intervaltree: intervaltree
@@ -159,6 +161,7 @@ manifest:
     jeepney: jeepney
     jinja2: jinja2
     jiter: jiter
+    joserfc: joserfc
     jsonref: jsonref
     jsonschema: jsonschema
     jsonschema_path: jsonschema_path
@@ -169,11 +172,13 @@ manifest:
     markdown_it: markdown_it_py
     markupsafe: markupsafe
     mcp: mcp
+    mcp_types: mcp_types
     mdurl: mdurl
     more_itertools: more_itertools
     mouseinfo: mouseinfo
     mpmath: mpmath
     multipart: python_multipart
+    mypy_extensions: mypy_extensions
     networkx: networkx
     numpy: numpy
     oauthlib: oauthlib
@@ -244,8 +249,8 @@ manifest:
     sympy: sympy
     torch: torch
     torchgen: torch
-    tqdm: tqdm
     triton: triton
+    truststore: truststore
     typing_extensions: typing_extensions
     typing_inspection: typing_inspection
     uncalled_for: uncalled_for
@@ -258,4 +263,4 @@ manifest:
     zipp: zipp
   pip_repository:
     name: pypi
-integrity: a43e0b301067291b671a97f8081af577bec0b7736064bdd3f7a7e8f2e7094e1c
+integrity: 4250635edc802edd000cce0ecea27fecd72dce44f749d57395c3325e804edc2f
