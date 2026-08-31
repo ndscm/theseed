@@ -23,6 +23,10 @@ go_test(
     name = "playpen_test",
     srcs = ["simple_file_system_test.go"],
     embed = [":playpen"],
+    # The shim runs the production scripts on the host; they use GNU coreutils
+    # (`stat --printf`, `find -printf`, ...) at /usr/bin, as in the container.
+    # macOS ships BSD tools in /bin, so this only passes on Linux.
+    target_compatible_with = ["@platforms//os:linux"],
     deps = [
         "//seed/infra/error/go/seederr",
         "@org_golang_google_grpc//codes",
