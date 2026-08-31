@@ -35,7 +35,6 @@ manifest:
     attr: attrs
     attrs: attrs
     authlib: authlib
-    backports: backports.tarfile
     beartype: beartype
     bs4: beautifulsoup4
     bson: pymongo
@@ -263,4 +262,4 @@ manifest:
     zipp: zipp
   pip_repository:
     name: pypi
-integrity: 4250635edc802edd000cce0ecea27fecd72dce44f749d57395c3325e804edc2f
+integrity: 114b35797d2e1f39ddd2c4ed11028c403566b4400e50cfe57293bf22127fc7e0
