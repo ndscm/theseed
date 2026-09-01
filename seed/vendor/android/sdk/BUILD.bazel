@@ -1,4 +1,5 @@
 exports_files([
+    "repository2-3.xml",
     "rules_android_ndk.patch",
     "rules_android.patch",
 ])
