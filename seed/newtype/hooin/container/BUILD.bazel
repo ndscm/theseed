@@ -6,7 +6,8 @@ load("//seed/devprod/container/starlark:transition.bzl", "layer_linux_x64")
 
 # Debug tooling (gnupg2, lsb-release) resolved as .debs by rules_distroless.
 # `curl` already ships in the ubuntu base, so it is not repeated here. See
-# apt.yaml for the package list and how to regenerate apt.lock.json.
+# apt.MODULE.bazel for the package list; resolution is pinned in
+# MODULE.bazel.lock.
 layer_from_tar(
     name = "apt_layer",
     src = "@seed_newtype_hooin_container_apt//:flat",
