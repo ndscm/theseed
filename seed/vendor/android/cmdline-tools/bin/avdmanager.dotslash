@@ -1,0 +1,43 @@
+#!/usr/bin/env dotslash
+
+{
+  "name": "avdmanager",
+  "platforms": {
+    "linux-x86_64": {
+      "path": "cmdline-tools/bin/avdmanager",
+      "size": 181833628,
+      "hash": "blake3",
+      "digest": "93c43ac104da91b9c856ec482164ff04a40e876249e3157e4ae1d95400e9287e",
+      "format": "zip",
+      "providers": [
+        {
+          "url": "https://dl.google.com/android/repository/commandlinetools-linux-15859902_latest.zip"
+        }
+      ]
+    },
+    "macos-aarch64": {
+      "path": "cmdline-tools/bin/avdmanager",
+      "size": 156083281,
+      "hash": "blake3",
+      "digest": "0cb28effe0d09299a3e54221b4f51bb7c4e6697c04b722d1effd5d4ed13b4f01",
+      "format": "zip",
+      "providers": [
+        {
+          "url": "https://dl.google.com/android/repository/commandlinetools-mac_arm64-15859902_latest.zip"
+        }
+      ]
+    },
+    "windows-x86_64": {
+      "path": "cmdline-tools/bin/avdmanager",
+      "size": 155655386,
+      "hash": "blake3",
+      "digest": "5c684ed7acdc1cf5c879cce7c6377265d7aaa4987cdf8c024bca8e0c3a0ff65a",
+      "format": "zip",
+      "providers": [
+        {
+          "url": "https://dl.google.com/android/repository/commandlinetools-win-15859902_latest.zip"
+        }
+      ]
+    }
+  }
+}
