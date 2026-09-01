@@ -12,11 +12,11 @@ version: 1
 
 sources:
   - channel: resolute main
-    url: https://snapshot.ubuntu.com/ubuntu/20260701T000000Z
+    url: https://snapshot.ubuntu.com/ubuntu/20260901T000000Z
   - channel: resolute-security main
-    url: https://snapshot.ubuntu.com/ubuntu/20260701T000000Z
+    url: https://snapshot.ubuntu.com/ubuntu/20260901T000000Z
   - channel: resolute-updates main
-    url: https://snapshot.ubuntu.com/ubuntu/20260701T000000Z
+    url: https://snapshot.ubuntu.com/ubuntu/20260901T000000Z
 
 archs:
   - "amd64"
