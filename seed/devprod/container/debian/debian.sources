@@ -1,5 +1,5 @@
 Types: deb
-URIs: https://snapshot.debian.org/archive/debian/20260801T000000Z
+URIs: https://snapshot.debian.org/archive/debian/20260901T000000Z
 # URIs: http://deb.debian.org/debian
 Suites: trixie trixie-updates
 Components: main
@@ -7,7 +7,7 @@ Signed-By: /usr/share/keyrings/debian-archive-keyring.pgp
 Check-Valid-Until: no
 
 Types: deb
-URIs: https://snapshot.debian.org/archive/debian-security/20260801T000000Z
+URIs: https://snapshot.debian.org/archive/debian-security/20260901T000000Z
 # URIs: http://deb.debian.org/debian-security
 Suites: trixie-security
 Components: main
