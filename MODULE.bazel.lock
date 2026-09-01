@@ -877,40 +877,11 @@
     "@@rules_oci+//oci:extensions.bzl%oci": {
       "general": {
         "bzlTransitiveDigest": "eU+Qp+gcWuG/Rw4Vh+ooPkh1i16imCn9xfnZQMYInrk=",
-        "usagesDigest": "iWIOhgT1djuA8DP2GkdtBjxNUXyQRz2axc9knAgQGQw=",
+        "usagesDigest": "lsqDNNiePKWsjHVCDJnX6vASi5p4XvZHqocZduUAInM=",
         "recordedFileInputs": {},
         "recordedDirentsInputs": {},
         "envVariables": {},
         "generatedRepoSpecs": {
-          "debian_12_slim_linux_amd64": {
-            "repoRuleId": "@@rules_oci+//oci/private:pull.bzl%oci_pull",
-            "attributes": {
-              "www_authenticate_challenges": {},
-              "scheme": "https",
-              "registry": "index.docker.io",
-              "repository": "library/debian",
-              "identifier": "12-slim",
-              "platform": "linux/amd64",
-              "target_name": "debian_12_slim_linux_amd64",
-              "bazel_tags": []
-            }
-          },
-          "debian_12_slim": {
-            "repoRuleId": "@@rules_oci+//oci/private:pull.bzl%oci_alias",
-            "attributes": {
-              "target_name": "debian_12_slim",
-              "www_authenticate_challenges": {},
-              "scheme": "https",
-              "registry": "index.docker.io",
-              "repository": "library/debian",
-              "identifier": "12-slim",
-              "platforms": {
-                "@@platforms//cpu:x86_64": "@debian_12_slim_linux_amd64"
-              },
-              "bzlmod_repository": "debian_12_slim",
-              "reproducible": true
-            }
-          },
           "seed_devprod_container_debian_13_oci_linux_amd64": {
             "repoRuleId": "@@rules_oci+//oci/private:pull.bzl%oci_pull",
             "attributes": {
@@ -1085,8 +1056,6 @@
         },
         "moduleExtensionMetadata": {
           "explicitRootModuleDirectDeps": [
-            "debian_12_slim",
-            "debian_12_slim_linux_amd64",
             "seed_devprod_container_debian_13_oci",
             "seed_devprod_container_debian_13_oci_linux_amd64",
             "seed_devprod_container_ubuntu_2604_oci",
