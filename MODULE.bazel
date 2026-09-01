@@ -14,10 +14,6 @@ module(
 
 # Android
 
-## Android Command Line Tools
-
-include("//seed/vendor/android/cmdline-tools:cmdline-tools.MODULE.bazel")
-
 ## Android SDK
 
 include("//seed/vendor/android/sdk:sdk.MODULE.bazel")
