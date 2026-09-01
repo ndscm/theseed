@@ -1,0 +1,32 @@
+{
+  "name": "apkanalyzer",
+  "platforms": {
+    "linux-x86_64": {
+      "path": "cmdline-tools/bin/apkanalyzer",
+      "format": "zip",
+      "providers": [
+        {
+          "url": "https://dl.google.com/android/repository/commandlinetools-linux-{{TAG}}_latest.zip"
+        }
+      ]
+    },
+    "macos-aarch64": {
+      "path": "cmdline-tools/bin/apkanalyzer",
+      "format": "zip",
+      "providers": [
+        {
+          "url": "https://dl.google.com/android/repository/commandlinetools-mac_arm64-{{TAG}}_latest.zip"
+        }
+      ]
+    },
+    "windows-x86_64": {
+      "path": "cmdline-tools/bin/apkanalyzer",
+      "format": "zip",
+      "providers": [
+        {
+          "url": "https://dl.google.com/android/repository/commandlinetools-win-{{TAG}}_latest.zip"
+        }
+      ]
+    }
+  }
+}
