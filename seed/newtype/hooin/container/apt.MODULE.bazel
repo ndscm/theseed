@@ -1,7 +1,25 @@
 apt = use_extension("@rules_distroless//apt:extensions.bzl", "apt")
+apt.sources_list(
+    architectures = ["amd64"],
+    components = ["main"],
+    suites = [
+        "resolute",
+        "resolute-security",
+        "resolute-updates",
+    ],
+    types = ["deb"],
+    uris = ["https://snapshot.ubuntu.com/ubuntu/20260901T000000Z"],
+)
 apt.install(
-    name = "seed_newtype_hooin_container_apt",
-    lock = "//seed/newtype/hooin/container:apt.lock.json",
-    manifest = "//seed/newtype/hooin/container:apt.yaml",
+    dependency_set = "seed_newtype_hooin_container_apt",
+    packages = [
+        "gnupg",
+        "lsb-release",
+    ],
+    suites = [
+        "resolute",
+        "resolute-security",
+        "resolute-updates",
+    ],
 )
 use_repo(apt, "seed_newtype_hooin_container_apt")
