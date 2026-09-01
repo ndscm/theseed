@@ -707,9 +707,9 @@
     "//seed/devprod/android/sdk:extension.bzl%android_sdk_extension": {
       "general": {
         "bzlTransitiveDigest": "c4qLaows9VjC/BqfDE+CxkwrykuGbKyVnNI3HtwZMjU=",
-        "usagesDigest": "0ETTr76aSh2W/LA2e1TvoBLunL60P9FZa55a8xWOyUU=",
+        "usagesDigest": "yxixoZKq+PTSFMXSQ4Grl3iF1gU7fElNS7Xk9t372fE=",
         "recordedInputs": [
-          "FILE:@@//seed/devprod/android/sdk/repository2-3.xml ba8f8783ea796220b731d3e8e14fb69280ace3d5a96a15b5a90bfcf70d20712e"
+          "FILE:@@//seed/vendor/android/sdk/repository2-3.xml ba8f8783ea796220b731d3e8e14fb69280ace3d5a96a15b5a90bfcf70d20712e"
         ],
         "generatedRepoSpecs": {
           "android_sdk": {
