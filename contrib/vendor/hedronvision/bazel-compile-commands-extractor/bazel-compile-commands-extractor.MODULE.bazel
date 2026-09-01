@@ -1,6 +1,9 @@
 bazel_dep(name = "hedron_compile_commands", dev_dependency = True)
+
+# The upstream is no longer maintained. Consider implementing it on our own.
+# See: https://github.com/hedronvision/bazel-compile-commands-extractor/issues/279
 git_override(
     module_name = "hedron_compile_commands",
-    commit = "abb61a688167623088f8768cc9264798df6a9d10",
-    remote = "https://github.com/hedronvision/bazel-compile-commands-extractor.git",
+    commit = "85d83bc1ee3ab8034d9c40f6900a0753688068b6",
+    remote = "https://github.com/helly25/bazel-compile-commands-extractor.git",
 )
