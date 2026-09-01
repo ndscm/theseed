@@ -13,7 +13,7 @@ android_sdk_extension.configure(
     remove_files = [
         "ndk/30.0.14904198/sources/third_party/googletest/test/BUILD.bazel",
     ],
-    repository_file = "//seed/devprod/android/sdk:repository2-3.xml",
+    repository_file = "//seed/vendor/android/sdk:repository2-3.xml",
     repository_url = "https://dl.google.com/android/repository/",
 )
 use_repo(
