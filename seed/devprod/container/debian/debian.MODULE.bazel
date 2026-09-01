@@ -16,7 +16,7 @@ use_repo(
     "seed_devprod_container_debian_13_oci_linux_amd64",
 )
 
-# run `bazel run seed_devprod_container_debian_13_apt_dists//:lock` to update the lockfile.
+# run `bazel run @seed_devprod_container_debian_13_apt_dists//:lock` to update the lockfile.
 apt_dists(
     name = "seed_devprod_container_debian_13_apt_dists",
     archs = ["amd64"],
@@ -24,7 +24,7 @@ apt_dists(
     sources = "//seed/devprod/container/debian:debian.sources",
 )
 
-# run `bazel run seed_devprod_container_debian_13_apt_pool//:lock` to update the lockfile.
+# run `bazel run @seed_devprod_container_debian_13_apt_pool//:lock` to update the lockfile.
 apt_pool(
     name = "seed_devprod_container_debian_13_apt_pool",
     archs = ["amd64"],
