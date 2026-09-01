@@ -1,5 +1,5 @@
 Types: deb
-URIs: https://snapshot.ubuntu.com/ubuntu/20260701T000000Z
+URIs: https://snapshot.ubuntu.com/ubuntu/20260901T000000Z
 # URIs: http://archive.ubuntu.com/ubuntu/
 Suites: resolute resolute-updates resolute-backports
 Components: main universe restricted multiverse
@@ -7,7 +7,7 @@ Signed-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg
 Check-Valid-Until: no
 
 Types: deb
-URIs: https://snapshot.ubuntu.com/ubuntu/20260701T000000Z
+URIs: https://snapshot.ubuntu.com/ubuntu/20260901T000000Z
 # URIs: http://security.ubuntu.com/ubuntu/
 Suites: resolute-security
 Components: main universe restricted multiverse
