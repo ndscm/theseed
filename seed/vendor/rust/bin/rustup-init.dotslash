@@ -5,67 +5,67 @@
   "platforms": {
     "linux-aarch64": {
       "path": "rustup-init",
-      "size": 19502880,
+      "size": 19856640,
       "hash": "blake3",
-      "digest": "0af2bad07dbb0d9ebbbf23adb2a4194c446b8333e063c05deec500caea11fa2e",
+      "digest": "cc6014d1140952d2e9aadd43bc684c6eb9cbe325216925c2d3d0bf959779e4fd",
       "providers": [
         {
-          "url": "https://static.rust-lang.org/rustup/dist/aarch64-unknown-linux-gnu/rustup-init"
+          "url": "https://static.rust-lang.org/rustup/archive/1.29.1/aarch64-unknown-linux-gnu/rustup-init"
         }
       ]
     },
     "linux-x86_64": {
       "path": "rustup-init",
-      "size": 20838840,
+      "size": 21113232,
       "hash": "blake3",
-      "digest": "0faca2a1f049303e014fac9fbf808943731bb4053c1755f79fa2936efa5d0d0c",
+      "digest": "be54cb15611f5d8f2e88f37584ffd60f65725f14f0239a081b8f8e8d558fbe65",
       "providers": [
         {
-          "url": "https://static.rust-lang.org/rustup/dist/x86_64-unknown-linux-gnu/rustup-init"
+          "url": "https://static.rust-lang.org/rustup/archive/1.29.1/x86_64-unknown-linux-gnu/rustup-init"
         }
       ]
     },
     "macos-aarch64": {
       "path": "rustup-init",
-      "size": 11053296,
+      "size": 11319056,
       "hash": "blake3",
-      "digest": "1a2bf6ea9f3d51c4f4db3698bb14508591f824d6fd350045f1fc11fdae32f56e",
+      "digest": "2020e5df0a2a37dd3ad4f2044d3c6f4a083955d19fbfaee938ac727e713e87b9",
       "providers": [
         {
-          "url": "https://static.rust-lang.org/rustup/dist/aarch64-apple-darwin/rustup-init"
+          "url": "https://static.rust-lang.org/rustup/archive/1.29.1/aarch64-apple-darwin/rustup-init"
         }
       ]
     },
     "macos-x86_64": {
       "path": "rustup-init",
-      "size": 12691104,
+      "size": 12945744,
       "hash": "blake3",
-      "digest": "2adbecd0d69e3dba970e943dc7522424fd2a2ac524973ea6b84b67d1f34bcc5c",
+      "digest": "e75d0bbaa6b0464292e1d79d1aab688831010383782bee8fd64c510feeb7bf03",
       "providers": [
         {
-          "url": "https://static.rust-lang.org/rustup/dist/x86_64-apple-darwin/rustup-init"
+          "url": "https://static.rust-lang.org/rustup/archive/1.29.1/x86_64-apple-darwin/rustup-init"
         }
       ]
     },
     "windows-aarch64": {
       "path": "rustup-init.exe",
-      "size": 11462144,
+      "size": 11195904,
       "hash": "blake3",
-      "digest": "7feaf29de41ab8060b2d3de6872fc75f75664ff8c134412d253c5f6e2ab63c60",
+      "digest": "992357158a3060a80ee39603911f003972e21faf44e5f2fb232f35632dedf8e7",
       "providers": [
         {
-          "url": "https://static.rust-lang.org/rustup/dist/aarch64-pc-windows-msvc/rustup-init.exe"
+          "url": "https://static.rust-lang.org/rustup/archive/1.29.1/aarch64-pc-windows-msvc/rustup-init.exe"
         }
       ]
     },
     "windows-x86_64": {
       "path": "rustup-init.exe",
-      "size": 12814336,
+      "size": 12721664,
       "hash": "blake3",
-      "digest": "6a2e305efe102416820668a7ed87df537378524dd1a9cd5112fc5d3a273f670d",
+      "digest": "169554e514d81be9b117e1961789fed332ff49b3a0fba3cb4a002052deec7ef8",
       "providers": [
         {
-          "url": "https://static.rust-lang.org/rustup/dist/x86_64-pc-windows-msvc/rustup-init.exe"
+          "url": "https://static.rust-lang.org/rustup/archive/1.29.1/x86_64-pc-windows-msvc/rustup-init.exe"
         }
       ]
     }
