@@ -30,6 +30,14 @@ if [[ ",${maintain_scopes}," == *",system,"* ]]; then
 
     brew install direnv
     brew install socat
+
+    # `brew shellenv` prepends /opt/homebrew/bin to PATH, shadowing the repo's
+    # dotslash-managed toolchains (e.g. go) for the rest of this run. Reload
+    # direnv so the repo-managed PATH entries take precedence again.
+    if command -v direnv >/dev/null 2>&1; then
+      direnv reload >/dev/null 2>&1 || true
+      eval "$(direnv export bash)"
+    fi
   fi
 
   printf "\e[32m[system] Check basic packages done.\e[0m\n"
