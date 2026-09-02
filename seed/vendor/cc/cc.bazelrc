@@ -1,2 +1,9 @@
 build --cxxopt=-std=c++17
 build --host_cxxopt=-std=c++17
+
+# grpc's package() enables layering_check, but @grpc//src/core:grpc_xds_client
+# includes envoy/type/v3/percent.upb.h and google/protobuf/{duration,struct,
+# wrappers}.upb.h without listing their *_upb targets in deps, so clang rejects
+# it. Disable the check globally until the upstream deps are fixed.
+build --features=-layering_check
+build --host_features=-layering_check
