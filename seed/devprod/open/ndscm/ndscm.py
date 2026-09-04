@@ -28,7 +28,9 @@ async def build(**kwargs) -> None:
             re.compile(r"^.bazeliskrc$"),
             re.compile(r"^.bazelrc$"),
             re.compile(r"^.gitignore$"),
+            re.compile(r"^BUILD.bazel$"),
             re.compile(r"^go.mod$"),
+            re.compile(r"^go.MODULE.bazel$"),
             re.compile(r"^MODULE.bazel$"),
             re.compile(r"^WORKSPACE.bazel$"),
         ]
@@ -38,6 +40,7 @@ async def build(**kwargs) -> None:
             re.compile(r"^seed/devprod/ndscm/.*$"),
             re.compile(r"^seed/devprod/open/ndscm/.*external.*$"),
             re.compile(r"^seed/devprod/rbe/bes/.*$"),
+            re.compile(r"^seed/devprod/rbe/rbe.bazelrc$"),
             re.compile(r"^seed/devprod/scalpel/go/.*$"),
             re.compile(r"^seed/devprod/starlark/inbazel/go/.*$"),
             re.compile(r"^seed/infra/buildinfo/bazel/.*$"),
@@ -52,6 +55,8 @@ async def build(**kwargs) -> None:
             re.compile(r"^seed/infra/shell/go/.*$"),
             re.compile(r"^seed/infra/tson/go/.*$"),
             re.compile(r"^seed/vendor/bazel/.*$"),
+            re.compile(r"^seed/vendor/go/.*$"),
+            re.compile(r"^seed/vendor/grpc/.*$"),
             re.compile(r"^seed/vendor/proto/.*$"),
         ],
         **kwargs,
@@ -69,9 +74,11 @@ async def build(**kwargs) -> None:
             re.compile(r"^.*CC.*$"),
             re.compile(r"^.*commit.*$"),
             re.compile(r"^.*Container.*$"),
+            re.compile(r"^.*container.*$"),
             re.compile(r"^.*cpp.*$"),
             re.compile(r"^.*debian.*$"),
             re.compile(r"^.*docker.*$"),
+            re.compile(r"^.*dotslash.*$"),
             re.compile(r"^.*git_override.*$"),
             re.compile(r"^.*git_repository.*$"),
             re.compile(r"^.*hedron.*$"),
@@ -107,13 +114,17 @@ async def build(**kwargs) -> None:
             re.compile(r"^.*vendor/rust.*$"),
             re.compile(r"^.*vendor/shell.*$"),
             re.compile(r"^.*vendor/ts.*$"),
+            re.compile(r"^.*vscode.*$"),
             re.compile(r"^# Java$"),
             re.compile(r"^# LLVM$"),
             re.compile(r"^# Rust$"),
             re.compile(r"^# Shell$"),
             re.compile(r"^## Abseil$"),
+            re.compile(r"^## Boost$"),
+            re.compile(r"^## Dotslash$"),
             re.compile(r"^## Hedronvision.*$"),
             re.compile(r"^## Keycloak$"),
+            re.compile(r"^## VS Code$"),
         ],
         "",
         **kwargs,
@@ -157,10 +168,27 @@ async def build(**kwargs) -> None:
         [
             re.compile(r"^.*aspect.*$"),
             re.compile(r"^.*boost.*$"),
+            re.compile(r"^.*cc.*$"),
+            re.compile(r"^.*container.*$"),
+            re.compile(r"^.*credential_helper.*$"),
             re.compile(r"^.*cxx.*$"),
+            re.compile(r"^.*hedronvision.*$"),
+            re.compile(r"^.*java.*$"),
             re.compile(r"^.*parse_headers.*$"),
+            re.compile(r"^.*python.*$"),
+            re.compile(r"^.*remote_cache.*$"),
             re.compile(r"^.*rules_js.*$"),
             re.compile(r"^.*rules_python.*$"),
+            re.compile(r"^.*ts.*$"),
+        ],
+        "",
+        **kwargs,
+    )
+
+    await diffedit.replace_hunk_lines(
+        [re.compile(r"^BUILD.bazel$")],
+        [
+            re.compile(r"^.*$"),
         ],
         "",
         **kwargs,
@@ -177,9 +205,9 @@ async def run(**kwargs) -> None:
 
     await clean.clean_empty(**kwargs)
 
-    # Stops the rebuild at commit index 1817 (2026-07-04), update the script
+    # Stops the rebuild at commit index 2447 (2026-09-03), update the script
     # and check results before rebuilding more commits.
-    await rebuild.rebuild("10001817", fresh=True, **kwargs)
+    await rebuild.rebuild("10002447", fresh=True, **kwargs)
     subprocess.run(
         ["git", "tag", "initial"],
         check=True,
