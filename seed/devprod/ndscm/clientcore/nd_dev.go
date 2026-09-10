@@ -129,11 +129,11 @@ func removeDevWorktree(
 	if err != nil {
 		return "", seederr.Wrap(err)
 	}
-	err = scmProvider.DeleteBranch(branchName)
+	err = scmProvider.DeleteBranch(repo, branchName)
 	if err != nil {
 		return "", seederr.Wrap(err)
 	}
-	err = scmProvider.DeleteBranch(baseBranchName)
+	err = scmProvider.DeleteBranch(repo, baseBranchName)
 	if err != nil {
 		return "", seederr.Wrap(err)
 	}
