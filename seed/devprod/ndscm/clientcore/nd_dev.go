@@ -41,9 +41,9 @@ func getDevWorktree(
 
 func createDevWorktree(
 	scmProvider scm.Provider,
-	monorepoHome string, ownerHandle string, focus string, tracking string,
+	repo *scm.WorkingRepo, ownerHandle string, focus string, tracking string,
 ) (string, error) {
-	worktreeName, worktreePath, exists := getDevWorktree(monorepoHome, ownerHandle, focus)
+	worktreeName, worktreePath, exists := getDevWorktree(repo.MonorepoHome, ownerHandle, focus)
 	if exists {
 		return "", seederr.WrapErrorf("worktree path already exists. path=%v", worktreePath)
 	}
@@ -60,7 +60,7 @@ func createDevWorktree(
 	if err != nil {
 		return "", seederr.WrapErrorf("failed to create worktree branch %v: %v", branchName, err)
 	}
-	newWorktreePath, err := scmProvider.CreateWorktree(monorepoHome, branchName)
+	newWorktreePath, err := scmProvider.CreateWorktree(repo, branchName)
 	if err != nil {
 		return "", seederr.WrapErrorf("failed to create branch worktree %v: %v", branchName, err)
 	}
@@ -69,15 +69,15 @@ func createDevWorktree(
 
 func removeDevWorktree(
 	scmProvider scm.Provider,
-	monorepoHome string, ownerHandle string, focus string,
+	repo *scm.WorkingRepo, ownerHandle string, focus string,
 ) (string, error) {
-	worktreeName, worktreePath, _ := getDevWorktree(monorepoHome, ownerHandle, focus)
+	worktreeName, worktreePath, _ := getDevWorktree(repo.MonorepoHome, ownerHandle, focus)
 	branchName := worktreeName
 	baseBranchName, err := scm.GetBaseBranchName(branchName)
 	if err != nil {
 		return "", seederr.Wrap(err)
 	}
-	_, currentWorktreePath, err := scmProvider.GetCurrentWorktree(monorepoHome)
+	_, currentWorktreePath, err := scmProvider.GetCurrentWorktree(repo)
 	if err != nil {
 		return "", seederr.Wrap(err)
 	}
@@ -119,13 +119,13 @@ func removeDevWorktree(
 	}
 	newCwd := ""
 	if needChdir {
-		err = os.Chdir(monorepoHome)
+		err = os.Chdir(repo.MonorepoHome)
 		if err != nil {
 			return "", seederr.Wrap(err)
 		}
-		newCwd = monorepoHome
+		newCwd = repo.MonorepoHome
 	}
-	err = scmProvider.RemoveWorktree(monorepoHome, worktreeName)
+	err = scmProvider.RemoveWorktree(repo, worktreeName)
 	if err != nil {
 		return "", seederr.Wrap(err)
 	}
@@ -154,7 +154,8 @@ func NdDev(scmProvider scm.Provider, options NdDevOptions) error {
 	if err != nil {
 		return seederr.Wrap(err)
 	}
-	err = scmProvider.QuickVerifyMonorepo()
+	repo := &scm.WorkingRepo{MonorepoHome: monorepoHome}
+	err = scmProvider.QuickVerifyMonorepo(repo)
 	if err != nil {
 		return seederr.Wrap(err)
 	}
@@ -179,7 +180,7 @@ func NdDev(scmProvider scm.Provider, options NdDevOptions) error {
 			return seederr.WrapErrorf("dev worktree %v does not exist", worktreePath)
 		}
 		newCwd, err := removeDevWorktree(
-			scmProvider, monorepoHome, currentUserHandle, focus,
+			scmProvider, repo, currentUserHandle, focus,
 		)
 		if err != nil {
 			return seederr.Wrap(err)
@@ -203,7 +204,7 @@ func NdDev(scmProvider scm.Provider, options NdDevOptions) error {
 			tracking = "origin/main"
 		}
 		newWorktreePath, err := createDevWorktree(
-			scmProvider, monorepoHome, currentUserHandle, focus, tracking,
+			scmProvider, repo, currentUserHandle, focus, tracking,
 		)
 		if err != nil {
 			return seederr.Wrap(err)

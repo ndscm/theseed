@@ -39,9 +39,9 @@ func getAreaWorktree(
 
 func createAreaWorktree(
 	scmProvider scm.Provider,
-	monorepoHome string, area string, orphan string, startPoint string,
+	repo *scm.WorkingRepo, area string, orphan string, startPoint string,
 ) (string, error) {
-	worktreeName, worktreePath, exists := getAreaWorktree(monorepoHome, area)
+	worktreeName, worktreePath, exists := getAreaWorktree(repo.MonorepoHome, area)
 	if exists {
 		return "", seederr.WrapErrorf("worktree path already exists. path=%v", worktreePath)
 	}
@@ -95,7 +95,7 @@ func createAreaWorktree(
 			return "", seederr.WrapErrorf("failed to set tracking for branch %v: %v", branchName, err)
 		}
 	}
-	newWorktreePath, err := scmProvider.CreateWorktree(monorepoHome, branchName)
+	newWorktreePath, err := scmProvider.CreateWorktree(repo, branchName)
 	if err != nil {
 		return "", seederr.WrapErrorf("failed to create worktree for branch %v: %v", branchName, err)
 	}
@@ -107,12 +107,12 @@ func createAreaWorktree(
 
 func removeAreaWorktree(
 	scmProvider scm.Provider,
-	monorepoHome string, area string,
+	repo *scm.WorkingRepo, area string,
 ) (string, error) {
-	worktreeName, worktreePath, _ := getAreaWorktree(monorepoHome, area)
+	worktreeName, worktreePath, _ := getAreaWorktree(repo.MonorepoHome, area)
 	branchName := worktreeName
 	remoteTracking := "origin/" + branchName
-	_, currentWorktreePath, err := scmProvider.GetCurrentWorktree(monorepoHome)
+	_, currentWorktreePath, err := scmProvider.GetCurrentWorktree(repo)
 	if err != nil {
 		return "", seederr.Wrap(err)
 	}
@@ -142,14 +142,14 @@ func removeAreaWorktree(
 	}
 	newCwd := ""
 	if needChdir {
-		mainWorktreePath := filepath.Join(monorepoHome, "main")
+		mainWorktreePath := filepath.Join(repo.MonorepoHome, "main")
 		err = os.Chdir(mainWorktreePath)
 		if err != nil {
 			return "", seederr.Wrap(err)
 		}
 		newCwd = mainWorktreePath
 	}
-	err = scmProvider.RemoveWorktree(monorepoHome, worktreeName)
+	err = scmProvider.RemoveWorktree(repo, worktreeName)
 	if err != nil {
 		return "", seederr.Wrap(err)
 	}
@@ -170,7 +170,8 @@ func NdMain(scmProvider scm.Provider, options NdMainOptions) error {
 	if err != nil {
 		return seederr.Wrap(err)
 	}
-	err = scmProvider.QuickVerifyMonorepo()
+	repo := &scm.WorkingRepo{MonorepoHome: monorepoHome}
+	err = scmProvider.QuickVerifyMonorepo(repo)
 	if err != nil {
 		return seederr.Wrap(err)
 	}
@@ -203,7 +204,7 @@ func NdMain(scmProvider scm.Provider, options NdMainOptions) error {
 			if options.Orphan != "" {
 				seedlog.Warnf("Ignoring --orphan message: --remove was specified")
 			}
-			newCwd, err := removeAreaWorktree(scmProvider, monorepoHome, area)
+			newCwd, err := removeAreaWorktree(scmProvider, repo, area)
 			if err != nil {
 				return seederr.Wrap(err)
 			}
@@ -219,7 +220,7 @@ func NdMain(scmProvider scm.Provider, options NdMainOptions) error {
 					seedlog.Warnf("Ignoring --orphan message: area worktree %v already exists", areaWorktreePath)
 				}
 			} else {
-				areaWorktreePath, err = createAreaWorktree(scmProvider, monorepoHome, area, options.Orphan, startPoint)
+				areaWorktreePath, err = createAreaWorktree(scmProvider, repo, area, options.Orphan, startPoint)
 				if err != nil {
 					return seederr.Wrap(err)
 				}

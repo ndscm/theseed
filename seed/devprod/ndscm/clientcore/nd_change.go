@@ -20,7 +20,8 @@ func NdChange(scmProvider scm.Provider, options NdChangeOptions) error {
 	if err != nil {
 		return seederr.Wrap(err)
 	}
-	devWorktreeName, _, err := scmProvider.GetCurrentWorktree(monorepoHome)
+	repo := &scm.WorkingRepo{MonorepoHome: monorepoHome}
+	devWorktreeName, _, err := scmProvider.GetCurrentWorktree(repo)
 	if err != nil {
 		return seederr.Wrap(err)
 	}

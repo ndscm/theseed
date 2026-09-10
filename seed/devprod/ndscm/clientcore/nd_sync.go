@@ -23,7 +23,8 @@ func NdSync(scmProvider scm.Provider, options NdSyncOptions) error {
 	if err != nil {
 		return seederr.Wrap(err)
 	}
-	err = scmProvider.QuickVerifyMonorepo()
+	repo := &scm.WorkingRepo{MonorepoHome: monorepoHome}
+	err = scmProvider.QuickVerifyMonorepo(repo)
 	if err != nil {
 		return seederr.Wrap(err)
 	}
@@ -34,7 +35,7 @@ func NdSync(scmProvider scm.Provider, options NdSyncOptions) error {
 	if len(dirtyFiles) > 0 {
 		return seederr.WrapErrorf("workspace is dirty:\n%v", dirtyFiles)
 	}
-	worktreeName, _, err := scmProvider.GetCurrentWorktree(monorepoHome)
+	worktreeName, _, err := scmProvider.GetCurrentWorktree(repo)
 	if err != nil {
 		return seederr.Wrap(err)
 	}

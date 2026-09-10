@@ -65,7 +65,8 @@ func NdRun(scmProvider scm.Provider, options NdRunOptions) error {
 	if err != nil {
 		seedlog.Warnf("Current worktree is not connected by ndscm")
 	}
-	_, worktreePath, err := scmProvider.GetCurrentWorktree(monorepoHome)
+	repo := &scm.WorkingRepo{MonorepoHome: monorepoHome}
+	_, worktreePath, err := scmProvider.GetCurrentWorktree(repo)
 	if err != nil {
 		return seederr.Wrap(err)
 	}

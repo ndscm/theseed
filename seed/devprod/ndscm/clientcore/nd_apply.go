@@ -54,11 +54,12 @@ func NdApply(scmProvider scm.Provider, options NdApplyOptions) error {
 	if err != nil {
 		return seederr.Wrap(err)
 	}
-	err = scmProvider.QuickVerifyMonorepo()
+	repo := &scm.WorkingRepo{MonorepoHome: monorepoHome}
+	err = scmProvider.QuickVerifyMonorepo(repo)
 	if err != nil {
 		return seederr.Wrap(err)
 	}
-	devWorktreeName, _, err := scmProvider.GetCurrentWorktree(monorepoHome)
+	devWorktreeName, _, err := scmProvider.GetCurrentWorktree(repo)
 	if err != nil {
 		return seederr.Wrap(err)
 	}
