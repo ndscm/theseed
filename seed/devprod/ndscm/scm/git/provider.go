@@ -133,8 +133,9 @@ func (g *GitProvider) UpdateBranch(branchName string, newPoint string) error {
 	return UpdateBranch("", branchName, newPoint)
 }
 
-func (g *GitProvider) DeleteBranch(branchName string) error {
-	return DeleteBranch("", branchName)
+func (g *GitProvider) DeleteBranch(repo *scm.WorkingRepo, branchName string) error {
+	monorepoGitDir := guessMonorepoGitDir(repo)
+	return DeleteBranch(monorepoGitDir, branchName)
 }
 
 func (g *GitProvider) DeleteMergedBranch(branchName string) error {
