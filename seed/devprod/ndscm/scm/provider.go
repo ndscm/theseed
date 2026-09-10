@@ -102,7 +102,7 @@ type Provider interface {
 	UpdateBranch(branchName string, newPoint string) error
 
 	// DeleteBranch removes branchName even if it has unmerged commits.
-	DeleteBranch(branchName string) error
+	DeleteBranch(repo *WorkingRepo, branchName string) error
 
 	// DeleteMergedBranch removes branchName only if its commits are reachable
 	// from its upstream; it fails for unmerged branches.
