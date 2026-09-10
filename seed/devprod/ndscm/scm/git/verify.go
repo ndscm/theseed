@@ -7,26 +7,22 @@ import (
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
 )
 
-func QuickVerifyMonorepo() error {
-	monorepoHome, err := scm.MonorepoHome()
-	if err != nil {
-		return seederr.Wrap(err)
+func QuickVerifyMonorepo(repo *scm.WorkingRepo) error {
+	if repo == nil || repo.MonorepoHome == "" {
+		return seederr.WrapErrorf("working repo is not connected by ndscm")
 	}
-	if monorepoHome == "" {
-		return seederr.WrapErrorf("monorepo home is not defined")
-	}
-	monorepoHomeStat, err := os.Stat(monorepoHome)
+	monorepoHomeStat, err := os.Stat(repo.MonorepoHome)
 	if os.IsNotExist(err) {
-		return seederr.WrapErrorf("monorepo home (%v) does not exist", monorepoHome)
+		return seederr.WrapErrorf("monorepo home (%v) does not exist", repo.MonorepoHome)
 	}
 	if err != nil {
 		return seederr.Wrap(err)
 	}
 	if !monorepoHomeStat.IsDir() {
-		return seederr.WrapErrorf("monorepo home (%v) is not a folder", monorepoHome)
+		return seederr.WrapErrorf("monorepo home (%v) is not a folder", repo.MonorepoHome)
 	}
 
-	monorepoGitDir := guessMonorepoGitDir(monorepoHome)
+	monorepoGitDir := guessMonorepoGitDir(repo)
 	if monorepoGitDir == "" {
 		return seederr.WrapErrorf("monorepo git dir is not defined")
 	}

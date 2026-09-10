@@ -62,7 +62,7 @@ func (g *GitProvider) Connect(
 
 	repoEnvLines = append(repoEnvLines, `ND_SCM="git"`)
 
-	gitDir := guessMonorepoGitDir(monorepoHome)
+	gitDir := guessMonorepoGitDir(&scm.WorkingRepo{MonorepoHome: monorepoHome})
 
 	mainBranch, err := BareClone(repoEndpoint, gitDir)
 	if err != nil {
@@ -111,8 +111,8 @@ func (g *GitProvider) Connect(
 
 // # verify
 
-func (g *GitProvider) QuickVerifyMonorepo() error {
-	return QuickVerifyMonorepo()
+func (g *GitProvider) QuickVerifyMonorepo(repo *scm.WorkingRepo) error {
+	return QuickVerifyMonorepo(repo)
 }
 
 // # branch
@@ -326,7 +326,7 @@ func (g *GitProvider) RemoveWipStatus(worktreePath string, force bool) error {
 
 // # worktree
 
-func (g *GitProvider) GetCurrentWorktree(monorepoHome string) (string, string, error) {
+func (g *GitProvider) GetCurrentWorktree(repo *scm.WorkingRepo) (string, string, error) {
 	worktreePath, err := GetCurrentWorktreePath()
 	if err != nil {
 		return "", "", seederr.Wrap(err)
@@ -334,8 +334,8 @@ func (g *GitProvider) GetCurrentWorktree(monorepoHome string) (string, string, e
 
 	// current worktree may not be connected with ndscm (e.g. ci environment)
 	worktreeName := ""
-	if monorepoHome != "" {
-		tmpWorktreeName, err := filepath.Rel(monorepoHome, worktreePath)
+	if repo != nil && repo.MonorepoHome != "" {
+		tmpWorktreeName, err := filepath.Rel(repo.MonorepoHome, worktreePath)
 		if err != nil {
 			return "", "", seederr.Wrap(err)
 		}
@@ -365,14 +365,20 @@ func (g *GitProvider) CreateCommitReuse(worktreePath string, commit string) erro
 	return CreateCommitReuse(worktreePath, commit)
 }
 
-func (g *GitProvider) CreateWorktree(monorepoHome string, worktreeName string) (string, error) {
-	monorepoGitDir := guessMonorepoGitDir(monorepoHome)
-	return CreateBranchWorktree(monorepoGitDir, monorepoHome, worktreeName)
+func (g *GitProvider) CreateWorktree(repo *scm.WorkingRepo, worktreeName string) (string, error) {
+	if repo == nil || repo.MonorepoHome == "" {
+		return "", seederr.WrapErrorf("nd connected repo is required")
+	}
+	monorepoGitDir := guessMonorepoGitDir(repo)
+	return CreateBranchWorktree(monorepoGitDir, repo.MonorepoHome, worktreeName)
 }
 
-func (g *GitProvider) RemoveWorktree(monorepoHome string, worktreeName string) error {
-	monorepoGitDir := guessMonorepoGitDir(monorepoHome)
-	worktreePath := filepath.Join(monorepoHome, worktreeName)
+func (g *GitProvider) RemoveWorktree(repo *scm.WorkingRepo, worktreeName string) error {
+	if repo == nil || repo.MonorepoHome == "" {
+		return seederr.WrapErrorf("nd connected repo is required")
+	}
+	monorepoGitDir := guessMonorepoGitDir(repo)
+	worktreePath := filepath.Join(repo.MonorepoHome, worktreeName)
 	return RemoveWorktree(monorepoGitDir, worktreePath)
 }
 
