@@ -20,6 +20,7 @@ func NdUncut(scmProvider scm.Provider, options NdUncutOptions) error {
 	if err != nil {
 		return seederr.Wrap(err)
 	}
+	repo := &scm.WorkingRepo{MonorepoHome: monorepoHome}
 	dirtyFiles, err := scmProvider.ListDirtyFiles("")
 	if err != nil {
 		return seederr.Wrap(err)
@@ -27,7 +28,7 @@ func NdUncut(scmProvider scm.Provider, options NdUncutOptions) error {
 	if len(dirtyFiles) > 0 {
 		return seederr.WrapErrorf("workspace is dirty:\n%v", dirtyFiles)
 	}
-	devWorktreeName, _, err := scmProvider.GetCurrentWorktree(monorepoHome)
+	devWorktreeName, _, err := scmProvider.GetCurrentWorktree(repo)
 	if err != nil {
 		return seederr.Wrap(err)
 	}

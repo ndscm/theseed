@@ -59,6 +59,8 @@ func NdConnect(scmProvider scm.Provider, options NdConnectOptions) error {
 		}
 		return seederr.Wrap(err)
 	}
+
+	repo := &scm.WorkingRepo{MonorepoHome: monorepoHome}
 	worktreePath := mainWorktree
 	if !options.NoDev {
 		// createDevWorktree creates branches via git without an explicit
@@ -69,7 +71,7 @@ func NdConnect(scmProvider scm.Provider, options NdConnectOptions) error {
 			return seederr.WrapErrorf("failed to enter main worktree %v: %w", mainWorktree, err)
 		}
 		devWorktree, err := createDevWorktree(
-			scmProvider, monorepoHome, currentUserHandle, "", remoteMainBranch,
+			scmProvider, repo, currentUserHandle, "", remoteMainBranch,
 		)
 		if err != nil {
 			return seederr.Wrap(err)

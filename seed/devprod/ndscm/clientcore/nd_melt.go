@@ -46,13 +46,13 @@ func getMeltWorktree(
 
 func createMeltWorktree(
 	scmProvider scm.Provider,
-	monorepoHome string, ownerHandle string,
+	repo *scm.WorkingRepo, ownerHandle string,
 	upstreamName string, fromPoint string, tracking string, forkPoint string,
 ) (string, error) {
 	if upstreamName == "" {
 		return "", seederr.WrapErrorf("upstream name is required for melt worktree")
 	}
-	worktreeName, worktreePath, exists := getMeltWorktree(monorepoHome, ownerHandle, upstreamName)
+	worktreeName, worktreePath, exists := getMeltWorktree(repo.MonorepoHome, ownerHandle, upstreamName)
 	if exists {
 		return "", seederr.WrapErrorf("worktree path already exists. path=%v", worktreePath)
 	}
@@ -69,7 +69,7 @@ func createMeltWorktree(
 	if err != nil {
 		return "", seederr.WrapErrorf("failed to create worktree branch %v: %v", branchName, err)
 	}
-	newWorktreePath, err := scmProvider.CreateWorktree(monorepoHome, branchName)
+	newWorktreePath, err := scmProvider.CreateWorktree(repo, branchName)
 	if err != nil {
 		return "", seederr.WrapErrorf("failed to create branch worktree %v: %v", branchName, err)
 	}
@@ -84,18 +84,18 @@ func createMeltWorktree(
 
 func removeMeltWorktree(
 	scmProvider scm.Provider,
-	monorepoHome string, ownerHandle string, upstreamName string,
+	repo *scm.WorkingRepo, ownerHandle string, upstreamName string,
 ) (string, error) {
 	if upstreamName == "" {
 		return "", seederr.WrapErrorf("upstream name is required for melt worktree")
 	}
-	worktreeName, worktreePath, _ := getMeltWorktree(monorepoHome, ownerHandle, upstreamName)
+	worktreeName, worktreePath, _ := getMeltWorktree(repo.MonorepoHome, ownerHandle, upstreamName)
 	branchName := worktreeName
 	baseBranchName, err := scm.GetBaseBranchName(branchName)
 	if err != nil {
 		return "", seederr.Wrap(err)
 	}
-	_, currentWorktreePath, err := scmProvider.GetCurrentWorktree(monorepoHome)
+	_, currentWorktreePath, err := scmProvider.GetCurrentWorktree(repo)
 	if err != nil {
 		return "", seederr.Wrap(err)
 	}
@@ -109,13 +109,13 @@ func removeMeltWorktree(
 	}
 	newCwd := ""
 	if needChdir {
-		err = os.Chdir(monorepoHome)
+		err = os.Chdir(repo.MonorepoHome)
 		if err != nil {
 			return "", seederr.Wrap(err)
 		}
-		newCwd = monorepoHome
+		newCwd = repo.MonorepoHome
 	}
-	err = scmProvider.RemoveWorktree(monorepoHome, worktreeName)
+	err = scmProvider.RemoveWorktree(repo, worktreeName)
 	if err != nil {
 		return "", seederr.Wrap(err)
 	}
@@ -142,7 +142,8 @@ func NdMelt(scmProvider scm.Provider, options NdMeltOptions) error {
 	if err != nil {
 		return seederr.Wrap(err)
 	}
-	err = scmProvider.QuickVerifyMonorepo()
+	repo := &scm.WorkingRepo{MonorepoHome: monorepoHome}
+	err = scmProvider.QuickVerifyMonorepo(repo)
 	if err != nil {
 		return seederr.Wrap(err)
 	}
@@ -151,7 +152,7 @@ func NdMelt(scmProvider scm.Provider, options NdMeltOptions) error {
 	if upstreamName == "" {
 		return seederr.WrapErrorf("upstream name is required")
 	}
-	_, devWorktreePath, err := scmProvider.GetCurrentWorktree(monorepoHome)
+	_, devWorktreePath, err := scmProvider.GetCurrentWorktree(repo)
 	if err != nil {
 		return seederr.Wrap(err)
 	}
@@ -196,7 +197,7 @@ func NdMelt(scmProvider scm.Provider, options NdMeltOptions) error {
 			return seederr.WrapErrorf("melt worktree %v does not exist", worktreePath)
 		}
 		newCwd, err := removeMeltWorktree(
-			scmProvider, monorepoHome, currentUserHandle, upstreamName,
+			scmProvider, repo, currentUserHandle, upstreamName,
 		)
 		if err != nil {
 			return seederr.Wrap(err)
@@ -232,7 +233,7 @@ func NdMelt(scmProvider scm.Provider, options NdMeltOptions) error {
 		seedlog.Infof("Found tracking fork point: %v", trackingForkPoint)
 		seedlog.Infof("Found upstream fork point: %v", upstreamForkPoint)
 		newWorktreePath, err := createMeltWorktree(
-			scmProvider, monorepoHome, currentUserHandle,
+			scmProvider, repo, currentUserHandle,
 			upstreamName, upstreamForkPoint, tracking, trackingForkPoint,
 		)
 		if err != nil {

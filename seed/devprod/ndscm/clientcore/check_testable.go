@@ -36,7 +36,8 @@ func CheckTestable(scmProvider scm.Provider, commit string) (bool, error) {
 		if err != nil {
 			return false, seederr.Wrap(err)
 		}
-		worktreeName, _, err := scmProvider.GetCurrentWorktree(monorepoHome)
+		repo := &scm.WorkingRepo{MonorepoHome: monorepoHome}
+		worktreeName, _, err := scmProvider.GetCurrentWorktree(repo)
 		if err != nil {
 			return false, seederr.Wrap(err)
 		}

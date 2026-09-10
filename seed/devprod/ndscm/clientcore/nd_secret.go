@@ -45,9 +45,9 @@ func getSecretWorktree(
 
 func createSecretWorktree(
 	scmProvider scm.Provider,
-	monorepoHome string, userHandle string, space string,
+	repo *scm.WorkingRepo, userHandle string, space string,
 ) (string, error) {
-	worktreeName, worktreePath, exists := getSecretWorktree(monorepoHome, userHandle, space)
+	worktreeName, worktreePath, exists := getSecretWorktree(repo.MonorepoHome, userHandle, space)
 	if exists {
 		return "", seederr.WrapErrorf("worktree path already exists. path=%v", worktreePath)
 	}
@@ -88,7 +88,7 @@ func createSecretWorktree(
 			return "", seederr.WrapErrorf("failed to set tracking for branch %v: %v", branchName, err)
 		}
 	}
-	newWorktreePath, err := scmProvider.CreateWorktree(monorepoHome, branchName)
+	newWorktreePath, err := scmProvider.CreateWorktree(repo, branchName)
 	if err != nil {
 		return "", seederr.WrapErrorf("failed to create worktree for branch %v: %v", branchName, err)
 	}
@@ -152,11 +152,11 @@ func bfsChangedFiles(paths []string) []string {
 
 func NdSecretSync(
 	scmProvider scm.Provider,
-	monorepoHome string, userHandle string, space string,
+	repo *scm.WorkingRepo, userHandle string, space string,
 ) error {
-	worktreeName, worktreePath, exists := getSecretWorktree(monorepoHome, userHandle, space)
+	worktreeName, worktreePath, exists := getSecretWorktree(repo.MonorepoHome, userHandle, space)
 	if !exists {
-		newWorktreePath, err := createSecretWorktree(scmProvider, monorepoHome, userHandle, space)
+		newWorktreePath, err := createSecretWorktree(scmProvider, repo, userHandle, space)
 		if err != nil {
 			return seederr.Wrap(err)
 		}
@@ -341,7 +341,8 @@ func NdSecret(scmProvider scm.Provider, options NdSecretOptions) error {
 	if err != nil {
 		return seederr.Wrap(err)
 	}
-	err = scmProvider.QuickVerifyMonorepo()
+	repo := &scm.WorkingRepo{MonorepoHome: monorepoHome}
+	err = scmProvider.QuickVerifyMonorepo(repo)
 	if err != nil {
 		return seederr.Wrap(err)
 	}
@@ -361,7 +362,7 @@ func NdSecret(scmProvider scm.Provider, options NdSecretOptions) error {
 	}
 	switch subcommand {
 	case "sync":
-		err := NdSecretSync(scmProvider, monorepoHome, userHandle, space)
+		err := NdSecretSync(scmProvider, repo, userHandle, space)
 		if err != nil {
 			return seederr.Wrap(err)
 		}
