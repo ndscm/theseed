@@ -69,7 +69,7 @@ func NdUncut(scmProvider scm.Provider, options NdUncutOptions) error {
 	if err != nil {
 		return seederr.Wrap(err)
 	}
-	err = scmProvider.DeleteBranch(changeBranch)
+	err = scmProvider.DeleteBranch(repo, changeBranch)
 	if err != nil {
 		return seederr.Wrap(err)
 	}

@@ -51,7 +51,7 @@ func continueSplit(
 	if err != nil {
 		return seederr.Wrap(err)
 	}
-	err = scmProvider.DeleteBranch(wipBranchName)
+	err = scmProvider.DeleteBranch(repo, wipBranchName)
 	if err != nil {
 		return seederr.Wrap(err)
 	}
