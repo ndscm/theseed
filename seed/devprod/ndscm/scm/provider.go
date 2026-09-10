@@ -4,6 +4,13 @@ import (
 	"time"
 )
 
+// WorkingRepo identifies the monorepo a provider operates on.
+type WorkingRepo struct {
+	// MonorepoHome is the absolute path to the monorepo's root, under which
+	// worktrees are materialized.
+	MonorepoHome string
+}
+
 // FileStatus describes a single modified or untracked path in a worktree.
 type FileStatus struct {
 	// TODO(nagi): add staging status
@@ -75,7 +82,7 @@ type Provider interface {
 
 	// QuickVerifyMonorepo performs a fast sanity check that the current
 	// working directory belongs to a valid monorepo for this SCM.
-	QuickVerifyMonorepo() error
+	QuickVerifyMonorepo(repo *WorkingRepo) error
 
 	// # branch
 
@@ -225,9 +232,9 @@ type Provider interface {
 
 	// GetCurrentWorktree returns the worktree containing the current working
 	// directory, as both its name (the worktree path relative to
-	// monorepoHome) and its absolute path. It fails if the current worktree
-	// is not under monorepoHome.
-	GetCurrentWorktree(monorepoHome string) (worktreeName string, worktreePath string, err error)
+	// repo.MonorepoHome) and its absolute path. It fails if the current
+	// worktree is not under repo.MonorepoHome.
+	GetCurrentWorktree(repo *WorkingRepo) (worktreeName string, worktreePath string, err error)
 
 	// Checkout switches worktreePath to branchName.
 	Checkout(worktreePath string, branchName string) error
@@ -258,12 +265,12 @@ type Provider interface {
 	CreateCommitReuse(worktreePath string, commit string) error
 
 	// CreateWorktree materializes the worktree at the conventional path for
-	// worktreeName under monorepoHome and returns that path. A branch named
+	// worktreeName under repo.MonorepoHome and returns that path. A branch named
 	// worktreeName must already exist; it is the branch checked out in the
 	// new worktree.
-	CreateWorktree(monorepoHome string, worktreeName string) (string, error)
+	CreateWorktree(repo *WorkingRepo, worktreeName string) (string, error)
 
 	// RemoveWorktree deletes the worktree for worktreeName under
-	// monorepoHome. The branch of the same name is left intact.
-	RemoveWorktree(monorepoHome string, worktreeName string) error
+	// repo.MonorepoHome. The branch of the same name is left intact.
+	RemoveWorktree(repo *WorkingRepo, worktreeName string) error
 }
