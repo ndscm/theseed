@@ -34,9 +34,9 @@ func getTicketWorktree(
 
 func createTicketWorktree(
 	scmProvider scm.Provider,
-	monorepoHome string, space string,
+	repo *scm.WorkingRepo, space string,
 ) (string, error) {
-	worktreeName, worktreePath, exists := getTicketWorktree(monorepoHome, space)
+	worktreeName, worktreePath, exists := getTicketWorktree(repo.MonorepoHome, space)
 	if exists {
 		return "", seederr.WrapErrorf("worktree path already exists. path=%v", worktreePath)
 	}
@@ -73,7 +73,7 @@ func createTicketWorktree(
 			return "", seederr.WrapErrorf("failed to set tracking for branch %v: %v", branchName, err)
 		}
 	}
-	newWorktreePath, err := scmProvider.CreateWorktree(monorepoHome, branchName)
+	newWorktreePath, err := scmProvider.CreateWorktree(repo, branchName)
 	if err != nil {
 		return "", seederr.WrapErrorf("failed to create worktree for branch %v: %v", branchName, err)
 	}
@@ -85,11 +85,11 @@ func createTicketWorktree(
 
 func NdTicketSync(
 	scmProvider scm.Provider,
-	monorepoHome string, space string,
+	repo *scm.WorkingRepo, space string,
 ) error {
-	worktreeName, worktreePath, exists := getTicketWorktree(monorepoHome, space)
+	worktreeName, worktreePath, exists := getTicketWorktree(repo.MonorepoHome, space)
 	if !exists {
-		newWorktreePath, err := createTicketWorktree(scmProvider, monorepoHome, space)
+		newWorktreePath, err := createTicketWorktree(scmProvider, repo, space)
 		if err != nil {
 			return seederr.Wrap(err)
 		}
@@ -131,7 +131,8 @@ func NdTicket(scmProvider scm.Provider, options NdTicketOptions) error {
 	if err != nil {
 		return seederr.Wrap(err)
 	}
-	err = scmProvider.QuickVerifyMonorepo()
+	repo := &scm.WorkingRepo{MonorepoHome: monorepoHome}
+	err = scmProvider.QuickVerifyMonorepo(repo)
 	if err != nil {
 		return seederr.Wrap(err)
 	}
@@ -144,7 +145,7 @@ func NdTicket(scmProvider scm.Provider, options NdTicketOptions) error {
 	}
 	switch subcommand {
 	case "sync":
-		err := NdTicketSync(scmProvider, monorepoHome, space)
+		err := NdTicketSync(scmProvider, repo, space)
 		if err != nil {
 			return seederr.Wrap(err)
 		}

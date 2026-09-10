@@ -22,6 +22,7 @@ func NdSplit(scmProvider scm.Provider, options NdSplitOptions) error {
 	if err != nil {
 		return seederr.Wrap(err)
 	}
+	repo := &scm.WorkingRepo{MonorepoHome: monorepoHome}
 	dirtyFiles, err := scmProvider.ListDirtyFiles("")
 	if err != nil {
 		return seederr.Wrap(err)
@@ -29,7 +30,7 @@ func NdSplit(scmProvider scm.Provider, options NdSplitOptions) error {
 	if len(dirtyFiles) > 0 {
 		return seederr.WrapErrorf("workspace is dirty:\n%v", dirtyFiles)
 	}
-	devWorktreeName, _, err := scmProvider.GetCurrentWorktree(monorepoHome)
+	devWorktreeName, _, err := scmProvider.GetCurrentWorktree(repo)
 	if err != nil {
 		return seederr.Wrap(err)
 	}

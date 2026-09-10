@@ -34,7 +34,8 @@ func NdSubmit(scmProvider scm.Provider, options NdSubmitOptions) error {
 	if err != nil {
 		return seederr.Wrap(err)
 	}
-	err = scmProvider.QuickVerifyMonorepo()
+	repo := &scm.WorkingRepo{MonorepoHome: monorepoHome}
+	err = scmProvider.QuickVerifyMonorepo(repo)
 	if err != nil {
 		return seederr.Wrap(err)
 	}
@@ -78,7 +79,7 @@ func NdSubmit(scmProvider scm.Provider, options NdSubmitOptions) error {
 	}
 	if err == nil {
 		seedlog.Warnf("Worktree %v already exists, removing...", worktreePath)
-		err = scmProvider.RemoveWorktree(monorepoHome, worktreePath)
+		err = scmProvider.RemoveWorktree(repo, worktreePath)
 		if err != nil {
 			return seederr.Wrap(err)
 		}
@@ -103,7 +104,7 @@ func NdSubmit(scmProvider scm.Provider, options NdSubmitOptions) error {
 	if err != nil {
 		return seederr.Wrap(err)
 	}
-	worktreePath, err = scmProvider.CreateWorktree(monorepoHome, submitBranch)
+	worktreePath, err = scmProvider.CreateWorktree(repo, submitBranch)
 	if err != nil {
 		return seederr.Wrap(err)
 	}
@@ -119,7 +120,7 @@ func NdSubmit(scmProvider scm.Provider, options NdSubmitOptions) error {
 	if err != nil {
 		return seederr.Wrap(err)
 	}
-	err = scmProvider.RemoveWorktree(monorepoHome, submitBranch)
+	err = scmProvider.RemoveWorktree(repo, submitBranch)
 	if err != nil {
 		return seederr.Wrap(err)
 	}

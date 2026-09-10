@@ -10,7 +10,9 @@ import (
 type NdContinueOptions struct {
 }
 
-func continueSplit(scmProvider scm.Provider, wipStatus *scm.WipStatus, wipBranchName string) error {
+func continueSplit(
+	scmProvider scm.Provider, repo *scm.WorkingRepo, wipStatus *scm.WipStatus, wipBranchName string,
+) error {
 	if wipStatus.Split == nil {
 		return seederr.WrapErrorf("wip split status is missing a target commit")
 	}
@@ -75,7 +77,8 @@ func NdContinue(scmProvider scm.Provider, options NdContinueOptions) error {
 	if err != nil {
 		return seederr.Wrap(err)
 	}
-	worktreeName, _, err := scmProvider.GetCurrentWorktree(monorepoHome)
+	repo := &scm.WorkingRepo{MonorepoHome: monorepoHome}
+	worktreeName, _, err := scmProvider.GetCurrentWorktree(repo)
 	if err != nil {
 		return seederr.Wrap(err)
 	}
@@ -102,7 +105,7 @@ func NdContinue(scmProvider scm.Provider, options NdContinueOptions) error {
 
 	switch wipStatus.Operation {
 	case "split":
-		err := continueSplit(scmProvider, wipStatus, wipBranchName)
+		err := continueSplit(scmProvider, repo, wipStatus, wipBranchName)
 		if err != nil {
 			return seederr.Wrap(err)
 		}
