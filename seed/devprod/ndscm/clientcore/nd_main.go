@@ -153,7 +153,7 @@ func removeAreaWorktree(
 	if err != nil {
 		return "", seederr.Wrap(err)
 	}
-	err = scmProvider.DeleteBranch(branchName)
+	err = scmProvider.DeleteBranch(repo, branchName)
 	if err != nil {
 		return "", seederr.Wrap(err)
 	}

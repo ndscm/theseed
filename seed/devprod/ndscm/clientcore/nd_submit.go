@@ -87,7 +87,7 @@ func NdSubmit(scmProvider scm.Provider, options NdSubmitOptions) error {
 	_, err = scmProvider.GetCommitId(submitBranch)
 	if err == nil {
 		seedlog.Warnf("Branch %v already exists, removing...", submitBranch)
-		err = scmProvider.DeleteBranch(submitBranch)
+		err = scmProvider.DeleteBranch(repo, submitBranch)
 		if err != nil {
 			return seederr.Wrap(err)
 		}
@@ -124,7 +124,7 @@ func NdSubmit(scmProvider scm.Provider, options NdSubmitOptions) error {
 	if err != nil {
 		return seederr.Wrap(err)
 	}
-	err = scmProvider.DeleteBranch(submitBranch)
+	err = scmProvider.DeleteBranch(repo, submitBranch)
 	if err != nil {
 		return seederr.Wrap(err)
 	}
