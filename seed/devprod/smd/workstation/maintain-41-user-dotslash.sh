@@ -44,6 +44,8 @@ if [[ ",${maintain_scopes}," == *",user,"* ]]; then
     cp -a -f ./seed/vendor/node/bin/npm.dotslash "${HOME}/.local/bin/npm.dotslash"
     cp -a -f ./seed/vendor/node/bin/npx "${HOME}/.local/bin/npx"
     cp -a -f ./seed/vendor/node/bin/npx.dotslash "${HOME}/.local/bin/npx.dotslash"
+    cp -a -f ./seed/vendor/node/bin/pnpm "${HOME}/.local/bin/pnpm"
+    cp -a -f ./seed/vendor/node/bin/pnpm.dotslash "${HOME}/.local/bin/pnpm.dotslash"
     cp -a -f ./seed/vendor/podman/bin/podman-remote "${HOME}/.local/bin/podman-remote"
     cp -a -f ./seed/vendor/podman/bin/podman-remote.dotslash "${HOME}/.local/bin/podman-remote.dotslash"
     cp -a -f ./seed/vendor/rust/bin/rustup "${HOME}/.local/bin/rustup"
