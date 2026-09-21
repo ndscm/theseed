@@ -1,0 +1,4 @@
+seed: python: break fastmcp usages
+
+Break: fastmcp version incompatible
+Migrate: lock fastmcp-slim to 4.0.0b5 with [client,server] extras
