@@ -13,3 +13,4 @@ bazel run //seed/devprod/dotslash/update -- \
 chmod +x ./seed/vendor/ndscm/bin/ndscm.dotslash
 
 ln -s -f ndscm.dotslash ./seed/vendor/ndscm/bin/ndscm
+ln -s -f ndscm.dotslash ./seed/vendor/ndscm/bin/nd
