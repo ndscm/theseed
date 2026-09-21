@@ -1,11 +1,8 @@
-From ac1c5785575d66935a6b2081fe63ee46062617f8 Mon Sep 17 00:00:00 2001
+From 6b423cbdba9e2a084a1124948253b7239fb01313 Mon Sep 17 00:00:00 2001
 From: Nagi <nagi@ndscm.com>
 Date: Wed, 20 May 2026 00:47:07 -0700
 Subject: [PATCH] seed: vendor: android: load sdk from bazel label
 
----
- rules/android_sdk_repository/rule.bzl | 20 +++++++++++---------
- 1 file changed, 11 insertions(+), 9 deletions(-)
 
 diff --git a/rules/android_sdk_repository/rule.bzl b/rules/android_sdk_repository/rule.bzl
 index 34de2b5..1a18a33 100644
@@ -84,6 +81,3 @@ index 34de2b5..1a18a33 100644
              "api_level": attr.int(),
              "build_tools_version": attr.string(),
          }),
--- 
-2.43.0
-
