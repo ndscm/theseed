@@ -23,12 +23,14 @@ use_repo(
 
 # Android SDK
 
-bazel_dep(name = "rules_android", version = "0.7.2")
+bazel_dep(name = "rules_android", version = "0.7.3")
 single_version_override(
     module_name = "rules_android",
     patch_strip = 1,
-    patches = ["//seed/vendor/android/sdk:rules_android.patch"],
-    version = "0.7.2",
+    patches = [
+        "//seed/vendor/android/sdk:rules_android.patch",
+    ],
+    version = "0.7.3",
 )
 
 remote_android_extensions = use_extension(
@@ -49,7 +51,9 @@ bazel_dep(name = "rules_android_ndk", version = "0.1.5")
 single_version_override(
     module_name = "rules_android_ndk",
     patch_strip = 1,
-    patches = ["//seed/vendor/android/sdk:rules_android_ndk.patch"],
+    patches = [
+        "//seed/vendor/android/sdk:rules_android_ndk.patch",
+    ],
     version = "0.1.5",
 )
 

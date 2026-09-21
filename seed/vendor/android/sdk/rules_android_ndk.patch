@@ -1,12 +1,8 @@
-From e83f5effcafa9992b23c86ffa34d3c6595272f80 Mon Sep 17 00:00:00 2001
+From c3f44523b5bdf481b37924118a767dd28182b9ab Mon Sep 17 00:00:00 2001
 From: Nagi <nagi@ndscm.com>
 Date: Wed, 20 May 2026 00:54:05 -0700
 Subject: [PATCH] seed: vendor: android: load ndk from bazel label
 
----
- extension.bzl |  4 ++--
- rules.bzl     | 10 +++++++---
- 2 files changed, 9 insertions(+), 5 deletions(-)
 
 diff --git a/extension.bzl b/extension.bzl
 index 22c8076..164d611 100644
@@ -60,6 +56,3 @@ index 53b9f7c..e7bfbbe 100644
          "api_level": attr.int(),
          "_build": attr.label(default = ":BUILD", allow_single_file = True),
          "_template_ndk_root": attr.label(default = ":BUILD.ndk_root.tpl", allow_single_file = True),
--- 
-2.43.0
-
