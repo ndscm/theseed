@@ -1,7 +1,7 @@
 {
   "name": "@theseed/monorepo",
   "description": "Theseed Monorepo",
-  "version": "25.4.22",
+  "version": "0.0.0",
   "author": "ndscm",
   "license": "MIT",
   "private": true,
