@@ -6,7 +6,6 @@
   "license": "MIT",
   "private": true,
   "devDependencies": {
-    "@ariga/atlas": "catalog:",
     "@bufbuild/protobuf": "catalog:",
     "@bufbuild/protoc-gen-es": "catalog:",
     "@connectrpc/connect": "catalog:",
