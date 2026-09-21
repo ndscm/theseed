@@ -18,7 +18,7 @@ export type RepoConfig = {
    * expects, so that the CLI can warn or adapt when running against a
    * mismatched repo.
    */
-  ndscm: {
+  ndscm?: {
     /**
      * Version of the ndscm tooling this repository targets.
      */
