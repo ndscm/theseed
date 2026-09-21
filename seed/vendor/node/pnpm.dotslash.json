@@ -1,0 +1,59 @@
+{
+  "name": "pnpm",
+  "platforms": {
+    "linux-aarch64": {
+      "path": "pnpm",
+      "format": "tar.gz",
+      "providers": [
+        {
+          "url": "https://github.com/pnpm/pnpm/releases/download/{{TAG}}/pnpm-linux-arm64.tar.gz"
+        }
+      ]
+    },
+    "linux-x86_64": {
+      "path": "pnpm",
+      "format": "tar.gz",
+      "providers": [
+        {
+          "url": "https://github.com/pnpm/pnpm/releases/download/{{TAG}}/pnpm-linux-x64.tar.gz"
+        }
+      ]
+    },
+    "macos-aarch64": {
+      "path": "pnpm",
+      "format": "tar.gz",
+      "providers": [
+        {
+          "url": "https://github.com/pnpm/pnpm/releases/download/{{TAG}}/pnpm-darwin-arm64.tar.gz"
+        }
+      ]
+    },
+    "macos-x86_64": {
+      "path": "pnpm",
+      "format": "tar.gz",
+      "providers": [
+        {
+          "url": "https://github.com/pnpm/pnpm/releases/download/{{TAG}}/pnpm-darwin-x64.tar.gz"
+        }
+      ]
+    },
+    "windows-aarch64": {
+      "path": "pnpm.exe",
+      "format": "zip",
+      "providers": [
+        {
+          "url": "https://github.com/pnpm/pnpm/releases/download/{{TAG}}/pnpm-win32-arm64.zip"
+        }
+      ]
+    },
+    "windows-x86_64": {
+      "path": "pnpm.exe",
+      "format": "zip",
+      "providers": [
+        {
+          "url": "https://github.com/pnpm/pnpm/releases/download/{{TAG}}/pnpm-win32-x64.zip"
+        }
+      ]
+    }
+  }
+}
