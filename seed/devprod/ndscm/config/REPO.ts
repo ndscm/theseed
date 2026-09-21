@@ -14,18 +14,6 @@ export type RepoConfig = {
   domain?: string
 
   /**
-   * ndscm tooling metadata. Controls which version of ndscm the repository
-   * expects, so that the CLI can warn or adapt when running against a
-   * mismatched repo.
-   */
-  ndscm?: {
-    /**
-     * Version of the ndscm tooling this repository targets.
-     */
-    version?: string
-  }
-
-  /**
    * Upstream sources the repository can sync from. Each entry is keyed by a
    * remote name (for example `"theseed"`) and describes how to fetch and
    * track that source.
