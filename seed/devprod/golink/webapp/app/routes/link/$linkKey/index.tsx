@@ -9,8 +9,8 @@ import MuiLink from "@mui/material/Link"
 import Toolbar from "@mui/material/Toolbar"
 import Typography from "@mui/material/Typography"
 
-import { useGolinkService } from "../../../../../client/tsx/GolinkServiceContext"
-import type { Link } from "../../../../../proto/golink_pb"
+import { useGolinkService } from "../../../../../client/tsx/GolinkServiceContext.js"
+import { type Link } from "../../../../../proto/golink_pb.js"
 
 const DetailRow: React.FC<{
   label: string

@@ -5,9 +5,9 @@ import { Outlet } from "react-router"
 import CssBaseline from "@mui/material/CssBaseline"
 import { ThemeProvider } from "@mui/material/styles"
 
-import { LoginServiceProvider } from "../../../../../cloud/login/client/tsx/LoginServiceContext"
-import Gotcha from "../../../../gotcha/tsx/Gotcha"
-import { GolinkServiceProvider } from "../../../client/tsx/GolinkServiceContext"
+import { LoginServiceProvider } from "../../../../../cloud/login/client/tsx/LoginServiceContext.js"
+import Gotcha from "../../../../gotcha/tsx/Gotcha.js"
+import { GolinkServiceProvider } from "../../../client/tsx/GolinkServiceContext.js"
 import GolinkAppBar from "../../components/GolinkAppBar"
 import theme from "./theme"
 
