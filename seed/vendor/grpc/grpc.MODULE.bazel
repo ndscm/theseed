@@ -1,2 +1,14 @@
 bazel_dep(name = "grpc", version = "1.83.0")
 bazel_dep(name = "grpc-java", version = "1.82.0")
+
+# grpc pulls in envoy_api 0.0.0-20251216-6ef568c, which imports
+# `com_google_googleapis_imports` from googleapis' `switched_rules`
+# extension. grpc-java pulls googleapis 0.0.0-20260514-1dbb1a14, where that
+# repo moved to the new `rules_registry` extension, so `switched_rules` no
+# longer generates it and full extension evaluation (e.g. `bazel mod deps`)
+# fails. This newer envoy_api drops the stale import, keeping it compatible
+# with the resolved googleapis.
+bazel_dep(
+    name = "envoy_api",
+    version = "0.0.0-20260901-005c18a.bcr.1",
+)
