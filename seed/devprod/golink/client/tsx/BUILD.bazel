@@ -36,8 +36,11 @@ js_library(
     name = "tsx",
     srcs = [
         "GolinkServiceContext/index.ts",
-        ":package.json",
-    ],
+        "package.json",
+    ] + glob([
+        "*.d.ts",
+        "*.js",
+    ]),
     deps = [":ts_project"],
 )
 
