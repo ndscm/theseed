@@ -2,11 +2,15 @@
   "name": "@theseed/seed-devprod-gotcha-tsx",
   "version": "0.0.0",
   "private": true,
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "type": "module",
   "files": [
-    "/dist"
+    "*.d.ts",
+    "*.js",
+    "dist"
   ],
+  "exports": {
+    "./*": "./dist/*.js"
+  },
   "scripts": {
     "build": "tsc"
   },
