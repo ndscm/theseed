@@ -49,7 +49,9 @@ js_library(
     srcs = [
         "buildinfo/index.d.ts",
         "buildinfo/index.js",
-        ":package.json",
+        "index.d.ts",
+        "index.js",
+        "package.json",
     ],
     visibility = ["//visibility:public"],
     deps = [":ts_project"],
