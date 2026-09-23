@@ -131,7 +131,7 @@ export default {
     bazel: {
       target: "MODULE.bazel.lock",
       watch: "(^|/)BUILD.bazel$",
-      run: "bazel mod tidy",
+      run: "bazel mod tidy --lockfile_mode=update",
       granularity: true,
     },
     cargo: {
