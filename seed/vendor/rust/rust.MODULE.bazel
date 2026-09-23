@@ -1,4 +1,9 @@
-bazel_dep(name = "rules_rust", version = "0.74.0")
+# Pinned to 0.70.0: do not bump until protobuf v37 is released.
+#
+# After 0.71.0, crate_universe hard-fails when a non-root module uses the
+# extension without a `lockfile = ...`. rules_rust resolves graph-wide, so this
+# also hits protobuf, whose `crate.from_specs()` ships no lockfile until v37.
+bazel_dep(name = "rules_rust", version = "0.70.0")
 
 crate = use_extension("@rules_rust//crate_universe:extensions.bzl", "crate")
 crate.from_cargo(
