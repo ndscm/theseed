@@ -39,8 +39,11 @@ js_library(
         "LoginButton/index.js",
         "LoginServiceContext/index.d.ts",
         "LoginServiceContext/index.js",
-        ":package.json",
-    ],
+        "package.json",
+    ] + glob([
+        "*.d.ts",
+        "*.js",
+    ]),
     visibility = ["//visibility:public"],
     deps = [
         ":ts_project",
