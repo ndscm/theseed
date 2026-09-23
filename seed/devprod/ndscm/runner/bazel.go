@@ -147,6 +147,7 @@ func (gnd *BazelGround) build(worktreePath string) error {
 	}
 	bazelArgs := []string{
 		"build",
+		"--lockfile_mode=off",
 		"--aspects=.cache/ndscm/default_executable_aspect.bzl%default_executable_aspect",
 		"--output_groups=+default_executable",
 	}
@@ -212,7 +213,7 @@ func (gnd *BazelGround) fulfillRawBazel(bashCmd string, dirRepoPath string, baze
 		absoluteBazelTarget := absolutizeBazelTarget(dirRepoPath, bazelTarget)
 		if i == 0 {
 			if strings.Contains(bashCmd, "{{BAZEL_RUN}}") {
-				bashCmd = strings.ReplaceAll(bashCmd, "{{BAZEL_RUN}}", "bazel run "+absoluteBazelTarget+" -- ")
+				bashCmd = strings.ReplaceAll(bashCmd, "{{BAZEL_RUN}}", "bazel run --lockfile_mode=off "+absoluteBazelTarget+" -- ")
 			}
 			if strings.Contains(bashCmd, "{{BAZEL_EXECUTABLE}}") {
 				bashCmd = strings.ReplaceAll(bashCmd, "{{BAZEL_EXECUTABLE}}", "")
@@ -222,7 +223,7 @@ func (gnd *BazelGround) fulfillRawBazel(bashCmd string, dirRepoPath string, baze
 			}
 		}
 		if strings.Contains(bashCmd, "{{BAZEL_RUN["+strconv.Itoa(i)+"]}}") {
-			bashCmd = strings.ReplaceAll(bashCmd, "{{BAZEL_RUN["+strconv.Itoa(i)+"]}}", "bazel run "+absoluteBazelTarget+" -- ")
+			bashCmd = strings.ReplaceAll(bashCmd, "{{BAZEL_RUN["+strconv.Itoa(i)+"]}}", "bazel run --lockfile_mode=off "+absoluteBazelTarget+" -- ")
 		}
 		if strings.Contains(bashCmd, "{{BAZEL_EXECUTABLE["+strconv.Itoa(i)+"]}}") {
 			bashCmd = strings.ReplaceAll(bashCmd, "{{BAZEL_EXECUTABLE["+strconv.Itoa(i)+"]}}", "")
