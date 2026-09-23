@@ -87,7 +87,11 @@ export default {
   },
   tidy: {
     bazel: {
-      target: "MODULE.bazel",
+      target: [
+        // sort
+        "go.MODULE.bazel",
+        "MODULE.bazel",
+      ],
       watch: "(^|/)BUILD.bazel$",
       run: "bazel mod tidy",
     },
