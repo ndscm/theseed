@@ -11,7 +11,7 @@
     "index.js"
   ],
   "scripts": {
-    "build": "./build.sh"
+    "build": "bazel run --stamp :bootstrap"
   },
   "devDependencies": {
     "@types/node": "catalog:",
