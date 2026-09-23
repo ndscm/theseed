@@ -35,7 +35,9 @@ ts_project(
 js_library(
     name = "vite-plugin-unsafe-dev-login",
     srcs = [
-        ":package.json",
+        "index.d.ts",
+        "index.js",
+        "package.json",
     ],
     visibility = ["//visibility:public"],
     deps = [
