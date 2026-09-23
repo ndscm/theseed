@@ -9,9 +9,9 @@ import Link from "@mui/material/Link"
 import Toolbar from "@mui/material/Toolbar"
 import Typography from "@mui/material/Typography"
 
-import LoginButton from "../../../../cloud/login/client/tsx/LoginButton"
-import { useLoginService } from "../../../../cloud/login/client/tsx/LoginServiceContext"
-import { type LoginStatus } from "../../../../cloud/login/proto/login_pb"
+import LoginButton from "../../../../cloud/login/client/tsx/LoginButton.js"
+import { useLoginService } from "../../../../cloud/login/client/tsx/LoginServiceContext.js"
+import { type LoginStatus } from "../../../../cloud/login/proto/login_pb.js"
 
 const GolinkAppBar: React.FC = () => {
   const { t } = useTranslation("common")
