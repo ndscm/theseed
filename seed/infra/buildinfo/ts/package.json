@@ -2,10 +2,13 @@
   "name": "@theseed/seed-infra-buildinfo-ts",
   "version": "0.0.0",
   "private": true,
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "type": "module",
+  "main": "index.js",
+  "types": "index.d.ts",
   "files": [
-    "/dist"
+    "dist",
+    "index.d.ts",
+    "index.js"
   ],
   "scripts": {
     "build": "./build.sh"
