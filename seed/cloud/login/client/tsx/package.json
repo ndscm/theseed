@@ -18,7 +18,6 @@
     "@bufbuild/protobuf": "catalog:",
     "@connectrpc/connect": "catalog:",
     "@connectrpc/connect-web": "catalog:",
-    "@theseed/seed-cloud-login-proto": "workspace:^",
     "react": "catalog:",
     "react-dom": "catalog:"
   },
