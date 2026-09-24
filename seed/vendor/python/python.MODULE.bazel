@@ -8,11 +8,20 @@ python = use_extension("@rules_python//python/extensions:python.bzl", "python")
 python.toolchain(
     python_version = "3.13",
 )
+use_repo(python, "python_3_13_host")
+
+python_locks = use_extension("//seed/vendor/python:extensions.bzl", "python_locks")
+python_locks.load_uv_lock(
+    name = "python_locks",
+    python = "@python_3_13_host//:python",
+    uv_lock = "//:uv.lock",
+)
+use_repo(python_locks, "python_locks")
 
 pip = use_extension("@rules_python//python/extensions:pip.bzl", "pip")
 pip.parse(
     hub_name = "pypi",
     python_version = "3.13",
-    requirements_lock = "//:requirements.txt",
+    requirements_lock = "@python_locks//:requirements.txt",
 )
 use_repo(pip, "pypi")
