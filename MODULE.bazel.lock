@@ -737,6 +737,24 @@
         }
       }
     },
+    "//seed/vendor/python:extensions.bzl%python_locks": {
+      "general": {
+        "bzlTransitiveDigest": "XDSk7zYzxmc1GDTqx+1VW7NTd1RI9tAmtEHDoaxQWvU=",
+        "usagesDigest": "KwmxsYD6Wmsy7wGjJs+8pRJN4BUVMmcpC1m2cFfmQhU=",
+        "recordedInputs": [
+          "REPO_MAPPING:,python_3_13_host rules_python++python+python_3_13_host"
+        ],
+        "generatedRepoSpecs": {
+          "python_locks": {
+            "repoRuleId": "@@//seed/vendor/python:extensions.bzl%_load_uv_lock_rule",
+            "attributes": {
+              "python": "@@rules_python++python+python_3_13_host//:python",
+              "uv_lock": "@@//:uv.lock"
+            }
+          }
+        }
+      }
+    },
     "@@aspect_tools_telemetry+//:extension.bzl%telemetry": {
       "general": {
         "bzlTransitiveDigest": "4w9RM0xjdKo1crk5zL20a/TuhqO0P1z1LsuXDneBXD4=",
