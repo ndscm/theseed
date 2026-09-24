@@ -1,0 +1,11 @@
+load("@rules_python//python:defs.bzl", "py_binary")
+
+py_binary(
+    name = "export_requirements",
+    srcs = ["export_requirements.py"],
+    visibility = ["//visibility:public"],
+    deps = [
+        "//seed/infra/flag/python:seed_flag",
+        "//seed/infra/init/python:seed_init",
+    ],
+)
