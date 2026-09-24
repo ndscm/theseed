@@ -118,6 +118,8 @@ export default {
         "^gazelle_python_modules_mapping_darwin.json$",
         "^gazelle_python_modules_mapping_linux.json$",
         "^pyproject.toml$",
+        "^requirements.txt$",
+        "^uv.lock$",
       ],
       run: "bazel run //:gazelle_python_manifest.update",
     },
