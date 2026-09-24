@@ -12,7 +12,7 @@ async def main():
     if not build_workspace_directory:
         raise ValueError("must run with bazel")
     with open(
-        "seed/devprod/python/modules_mapping/local_modules_mapping.json", "r"
+        "seed/devprod/python/modules_mapping/modules_mapping_native.json", "r"
     ) as f:
         mapping: dict[str, str] = json.load(f)
     mapping = {k: v.lower() for k, v in mapping.items()}

@@ -1,18 +1,34 @@
 load("@pypi//:requirements.bzl", "all_whl_requirements")
 load("@rules_python//python:defs.bzl", "py_binary")
 load("@rules_python_gazelle_plugin//modules_mapping:def.bzl", "modules_mapping")
+load(":platform.bzl", "modules_mapping_platform")
 
 modules_mapping(
-    name = "local_modules_mapping_json",
-    modules_mapping_name = "local_modules_mapping.json",
+    name = "modules_mapping_native",
+    modules_mapping_name = "modules_mapping_native.json",
     wheels = all_whl_requirements,
+)
+
+modules_mapping_platform(
+    name = "modules_mapping_linux",
+    out = "modules_mapping_linux.json",
+    native = ":modules_mapping_native",
+    platform = "//seed/devprod/platform/linux:amd64",
+    target_compatible_with = ["@platforms//os:linux"],
+)
+
+modules_mapping_platform(
+    name = "modules_mapping_darwin",
+    out = "modules_mapping_darwin.json",
+    native = ":modules_mapping_native",
+    platform = "//seed/devprod/platform/darwin:arm64",
 )
 
 py_binary(
     name = "generate",
     srcs = ["generate.py"],
     data = [
-        ":local_modules_mapping_json",
+        ":modules_mapping_native",
     ],
     deps = ["//seed/infra/init/python:seed_init"],
 )
@@ -25,4 +41,16 @@ py_binary(
         "//seed/infra/flag/python:seed_flag",
         "//seed/infra/init/python:seed_init",
     ],
+)
+
+genrule(
+    name = "modules_mapping",
+    srcs = [
+        ":modules_mapping_darwin",
+        ":modules_mapping_linux",
+    ],
+    outs = ["modules_mapping.json"],
+    cmd_bash = "$(execpath :merge) $(SRCS) > $@",
+    tools = [":merge"],
+    visibility = ["//visibility:public"],
 )
