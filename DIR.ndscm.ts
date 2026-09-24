@@ -161,7 +161,7 @@ export default {
     requirements: {
       target: "requirements.txt",
       watch: "^uv.lock$",
-      run: "uv sync && uv export --format requirements-txt > ./requirements.txt",
+      run: "bazel run //seed/devprod/python/translate_uv_lock:export_requirements -- $(pwd)/uv.lock > ./requirements.txt",
     },
     uv: {
       target: "uv.lock",

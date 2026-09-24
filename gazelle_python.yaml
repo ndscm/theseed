@@ -266,4 +266,4 @@ manifest:
     zipp: zipp
   pip_repository:
     name: pypi
-integrity: f826ac8771c55dc76a2909e39a335d5291d34c1a0dac0e34d55dee2c446ef4ef
+integrity: 30733f29789462a45ec78ee3afeb34d821f49c4a7596628108653c680bb9efc1
