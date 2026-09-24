@@ -54,7 +54,7 @@ gazelle_python_manifest(
     modules_mapping = ":gazelle_python_modules_mapping",
     pip_repository_name = "pypi",
     requirements = [
-        "//:requirements.txt",
+        "@python_locks//:requirements.txt",
     ],
 )
 

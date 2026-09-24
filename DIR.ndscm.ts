@@ -109,7 +109,7 @@ export default {
         "gazelle_python_modules_mapping_darwin.json",
         "gazelle_python_modules_mapping_linux.json",
       ],
-      watch: ["^pyproject.toml$", "^requirements.txt$"],
+      watch: ["^pyproject.toml$", "^uv.lock$"],
       run: "bazel run //seed/devprod/python/modules_mapping:generate",
     },
     gazelle_python: {
@@ -118,7 +118,6 @@ export default {
         "^gazelle_python_modules_mapping_darwin.json$",
         "^gazelle_python_modules_mapping_linux.json$",
         "^pyproject.toml$",
-        "^requirements.txt$",
         "^uv.lock$",
       ],
       run: "bazel run //:gazelle_python_manifest.update",
@@ -157,11 +156,6 @@ export default {
       ],
       run: 'bazel run @pnpm//:pnpm -- --dir "$(pwd)" install',
       granularity: true,
-    },
-    requirements: {
-      target: "requirements.txt",
-      watch: "^uv.lock$",
-      run: "uv sync && uv export --format requirements-txt > ./requirements.txt",
     },
     uv: {
       target: "uv.lock",
