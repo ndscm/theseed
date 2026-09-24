@@ -23,5 +23,14 @@ pip.parse(
     hub_name = "pypi",
     python_version = "3.13",
     requirements_lock = "@python_locks//:requirements.txt",
+    # Resolve wheels for every platform we support so a single workstation can
+    # introspect all wheels (e.g. to generate the gazelle modules mapping)
+    # without needing one machine per OS. Wheels are fetched via the bazel
+    # downloader and never executed, so cross-platform resolution is host
+    # independent.
+    target_platforms = [
+        "linux_x86_64",
+        "osx_aarch64",
+    ],
 )
 use_repo(pip, "pypi")
