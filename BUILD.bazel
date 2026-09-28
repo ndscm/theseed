@@ -1,9 +1,7 @@
 load("@gazelle//:def.bzl", "gazelle", "gazelle_binary")
 load("@hedron_compile_commands//:refresh_compile_commands.bzl", "refresh_compile_commands")
 load("@npm//:defs.bzl", "npm_link_all_packages")
-load("@pypi//:requirements.bzl", "all_whl_requirements")
 load("@rules_python_gazelle_plugin//manifest:defs.bzl", "gazelle_python_manifest")
-load("@rules_python_gazelle_plugin//modules_mapping:def.bzl", "modules_mapping")
 
 # gazelle:exclude **/*_pb2_grpc.py
 # gazelle:exclude **/*_pb2.py
@@ -19,6 +17,13 @@ load("@rules_python_gazelle_plugin//modules_mapping:def.bzl", "modules_mapping")
 # gazelle:resolve_regexp go github.com/([^/]+)/([^/]+)/(.*)/database/ent //${3}/database:ent
 # gazelle:resolve_regexp go github.com/([^/]+)/([^/]+)/(.*)/database/ent/(.*) //${3}/database:ent/${4}
 
+genrule(
+    name = "noop",
+    outs = ["noop.sh"],
+    cmd_bash = "printf '#!/bin/sh\\nexit 0\\n' > $@",
+    executable = True,
+)
+
 # CC
 
 refresh_compile_commands(
@@ -33,29 +38,27 @@ npm_link_all_packages()
 
 # Python
 
-modules_mapping(
-    name = "modules_map",
-    wheels = all_whl_requirements,
-)
-
-genrule(
-    name = "gazelle_python_modules_mapping",
-    srcs = [
-        "gazelle_python_modules_mapping_darwin.json",
-        "gazelle_python_modules_mapping_linux.json",
-    ],
-    outs = ["gazelle_python_modules_mapping.json"],
-    cmd_bash = "$(location //seed/devprod/python/modules_mapping:merge) $(SRCS) > $@",
-    tools = ["//seed/devprod/python/modules_mapping:merge"],
-)
-
+# The manifest merges the per-OS modules mappings, one of which resolves the
+# Linux wheels. evdev is Linux-only and ships no wheels (sdist only), so building
+# that mapping compiles evdev from source, which needs Linux kernel headers. That
+# compile only succeeds on a Linux host, so the manifest can only be regenerated
+# on Linux for now; on other hosts the target is incompatible and skipped.
 gazelle_python_manifest(
     name = "gazelle_python_manifest",
-    modules_mapping = ":gazelle_python_modules_mapping",
+    modules_mapping = "//seed/devprod/python/modules_mapping",
     pip_repository_name = "pypi",
     requirements = [
         "@python_locks//:requirements.txt",
     ],
+    target_compatible_with = ["@platforms//os:linux"],
+)
+
+alias(
+    name = "update_gazelle_python_manifest",
+    actual = select({
+        "@platforms//os:linux": ":gazelle_python_manifest.update",
+        "//conditions:default": ":noop",
+    }),
 )
 
 # Gazelle
