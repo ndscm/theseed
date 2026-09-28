@@ -104,23 +104,10 @@ export default {
       watch: "\\.go$",
       run: "bazel run @rules_go//go -- mod tidy -e",
     },
-    gazelle_python_modules_mapping: {
-      target: [
-        "gazelle_python_modules_mapping_darwin.json",
-        "gazelle_python_modules_mapping_linux.json",
-      ],
-      watch: ["^pyproject.toml$", "^uv.lock$"],
-      run: "bazel run //seed/devprod/python/modules_mapping:generate",
-    },
     gazelle_python: {
       target: "gazelle_python.yaml",
-      watch: [
-        "^gazelle_python_modules_mapping_darwin.json$",
-        "^gazelle_python_modules_mapping_linux.json$",
-        "^pyproject.toml$",
-        "^uv.lock$",
-      ],
-      run: "bazel run //:gazelle_python_manifest.update",
+      watch: ["^pyproject.toml$", "^uv.lock$"],
+      run: "bazel run //:update_gazelle_python_manifest",
     },
     gazelle_build: {
       target: "BUILD.bazel",
