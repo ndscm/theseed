@@ -241,8 +241,8 @@ manifest:
     setuptools: setuptools
     six: six
     sniffio: sniffio
-    socks: pysocks
-    sockshandler: pysocks
+    socks: PySocks
+    sockshandler: PySocks
     sortedcontainers: sortedcontainers
     soupsieve: soupsieve
     srt: srt
@@ -266,4 +266,4 @@ manifest:
     zipp: zipp
   pip_repository:
     name: pypi
-integrity: a74bfdb7c1a45ad3d0502333632bd322cde01cf3c31e455988c93afb8a7ad782
+integrity: e1eae33817aa18da3d084269d78cddd1b90d73e9952bd4d0153e2272226d4620
