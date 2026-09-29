@@ -30,7 +30,15 @@ func LoadDirConfigs(worktreePath string, scmFilePaths []string) (map[string]*Dir
 		if filepath.Base(scmFilePath) != "DIR.ndscm.ts" {
 			continue
 		}
-		dirConfig, err := LoadDirConfig(filepath.Join(worktreePath, scmFilePath))
+		dirConfigPath := filepath.Join(worktreePath, scmFilePath)
+		_, err := os.Stat(dirConfigPath)
+		if os.IsNotExist(err) {
+			// The config was deleted (e.g. removed in the most recent commit)
+			// but may still appear in the scan paths so other rules can react
+			// to the deletion. There is nothing to load here.
+			continue
+		}
+		dirConfig, err := LoadDirConfig(dirConfigPath)
 		if err != nil {
 			return nil, seederr.Wrap(err)
 		}
