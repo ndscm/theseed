@@ -34,8 +34,11 @@ js_library(
     srcs = [
         "MarkdownView/index.d.ts",
         "MarkdownView/index.js",
-        ":package.json",
-    ],
+        "package.json",
+    ] + glob([
+        "*.d.ts",
+        "*.js",
+    ]),
     visibility = ["//visibility:public"],
     deps = [":ts_project"],
 )
