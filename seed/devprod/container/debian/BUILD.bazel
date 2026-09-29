@@ -4,7 +4,7 @@ load("@rules_img//img:layer.bzl", "layer_from_tar")
 load("@rules_img//img:load.bzl", "image_load")
 load("//seed/devprod/container/starlark:apt.bzl", "apt_mirror")
 load("//seed/devprod/container/starlark:container.bzl", "build_freedom_image")
-load("//seed/devprod/container/starlark:transition.bzl", "layer_linux_x64")
+load("//seed/devprod/container/starlark:transition.bzl", "layer_single_platform")
 
 layer_from_tar(
     name = "13_apt_layer",
@@ -12,9 +12,10 @@ layer_from_tar(
     target_compatible_with = ["@platforms//os:linux"],
 )
 
-layer_linux_x64(
-    name = "13_apt_layer_linux_x64",
-    actual = ":13_apt_layer",
+layer_single_platform(
+    name = "13_apt_layer_linux_amd64",
+    native = ":13_apt_layer",
+    platform = "//seed/devprod/platform/linux:amd64",
 )
 
 # rules_distroless installs the `ca-certificates` .deb but does not run its
@@ -32,9 +33,10 @@ layer_from_tar(
     target_compatible_with = ["@platforms//os:linux"],
 )
 
-layer_linux_x64(
-    name = "13_cacerts_layer_linux_x64",
-    actual = ":13_cacerts_layer",
+layer_single_platform(
+    name = "13_cacerts_layer_linux_amd64",
+    native = ":13_cacerts_layer",
+    platform = "//seed/devprod/platform/linux:amd64",
 )
 
 image_manifest(
@@ -46,8 +48,8 @@ image_manifest(
         "LC_ALL": "C.UTF-8",
     },
     layers = [
-        ":13_apt_layer_linux_x64",
-        ":13_cacerts_layer_linux_x64",
+        ":13_apt_layer_linux_amd64",
+        ":13_cacerts_layer_linux_amd64",
     ],
     platform = "//seed/devprod/platform/linux:amd64",
     visibility = ["//visibility:public"],
