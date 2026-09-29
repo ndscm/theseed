@@ -2,7 +2,5 @@
   "name": "@theseed/seed-devprod-golink-proto",
   "version": "0.0.0",
   "private": true,
-  "scripts": {
-    "build": "./build.sh ts"
-  }
+  "type": "module"
 }
