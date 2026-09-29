@@ -37,39 +37,3 @@ platform(
     ],
     deprecation = "Use //seed/devprod/platform/android:amd64 instead.",
 )
-
-platform(
-    name = "linux-arm32",
-    constraint_values = [
-        "@platforms//os:linux",
-        "@platforms//cpu:armv7",
-    ],
-    deprecation = "Use //seed/devprod/platform/linux:arm instead.",
-)
-
-platform(
-    name = "linux-arm64",
-    constraint_values = [
-        "@platforms//os:linux",
-        "@platforms//cpu:aarch64",
-    ],
-    deprecation = "Use //seed/devprod/platform/linux:arm64 instead.",
-)
-
-platform(
-    name = "linux-x86",
-    constraint_values = [
-        "@platforms//os:linux",
-        "@platforms//cpu:x86_32",
-    ],
-    deprecation = "Use //seed/devprod/platform/linux:x86 instead.",
-)
-
-platform(
-    name = "linux-x64",
-    constraint_values = [
-        "@platforms//os:linux",
-        "@platforms//cpu:x86_64",
-    ],
-    deprecation = "Use //seed/devprod/platform/linux:amd64 instead.",
-)
