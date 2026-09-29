@@ -2,10 +2,13 @@
   "name": "@theseed/seed-devprod-ts-grouping-tailwind",
   "version": "0.0.0",
   "private": true,
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "type": "module",
+  "main": "index.js",
+  "types": "index.d.ts",
   "files": [
-    "/dist"
+    "*.d.ts",
+    "*.js",
+    "dist"
   ],
   "scripts": {
     "build": "tsc"
