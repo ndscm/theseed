@@ -531,9 +531,6 @@ importers:
 
   seed/devprod/vscode/web/tsx:
     dependencies:
-      '@theseed/seed-devprod-vscode-web-ts-web-file-system':
-        specifier: workspace:^
-        version: link:../ts/web-file-system
       react:
         specifier: 19.2.8
         version: 19.2.8
