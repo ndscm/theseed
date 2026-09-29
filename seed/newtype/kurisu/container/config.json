@@ -1,6 +1,0 @@
-{
-  "config": {
-    "Entrypoint": ["/opt/kurisu/kurisu-server"],
-    "User": "kurisu"
-  }
-}
