@@ -3,9 +3,9 @@ import { useTranslation } from "react-i18next"
 
 import { ClipboardCopyIcon, UserKeyIcon, XIcon } from "lucide-react"
 
-import tw from "../../../../../../../../devprod/ts/grouping-tailwind"
-import { useHooinRosterService } from "../../../../../../../hooin/roster/client/tsx/HooinRosterServiceContext"
-import { useKurisuService } from "../../../../../../client/tsx/KurisuServiceContext"
+import tw from "../../../../../../../../devprod/ts/grouping-tailwind/index.js"
+import { useHooinRosterService } from "../../../../../../../hooin/roster/client/tsx/HooinRosterServiceContext.js"
+import { useKurisuService } from "../../../../../../client/tsx/KurisuServiceContext.js"
 
 const PersonAttendancePage: React.FC<{ params: { handle: string } }> = ({
   params,

@@ -2,9 +2,9 @@ import React, { useCallback, useEffect } from "react"
 import { useTranslation } from "react-i18next"
 import { useNavigate } from "react-router"
 
-import tw from "../../../../../../../devprod/ts/grouping-tailwind"
-import { useHooinRosterService } from "../../../../../../hooin/roster/client/tsx/HooinRosterServiceContext"
-import { type TeamMember } from "../../../../../../hooin/roster/proto/roster_pb"
+import tw from "../../../../../../../devprod/ts/grouping-tailwind/index.js"
+import { useHooinRosterService } from "../../../../../../hooin/roster/client/tsx/HooinRosterServiceContext.js"
+import { type TeamMember } from "../../../../../../hooin/roster/proto/roster_pb.js"
 import KurisuAvatar from "../../../../components/KurisuAvatar"
 import OrganicUtils from "../../../../utils/OrganicUtils"
 

@@ -1,7 +1,7 @@
 import React from "react"
 import { useTranslation } from "react-i18next"
 
-import tw from "../../../../../../../../devprod/ts/grouping-tailwind"
+import tw from "../../../../../../../../devprod/ts/grouping-tailwind/index.js"
 
 const PersonChatPage: React.FC<{ params: { handle: string } }> = ({
   params,

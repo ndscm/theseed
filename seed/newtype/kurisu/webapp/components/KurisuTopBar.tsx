@@ -2,7 +2,7 @@ import React from "react"
 
 import { PanelLeftOpenIcon } from "lucide-react"
 
-import tw from "../../../../devprod/ts/grouping-tailwind/dist"
+import tw from "../../../../devprod/ts/grouping-tailwind/index.js"
 
 const KurisuTopBar: React.FC<{
   title: React.ReactNode
