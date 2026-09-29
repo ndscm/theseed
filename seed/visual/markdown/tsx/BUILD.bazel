@@ -32,8 +32,6 @@ ts_project(
 js_library(
     name = "tsx",
     srcs = [
-        "MarkdownView/index.d.ts",
-        "MarkdownView/index.js",
         "package.json",
     ] + glob([
         "*.d.ts",
