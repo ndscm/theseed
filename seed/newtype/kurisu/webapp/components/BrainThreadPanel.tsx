@@ -13,15 +13,15 @@ import {
   ZapIcon,
 } from "lucide-react"
 
-import tw from "../../../../devprod/ts/grouping-tailwind"
-import MarkdownView from "../../../../visual/markdown/tsx/MarkdownView"
+import tw from "../../../../devprod/ts/grouping-tailwind/index.js"
+import MarkdownView from "../../../../visual/markdown/tsx/MarkdownView.js"
 import ClaudePayload, {
   type StreamOutputMessage,
-} from "../../../gajetto/payload/ts/claude-payload"
+} from "../../../gajetto/payload/ts/claude-payload/index.js"
 import {
   type BrainStep,
   BrainStepSchema,
-} from "../../../gajetto/proto/brain_pb"
+} from "../../../gajetto/proto/brain_pb.js"
 import BrainThreadInput from "./BrainThreadInput"
 import KurisuPanel from "./KurisuPanel"
 

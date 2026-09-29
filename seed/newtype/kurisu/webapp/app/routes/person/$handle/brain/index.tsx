@@ -12,16 +12,16 @@ import { useTranslation } from "react-i18next"
 
 import { BracketsIcon, CornerDownLeftIcon, SendIcon } from "lucide-react"
 
-import tw from "../../../../../../../../devprod/ts/grouping-tailwind"
+import tw from "../../../../../../../../devprod/ts/grouping-tailwind/index.js"
 import {
   type BrainInput,
   BrainInputSchema,
   type BrainStep,
   BrainStepSchema,
-} from "../../../../../../../gajetto/proto/brain_pb"
-import { useHooinDictateService } from "../../../../../../../hooin/dictate/client/tsx/HooinDictateServiceContext"
-import { PersonTopicSchema } from "../../../../../../../hooin/dictate/proto/dictate_pb"
-import { useHooinRosterService } from "../../../../../../../hooin/roster/client/tsx/HooinRosterServiceContext"
+} from "../../../../../../../gajetto/proto/brain_pb.js"
+import { useHooinDictateService } from "../../../../../../../hooin/dictate/client/tsx/HooinDictateServiceContext.js"
+import { PersonTopicSchema } from "../../../../../../../hooin/dictate/proto/dictate_pb.js"
+import { useHooinRosterService } from "../../../../../../../hooin/roster/client/tsx/HooinRosterServiceContext.js"
 import BrainThreadPanel, {
   type BrainThread,
 } from "../../../../../components/BrainThreadPanel"
