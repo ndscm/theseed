@@ -16,11 +16,8 @@
   },
   "dependencies": {
     "@bufbuild/protobuf": "catalog:",
-    "@theseed/seed-devprod-vscode-web-ts-web-file-system": "workspace:^",
     "@connectrpc/connect": "catalog:",
     "@connectrpc/connect-web": "catalog:",
-    "@theseed/seed-infra-filesystem-proto": "workspace:^",
-    "@theseed/seed-newtype-hooin-raid-proto": "workspace:^",
     "react": "catalog:",
     "react-dom": "catalog:"
   },
