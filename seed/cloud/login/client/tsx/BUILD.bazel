@@ -35,10 +35,6 @@ ts_project(
 js_library(
     name = "tsx",
     srcs = [
-        "LoginButton/index.d.ts",
-        "LoginButton/index.js",
-        "LoginServiceContext/index.d.ts",
-        "LoginServiceContext/index.js",
         "package.json",
     ] + glob([
         "*.d.ts",
