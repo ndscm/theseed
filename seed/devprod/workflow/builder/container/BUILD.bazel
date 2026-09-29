@@ -109,7 +109,7 @@ image_manifest(
         ":etc_group_layer",
         ":home_builder_layer",
     ],
-    platform = "//seed/devprod/platform:linux-x64",
+    platform = "//seed/devprod/platform/linux:amd64",
     user = "builder",
     visibility = ["//visibility:public"],
     working_dir = "/home/builder",
