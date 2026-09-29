@@ -15,7 +15,6 @@
     "build": "tsc"
   },
   "dependencies": {
-    "@theseed/seed-devprod-vscode-web-ts-web-file-system": "workspace:^",
     "react": "catalog:",
     "react-dom": "catalog:"
   },
