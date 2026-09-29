@@ -35,7 +35,6 @@ ts_project(
 js_library(
     name = "tsx",
     srcs = [
-        "StuffServiceContext/index.ts",
         "package.json",
     ] + glob([
         "*.d.ts",
