@@ -37,8 +37,6 @@ ts_project(
 js_library(
     name = "tsx",
     srcs = [
-        "HooinInvadeServiceContext/index.d.ts",
-        "HooinInvadeServiceContext/index.js",
         "package.json",
     ] + glob([
         "*.d.ts",
