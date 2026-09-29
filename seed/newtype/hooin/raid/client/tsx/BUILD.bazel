@@ -42,8 +42,11 @@ js_library(
         "HooinRaidFileSystem/index.js",
         "HooinRaidServiceContext/index.d.ts",
         "HooinRaidServiceContext/index.js",
-        ":package.json",
-    ],
+        "package.json",
+    ] + glob([
+        "*.d.ts",
+        "*.js",
+    ]),
     deps = [":ts_project"],
 )
 
