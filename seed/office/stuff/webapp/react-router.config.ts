@@ -10,12 +10,7 @@ export default {
   basename: BUILD_LANGUAGE == DEFAULT_LANGUAGE ? "/" : `/${BUILD_LANGUAGE}/`,
   buildDirectory: "dist/" + BUILD_LANGUAGE,
   ssr: false,
-  prerender: async () => {
-    return [
-      // sort
-      "/",
-    ]
-  },
+  prerender: true,
 
   /**
    * Hack: Flatten the localized build output to align React Router with Vite's asset pipeline.
