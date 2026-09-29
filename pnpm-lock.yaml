@@ -302,9 +302,6 @@ importers:
 
   seed/cloud/login/ts/vite-plugin-unsafe-dev-login:
     devDependencies:
-      '@theseed/seed-infra-auth-ts':
-        specifier: workspace:^
-        version: link:../../../../infra/auth/ts
       '@types/node':
         specifier: 26.2.0
         version: 26.2.0
