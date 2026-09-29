@@ -1,6 +1,0 @@
-{
-  "config": {
-    "Entrypoint": ["/opt/hooin/hooin-server"],
-    "User": "hooin"
-  }
-}
