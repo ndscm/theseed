@@ -28,7 +28,9 @@ ts_project(
 js_library(
     name = "claude-payload",
     srcs = [
-        ":package.json",
+        "index.d.ts",
+        "index.js",
+        "package.json",
     ],
     visibility = ["//visibility:public"],
     deps = [":ts_project"],
