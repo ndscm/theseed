@@ -47,8 +47,6 @@ ts_project(
 js_library(
     name = "ts",
     srcs = [
-        "buildinfo/index.d.ts",
-        "buildinfo/index.js",
         "index.d.ts",
         "index.js",
         "package.json",
