@@ -1,7 +1,7 @@
 load("@pypi//:requirements.bzl", "all_whl_requirements")
 load("@rules_python//python:defs.bzl", "py_binary")
 load("@rules_python_gazelle_plugin//modules_mapping:def.bzl", "modules_mapping")
-load(":platform.bzl", "modules_mapping_platform")
+load("//seed/devprod/platform:transition.bzl", "single_platform")
 
 modules_mapping(
     name = "modules_mapping_native",
@@ -9,17 +9,15 @@ modules_mapping(
     wheels = all_whl_requirements,
 )
 
-modules_mapping_platform(
+single_platform(
     name = "modules_mapping_linux",
-    out = "modules_mapping_linux.json",
     native = ":modules_mapping_native",
     platform = "//seed/devprod/platform/linux:amd64",
     target_compatible_with = ["@platforms//os:linux"],
 )
 
-modules_mapping_platform(
+single_platform(
     name = "modules_mapping_darwin",
-    out = "modules_mapping_darwin.json",
     native = ":modules_mapping_native",
     platform = "//seed/devprod/platform/darwin:arm64",
 )
