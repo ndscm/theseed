@@ -36,8 +36,6 @@ ts_project(
 js_library(
     name = "tsx",
     srcs = [
-        "HooinRosterServiceContext/index.d.ts",
-        "HooinRosterServiceContext/index.js",
         "package.json",
     ] + glob([
         "*.d.ts",
