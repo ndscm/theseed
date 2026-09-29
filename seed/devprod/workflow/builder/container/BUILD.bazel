@@ -3,7 +3,7 @@ load("@rules_img//img:image.bzl", "image_manifest")
 load("@rules_img//img:layer.bzl", "layer_from_tar")
 load("@rules_img//img:load.bzl", "image_load")
 load("@rules_pkg//pkg:tar.bzl", "pkg_tar")
-load("//seed/devprod/container/starlark:transition.bzl", "layer_linux_x64")
+load("//seed/devprod/container/starlark:transition.bzl", "layer_single_platform")
 
 layer_from_tar(
     name = "apt_layer",
@@ -11,9 +11,10 @@ layer_from_tar(
     target_compatible_with = ["@platforms//os:linux"],
 )
 
-layer_linux_x64(
-    name = "apt_layer_linux_x64",
-    actual = ":apt_layer",
+layer_single_platform(
+    name = "apt_layer_linux_amd64",
+    native = ":apt_layer",
+    platform = "//seed/devprod/platform/linux:amd64",
 )
 
 pkg_tar(
@@ -103,7 +104,7 @@ image_manifest(
         "USER": "builder",
     },
     layers = [
-        ":apt_layer_linux_x64",
+        ":apt_layer_linux_amd64",
         ":bin_layer",
         ":etc_passwd_layer",
         ":etc_group_layer",
