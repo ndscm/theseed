@@ -39,8 +39,11 @@ js_library(
     srcs = [
         "HooinDictateServiceContext/index.d.ts",
         "HooinDictateServiceContext/index.js",
-        ":package.json",
-    ],
+        "package.json",
+    ] + glob([
+        "*.d.ts",
+        "*.js",
+    ]),
     deps = [":ts_project"],
 )
 
