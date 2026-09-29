@@ -649,15 +649,6 @@ importers:
       '@connectrpc/connect-web':
         specifier: 2.1.2
         version: 2.1.2(@bufbuild/protobuf@2.14.0)(@connectrpc/connect@2.1.2(@bufbuild/protobuf@2.14.0))
-      '@theseed/seed-devprod-vscode-web-ts-web-file-system':
-        specifier: workspace:^
-        version: link:../../../../../devprod/vscode/web/ts/web-file-system
-      '@theseed/seed-infra-filesystem-proto':
-        specifier: workspace:^
-        version: link:../../../../../infra/filesystem/proto
-      '@theseed/seed-newtype-hooin-raid-proto':
-        specifier: workspace:^
-        version: link:../../proto
       react:
         specifier: 19.2.8
         version: 19.2.8
@@ -675,11 +666,7 @@ importers:
         specifier: 7.0.2
         version: 7.0.2
 
-  seed/newtype/hooin/raid/proto:
-    dependencies:
-      '@theseed/seed-infra-filesystem-proto':
-        specifier: workspace:^
-        version: link:../../../../infra/filesystem/proto
+  seed/newtype/hooin/raid/proto: {}
 
   seed/newtype/hooin/roster/client/tsx:
     dependencies:
