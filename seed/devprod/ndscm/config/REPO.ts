@@ -14,6 +14,51 @@ export type RepoConfig = {
   domain?: string
 
   /**
+   * Collaboration surfaces for the repository: where issues are tracked and
+   * where pending code changes are discussed. Each surface can be backed by
+   * a different system, letting a repo mix ndscm-native tooling with GitHub.
+   */
+  collaboration?: {
+    /**
+     * The ticket tracker for issues, bugs, and feature requests.
+     */
+    tracker?: {
+      /**
+       * The tracker system.
+       *
+       * - `"ndscm"` — Stores tickets on a branch.
+       * - `"github"` — Uses GitHub Issues.
+       */
+      system?: "ndscm" | "github"
+
+      /**
+       * Branch that stores the tickets. Only used by the `"ndscm"` system.
+       * When empty, tickets are stored on the current branch.
+       */
+      branch?: string
+    }
+
+    /**
+     * The discussion board for pending code changes.
+     */
+    review?: {
+      /**
+       * Backend hosting the review board.
+       *
+       * - `"ndscm"` — Stores patches and discussions on a branch.
+       * - `"github"` — Uses GitHub pull requests.
+       */
+      system?: "ndscm" | "github"
+
+      /**
+       * Branch that stores the patches and discussions. Only used by the
+       * `"ndscm"` system. When empty, they are stored on the current branch.
+       */
+      branch?: string
+    }
+  }
+
+  /**
    * Upstream sources the repository can sync from. Each entry is keyed by a
    * remote name (for example `"theseed"`) and describes how to fetch and
    * track that source.
