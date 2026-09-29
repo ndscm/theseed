@@ -77,7 +77,7 @@ layer_from_tar(
 image_manifest(
     name = "container",
     base = "//seed/devprod/container/ubuntu:ubuntu",
-    config_fragment = "container.json",
+    entrypoint = ["/opt/golink/golink-server"],
     layers = [
         ":opt_golink_layer",
         ":etc_passwd_layer",
@@ -85,10 +85,8 @@ image_manifest(
         ":home_golink_layer",
     ],
     platform = "//seed/devprod/platform/linux:amd64",
+    user = "golink",
     visibility = ["//visibility:public"],
-    # Explicit override: opt_golink_layer (layer_from_binary) sets working_dir
-    # to the binary's runfiles root, and layer config beats config_fragment.
-    # Only a rule attr wins over the layer, so working_dir stays here.
     working_dir = "/home/golink",
 )
 
