@@ -23,15 +23,6 @@ single_platform(
 )
 
 py_binary(
-    name = "generate",
-    srcs = ["generate.py"],
-    data = [
-        ":modules_mapping_native",
-    ],
-    deps = ["//seed/infra/init/python:seed_init"],
-)
-
-py_binary(
     name = "merge",
     srcs = ["merge.py"],
     visibility = ["//visibility:public"],
