@@ -35,8 +35,11 @@ js_library(
     srcs = [
         "VscodeWebWorkbench/index.d.ts",
         "VscodeWebWorkbench/index.js",
-        ":package.json",
-    ],
+        "package.json",
+    ] + glob([
+        "*.d.ts",
+        "*.js",
+    ]),
     deps = [":ts_project"],
 )
 
