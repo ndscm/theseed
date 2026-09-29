@@ -7,3 +7,4 @@ bazel build --stamp //seed/devprod/ndscm/cli
 mkdir -p "${HOME}/.local/bin"
 rm -f "${HOME}/.local/bin/ndscm"
 cp -f ./bazel-bin/seed/devprod/ndscm/cli/ndscm_/ndscm "${HOME}/.local/bin/ndscm"
+ln -s -f "ndscm" "${HOME}/.local/bin/nd"
