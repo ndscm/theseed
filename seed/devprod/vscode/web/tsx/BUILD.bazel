@@ -33,8 +33,6 @@ ts_project(
 js_library(
     name = "tsx",
     srcs = [
-        "VscodeWebWorkbench/index.d.ts",
-        "VscodeWebWorkbench/index.js",
         "package.json",
     ] + glob([
         "*.d.ts",
