@@ -38,8 +38,11 @@ js_library(
     srcs = [
         "HooinRosterServiceContext/index.d.ts",
         "HooinRosterServiceContext/index.js",
-        ":package.json",
-    ],
+        "package.json",
+    ] + glob([
+        "*.d.ts",
+        "*.js",
+    ]),
     deps = [":ts_project"],
 )
 
