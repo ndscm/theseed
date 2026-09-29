@@ -3,11 +3,11 @@ import { useTranslation } from "react-i18next"
 
 import { HouseIcon } from "lucide-react"
 
-import tw from "../../../../../../../../devprod/ts/grouping-tailwind"
-import VscodeWebWorkbench from "../../../../../../../../devprod/vscode/web/tsx/VscodeWebWorkbench"
-import HooinRaidFileSystem from "../../../../../../../hooin/raid/client/tsx/HooinRaidFileSystem"
-import { useHooinRaidService } from "../../../../../../../hooin/raid/client/tsx/HooinRaidServiceContext"
-import { useHooinRosterService } from "../../../../../../../hooin/roster/client/tsx/HooinRosterServiceContext"
+import tw from "../../../../../../../../devprod/ts/grouping-tailwind/index.js"
+import VscodeWebWorkbench from "../../../../../../../../devprod/vscode/web/tsx/VscodeWebWorkbench.js"
+import HooinRaidFileSystem from "../../../../../../../hooin/raid/client/tsx/HooinRaidFileSystem.js"
+import { useHooinRaidService } from "../../../../../../../hooin/raid/client/tsx/HooinRaidServiceContext.js"
+import { useHooinRosterService } from "../../../../../../../hooin/roster/client/tsx/HooinRosterServiceContext.js"
 
 const PersonWorkstationPage: React.FC<{ params: { handle: string } }> = ({
   params,

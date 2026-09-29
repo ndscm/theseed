@@ -1,6 +1,6 @@
 import React from "react"
 
-import tw from "../../../../devprod/ts/grouping-tailwind"
+import tw from "../../../../devprod/ts/grouping-tailwind/index.js"
 
 const KurisuPanel: React.FC<{
   title: React.ReactNode

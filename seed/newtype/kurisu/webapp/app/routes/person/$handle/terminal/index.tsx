@@ -6,13 +6,13 @@ import { TerminalIcon } from "lucide-react"
 
 import "@xterm/xterm/css/xterm.css"
 
-import tw from "../../../../../../../../devprod/ts/grouping-tailwind"
+import tw from "../../../../../../../../devprod/ts/grouping-tailwind/index.js"
 import {
   type TerminalInputFrame,
   TerminalInputFrameSchema,
-} from "../../../../../../../../infra/terminal/proto/terminal_pb"
-import { useHooinInvadeService } from "../../../../../../../hooin/invade/client/tsx/HooinInvadeServiceContext"
-import { useHooinRosterService } from "../../../../../../../hooin/roster/client/tsx/HooinRosterServiceContext"
+} from "../../../../../../../../infra/terminal/proto/terminal_pb.js"
+import { useHooinInvadeService } from "../../../../../../../hooin/invade/client/tsx/HooinInvadeServiceContext.js"
+import { useHooinRosterService } from "../../../../../../../hooin/roster/client/tsx/HooinRosterServiceContext.js"
 
 const UbuntuTerminalTheme = {
   background: "#300a24",

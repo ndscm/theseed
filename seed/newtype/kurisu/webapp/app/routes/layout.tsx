@@ -1,7 +1,7 @@
 import React from "react"
 import { Outlet } from "react-router"
 
-import tw from "../../../../../devprod/ts/grouping-tailwind"
+import tw from "../../../../../devprod/ts/grouping-tailwind/index.js"
 import KurisuSideBar from "../../components/KurisuSideBar"
 
 const HomeLayout: React.FC = () => {

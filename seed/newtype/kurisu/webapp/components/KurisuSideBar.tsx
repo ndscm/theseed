@@ -12,12 +12,12 @@ import {
   UsersIcon,
 } from "lucide-react"
 
-import LoginButton from "../../../../cloud/login/client/tsx/LoginButton"
-import { useLoginService } from "../../../../cloud/login/client/tsx/LoginServiceContext"
-import { type LoginStatus } from "../../../../cloud/login/proto/login_pb"
-import tw from "../../../../devprod/ts/grouping-tailwind"
-import { useHooinRosterService } from "../../../hooin/roster/client/tsx/HooinRosterServiceContext"
-import { type TeamMember } from "../../../hooin/roster/proto/roster_pb"
+import LoginButton from "../../../../cloud/login/client/tsx/LoginButton.js"
+import { useLoginService } from "../../../../cloud/login/client/tsx/LoginServiceContext.js"
+import { type LoginStatus } from "../../../../cloud/login/proto/login_pb.js"
+import tw from "../../../../devprod/ts/grouping-tailwind/index.js"
+import { useHooinRosterService } from "../../../hooin/roster/client/tsx/HooinRosterServiceContext.js"
+import { type TeamMember } from "../../../hooin/roster/proto/roster_pb.js"
 import OrganicUtils from "../utils/OrganicUtils"
 import KurisuAvatar from "./KurisuAvatar"
 

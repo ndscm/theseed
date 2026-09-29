@@ -4,9 +4,9 @@ import { NavLink, useParams } from "react-router"
 
 import { ChevronRightIcon } from "lucide-react"
 
-import tw from "../../../../devprod/ts/grouping-tailwind/dist"
-import { useHooinRosterService } from "../../../hooin/roster/client/tsx/HooinRosterServiceContext"
-import { type TeamMember } from "../../../hooin/roster/proto/roster_pb"
+import tw from "../../../../devprod/ts/grouping-tailwind/index.js"
+import { useHooinRosterService } from "../../../hooin/roster/client/tsx/HooinRosterServiceContext.js"
+import { type TeamMember } from "../../../hooin/roster/proto/roster_pb.js"
 import OrganicUtils from "../utils/OrganicUtils"
 import KurisuAvatar from "./KurisuAvatar"
 import KurisuTopBar from "./KurisuTopBar"

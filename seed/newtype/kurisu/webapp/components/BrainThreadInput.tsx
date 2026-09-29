@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next"
 
 import { CornerDownLeftIcon, SendIcon } from "lucide-react"
 
-import tw from "../../../../devprod/ts/grouping-tailwind"
+import tw from "../../../../devprod/ts/grouping-tailwind/index.js"
 
 // BrainThreadInput is the compact reply box rendered at the tail of a thread
 // panel. It is a controlled input: the draft text lives in the parent panel,

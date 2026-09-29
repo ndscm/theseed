@@ -9,7 +9,7 @@ import {
   isRouteErrorResponse,
 } from "react-router"
 
-import buildinfo from "../../../../infra/buildinfo/ts/buildinfo"
+import buildinfo from "../../../../infra/buildinfo/ts/index.js"
 import i18n from "./i18n"
 
 export const ErrorBoundary = ({ error }: { error: unknown }) => {
