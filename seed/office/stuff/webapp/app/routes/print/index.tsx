@@ -5,8 +5,8 @@ import { useSearchParams } from "react-router"
 import Box from "@mui/material/Box"
 import CircularProgress from "@mui/material/CircularProgress"
 
-import { useStuffService } from "../../../../client/tsx/StuffServiceContext"
-import { type Stuff } from "../../../../proto/stuff_pb"
+import { useStuffService } from "../../../../client/tsx/StuffServiceContext.js"
+import { type Stuff } from "../../../../proto/stuff_pb.js"
 
 const TemplateMore: React.FC<{ stuff: Stuff }> = ({ stuff }) => {
   const { t } = useTranslation("common")
