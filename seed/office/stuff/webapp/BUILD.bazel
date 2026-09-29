@@ -1,7 +1,6 @@
 load("@npm//:defs.bzl", "npm_link_all_packages")
 load("@npm//seed/office/stuff/webapp:@react-router/dev/package_json.bzl", react_router_bin = "bin")
 load("//seed/devprod/reactrouter/starlark:defs.bzl", "react_router_webapp")
-load("//seed/devprod/starlark/archive:defs.bzl", "create_tar_gz", "extract_tar")
 
 package(default_visibility = ["//seed/office/stuff:__subpackages__"])
 
@@ -17,8 +16,6 @@ react_router_webapp(
         [
             "app/**/*",
             "components/**/*",
-            "containers/**/*",
-            "context/**/*",
             "icons/**/*",
             "locales/**/*",
             "public/**/*",

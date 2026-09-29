@@ -54,8 +54,8 @@ import CircularProgress from "@mui/material/CircularProgress"
 import Toolbar from "@mui/material/Toolbar"
 import Typography from "@mui/material/Typography"
 
-import { useStuffService } from "../../../client/tsx/StuffServiceContext"
-import { StuffSchema } from "../../../proto/stuff_pb"
+import { useStuffService } from "../../../client/tsx/StuffServiceContext.js"
+import { StuffSchema } from "../../../proto/stuff_pb.js"
 
 import "@univerjs/sheets/facade"
 import "@univerjs/sheets-ui/facade"
