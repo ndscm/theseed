@@ -156,16 +156,16 @@ const PrintPage: React.FC = () => {
   const uuids = searchParams.get("uuids")
 
   if (!paperSize) {
-    throw new Error("paperSize is required")
+    return "paperSize is required"
   }
   if (!labelSize) {
-    throw new Error("labelSize is required")
+    return "labelSize is required"
   }
   if (!template) {
-    throw new Error("template is required")
+    return "template is required"
   }
   if (!uuids) {
-    throw new Error("uuids is required")
+    return "uuids is required"
   }
 
   const paperDimensions = getDimensions(paperSize)
