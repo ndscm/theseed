@@ -1,7 +1,7 @@
 import { reactRouter } from "@react-router/dev/vite"
 import { defineConfig } from "vite"
 
-import unsafeDevLogin from "../../../cloud/login/ts/vite-plugin-unsafe-dev-login/dist/index.js"
+import unsafeDevLogin from "../../../cloud/login/ts/vite-plugin-unsafe-dev-login/index.js"
 
 const DEFAULT_LANGUAGE = process.env.DEFAULT_LANGUAGE || "en"
 const BUILD_LANGUAGE = process.env.BUILD_LANGUAGE || DEFAULT_LANGUAGE
