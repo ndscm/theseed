@@ -10,6 +10,7 @@ import (
 	"github.com/ndscm/theseed/seed/cloud/sfe/certificate/challenge/cloudflarednschallenge"
 	"github.com/ndscm/theseed/seed/cloud/sfe/certificate/proto/certificatepbconnect"
 	certificateservice "github.com/ndscm/theseed/seed/cloud/sfe/certificate/service"
+	"github.com/ndscm/theseed/seed/cloud/sfe/certificate/storage/localstorage"
 	"github.com/ndscm/theseed/seed/infra/auth/go/openidverify"
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
 	"github.com/ndscm/theseed/seed/infra/flag/go/seedflag"
@@ -71,7 +72,9 @@ func run() error {
 		return seederr.Wrap(err)
 	}
 
-	certificateSvc := certificateservice.NewSfeCertificateService(challenger)
+	certificateStorage := localstorage.LoadLocalCertificateStorage()
+
+	certificateSvc := certificateservice.NewSfeCertificateService(challenger, certificateStorage)
 	err = mux.Register(certificatepbconnect.NewSfeCertificateServiceHandler(
 		certificateSvc,
 		seedgrpc.WithCommonInterceptors(),
