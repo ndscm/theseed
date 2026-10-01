@@ -12,6 +12,7 @@ package(default_visibility = [
 proto_library(
     name = "certificate_proto",
     srcs = ["certificate.proto"],
+    visibility = ["//visibility:public"],
 )
 
 go_proto_library(
@@ -19,12 +20,14 @@ go_proto_library(
     compilers = ["@rules_go//proto:go_grpc"],
     importpath = "github.com/ndscm/theseed/seed/cloud/sfe/certificate/proto/certificatepb",
     proto = ":certificate_proto",
+    visibility = ["//visibility:public"],
 )
 
 go_connect_library(
     name = "certificate_go_connect",
     importpath = "github.com/ndscm/theseed/seed/cloud/sfe/certificate/proto/certificatepbconnect",
     proto = ":certificate_proto",
+    visibility = ["//visibility:public"],
     deps = [
         ":certificate_go_proto",
         "@com_connectrpc_connect//:connect",
