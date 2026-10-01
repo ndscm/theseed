@@ -18,13 +18,12 @@ import (
 
 var flagAcmeAccountEmail = seedflag.DefineString("acme_account_email", "sfe-dev@ndscm.com", "")
 var flagAcmeAccountsHome = seedflag.DefineString("acme_accounts_home", "/mnt/data/sfe-certificate/accounts", "")
-var flagAcmeCertificatesHome = seedflag.DefineString("acme_certificates_home", "/mnt/data/sfe-certificate/certificates", "")
 var flagAcmeProvider = seedflag.DefineString("acme_provider", "letsencrypt", "Provider tag or directory url")
 
-type SfeCertificateChallenger func(ctx context.Context, domain string) (challenge.AcmeChallenge, error)
-
 type SfeCertificateService struct {
-	challenger SfeCertificateChallenger
+	challenger challenge.AcmeChallenger
+
+	certificateStorage storage.CertificateStorage
 }
 
 func (svc *SfeCertificateService) RenewCertificate(
@@ -37,8 +36,7 @@ func (svc *SfeCertificateService) RenewCertificate(
 	if err != nil {
 		return nil, seederr.Wrap(err)
 	}
-	certificateStorage := storage.NewLocalCertificateStorage(flagAcmeCertificatesHome.Get())
-	acmeCertificate, storageErr := certificateStorage.Get(domain)
+	acmeCertificate, storageErr := svc.certificateStorage.Get(ctx, domain)
 	if storageErr != nil {
 		seedlog.Infof("Requesting certificate for: %v", domain)
 		acmeProvider := flagAcmeProvider.Get()
@@ -81,7 +79,7 @@ func (svc *SfeCertificateService) RenewCertificate(
 		}
 
 		// Store
-		err = certificateStorage.Update(domain, newCertificate)
+		err = svc.certificateStorage.Update(ctx, domain, newCertificate)
 		if err != nil {
 			return nil, seederr.Wrap(err)
 		}
@@ -94,8 +92,13 @@ func (svc *SfeCertificateService) RenewCertificate(
 	return connect.NewResponse(response), nil
 }
 
-func NewSfeCertificateService(challenger SfeCertificateChallenger) *SfeCertificateService {
+func NewSfeCertificateService(
+	challenger challenge.AcmeChallenger,
+	certificateStorage storage.CertificateStorage,
+) *SfeCertificateService {
 	return &SfeCertificateService{
 		challenger: challenger,
+
+		certificateStorage: certificateStorage,
 	}
 }
