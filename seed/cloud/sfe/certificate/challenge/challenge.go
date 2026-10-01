@@ -13,3 +13,5 @@ type AcmeChallenge interface {
 		ctx context.Context, acmeDirectoryUrl *url.URL, acmeAccount registration.User, domain string,
 	) (*certificate.Resource, error)
 }
+
+type AcmeChallenger func(ctx context.Context, domain string) (AcmeChallenge, error)
