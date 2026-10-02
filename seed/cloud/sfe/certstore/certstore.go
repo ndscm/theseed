@@ -28,6 +28,8 @@ func checkCertificateLife(tlsCertificate *tls.Certificate) (bool, bool, error) {
 }
 
 type SfeCertStore struct {
+	staticBearerToken string
+
 	serviceOpenid *openid.OpenidClient
 
 	certificateCache sync.Map
@@ -36,11 +38,15 @@ type SfeCertStore struct {
 func (s *SfeCertStore) fetchCertificate(hello *tls.ClientHelloInfo, domain string) (*tls.Certificate, error) {
 	ctx := hello.Context()
 	client := certificateclient.NewSfeCertificateClient("")
-	accessToken, err := s.serviceOpenid.AccessToken(ctx, nil)
-	if err != nil {
-		return nil, seederr.Wrap(err)
+	token := s.staticBearerToken
+	if token == "" && s.serviceOpenid != nil {
+		accessToken, err := s.serviceOpenid.AccessToken(ctx, nil)
+		if err != nil {
+			return nil, seederr.Wrap(err)
+		}
+		token = accessToken
 	}
-	certkey, certBytes, err := client.RenewCertificate(seedbearer.WithBearer(ctx, accessToken), domain)
+	certkey, certBytes, err := client.RenewCertificate(seedbearer.WithBearer(ctx, token), domain)
 	if err != nil {
 		// Hide the error details
 		return nil, seederr.WrapErrorf("invalid domain")
@@ -92,5 +98,11 @@ func (s *SfeCertStore) GetCertificate(hello *tls.ClientHelloInfo) (*tls.Certific
 func NewSfeCertStore(serviceOpenid *openid.OpenidClient) *SfeCertStore {
 	return &SfeCertStore{
 		serviceOpenid: serviceOpenid,
+	}
+}
+
+func NewSfeCertStoreWithStaticBearerToken(token string) *SfeCertStore {
+	return &SfeCertStore{
+		staticBearerToken: token,
 	}
 }
