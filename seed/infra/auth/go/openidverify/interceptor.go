@@ -43,12 +43,14 @@ func (m *openidMiddleware) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	authorization := r.Header.Get("Authorization")
 	if strings.HasPrefix(authorization, "Bearer ") {
 		accessToken := strings.TrimPrefix(authorization, "Bearer ")
-		userInfo, err := m.openidDecoder.Decode(accessToken)
-		if err != nil {
-			seedlog.Errorf("Failed to decode JWT: %v", err)
-		}
-		if userInfo != nil {
-			r = r.WithContext(withOpenidUser(r.Context(), userInfo))
+		if strings.Count(accessToken, ".") == 2 {
+			userInfo, err := m.openidDecoder.Decode(accessToken)
+			if err != nil {
+				seedlog.Errorf("Failed to decode JWT: %v", err)
+			}
+			if userInfo != nil {
+				r = r.WithContext(withOpenidUser(r.Context(), userInfo))
+			}
 		}
 	}
 	m.next.ServeHTTP(w, r)
