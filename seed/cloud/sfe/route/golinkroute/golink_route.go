@@ -84,7 +84,9 @@ func CreateGolinkRoute(sfeOpenidClient *openid.OpenidClient) (*GolinkRoute, erro
 			r.SetXForwarded()
 		},
 	}
-	next := authfe.InterceptSessionAuthorizationMiddleware(reverseProxy, provider)
+
+	// Golink server needs authentication for http redirection
+	next := authfe.InterceptAuthMiddleware(reverseProxy, authHandler, nil)
 
 	// Create Golink Route
 	route := &GolinkRoute{
