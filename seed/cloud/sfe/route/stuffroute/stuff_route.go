@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"net/http/httputil"
 	"net/url"
+	"regexp"
 	"strings"
 	"time"
 
@@ -47,6 +48,8 @@ func (p *StuffRoute) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 var _ http.Handler = (*StuffRoute)(nil)
 
+var contentTypeRegexp = regexp.MustCompile("^application/(json|grpc)")
+
 func CreateStuffRoute(sfeOpenidClient *openid.OpenidClient) (*StuffRoute, error) {
 	// Create Auth Handler
 	discoveryUrl := flagStuffOpenidDiscoveryUrl.Get()
@@ -84,7 +87,15 @@ func CreateStuffRoute(sfeOpenidClient *openid.OpenidClient) (*StuffRoute, error)
 			r.SetXForwarded()
 		},
 	}
-	next := authfe.InterceptSessionAuthorizationMiddleware(reverseProxy, provider)
+	next := authfe.InterceptAuthMiddleware(
+		reverseProxy,
+		authHandler,
+		&authfe.AuthMiddlewareOptions{
+			Matcher: func(r *http.Request) bool {
+				return contentTypeRegexp.MatchString(r.Header.Get("Content-Type"))
+			},
+		},
+	)
 
 	// Create Stuff Route
 	route := &StuffRoute{
