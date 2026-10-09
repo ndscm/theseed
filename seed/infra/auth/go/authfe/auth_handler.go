@@ -46,8 +46,13 @@ func guessOrigin(r *http.Request) string {
 	return scheme + "://" + r.Host
 }
 
+// OpenidProviderResolver returns the OpenID provider to use for a given request. A
+// single-tenant front end returns the same provider for every request; a
+// multitenant one resolves it per request, e.g. from the request host.
+type OpenidProviderResolver func(r *http.Request) (*openid.OpenidProvider, error)
+
 type AuthHandler struct {
-	provider *openid.OpenidProvider
+	resolver OpenidProviderResolver
 
 	uma bool
 
@@ -67,6 +72,13 @@ func (h *AuthHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 func (h *AuthHandler) handleLogin(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
+
+	provider, err := h.resolver(r)
+	if err != nil {
+		seedlog.Errorf("Failed to resolve OpenID provider: %v", err)
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		return
+	}
 
 	returnUrl := sanitizeReturnUrl(r.URL.Query().Get("return"))
 
@@ -95,7 +107,7 @@ func (h *AuthHandler) handleLogin(w http.ResponseWriter, r *http.Request) {
 	}
 
 	origin := guessOrigin(r)
-	oauth2Config, err := h.provider.GetOauth2Config(ctx, origin, nil)
+	oauth2Config, err := provider.GetOauth2Config(ctx, origin, nil)
 	if err != nil {
 		seedlog.Errorf("Failed to get oauth2 config: %v", err)
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
@@ -112,6 +124,7 @@ func (h *AuthHandler) handleLogin(w http.ResponseWriter, r *http.Request) {
 // resource server that owns the resources.
 func (h *AuthHandler) grantUmaToken(
 	ctx context.Context,
+	provider *openid.OpenidProvider,
 	tokenSource oauth2.TokenSource,
 	storage openid.ExternalTokenStorage,
 ) error {
@@ -122,10 +135,10 @@ func (h *AuthHandler) grantUmaToken(
 
 	audience := h.umaAudience
 	if audience == "" {
-		audience = h.provider.ClientId()
+		audience = provider.ClientId()
 	}
 
-	_, err = h.provider.UmaGrant(ctx, token.AccessToken, audience, storage)
+	_, err = provider.UmaGrant(ctx, token.AccessToken, audience, storage)
 	if err != nil {
 		return seederr.Wrap(err)
 	}
@@ -134,6 +147,13 @@ func (h *AuthHandler) grantUmaToken(
 
 func (h *AuthHandler) handleCallback(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
+
+	provider, err := h.resolver(r)
+	if err != nil {
+		seedlog.Errorf("Failed to resolve OpenID provider: %v", err)
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		return
+	}
 
 	code := r.URL.Query().Get("code")
 	state := r.URL.Query().Get("state")
@@ -164,7 +184,7 @@ func (h *AuthHandler) handleCallback(w http.ResponseWriter, r *http.Request) {
 	}
 
 	origin := guessOrigin(r)
-	tokenSource, err := h.provider.CodeGrant(ctx, origin, code, nil, session)
+	tokenSource, err := provider.CodeGrant(ctx, origin, code, nil, session)
 	if err != nil {
 		seedlog.Errorf("Failed to exchange code: %v", err)
 		http.Error(w, "Failed to exchange authorization code", http.StatusInternalServerError)
@@ -172,7 +192,7 @@ func (h *AuthHandler) handleCallback(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if h.uma {
-		err = h.grantUmaToken(ctx, tokenSource, session)
+		err = h.grantUmaToken(ctx, provider, tokenSource, session)
 		if err != nil {
 			// The code grant already stored the plain access token, so unprotected
 			// routes still work; the protected ones are refused later all the same.
@@ -200,31 +220,53 @@ func (h *AuthHandler) handleCallback(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, returnUrl, http.StatusFound)
 }
 
-type authHandlerOptions struct {
-	uma bool
+type AuthHandlerOptions struct {
+	Uma bool
 
-	umaAudience string
+	UmaAudience string
 }
 
-type AuthHandlerOption func(*authHandlerOptions)
+type AuthHandlerOption func(*AuthHandlerOptions)
 
 func WithUma(audience string) AuthHandlerOption {
-	return func(opts *authHandlerOptions) {
-		opts.uma = true
-		opts.umaAudience = audience
+	return func(opts *AuthHandlerOptions) {
+		opts.Uma = true
+		opts.UmaAudience = audience
 	}
 }
 
+// NewAuthHandler builds a single-tenant auth handler bound to a fixed provider.
+// For a multitenant front end that resolves the provider per request, use
+// NewMultiTenantAuthHandler instead.
 func NewAuthHandler(provider *openid.OpenidProvider, opts ...AuthHandlerOption) *AuthHandler {
-	options := &authHandlerOptions{}
+	options := &AuthHandlerOptions{}
 	for _, opt := range opts {
 		opt(options)
 	}
+	resolver := func(_ *http.Request) (*openid.OpenidProvider, error) {
+		return provider, nil
+	}
 	return &AuthHandler{
-		provider: provider,
+		resolver: resolver,
 
-		uma: options.uma,
+		uma: options.Uma,
 
-		umaAudience: options.umaAudience,
+		umaAudience: options.UmaAudience,
+	}
+}
+
+// NewMultiTenantAuthHandler builds an auth handler that resolves its OpenID
+// provider per request via resolver, for front ends that serve multiple tenants
+// from a single process.
+func NewMultiTenantAuthHandler(resolver OpenidProviderResolver, opts *AuthHandlerOptions) *AuthHandler {
+	if opts == nil {
+		opts = &AuthHandlerOptions{}
+	}
+	return &AuthHandler{
+		resolver: resolver,
+
+		uma: opts.Uma,
+
+		umaAudience: opts.UmaAudience,
 	}
 }
