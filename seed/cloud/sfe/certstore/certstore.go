@@ -49,12 +49,12 @@ func (s *SfeCertStore) fetchCertificate(hello *tls.ClientHelloInfo, domain strin
 	certkey, certBytes, err := client.RenewCertificate(seedbearer.WithBearer(ctx, token), domain)
 	if err != nil {
 		// Hide the error details
-		return nil, seederr.WrapErrorf("invalid domain")
+		return nil, seederr.WrapErrorf("invalid domain: %v", domain)
 	}
 	newCert, err := tls.X509KeyPair(certBytes, certkey)
 	if err != nil {
 		// Hide the error details
-		return nil, seederr.WrapErrorf("invalid certificate")
+		return nil, seederr.WrapErrorf("invalid certificate for domain: %v", domain)
 	}
 	s.certificateCache.Store(domain, &newCert)
 	return &newCert, nil
