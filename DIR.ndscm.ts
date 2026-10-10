@@ -70,7 +70,11 @@ export default {
       },
     },
     sh: {
-      watch: "\\.(sh)$",
+      watch: [
+        // sort
+        "(^|/)bootstrap$",
+        "\\.(sh)$",
+      ],
       run: 'shfmt -w "{{TARGET}}"',
     },
   },
