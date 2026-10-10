@@ -65,7 +65,7 @@ export default {
     rust: {
       watch: "\\.(rs)$",
       bazel: {
-        build: "@rules_rust//tools/rustfmt:upstream_rustfmt",
+        build: "@rules_rust//tools/upstream_wrapper:rustfmt",
         run: '{{BAZEL_RUN}} "{{TARGET}}"',
       },
     },
