@@ -7,6 +7,7 @@ import (
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
 	"github.com/ndscm/theseed/seed/infra/flag/go/seedflag"
 	"github.com/ndscm/theseed/seed/infra/jwt/go/jwsdecoder"
+	"github.com/ndscm/theseed/seed/infra/jwt/go/jwtcore"
 )
 
 var flagTrustOpenidAuthorizedParty = seedflag.DefineStringList(
@@ -56,19 +57,40 @@ func (d *OpenidDecoder) Decode(accessToken string) (*openid.OpenidUserInfo, erro
 	return userInfo, nil
 }
 
-func CreateOpenidDecoder() (*OpenidDecoder, error) {
-	jwksStore, err := CreateOpenidJwksStore()
+type OpenidDecoderOptions struct {
+	SkipJwtSignatureVerification bool
+
+	JwksStore jwtcore.JwksStore
+
+	AuthorizedParties []string
+}
+
+func CreateOpenidDecoder(opts *OpenidDecoderOptions) (*OpenidDecoder, error) {
+	if opts == nil {
+		opts = &OpenidDecoderOptions{}
+	}
+	if opts.JwksStore == nil {
+		jwksStore, err := CreateOpenidJwksStore()
+		if err != nil {
+			return nil, seederr.Wrap(err)
+		}
+		opts.JwksStore = jwksStore
+	}
+	jwsDecoder, err := jwsdecoder.CreateJwsDecoder(&jwsdecoder.JwsDecoderOptions{
+		SkipJwtSignatureVerification: opts.SkipJwtSignatureVerification,
+
+		JwksStore: opts.JwksStore,
+	})
 	if err != nil {
 		return nil, seederr.Wrap(err)
 	}
-	jwsDecoder, err := jwsdecoder.CreateJwsDecoder(jwksStore)
-	if err != nil {
-		return nil, seederr.Wrap(err)
+	if len(opts.AuthorizedParties) == 0 {
+		opts.AuthorizedParties = flagTrustOpenidAuthorizedParty.Get()
 	}
 	d := &OpenidDecoder{
-		authorizedParties: flagTrustOpenidAuthorizedParty.Get(),
-
 		jwsDecoder: jwsDecoder,
+
+		authorizedParties: opts.AuthorizedParties,
 	}
 	return d, nil
 }
