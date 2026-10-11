@@ -68,7 +68,7 @@ func (i *OpenidInterceptor) Intercept(next http.Handler) http.Handler {
 
 func CreateOpenidInterceptor() (*OpenidInterceptor, error) {
 	i := &OpenidInterceptor{}
-	openidDecoder, err := CreateOpenidDecoder()
+	openidDecoder, err := CreateOpenidDecoder(nil)
 	if err != nil {
 		return nil, seederr.Wrap(err)
 	}
