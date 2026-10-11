@@ -32,11 +32,13 @@ var flagJwtIncludeAudience = seedflag.DefineStringList(
 
 // JwsDecoder verifies OpenID Connect JWTs using statically configured kid-to-certificate mappings.
 type JwsDecoder struct {
+	skipJwtSignatureVerification bool
+
+	jwksStore jwtcore.JwksStore
+
 	audience string
 
 	includeAudiences []string
-
-	jwksStore jwtcore.JwksStore
 }
 
 // resolveSigningKey returns the public key for JWT verification by looking up
@@ -64,8 +66,8 @@ func (v *JwsDecoder) verifyJwtSignature(issuer string, headerB64 string, payload
 		return seederr.WrapErrorf("failed to unmarshal JWT header: %v", err)
 	}
 	seedlog.Debugf("Jwt header: %+v", header)
-	if flagSkipJwtVerification.Get() {
-		seedlog.Warnf("Skipping JWT verification as it is disabled.")
+	if v.skipJwtSignatureVerification {
+		seedlog.Warnf("Skipping JWT signature verification as it is disabled.")
 		return nil
 	}
 	pubKey, err := v.resolveSigningKey(issuer, header)
@@ -161,12 +163,35 @@ func (v *JwsDecoder) Decode(jwsB64 string) ([]byte, error) {
 	return payloadBytes, nil
 }
 
-func CreateJwsDecoder(jwksStore jwtcore.JwksStore) (*JwsDecoder, error) {
-	v := &JwsDecoder{
-		audience:         flagJwtAudience.Get(),
-		includeAudiences: flagJwtIncludeAudience.Get(),
+type JwsDecoderOptions struct {
+	SkipJwtSignatureVerification bool
 
-		jwksStore: jwksStore,
+	JwksStore jwtcore.JwksStore
+
+	Audience string
+
+	IncludeAudiences []string
+}
+
+func CreateJwsDecoder(opts *JwsDecoderOptions) (*JwsDecoder, error) {
+	if opts == nil {
+		opts = &JwsDecoderOptions{}
+	}
+	if flagSkipJwtVerification.Get() {
+		opts.SkipJwtSignatureVerification = true
+	}
+	if opts.Audience == "" && len(opts.IncludeAudiences) == 0 {
+		opts.Audience = flagJwtAudience.Get()
+		opts.IncludeAudiences = flagJwtIncludeAudience.Get()
+	}
+	v := &JwsDecoder{
+		skipJwtSignatureVerification: opts.SkipJwtSignatureVerification,
+
+		jwksStore: opts.JwksStore,
+
+		audience: opts.Audience,
+
+		includeAudiences: opts.IncludeAudiences,
 	}
 	return v, nil
 }
