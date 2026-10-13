@@ -79,7 +79,6 @@ if [[ ",${maintain_scopes}," == *",user,"* ]]; then
 
   export ND_USER_HANDLE
   export ND_USER_DOMAIN
-  export ND_USER_EMAIL="${ND_USER_HANDLE}@${ND_USER_DOMAIN}"
   export ND_USER_DISPLAY_NAME
 fi
 
