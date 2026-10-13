@@ -1,4 +1,4 @@
-package certstore
+package certificatefe
 
 import (
 	"context"
@@ -17,7 +17,7 @@ import (
 	"golang.org/x/oauth2"
 )
 
-func checkCertificateLife(tlsCertificate *tls.Certificate) (bool, bool, error) {
+func CheckCertificateLife(tlsCertificate *tls.Certificate) (bool, bool, error) {
 	if len(tlsCertificate.Certificate) == 0 {
 		return false, false, seederr.WrapErrorf("empty certificate")
 	}
@@ -30,7 +30,7 @@ func checkCertificateLife(tlsCertificate *tls.Certificate) (bool, bool, error) {
 	return alive, expiringSoon, nil
 }
 
-type SfeCertStore struct {
+type CertificateStation struct {
 	staticBearerToken string
 
 	openidClient *openid.OpenidClient
@@ -40,7 +40,7 @@ type SfeCertStore struct {
 	certificateCache sync.Map
 }
 
-func (s *SfeCertStore) fetchCertificate(hello *tls.ClientHelloInfo, domain string) (*tls.Certificate, error) {
+func (s *CertificateStation) fetchCertificate(hello *tls.ClientHelloInfo, domain string) (*tls.Certificate, error) {
 	ctx := hello.Context()
 	client := certificateclient.NewSfeCertificateClient("")
 	token := s.staticBearerToken
@@ -69,7 +69,7 @@ func (s *SfeCertStore) fetchCertificate(hello *tls.ClientHelloInfo, domain strin
 	return &newCert, nil
 }
 
-func (s *SfeCertStore) GetCertificate(hello *tls.ClientHelloInfo) (*tls.Certificate, error) {
+func (s *CertificateStation) GetCertificate(hello *tls.ClientHelloInfo) (*tls.Certificate, error) {
 	seedlog.Debugf("Tls request: %s", hello.ServerName)
 	domain := strings.ToLower(strings.TrimSpace(hello.ServerName))
 	if domain == "" {
@@ -78,7 +78,7 @@ func (s *SfeCertStore) GetCertificate(hello *tls.ClientHelloInfo) (*tls.Certific
 	cert, ok := s.certificateCache.Load(domain)
 	if ok {
 		certificateInCache := cert.(*tls.Certificate)
-		alive, expiringSoon, err := checkCertificateLife(certificateInCache)
+		alive, expiringSoon, err := CheckCertificateLife(certificateInCache)
 		if err != nil {
 			seedlog.Warnf("Failed to check certificate life %v: %v", domain, err)
 			s.certificateCache.Delete(domain)
@@ -104,19 +104,7 @@ func (s *SfeCertStore) GetCertificate(hello *tls.ClientHelloInfo) (*tls.Certific
 	return newCert, nil
 }
 
-func NewSfeCertStore(openidClient *openid.OpenidClient) *SfeCertStore {
-	return &SfeCertStore{
-		openidClient: openidClient,
-	}
-}
-
-func NewSfeCertStoreWithStaticBearerToken(token string) *SfeCertStore {
-	return &SfeCertStore{
-		staticBearerToken: token,
-	}
-}
-
-type CertStoreOptions struct {
+type CertificateStationOptions struct {
 	StaticBearerToken string
 
 	OpenidClient *openid.OpenidClient
@@ -124,8 +112,11 @@ type CertStoreOptions struct {
 	OpenidHttpClient *http.Client
 }
 
-func NewCertStore(opts *CertStoreOptions) *SfeCertStore {
-	return &SfeCertStore{
+func NewCertificateStation(opts *CertificateStationOptions) *CertificateStation {
+	if opts == nil {
+		opts = &CertificateStationOptions{}
+	}
+	return &CertificateStation{
 		staticBearerToken: opts.StaticBearerToken,
 
 		openidClient: opts.OpenidClient,
