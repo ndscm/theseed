@@ -58,6 +58,8 @@ func (d *OpenidDecoder) Decode(accessToken string) (*openid.OpenidUserInfo, erro
 }
 
 type OpenidDecoderOptions struct {
+	OpenidJwksStoreOptions
+
 	SkipJwtSignatureVerification bool
 
 	JwksStore jwtcore.JwksStore
@@ -70,7 +72,7 @@ func CreateOpenidDecoder(opts *OpenidDecoderOptions) (*OpenidDecoder, error) {
 		opts = &OpenidDecoderOptions{}
 	}
 	if opts.JwksStore == nil {
-		jwksStore, err := CreateOpenidJwksStore()
+		jwksStore, err := CreateOpenidJwksStore(&opts.OpenidJwksStoreOptions)
 		if err != nil {
 			return nil, seederr.Wrap(err)
 		}
