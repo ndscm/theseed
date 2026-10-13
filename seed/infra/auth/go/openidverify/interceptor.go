@@ -66,9 +66,16 @@ func (i *OpenidInterceptor) Intercept(next http.Handler) http.Handler {
 	return &openidMiddleware{next: next, openidDecoder: i.openidDecoder}
 }
 
-func CreateOpenidInterceptor() (*OpenidInterceptor, error) {
+type OpenidInterceptorOptions struct {
+	OpenidDecoderOptions
+}
+
+func CreateOpenidInterceptor(opts *OpenidInterceptorOptions) (*OpenidInterceptor, error) {
+	if opts == nil {
+		opts = &OpenidInterceptorOptions{}
+	}
 	i := &OpenidInterceptor{}
-	openidDecoder, err := CreateOpenidDecoder(nil)
+	openidDecoder, err := CreateOpenidDecoder(&opts.OpenidDecoderOptions)
 	if err != nil {
 		return nil, seederr.Wrap(err)
 	}
