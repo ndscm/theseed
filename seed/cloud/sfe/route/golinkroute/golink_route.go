@@ -65,7 +65,7 @@ func CreateGolinkRoute(sfeOpenidClient *openid.OpenidClient) (*GolinkRoute, erro
 		return nil, seederr.Wrap(err)
 	}
 	provider := openid.NewOpenidProvider(client, "golink_")
-	authHandler := authfe.NewAuthHandler(provider)
+	authHandler := authfe.NewAuthHandler(provider, nil)
 
 	// Create Reverse Proxy
 	serverUrl, err := url.Parse(flagGolinkServiceServer.Get())
