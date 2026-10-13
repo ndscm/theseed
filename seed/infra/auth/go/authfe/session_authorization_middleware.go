@@ -3,7 +3,6 @@ package authfe
 import (
 	"net/http"
 
-	"github.com/ndscm/theseed/seed/infra/auth/go/openid"
 	"github.com/ndscm/theseed/seed/infra/http/go/seedsession"
 	"github.com/ndscm/theseed/seed/infra/log/go/seedlog"
 )
@@ -11,7 +10,7 @@ import (
 type SessionAuthorizationMiddleware struct {
 	matcher func(*http.Request) bool
 
-	resolver OpenidProviderResolver
+	provider DynamicOpenidProvider
 
 	next http.Handler
 }
@@ -24,7 +23,7 @@ func (m SessionAuthorizationMiddleware) ServeHTTP(w http.ResponseWriter, r *http
 		return
 	}
 
-	provider, err := m.resolver(r)
+	provider, err := m.provider.GetOpenidProvider(r)
 	if err != nil {
 		seedlog.Errorf("Failed to resolve OpenID provider: %v", err)
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
@@ -54,19 +53,6 @@ func (m SessionAuthorizationMiddleware) ServeHTTP(w http.ResponseWriter, r *http
 	m.next.ServeHTTP(w, r.WithContext(ctx))
 }
 
-// Deprecated
-func InterceptSessionAuthorizationMiddleware(
-	next http.Handler, provider *openid.OpenidProvider,
-) http.Handler {
-	resolver := func(_ *http.Request) (*openid.OpenidProvider, error) {
-		return provider, nil
-	}
-	return &SessionAuthorizationMiddleware{
-		next:     next,
-		resolver: resolver,
-	}
-}
-
 type AuthMiddlewareOptions struct {
 	Matcher func(*http.Request) bool
 }
@@ -80,7 +66,7 @@ func InterceptAuthMiddleware(
 	return &SessionAuthorizationMiddleware{
 		matcher: opts.Matcher,
 
-		resolver: authHandler.resolver,
+		provider: authHandler.provider,
 
 		next: next,
 	}
