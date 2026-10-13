@@ -68,7 +68,7 @@ func CreateStuffRoute(sfeOpenidClient *openid.OpenidClient) (*StuffRoute, error)
 		return nil, seederr.Wrap(err)
 	}
 	provider := openid.NewOpenidProvider(client, "stuff_")
-	authHandler := authfe.NewAuthHandler(provider)
+	authHandler := authfe.NewAuthHandler(provider, nil)
 
 	// Create Reverse Proxy
 	serverUrl, err := url.Parse(flagStuffServiceServer.Get())
