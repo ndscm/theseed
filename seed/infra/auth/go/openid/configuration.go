@@ -20,6 +20,9 @@ type OpenidConfiguration struct {
 	SubjectTypesSupported  []string `json:"subject_types_supported"`
 	ClaimsSupported        []string `json:"claims_supported"`
 
+	// See: https://openid.net/specs/openid-connect-rpinitiated-1_0.html#OPMetadata
+	EndSessionEndpoint string `json:"end_session_endpoint"`
+
 	// See: https://datatracker.ietf.org/doc/html/rfc8628#section-7.4
 	DeviceAuthorizationEndpoint string `json:"device_authorization_endpoint,omitempty"`
 

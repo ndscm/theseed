@@ -211,6 +211,67 @@ func (provider *OpenidProvider) UmaGrant(
 	return tokenSource, nil
 }
 
+func (provider *OpenidProvider) ClearGrant(
+	ctx context.Context,
+	storage ExternalTokenStorage,
+) (string, error) {
+	idTokenHint, err := storage.Get(ctx, provider.prefix+"id_token_hint")
+	if err != nil {
+		return "", seederr.Wrap(err)
+	}
+	err = storage.Update(ctx, map[string]string{
+		provider.prefix + "access_token":  "",
+		provider.prefix + "refresh_token": "",
+		provider.prefix + "expiry":        "",
+		provider.prefix + "id_token_hint": "",
+	})
+	if err != nil {
+		return "", seederr.Wrap(err)
+	}
+	return idTokenHint, nil
+}
+
+type EndSessionOptions struct {
+	IdTokenHint string
+
+	PostLogoutRedirectUri string
+}
+
+func (provider *OpenidProvider) EndSessionUrl(
+	ctx context.Context,
+	opts *EndSessionOptions,
+) (string, error) {
+	if opts == nil {
+		opts = &EndSessionOptions{}
+	}
+
+	configuration, err := provider.GetOpenidConfiguration(ctx)
+	if err != nil {
+		return "", seederr.Wrap(err)
+	}
+	if configuration.EndSessionEndpoint == "" {
+		return "", nil
+	}
+
+	endSessionUrl, err := url.Parse(configuration.EndSessionEndpoint)
+	if err != nil {
+		return "", seederr.Wrap(err)
+	}
+
+	query := endSessionUrl.Query()
+	query.Set("client_id", provider.clientId)
+	if opts.IdTokenHint != "" {
+		query.Set("id_token_hint", opts.IdTokenHint)
+	}
+	if opts.PostLogoutRedirectUri != "" {
+		query.Set("post_logout_redirect_uri", opts.PostLogoutRedirectUri)
+	}
+
+	endSessionUrl.RawQuery = query.Encode()
+
+	return endSessionUrl.String(), nil
+}
+
 func (provider *OpenidProvider) Client(
 	ctx context.Context,
 	storage ExternalTokenStorage,

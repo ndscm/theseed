@@ -35,11 +35,16 @@ func (s *ExternalTokenStorageTokenSource) Token() (*oauth2.Token, error) {
 		if s.storage == nil {
 			return nil, seederr.WrapErrorf("storage is nil")
 		}
-		err := s.storage.Update(s.ctx, map[string]string{
+		change := map[string]string{
 			s.prefix + "access_token":  newToken.AccessToken,
 			s.prefix + "refresh_token": newToken.RefreshToken,
 			s.prefix + "expiry":        newToken.Expiry.Format(time.RFC3339Nano),
-		})
+		}
+		idToken, ok := newToken.Extra("id_token").(string)
+		if ok && idToken != "" {
+			change[s.prefix+"id_token_hint"] = idToken
+		}
+		err := s.storage.Update(s.ctx, change)
 		if err != nil {
 			return nil, seederr.Wrap(err)
 		}
@@ -94,11 +99,16 @@ func createExternalTokenStorageTokenSource(
 			Expiry:       expiry,
 		}
 	} else {
-		err := storage.Update(ctx, map[string]string{
+		change := map[string]string{
 			prefix + "access_token":  initial.AccessToken,
 			prefix + "refresh_token": initial.RefreshToken,
 			prefix + "expiry":        initial.Expiry.Format(time.RFC3339Nano),
-		})
+		}
+		idToken, ok := initial.Extra("id_token").(string)
+		if ok && idToken != "" {
+			change[prefix+"id_token_hint"] = idToken
+		}
+		err := storage.Update(ctx, change)
 		if err != nil {
 			return nil, seederr.Wrap(err)
 		}
