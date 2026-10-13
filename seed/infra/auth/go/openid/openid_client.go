@@ -127,7 +127,13 @@ func (oc *OpenidClient) GetOpenidConfiguration(ctx context.Context) (*OpenidConf
 	if err != nil {
 		return nil, seederr.Wrap(err)
 	}
-	response, err := http.DefaultClient.Do(request)
+
+	httpClient, ok := ctx.Value(oauth2.HTTPClient).(*http.Client)
+	if !ok || httpClient == nil {
+		httpClient = http.DefaultClient
+	}
+
+	response, err := httpClient.Do(request)
 	if err != nil {
 		return nil, seederr.Wrap(err)
 	}
@@ -206,7 +212,14 @@ func (oc *OpenidClient) GetTokenSource(
 	if err != nil {
 		return nil, seederr.Wrap(err)
 	}
-	refreshCtx := oc.WithClientAssertion(context.Background())
+
+	refreshCtx := context.Background()
+	openidHttpClient, ok := ctx.Value(oauth2.HTTPClient).(*http.Client)
+	if ok && openidHttpClient != nil {
+		refreshCtx = context.WithValue(refreshCtx, oauth2.HTTPClient, openidHttpClient)
+	}
+
+	refreshCtx = oc.WithClientAssertion(refreshCtx)
 	tokenSource := oauth2Config.TokenSource(refreshCtx)
 	func() {
 		oc.tokenSourcesMutex.Lock()
