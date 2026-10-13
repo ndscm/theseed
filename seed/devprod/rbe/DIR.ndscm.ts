@@ -3,6 +3,6 @@ import { type DirConfig } from "@//seed/devprod/ndscm/config/DIR"
 export default {
   granularity: {
     style: "linux",
-    prefix: "seed: rbe: ",
+    part: "rbe: ",
   },
 } satisfies DirConfig
