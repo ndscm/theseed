@@ -18,9 +18,9 @@ func parseNdRunFlags(args []string) (ndRunFlags, []string, error) {
 	cmdFlags := ndRunFlags{}
 	cmdFlags.all = cf.DefineBool("all", false, "Check all watchers regardless of cached modified time")
 	cmdFlags.changed = cf.DefineBool("changed", false, "Run against changed files instead of only dirty files")
-	cmdArgs, err := cf.Parse(args,
-		seedflag.WithAnywhereFlag(true),
-	)
+	cmdArgs, err := cf.Parse(args, &seedflag.ParseOptions{
+		AnywhereFlag: true,
+	})
 	if err != nil {
 		return cmdFlags, nil, seederr.Wrap(err)
 	}

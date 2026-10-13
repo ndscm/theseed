@@ -16,9 +16,9 @@ func parseNdVendorFlags(args []string) (ndVendorFlags, []string, error) {
 	cf := seedflag.NewCommandFlags("nd-vendor")
 	cmdFlags := ndVendorFlags{}
 	cmdFlags.all = cf.DefineBool("all", false, "Check all watchers regardless of cached modified time")
-	cmdArgs, err := cf.Parse(args,
-		seedflag.WithAnywhereFlag(true),
-	)
+	cmdArgs, err := cf.Parse(args, &seedflag.ParseOptions{
+		AnywhereFlag: true,
+	})
 	if err != nil {
 		return cmdFlags, nil, seederr.Wrap(err)
 	}

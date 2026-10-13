@@ -14,9 +14,9 @@ func parseNdSyncFlags(args []string) (ndSyncFlags, []string, error) {
 	cf := seedflag.NewCommandFlags("nd-sync")
 	cmdFlags := ndSyncFlags{}
 	cmdFlags.fetch = cf.DefineString("fetch", "auto", "When to fetch upstream changes before rebasing: always, never, or auto (fetch only on the dev branch tip)")
-	cmdArgs, err := cf.Parse(args,
-		seedflag.WithAnywhereFlag(true),
-	)
+	cmdArgs, err := cf.Parse(args, &seedflag.ParseOptions{
+		AnywhereFlag: true,
+	})
 	if err != nil {
 		return cmdFlags, nil, seederr.Wrap(err)
 	}
