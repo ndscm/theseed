@@ -32,7 +32,7 @@ func run() error {
 		return seederr.Wrap(err)
 	}
 
-	openidInterceptor, err := openidverify.CreateOpenidInterceptor()
+	openidInterceptor, err := openidverify.CreateOpenidInterceptor(nil)
 	if err != nil {
 		return seederr.Wrap(err)
 	}
