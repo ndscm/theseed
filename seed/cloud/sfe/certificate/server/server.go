@@ -15,6 +15,7 @@ import (
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
 	"github.com/ndscm/theseed/seed/infra/flag/go/seedflag"
 	"github.com/ndscm/theseed/seed/infra/grpc/go/seedgrpc"
+	"github.com/ndscm/theseed/seed/infra/http/go/vpcdirect"
 	"github.com/ndscm/theseed/seed/infra/init/go/seedinit"
 	"github.com/ndscm/theseed/seed/infra/log/go/seedlog"
 )
@@ -62,7 +63,14 @@ func run() error {
 		return seederr.Wrap(err)
 	}
 
-	openidInterceptor, err := openidverify.CreateOpenidInterceptor(nil)
+	openidHttpClient, err := vpcdirect.CreateVpcDirectClient()
+	if err != nil {
+		return seederr.Wrap(err)
+	}
+
+	openidInterceptor, err := openidverify.CreateOpenidInterceptor(&openidverify.OpenidInterceptorOptions{
+		OpenidHttpClient: openidHttpClient,
+	})
 	if err != nil {
 		return seederr.Wrap(err)
 	}
