@@ -21,7 +21,9 @@ func parseNdSubmitFlags(args []string) (ndSubmitFlags, []string, error) {
 	cmdFlags.force = cf.DefineBool("force", false, "Force cut even if the change branch already exists")
 	cmdFlags.remote = cf.DefineString("remote", "origin", "Remote identifier for submitting the branch")
 	cmdFlags.owner = cf.DefineString("owner", "", "Owner identifier for submitting the branch")
-	cmdArgs, err := cf.Parse(args)
+	cmdArgs, err := cf.Parse(args, &seedflag.ParseOptions{
+		AnywhereFlag: true,
+	})
 	if err != nil {
 		return cmdFlags, nil, seederr.Wrap(err)
 	}

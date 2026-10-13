@@ -14,9 +14,9 @@ func parseNdTicketFlags(args []string) (ndTicketFlags, []string, error) {
 	cf := seedflag.NewCommandFlags("nd-ticket")
 	cmdFlags := ndTicketFlags{}
 	cmdFlags.space = cf.DefineString("space", "main", "The ticket space; the worktree is ticket/<space>")
-	cmdArgs, err := cf.Parse(args,
-		seedflag.WithAnywhereFlag(true),
-	)
+	cmdArgs, err := cf.Parse(args, &seedflag.ParseOptions{
+		AnywhereFlag: true,
+	})
 	if err != nil {
 		return cmdFlags, nil, seederr.Wrap(err)
 	}

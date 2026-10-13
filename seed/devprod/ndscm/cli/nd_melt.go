@@ -19,9 +19,9 @@ func parseNdMeltFlags(args []string) (ndMeltFlags, []string, error) {
 	cmdFlags.remove = cf.DefineBool("remove", false, "Remove the melt worktree")
 	cmdFlags.track = cf.DefineString("track", "", "Local tracking branch for fork point search (default: origin/main)")
 	cmdFlags.lock = cf.DefineString("lock", "drop", "Lock file for the melt worktree")
-	cmdArgs, err := cf.Parse(args,
-		seedflag.WithAnywhereFlag(true),
-	)
+	cmdArgs, err := cf.Parse(args, &seedflag.ParseOptions{
+		AnywhereFlag: true,
+	})
 	if err != nil {
 		return cmdFlags, nil, seederr.Wrap(err)
 	}

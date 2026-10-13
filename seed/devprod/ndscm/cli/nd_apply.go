@@ -18,7 +18,9 @@ func parseNdApplyFlags(args []string) (ndApplyFlags, []string, error) {
 	cmdFlags := ndApplyFlags{}
 	cmdFlags.remote = cf.DefineString("remote", "origin", "Remote identifier for fetching the branch")
 	cmdFlags.owner = cf.DefineString("owner", "", "Owner of the remote change branch")
-	cmdArgs, err := cf.Parse(args)
+	cmdArgs, err := cf.Parse(args, &seedflag.ParseOptions{
+		AnywhereFlag: true,
+	})
 	if err != nil {
 		return cmdFlags, nil, seederr.Wrap(err)
 	}

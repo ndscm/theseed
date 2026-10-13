@@ -8,7 +8,9 @@ import (
 
 func parseNdContinueFlags(args []string) ([]string, error) {
 	cf := seedflag.NewCommandFlags("nd-continue")
-	cmdArgs, err := cf.Parse(args)
+	cmdArgs, err := cf.Parse(args, &seedflag.ParseOptions{
+		AnywhereFlag: true,
+	})
 	if err != nil {
 		return nil, seederr.Wrap(err)
 	}

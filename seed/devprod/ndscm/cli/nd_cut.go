@@ -16,7 +16,9 @@ func parseNdCutFlags(args []string) (ndCutFlags, []string, error) {
 	cf := seedflag.NewCommandFlags("nd-cut")
 	cmdFlags := ndCutFlags{}
 	cmdFlags.force = cf.DefineBool("force", false, "Force cut even if the change branch already exists")
-	cmdArgs, err := cf.Parse(args)
+	cmdArgs, err := cf.Parse(args, &seedflag.ParseOptions{
+		AnywhereFlag: true,
+	})
 	if err != nil {
 		return cmdFlags, nil, seederr.Wrap(err)
 	}

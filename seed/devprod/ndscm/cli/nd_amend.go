@@ -18,7 +18,9 @@ func parseNdAmendFlags(args []string) (ndAmendFlags, []string, error) {
 	cmdFlags.breakText = cf.DefineString("break", "", "Breaking change description")
 	cmdFlags.migrateText = cf.DefineString("migrate", "", "Migration instruction")
 	cmdFlags.sideEffectOf = cf.DefineString("side-effect-of", "", "Change UUID this commit is a side effect of")
-	cmdArgs, err := cf.Parse(args)
+	cmdArgs, err := cf.Parse(args, &seedflag.ParseOptions{
+		AnywhereFlag: true,
+	})
 	if err != nil {
 		return cmdFlags, nil, seederr.Wrap(err)
 	}

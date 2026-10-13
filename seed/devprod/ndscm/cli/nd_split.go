@@ -10,7 +10,9 @@ import (
 
 func parseNdSplitFlags(args []string) ([]string, error) {
 	cf := seedflag.NewCommandFlags("nd-split")
-	cmdArgs, err := cf.Parse(args)
+	cmdArgs, err := cf.Parse(args, &seedflag.ParseOptions{
+		AnywhereFlag: true,
+	})
 	if err != nil {
 		return nil, seederr.Wrap(err)
 	}
