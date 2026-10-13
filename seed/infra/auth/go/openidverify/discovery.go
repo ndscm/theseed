@@ -20,6 +20,7 @@ import (
 	"github.com/ndscm/theseed/seed/infra/flag/go/seedflag"
 	"github.com/ndscm/theseed/seed/infra/jwt/go/jwtcore"
 	"github.com/ndscm/theseed/seed/infra/log/go/seedlog"
+	"golang.org/x/oauth2"
 )
 
 var flagTrustOpenidIssuersFile = seedflag.DefineFile(
@@ -93,7 +94,11 @@ func fetchOpenidConfiguration(ctx context.Context, discoveryUrl string) (*openid
 	if err != nil {
 		return nil, seederr.Wrap(err)
 	}
-	response, err := http.DefaultClient.Do(request)
+	httpClient, ok := ctx.Value(oauth2.HTTPClient).(*http.Client)
+	if !ok || httpClient == nil {
+		httpClient = http.DefaultClient
+	}
+	response, err := httpClient.Do(request)
 	if err != nil {
 		return nil, seederr.Wrap(err)
 	}
@@ -126,11 +131,17 @@ func fetchOpenidIssuerJwks(ctx context.Context, discoveryUrl string) (string, *O
 		return "", nil, seederr.Wrap(err)
 	}
 
+	httpClient, ok := ctx.Value(oauth2.HTTPClient).(*http.Client)
+	if !ok || httpClient == nil {
+		httpClient = http.DefaultClient
+	}
+
 	jwksRequest, err := http.NewRequestWithContext(ctx, http.MethodGet, configuration.JwksUri, nil)
 	if err != nil {
 		return "", nil, seederr.Wrap(err)
 	}
-	jwksResponse, err := http.DefaultClient.Do(jwksRequest)
+
+	jwksResponse, err := httpClient.Do(jwksRequest)
 	if err != nil {
 		return "", nil, seederr.Wrap(err)
 	}
@@ -180,6 +191,8 @@ func fetchOpenidIssuerJwks(ctx context.Context, discoveryUrl string) (string, *O
 }
 
 type OpenidJwksStore struct {
+	openidHttpClient *http.Client
+
 	issuersMutex sync.RWMutex
 	issuers      OpenidIssuers
 
@@ -209,7 +222,11 @@ func (s *OpenidJwksStore) setIssuerJwks(issuer string, issuerJwks *OpenidIssuerJ
 }
 
 func (s *OpenidJwksStore) refreshIssuers() error {
-	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	ctx := context.Background()
+	if s.openidHttpClient != nil {
+		ctx = context.WithValue(ctx, oauth2.HTTPClient, s.openidHttpClient)
+	}
+	ctx, cancel := context.WithTimeout(ctx, 30*time.Second)
 	defer cancel()
 	issuers := s.getIssuers()
 	s.clearIssuerJwks()
@@ -283,7 +300,14 @@ func (s *OpenidJwksStore) GetByKid(issuer string, kid string) (crypto.PublicKey,
 	return key, nil
 }
 
-func CreateOpenidJwksStore() (*OpenidJwksStore, error) {
+type OpenidJwksStoreOptions struct {
+	OpenidHttpClient *http.Client
+}
+
+func CreateOpenidJwksStore(opts *OpenidJwksStoreOptions) (*OpenidJwksStore, error) {
+	if opts == nil {
+		opts = &OpenidJwksStoreOptions{}
+	}
 	issuersBytes, err := flagTrustOpenidIssuersFile.Load()
 	if err != nil {
 		return nil, seederr.Wrap(err)
@@ -301,6 +325,8 @@ func CreateOpenidJwksStore() (*OpenidJwksStore, error) {
 		}
 	}
 	store := &OpenidJwksStore{
+		openidHttpClient: opts.OpenidHttpClient,
+
 		issuers: issuers,
 		jwks:    map[string]*OpenidIssuerJwks{},
 	}
