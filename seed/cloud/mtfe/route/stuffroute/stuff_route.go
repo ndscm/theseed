@@ -40,13 +40,9 @@ var _ http.Handler = (*StuffRoute)(nil)
 
 var contentTypeRegexp = regexp.MustCompile("^application/(json|grpc)")
 
-// CreateStuffRoute builds a multitenant Stuff route. resolver resolves the
-// tenant's OpenID provider per request. The returned route does not establish
-// the session itself; the caller is expected to wrap it with its session
-// middleware, just as the sfe server does.
-func CreateStuffRoute(resolver authfe.OpenidProviderResolver) (*StuffRoute, error) {
+func CreateStuffRoute(provider authfe.DynamicOpenidProvider) (*StuffRoute, error) {
 	// Create Auth Handler
-	authHandler := authfe.NewMultiTenantAuthHandler(resolver, nil)
+	authHandler := authfe.NewDynamicAuthHandler(provider, nil)
 
 	// Create Reverse Proxy
 	serverUrl, err := url.Parse(flagStuffServiceServer.Get())
