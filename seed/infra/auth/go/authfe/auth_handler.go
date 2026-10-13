@@ -46,13 +46,22 @@ func guessOrigin(r *http.Request) string {
 	return scheme + "://" + r.Host
 }
 
-// OpenidProviderResolver returns the OpenID provider to use for a given request. A
-// single-tenant front end returns the same provider for every request; a
-// multitenant one resolves it per request, e.g. from the request host.
-type OpenidProviderResolver func(r *http.Request) (*openid.OpenidProvider, error)
+type DynamicOpenidProvider interface {
+	GetOpenidProvider(r *http.Request) (*openid.OpenidProvider, error)
+}
+
+type simpleOpenidProvider struct {
+	provider *openid.OpenidProvider
+}
+
+func (s *simpleOpenidProvider) GetOpenidProvider(r *http.Request) (*openid.OpenidProvider, error) {
+	return s.provider, nil
+}
+
+var _ DynamicOpenidProvider = (*simpleOpenidProvider)(nil)
 
 type AuthHandler struct {
-	resolver OpenidProviderResolver
+	provider DynamicOpenidProvider
 
 	uma bool
 
@@ -77,7 +86,7 @@ func (h *AuthHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 func (h *AuthHandler) handleLogin(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
-	provider, err := h.resolver(r)
+	provider, err := h.provider.GetOpenidProvider(r)
 	if err != nil {
 		seedlog.Errorf("Failed to resolve OpenID provider: %v", err)
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
@@ -152,7 +161,7 @@ func (h *AuthHandler) grantUmaToken(
 func (h *AuthHandler) handleCallback(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
-	provider, err := h.resolver(r)
+	provider, err := h.provider.GetOpenidProvider(r)
 	if err != nil {
 		seedlog.Errorf("Failed to resolve OpenID provider: %v", err)
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
@@ -229,7 +238,7 @@ func (h *AuthHandler) handleCallback(w http.ResponseWriter, r *http.Request) {
 func (h *AuthHandler) handleLogout(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
-	provider, err := h.resolver(r)
+	provider, err := h.provider.GetOpenidProvider(r)
 	if err != nil {
 		seedlog.Errorf("Failed to resolve OpenID provider: %v", err)
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
@@ -275,7 +284,7 @@ func (h *AuthHandler) handleLogout(w http.ResponseWriter, r *http.Request) {
 func (h *AuthHandler) handleClear(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
-	provider, err := h.resolver(r)
+	provider, err := h.provider.GetOpenidProvider(r)
 	if err != nil {
 		seedlog.Errorf("Failed to resolve OpenID provider: %v", err)
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
@@ -317,18 +326,13 @@ func WithUma(audience string) AuthHandlerOption {
 }
 
 // NewAuthHandler builds a single-tenant auth handler bound to a fixed provider.
-// For a multitenant front end that resolves the provider per request, use
-// NewMultiTenantAuthHandler instead.
 func NewAuthHandler(provider *openid.OpenidProvider, opts ...AuthHandlerOption) *AuthHandler {
 	options := &AuthHandlerOptions{}
 	for _, opt := range opts {
 		opt(options)
 	}
-	resolver := func(_ *http.Request) (*openid.OpenidProvider, error) {
-		return provider, nil
-	}
 	return &AuthHandler{
-		resolver: resolver,
+		provider: &simpleOpenidProvider{provider: provider},
 
 		uma: options.Uma,
 
@@ -336,15 +340,14 @@ func NewAuthHandler(provider *openid.OpenidProvider, opts ...AuthHandlerOption) 
 	}
 }
 
-// NewMultiTenantAuthHandler builds an auth handler that resolves its OpenID
-// provider per request via resolver, for front ends that serve multiple tenants
-// from a single process.
-func NewMultiTenantAuthHandler(resolver OpenidProviderResolver, opts *AuthHandlerOptions) *AuthHandler {
+// NewDynamicAuthHandler builds an auth handler that resolves its OpenID
+// provider per request via resolver, for front ends that serve multiple tenants.
+func NewDynamicAuthHandler(provider DynamicOpenidProvider, opts *AuthHandlerOptions) *AuthHandler {
 	if opts == nil {
 		opts = &AuthHandlerOptions{}
 	}
 	return &AuthHandler{
-		resolver: resolver,
+		provider: provider,
 
 		uma: opts.Uma,
 
