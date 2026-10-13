@@ -1,8 +1,10 @@
 package certstore
 
 import (
+	"context"
 	"crypto/tls"
 	"crypto/x509"
+	"net/http"
 	"strings"
 	"sync"
 	"time"
@@ -12,6 +14,7 @@ import (
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
 	"github.com/ndscm/theseed/seed/infra/http/go/seedbearer"
 	"github.com/ndscm/theseed/seed/infra/log/go/seedlog"
+	"golang.org/x/oauth2"
 )
 
 func checkCertificateLife(tlsCertificate *tls.Certificate) (bool, bool, error) {
@@ -30,7 +33,9 @@ func checkCertificateLife(tlsCertificate *tls.Certificate) (bool, bool, error) {
 type SfeCertStore struct {
 	staticBearerToken string
 
-	serviceOpenid *openid.OpenidClient
+	openidClient *openid.OpenidClient
+
+	openidHttpClient *http.Client
 
 	certificateCache sync.Map
 }
@@ -39,8 +44,12 @@ func (s *SfeCertStore) fetchCertificate(hello *tls.ClientHelloInfo, domain strin
 	ctx := hello.Context()
 	client := certificateclient.NewSfeCertificateClient("")
 	token := s.staticBearerToken
-	if token == "" && s.serviceOpenid != nil {
-		accessToken, err := s.serviceOpenid.AccessToken(ctx, nil)
+	if token == "" && s.openidClient != nil {
+		tokenCtx := ctx
+		if s.openidHttpClient != nil {
+			tokenCtx = context.WithValue(ctx, oauth2.HTTPClient, s.openidHttpClient)
+		}
+		accessToken, err := s.openidClient.AccessToken(tokenCtx, nil)
 		if err != nil {
 			return nil, seederr.Wrap(err)
 		}
@@ -95,14 +104,32 @@ func (s *SfeCertStore) GetCertificate(hello *tls.ClientHelloInfo) (*tls.Certific
 	return newCert, nil
 }
 
-func NewSfeCertStore(serviceOpenid *openid.OpenidClient) *SfeCertStore {
+func NewSfeCertStore(openidClient *openid.OpenidClient) *SfeCertStore {
 	return &SfeCertStore{
-		serviceOpenid: serviceOpenid,
+		openidClient: openidClient,
 	}
 }
 
 func NewSfeCertStoreWithStaticBearerToken(token string) *SfeCertStore {
 	return &SfeCertStore{
 		staticBearerToken: token,
+	}
+}
+
+type CertStoreOptions struct {
+	StaticBearerToken string
+
+	OpenidClient *openid.OpenidClient
+
+	OpenidHttpClient *http.Client
+}
+
+func NewCertStore(opts *CertStoreOptions) *SfeCertStore {
+	return &SfeCertStore{
+		staticBearerToken: opts.StaticBearerToken,
+
+		openidClient: opts.OpenidClient,
+
+		openidHttpClient: opts.OpenidHttpClient,
 	}
 }
