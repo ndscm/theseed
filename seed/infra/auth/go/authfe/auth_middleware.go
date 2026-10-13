@@ -7,7 +7,7 @@ import (
 	"github.com/ndscm/theseed/seed/infra/log/go/seedlog"
 )
 
-type SessionAuthorizationMiddleware struct {
+type AuthMiddleware struct {
 	matcher func(*http.Request) bool
 
 	provider DynamicOpenidProvider
@@ -15,7 +15,7 @@ type SessionAuthorizationMiddleware struct {
 	next http.Handler
 }
 
-func (m SessionAuthorizationMiddleware) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (m AuthMiddleware) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	if m.matcher != nil && !m.matcher(r) {
@@ -63,7 +63,7 @@ func InterceptAuthMiddleware(
 	if opts == nil {
 		opts = &AuthMiddlewareOptions{}
 	}
-	return &SessionAuthorizationMiddleware{
+	return &AuthMiddleware{
 		matcher: opts.Matcher,
 
 		provider: authHandler.provider,
