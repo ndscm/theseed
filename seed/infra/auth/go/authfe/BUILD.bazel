@@ -4,7 +4,7 @@ go_library(
     name = "authfe",
     srcs = [
         "auth_handler.go",
-        "session_authorization_middleware.go",
+        "auth_middleware.go",
     ],
     importpath = "github.com/ndscm/theseed/seed/infra/auth/go/authfe",
     visibility = ["//visibility:public"],
