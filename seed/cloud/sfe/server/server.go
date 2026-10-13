@@ -8,7 +8,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/ndscm/theseed/seed/cloud/sfe/certstore"
+	"github.com/ndscm/theseed/seed/cloud/sfe/certificate/client/go/certificatefe"
 	"github.com/ndscm/theseed/seed/cloud/sfe/escalate"
 	"github.com/ndscm/theseed/seed/cloud/sfe/route/golinkroute"
 	"github.com/ndscm/theseed/seed/cloud/sfe/route/kurisuroute"
@@ -178,11 +178,13 @@ func run() error {
 	}
 
 	// Configure HTTPS server
-	sfeCertStore := certstore.NewSfeCertStore(sfeOpenidClient)
+	certificateStation := certificatefe.NewCertificateStation(&certificatefe.CertificateStationOptions{
+		OpenidClient: sfeOpenidClient,
+	})
 	httpsServer := &http.Server{
 		Addr: ":" + flagHttpsPort.Get(),
 		TLSConfig: &tls.Config{
-			GetCertificate: sfeCertStore.GetCertificate,
+			GetCertificate: certificateStation.GetCertificate,
 			NextProtos:     []string{"h2", "http/1.1"},
 		},
 	}
