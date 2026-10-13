@@ -104,12 +104,15 @@ func Initialize(opts ...initializeOption) ([]string, error) {
 		}
 	}
 
-	args, err := seedflag.Parse(
-		seedflag.WithAnywhereFlag(o.anywhereFlag),
-		seedflag.WithUnknownFlag(o.unknownFlag),
-		seedflag.WithEnvPrefix(o.envPrefix),
-		seedflag.WithFallbackEnvPrefix(o.fallbackEnvPrefix),
-	)
+	args, err := seedflag.Parse(&seedflag.GlobalParseOptions{
+		AnywhereFlag: o.anywhereFlag,
+
+		UnknownFlag: o.unknownFlag,
+
+		EnvPrefix: o.envPrefix,
+
+		FallbackEnvPrefix: o.fallbackEnvPrefix,
+	})
 	if err != nil {
 		return nil, seederr.Wrap(err)
 	}
