@@ -10,7 +10,6 @@ import (
 	"sync"
 
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
-	"github.com/ndscm/theseed/seed/infra/log/go/seedlog"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/clientcredentials"
 )
@@ -85,9 +84,6 @@ type OpenidClient struct {
 
 	clientAssertion oauth2.TokenSource
 
-	configurationMutex sync.RWMutex
-	configuration      *OpenidConfiguration
-
 	tokenSourcesMutex sync.RWMutex
 	tokenSources      map[string]oauth2.TokenSource
 }
@@ -114,48 +110,7 @@ func (oc *OpenidClient) Origin() (string, error) {
 }
 
 func (oc *OpenidClient) GetOpenidConfiguration(ctx context.Context) (*OpenidConfiguration, error) {
-	cached := func() *OpenidConfiguration {
-		oc.configurationMutex.RLock()
-		defer oc.configurationMutex.RUnlock()
-		return oc.configuration
-	}()
-	if cached != nil {
-		return cached, nil
-	}
-	seedlog.Infof("Fetching openid configuration from %s", oc.discoveryUrl)
-	request, err := http.NewRequestWithContext(ctx, http.MethodGet, oc.discoveryUrl, nil)
-	if err != nil {
-		return nil, seederr.Wrap(err)
-	}
-
-	httpClient, ok := ctx.Value(oauth2.HTTPClient).(*http.Client)
-	if !ok || httpClient == nil {
-		httpClient = http.DefaultClient
-	}
-
-	response, err := httpClient.Do(request)
-	if err != nil {
-		return nil, seederr.Wrap(err)
-	}
-	defer response.Body.Close()
-	responseBodyBytes, err := io.ReadAll(response.Body)
-	if err != nil {
-		return nil, seederr.Wrap(err)
-	}
-	if response.StatusCode != http.StatusOK {
-		return nil, seederr.WrapErrorf("failed to fetch openid configuration: status %d, body: %s",
-			response.StatusCode, string(responseBodyBytes))
-	}
-	configuration, err := DecodeOpenidConfiguration(responseBodyBytes)
-	if err != nil {
-		return nil, seederr.Wrap(err)
-	}
-	func() {
-		oc.configurationMutex.Lock()
-		defer oc.configurationMutex.Unlock()
-		oc.configuration = configuration
-	}()
-	return configuration, nil
+	return FetchOpenidConfiguration(ctx, oc.discoveryUrl)
 }
 
 func (oc *OpenidClient) GetClientCredentialsConfig(
