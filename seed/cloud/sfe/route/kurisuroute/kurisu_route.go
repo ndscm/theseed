@@ -68,7 +68,9 @@ func CreateKurisuRoute(sfeOpenidClient *openid.OpenidClient) (*KurisuRoute, erro
 		return nil, seederr.Wrap(err)
 	}
 	provider := openid.NewOpenidProvider(client, "kurisu_")
-	authHandler := authfe.NewAuthHandler(provider, authfe.WithUma(""))
+	authHandler := authfe.NewAuthHandler(provider, &authfe.AuthHandlerOptions{
+		Uma: true,
+	})
 
 	// Create Reverse Proxy
 	serverUrl, err := url.Parse(flagKurisuServiceServer.Get())
