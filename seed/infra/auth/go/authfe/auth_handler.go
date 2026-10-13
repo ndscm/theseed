@@ -65,6 +65,10 @@ func (h *AuthHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		h.handleLogin(w, r)
 	case strings.HasPrefix(r.URL.Path, "/auth/callback"):
 		h.handleCallback(w, r)
+	case strings.HasPrefix(r.URL.Path, "/auth/logout"):
+		h.handleLogout(w, r)
+	case strings.HasPrefix(r.URL.Path, "/auth/clear"):
+		h.handleClear(w, r)
 	default:
 		http.NotFound(w, r)
 	}
@@ -215,6 +219,83 @@ func (h *AuthHandler) handleCallback(w http.ResponseWriter, r *http.Request) {
 	})
 	if err != nil {
 		seedlog.Warnf("Failed to clear auth state from session: %v", err)
+	}
+
+	http.Redirect(w, r, returnUrl, http.StatusFound)
+}
+
+// handleLogout clears the local grant and redirects to the provider's
+// end-session endpoint to end its session too.
+func (h *AuthHandler) handleLogout(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	provider, err := h.resolver(r)
+	if err != nil {
+		seedlog.Errorf("Failed to resolve OpenID provider: %v", err)
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		return
+	}
+
+	returnUrl := sanitizeReturnUrl(r.URL.Query().Get("return"))
+	redirectUrl := guessOrigin(r) + returnUrl
+
+	session, err := seedsession.Session(ctx)
+	if err != nil {
+		seedlog.Errorf("Failed to get session: %v", err)
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		return
+	}
+
+	idToken, err := provider.ClearGrant(ctx, session)
+	if err != nil {
+		seedlog.Errorf("Failed to clear grant: %v", err)
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		return
+	}
+
+	endSessionUrl, err := provider.EndSessionUrl(ctx, &openid.EndSessionOptions{
+		IdTokenHint: idToken,
+
+		PostLogoutRedirectUri: redirectUrl,
+	})
+	if err != nil {
+		seedlog.Warnf("Failed to build end-session URL: %v", err)
+		endSessionUrl = ""
+	}
+
+	if endSessionUrl == "" {
+		endSessionUrl = returnUrl
+	}
+	http.Redirect(w, r, endSessionUrl, http.StatusFound)
+}
+
+// handleClear clears only the local grant, without contacting the provider,
+// for when the provider-side identity changed but the front end holds the old
+// session.
+func (h *AuthHandler) handleClear(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	provider, err := h.resolver(r)
+	if err != nil {
+		seedlog.Errorf("Failed to resolve OpenID provider: %v", err)
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		return
+	}
+
+	returnUrl := sanitizeReturnUrl(r.URL.Query().Get("return"))
+
+	session, err := seedsession.Session(ctx)
+	if err != nil {
+		seedlog.Errorf("Failed to get session: %v", err)
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		return
+	}
+
+	_, err = provider.ClearGrant(ctx, session)
+	if err != nil {
+		seedlog.Errorf("Failed to clear stored tokens: %v", err)
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		return
 	}
 
 	http.Redirect(w, r, returnUrl, http.StatusFound)
