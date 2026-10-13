@@ -33,9 +33,9 @@ func (p *GolinkRoute) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 var _ http.Handler = (*GolinkRoute)(nil)
 
-func CreateGolinkRoute(resolver authfe.OpenidProviderResolver) (*GolinkRoute, error) {
+func CreateGolinkRoute(provider authfe.DynamicOpenidProvider) (*GolinkRoute, error) {
 	// Create Auth Handler
-	authHandler := authfe.NewMultiTenantAuthHandler(resolver, nil)
+	authHandler := authfe.NewDynamicAuthHandler(provider, nil)
 
 	// Create Reverse Proxy
 	serverUrl, err := url.Parse(flagGolinkServiceServer.Get())
