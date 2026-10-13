@@ -129,6 +129,13 @@ export type DirConfig = {
     prefix?: string
 
     /**
+     * Segment appended to the commit prefix for this directory's commit.
+     *
+     * Only used for the `"linux"` {@link style}, and usually ends with `: `.
+     */
+    part?: string
+
+    /**
      * Scope inserted into the commit message for this directory's commit.
      *
      * Only used for the `"conventional"` {@link style}.
