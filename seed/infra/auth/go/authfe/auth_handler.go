@@ -316,27 +316,17 @@ type AuthHandlerOptions struct {
 	UmaAudience string
 }
 
-type AuthHandlerOption func(*AuthHandlerOptions)
-
-func WithUma(audience string) AuthHandlerOption {
-	return func(opts *AuthHandlerOptions) {
-		opts.Uma = true
-		opts.UmaAudience = audience
-	}
-}
-
 // NewAuthHandler builds a single-tenant auth handler bound to a fixed provider.
-func NewAuthHandler(provider *openid.OpenidProvider, opts ...AuthHandlerOption) *AuthHandler {
-	options := &AuthHandlerOptions{}
-	for _, opt := range opts {
-		opt(options)
+func NewAuthHandler(provider *openid.OpenidProvider, opts *AuthHandlerOptions) *AuthHandler {
+	if opts == nil {
+		opts = &AuthHandlerOptions{}
 	}
 	return &AuthHandler{
 		provider: &simpleOpenidProvider{provider: provider},
 
-		uma: options.Uma,
+		uma: opts.Uma,
 
-		umaAudience: options.UmaAudience,
+		umaAudience: opts.UmaAudience,
 	}
 }
 
