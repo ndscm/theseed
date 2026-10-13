@@ -17,61 +17,18 @@ func IsUnknownFlag(err error) bool {
 	return strings.HasPrefix(err.Error(), "flag provided but not defined")
 }
 
-type parseOptions struct {
-	anywhereFlag bool
-	unknownFlag  bool
+type ParseOptions struct {
+	AnywhereFlag bool
+
+	UnknownFlag bool
 }
 
-type parseOption interface {
-	applyParseOption(*parseOptions)
-}
+type GlobalParseOptions struct {
+	ParseOptions
 
-type globalParseOptions struct {
-	parseOptions []parseOption
+	EnvPrefix string
 
-	envPrefix         string
-	fallbackEnvPrefix string
-}
-
-type globalParseOption interface {
-	applyGlobalParseOption(*globalParseOptions)
-}
-
-type withAnywhereFlag struct {
-	value bool
-}
-
-func (w *withAnywhereFlag) applyParseOption(o *parseOptions) {
-	o.anywhereFlag = w.value
-}
-
-func (w *withAnywhereFlag) applyGlobalParseOption(o *globalParseOptions) {
-	o.parseOptions = append(o.parseOptions, w)
-}
-
-func WithAnywhereFlag(value bool) *withAnywhereFlag {
-	return &withAnywhereFlag{value: value}
-}
-
-// WithUnknownFlag tells Parse to leave unknown flags in the returned args
-// instead of treating them as an error, so a downstream subcommand parser
-// can consume them. Only use this when a subcommand layer will run next; the
-// caller must invoke Finalize on whatever args remain after subcommand parsing
-// to surface any flags that nothing claimed.
-type withUnknownFlag struct {
-	value bool
-}
-
-func (w *withUnknownFlag) applyParseOption(o *parseOptions) {
-	o.unknownFlag = w.value
-}
-
-func (w *withUnknownFlag) applyGlobalParseOption(o *globalParseOptions) {
-	o.parseOptions = append(o.parseOptions, w)
-}
-
-func WithUnknownFlag(value bool) *withUnknownFlag {
-	return &withUnknownFlag{value: value}
+	FallbackEnvPrefix string
 }
 
 type CommandFlags struct {
@@ -129,10 +86,9 @@ func (cf *CommandFlags) PrintUsage() {
 	s.Usage()
 }
 
-func (cf *CommandFlags) Parse(args []string, opts ...parseOption) ([]string, error) {
-	o := &parseOptions{}
-	for _, opt := range opts {
-		opt.applyParseOption(o)
+func (cf *CommandFlags) Parse(args []string, opts *ParseOptions) ([]string, error) {
+	if opts == nil {
+		opts = &ParseOptions{}
 	}
 	s := cf.newFlagSet(io.Discard)
 	finalArgs := []string{}
@@ -153,7 +109,7 @@ func (cf *CommandFlags) Parse(args []string, opts ...parseOption) ([]string, err
 				// migrated from the stdlib package.
 				os.Exit(0)
 			}
-			if o.unknownFlag && IsUnknownFlag(err) {
+			if opts.UnknownFlag && IsUnknownFlag(err) {
 				n := len(remainArgs) - len(s.Args())
 				finalArgs = append(finalArgs, remainArgs[n-1])
 				remainArgs = s.Args()
@@ -161,7 +117,7 @@ func (cf *CommandFlags) Parse(args []string, opts ...parseOption) ([]string, err
 			}
 			return nil, seederr.Wrap(err)
 		}
-		if o.anywhereFlag && len(s.Args()) > 0 {
+		if opts.AnywhereFlag && len(s.Args()) > 0 {
 			finalArgs = append(finalArgs, s.Args()[0])
 			remainArgs = s.Args()[1:]
 			break
@@ -175,11 +131,11 @@ func (cf *CommandFlags) Parse(args []string, opts ...parseOption) ([]string, err
 	// first round left args after a positional. -h/--help is passed through
 	// to the downstream parser when unknownFlag is set; otherwise it still
 	// triggers usage like any -h/--help would.
-	if o.anywhereFlag && len(remainArgs) > 0 {
+	if opts.AnywhereFlag && len(remainArgs) > 0 {
 		for {
 			err := s.Parse(remainArgs)
 			if err != nil {
-				if !o.unknownFlag {
+				if !opts.UnknownFlag {
 					if errors.Is(err, flag.ErrHelp) {
 						cf.PrintUsage()
 						// Same as the first round: match stdlib
@@ -240,34 +196,9 @@ func DefineSecret(name string, usage string) *SecretFlag {
 	return globalFlags.DefineSecret(name, usage)
 }
 
-type withEnvPrefix struct {
-	prefix string
-}
-
-func (w *withEnvPrefix) applyGlobalParseOption(o *globalParseOptions) {
-	o.envPrefix = w.prefix
-}
-
-func WithEnvPrefix(prefix string) globalParseOption {
-	return &withEnvPrefix{prefix: prefix}
-}
-
-type withFallbackEnvPrefix struct {
-	prefix string
-}
-
-func (w *withFallbackEnvPrefix) applyGlobalParseOption(o *globalParseOptions) {
-	o.fallbackEnvPrefix = w.prefix
-}
-
-func WithFallbackEnvPrefix(prefix string) globalParseOption {
-	return &withFallbackEnvPrefix{prefix: prefix}
-}
-
-func Parse(opts ...globalParseOption) ([]string, error) {
-	o := &globalParseOptions{}
-	for _, opt := range opts {
-		opt.applyGlobalParseOption(o)
+func Parse(opts *GlobalParseOptions) ([]string, error) {
+	if opts == nil {
+		opts = &GlobalParseOptions{}
 	}
 
 	for _, env := range os.Environ() {
@@ -275,8 +206,8 @@ func Parse(opts ...globalParseOption) ([]string, error) {
 		if len(parts) != 2 {
 			continue
 		}
-		if o.envPrefix != "" && strings.HasPrefix(parts[0], o.envPrefix) {
-			pure := strings.TrimPrefix(parts[0], o.envPrefix)
+		if opts.EnvPrefix != "" && strings.HasPrefix(parts[0], opts.EnvPrefix) {
+			pure := strings.TrimPrefix(parts[0], opts.EnvPrefix)
 			name := strings.ToLower(strings.TrimSpace(pure))
 			value := strings.TrimSpace(parts[1])
 			item, ok := globalFlags.flags[name]
@@ -288,8 +219,8 @@ func Parse(opts ...globalParseOption) ([]string, error) {
 			if err != nil {
 				return nil, seederr.Wrap(err)
 			}
-		} else if o.fallbackEnvPrefix != "" && strings.HasPrefix(parts[0], o.fallbackEnvPrefix) {
-			pure := strings.TrimPrefix(parts[0], o.fallbackEnvPrefix)
+		} else if opts.FallbackEnvPrefix != "" && strings.HasPrefix(parts[0], opts.FallbackEnvPrefix) {
+			pure := strings.TrimPrefix(parts[0], opts.FallbackEnvPrefix)
 			name := strings.ToLower(strings.TrimSpace(pure))
 			value := strings.TrimSpace(parts[1])
 			item, ok := globalFlags.flags[name]
@@ -304,7 +235,7 @@ func Parse(opts ...globalParseOption) ([]string, error) {
 		}
 	}
 
-	finalArgs, err := globalFlags.Parse(os.Args[1:], o.parseOptions...)
+	finalArgs, err := globalFlags.Parse(os.Args[1:], &opts.ParseOptions)
 	if err != nil {
 		return nil, seederr.Wrap(err)
 	}
