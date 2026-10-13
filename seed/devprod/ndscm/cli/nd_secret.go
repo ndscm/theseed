@@ -19,9 +19,9 @@ func parseNdSecretFlags(args []string) (ndSecretFlags, []string, error) {
 	cmdFlags.space = cf.DefineString("space", "main", "The secret space; the worktree is secret/<space>")
 	cmdFlags.user = cf.DefineBool("user", false, "Scope the secret worktree to the current user: <user-handle>/secret/<space>")
 	cmdFlags.provider = cf.DefineString("provider", "", "The secret provider for keygen, e.g. age")
-	cmdArgs, err := cf.Parse(args,
-		seedflag.WithAnywhereFlag(true),
-	)
+	cmdArgs, err := cf.Parse(args, &seedflag.ParseOptions{
+		AnywhereFlag: true,
+	})
 	if err != nil {
 		return cmdFlags, nil, seederr.Wrap(err)
 	}

@@ -16,9 +16,9 @@ func parseNdConnectFlags(args []string) (ndConnectFlags, []string, error) {
 	cf := seedflag.NewCommandFlags("nd-connect")
 	cmdFlags := ndConnectFlags{}
 	cmdFlags.noDev = cf.DefineBool("no-dev", false, "Skip creating a dev worktree after connecting")
-	cmdArgs, err := cf.Parse(args,
-		seedflag.WithAnywhereFlag(true),
-	)
+	cmdArgs, err := cf.Parse(args, &seedflag.ParseOptions{
+		AnywhereFlag: true,
+	})
 	if err != nil {
 		return cmdFlags, nil, seederr.Wrap(err)
 	}

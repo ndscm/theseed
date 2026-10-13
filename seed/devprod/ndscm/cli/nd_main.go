@@ -18,9 +18,9 @@ func parseNdMainFlags(args []string) (ndMainFlags, []string, error) {
 	cmdFlags := ndMainFlags{}
 	cmdFlags.remove = cf.DefineBool("remove", false, "Remove the area main worktree")
 	cmdFlags.orphan = cf.DefineString("orphan", "", "Create the area branch as an orphan branch with no history, rooted at an empty commit carrying this message")
-	cmdArgs, err := cf.Parse(args,
-		seedflag.WithAnywhereFlag(true),
-	)
+	cmdArgs, err := cf.Parse(args, &seedflag.ParseOptions{
+		AnywhereFlag: true,
+	})
 	if err != nil {
 		return cmdFlags, nil, seederr.Wrap(err)
 	}

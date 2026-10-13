@@ -16,9 +16,9 @@ func parseNdDevFlags(args []string) (ndDevFlags, []string, error) {
 	cmdFlags := ndDevFlags{}
 	cmdFlags.remove = cf.DefineBool("remove", false, "Remove the dev worktree")
 	cmdFlags.track = cf.DefineString("track", "", "Remote branch to track (e.g. origin/main); only valid when creating a new dev worktree, must not be provided if the dev worktree already exists")
-	cmdArgs, err := cf.Parse(args,
-		seedflag.WithAnywhereFlag(true),
-	)
+	cmdArgs, err := cf.Parse(args, &seedflag.ParseOptions{
+		AnywhereFlag: true,
+	})
 	if err != nil {
 		return cmdFlags, nil, seederr.Wrap(err)
 	}
