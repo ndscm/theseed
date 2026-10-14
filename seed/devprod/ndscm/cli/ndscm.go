@@ -12,14 +12,16 @@ import (
 )
 
 func run() error {
-	args, err := seedinit.Initialize(
-		seedinit.WithAnywhereFlag(true),
-		seedinit.WithUnknownFlag(true),
-		seedinit.WithEnvPrefix("ND_"),
-		seedinit.WithSystemEnv("ndscm/ndscm.env"),
-		seedinit.WithUserEnv("ndscm/ndscm.env"),
-		seedinit.WithAncestorEnv("ndscm.env"),
-	)
+	args, err := seedinit.Initialize(&seedinit.InitializeOptions{
+		AnywhereFlag: true,
+		UnknownFlag:  true,
+
+		EnvPrefix: "ND_",
+
+		SystemEnv:   "ndscm/ndscm.env",
+		UserEnv:     "ndscm/ndscm.env",
+		AncestorEnv: "ndscm.env",
+	})
 	if err != nil {
 		return seederr.Wrap(err)
 	}
