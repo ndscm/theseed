@@ -39,7 +39,9 @@ func interceptBodyLimitMiddleware(h http.Handler, max int64) http.Handler {
 }
 
 func run() error {
-	_, err := seedinit.Initialize()
+	_, err := seedinit.Initialize(&seedinit.InitializeOptions{
+		LogFlags: true,
+	})
 	if err != nil {
 		return seederr.Wrap(err)
 	}
