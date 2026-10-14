@@ -21,6 +21,8 @@ type ParseOptions struct {
 	AnywhereFlag bool
 
 	UnknownFlag bool
+
+	LogFlags bool
 }
 
 type GlobalParseOptions struct {
@@ -34,6 +36,19 @@ type GlobalParseOptions struct {
 type CommandFlags struct {
 	command string
 	flags   map[string]FlagDefinition
+}
+
+func (cf *CommandFlags) String() string {
+	s := strings.Builder{}
+	s.WriteString(cf.command)
+	s.WriteString(":")
+	for name, item := range cf.flags {
+		s.WriteString("\n  ")
+		s.WriteString(name)
+		s.WriteString(": ")
+		s.WriteString(item.String())
+	}
+	return s.String()
 }
 
 func (cf *CommandFlags) DefineFlag(name string, flagDefinition FlagDefinition) FlagDefinition {
@@ -90,6 +105,7 @@ func (cf *CommandFlags) Parse(args []string, opts *ParseOptions) ([]string, erro
 	if opts == nil {
 		opts = &ParseOptions{}
 	}
+
 	s := cf.newFlagSet(io.Discard)
 	finalArgs := []string{}
 	remainArgs := args
@@ -160,6 +176,17 @@ func (cf *CommandFlags) Parse(args []string, opts *ParseOptions) ([]string, erro
 		}
 	}
 
+	// Must be read after parsing is done
+	if flagLogFlags.Get() {
+		opts.LogFlags = true
+	}
+
+	if opts.LogFlags || flagLogFlags.Get() {
+		seedlog.Infof("%s", cf.String())
+	} else {
+		seedlog.Debugf("%s", cf.String())
+	}
+
 	return finalArgs, nil
 }
 
@@ -195,6 +222,8 @@ func DefineFile(name string, defaultValue string, usage string) *FileFlag {
 func DefineSecret(name string, usage string) *SecretFlag {
 	return globalFlags.DefineSecret(name, usage)
 }
+
+var flagLogFlags = DefineBool("log_flags", false, "Print all flags and their values")
 
 func Parse(opts *GlobalParseOptions) ([]string, error) {
 	if opts == nil {
@@ -239,7 +268,6 @@ func Parse(opts *GlobalParseOptions) ([]string, error) {
 	if err != nil {
 		return nil, seederr.Wrap(err)
 	}
-	seedlog.Infof("Global flags: %+v", globalFlags.flags)
 	return finalArgs, nil
 }
 
