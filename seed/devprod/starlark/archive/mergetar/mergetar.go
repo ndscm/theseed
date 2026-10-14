@@ -57,9 +57,9 @@ func appendTar(tarWriter *tar.Writer, srcTar string, dstPrefix string) error {
 }
 
 func run() error {
-	args, err := seedinit.Initialize(
-		seedinit.WithAnywhereFlag(true),
-	)
+	args, err := seedinit.Initialize(&seedinit.InitializeOptions{
+		AnywhereFlag: true,
+	})
 	if err != nil {
 		return seederr.Wrap(err)
 	}
