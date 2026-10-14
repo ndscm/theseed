@@ -21,98 +21,147 @@ func RegisterPackageInit(initializer func() error) {
 	packageInitializers = append(packageInitializers, initializer)
 }
 
-type initializeOptions struct {
-	// flag parser behavior options
-	anywhereFlag bool
-	unknownFlag  bool
+type InitializeOptions struct {
+	seedflag.GlobalParseOptions
 
-	// env file locators
-	systemEnvPath       string
-	userEnvPath         string
-	ancestorEnvFileName string
+	// SystemEnv is the env file path relative to /etc.
+	SystemEnv string
 
-	envPrefix         string
-	fallbackEnvPrefix string
+	// UserEnv is the env file path relative to the user's config directory.
+	UserEnv string
+
+	// AncestorEnv is the env filename to search for in the current directory and its ancestors.
+	AncestorEnv string
 }
 
-type initializeOption func(*initializeOptions)
+func (o *InitializeOptions) apply(opts *InitializeOptions) {
+	*opts = *o
+}
+
+type initializeOption interface {
+	apply(*InitializeOptions)
+}
+
+type anywhereFlagOption struct {
+	value bool
+}
+
+func (o *anywhereFlagOption) apply(opts *InitializeOptions) {
+	opts.AnywhereFlag = o.value
+}
 
 func WithAnywhereFlag(value bool) initializeOption {
-	return func(o *initializeOptions) {
-		o.anywhereFlag = value
-	}
+	seedlog.Warnf("Deprecated, use seedinit.Initialize(&seedinit.InitializeOptions{...})")
+	return &anywhereFlagOption{value: value}
+}
+
+type unknownFlagOption struct {
+	value bool
+}
+
+func (o *unknownFlagOption) apply(opts *InitializeOptions) {
+	opts.UnknownFlag = o.value
 }
 
 func WithUnknownFlag(value bool) initializeOption {
-	return func(o *initializeOptions) {
-		o.unknownFlag = value
-	}
+	seedlog.Warnf("Deprecated, use seedinit.Initialize(&seedinit.InitializeOptions{...})")
+	return &unknownFlagOption{value: value}
+}
+
+type systemEnvOption struct {
+	path string
+}
+
+func (o *systemEnvOption) apply(opts *InitializeOptions) {
+	opts.SystemEnv = o.path
 }
 
 func WithSystemEnv(pathInConfigHome string) initializeOption {
-	return func(o *initializeOptions) {
-		o.systemEnvPath = pathInConfigHome
-	}
+	seedlog.Warnf("Deprecated, use seedinit.Initialize(&seedinit.InitializeOptions{...})")
+	return &systemEnvOption{path: pathInConfigHome}
+}
+
+type userEnvOption struct {
+	path string
+}
+
+func (o *userEnvOption) apply(opts *InitializeOptions) {
+	opts.UserEnv = o.path
 }
 
 func WithUserEnv(pathInConfigHome string) initializeOption {
-	return func(o *initializeOptions) {
-		o.userEnvPath = pathInConfigHome
-	}
+	seedlog.Warnf("Deprecated, use seedinit.Initialize(&seedinit.InitializeOptions{...})")
+	return &userEnvOption{path: pathInConfigHome}
+}
+
+type ancestorEnvOption struct {
+	fileName string
+}
+
+func (o *ancestorEnvOption) apply(opts *InitializeOptions) {
+	opts.AncestorEnv = o.fileName
 }
 
 func WithAncestorEnv(envFileName string) initializeOption {
-	return func(o *initializeOptions) {
-		o.ancestorEnvFileName = envFileName
-	}
+	seedlog.Warnf("Deprecated, use seedinit.Initialize(&seedinit.InitializeOptions{...})")
+	return &ancestorEnvOption{fileName: envFileName}
+}
+
+type envPrefixOption struct {
+	prefix string
+}
+
+func (o *envPrefixOption) apply(opts *InitializeOptions) {
+	opts.EnvPrefix = o.prefix
 }
 
 func WithEnvPrefix(prefix string) initializeOption {
-	return func(o *initializeOptions) {
-		o.envPrefix = prefix
-	}
+	seedlog.Warnf("Deprecated, use seedinit.Initialize(&seedinit.InitializeOptions{...})")
+	return &envPrefixOption{prefix: prefix}
+}
+
+type fallbackEnvPrefixOption struct {
+	prefix string
+}
+
+func (o *fallbackEnvPrefixOption) apply(opts *InitializeOptions) {
+	opts.FallbackEnvPrefix = o.prefix
 }
 
 func WithFallbackEnvPrefix(prefix string) initializeOption {
-	return func(o *initializeOptions) {
-		o.fallbackEnvPrefix = prefix
-	}
+	seedlog.Warnf("Deprecated, use seedinit.Initialize(&seedinit.InitializeOptions{...})")
+	return &fallbackEnvPrefixOption{prefix: prefix}
 }
 
-func Initialize(opts ...initializeOption) ([]string, error) {
-	o := &initializeOptions{}
-	for _, opt := range opts {
-		opt(o)
+// Use Initialize(&InitializeOptions{...}), avoid using deprecated With* options.
+func Initialize(options ...initializeOption) ([]string, error) {
+	opts := &InitializeOptions{}
+	for _, opt := range options {
+		if opt != nil {
+			opt.apply(opts)
+		}
 	}
 
-	if o.systemEnvPath != "" {
-		err := loadSystemEnv(o.systemEnvPath)
+	if opts.SystemEnv != "" {
+		err := loadSystemEnv(opts.SystemEnv)
 		if err != nil {
 			return nil, seederr.Wrap(err)
 		}
 	}
-	if o.userEnvPath != "" {
-		err := loadUserEnv(o.userEnvPath)
+	if opts.UserEnv != "" {
+		err := loadUserEnv(opts.UserEnv)
 		if err != nil {
 			return nil, seederr.Wrap(err)
 		}
 	}
-	if o.ancestorEnvFileName != "" {
-		err := dotenv.LoadAncestor(".", o.ancestorEnvFileName)
+	if opts.AncestorEnv != "" {
+		err := dotenv.LoadAncestor(".", opts.AncestorEnv)
 		if err != nil {
 			return nil, seederr.Wrap(err)
 		}
 	}
 
-	args, err := seedflag.Parse(&seedflag.GlobalParseOptions{
-		AnywhereFlag: o.anywhereFlag,
-
-		UnknownFlag: o.unknownFlag,
-
-		EnvPrefix: o.envPrefix,
-
-		FallbackEnvPrefix: o.fallbackEnvPrefix,
-	})
+	args, err := seedflag.Parse(&opts.GlobalParseOptions)
 	if err != nil {
 		return nil, seederr.Wrap(err)
 	}
