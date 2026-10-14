@@ -58,7 +58,9 @@ func challenger(ctx context.Context, domain string) (challenge.AcmeChallenge, er
 }
 
 func run() error {
-	_, err := seedinit.Initialize()
+	_, err := seedinit.Initialize(&seedinit.InitializeOptions{
+		LogFlags: true,
+	})
 	if err != nil {
 		return seederr.Wrap(err)
 	}
