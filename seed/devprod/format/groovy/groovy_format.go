@@ -16,9 +16,9 @@ import (
 var flagWrite = seedflag.DefineBool("write", false, "Write changes to files")
 
 func run() error {
-	args, err := seedinit.Initialize(
-		seedinit.WithAnywhereFlag(true),
-	)
+	args, err := seedinit.Initialize(&seedinit.InitializeOptions{
+		AnywhereFlag: true,
+	})
 	if err != nil {
 		return seederr.Wrap(err)
 	}
