@@ -107,9 +107,9 @@ func tarDir(outDir, outTar string) error {
 }
 
 func run() error {
-	toolArgs, err := seedinit.Initialize(
-		seedinit.WithAnywhereFlag(true),
-	)
+	toolArgs, err := seedinit.Initialize(&seedinit.InitializeOptions{
+		AnywhereFlag: true,
+	})
 	if err != nil {
 		return seederr.Wrap(err)
 	}
