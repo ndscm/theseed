@@ -132,10 +132,12 @@ func CreateSfeRouteHandler(sfeOpenidClient *openid.OpenidClient) (*SfeRouteHandl
 }
 
 func run() error {
-	_, err := seedinit.Initialize(
-		seedinit.WithEnvPrefix("SFE_"),
-		seedinit.WithFallbackEnvPrefix("SEED_"),
-	)
+	_, err := seedinit.Initialize(&seedinit.InitializeOptions{
+		LogFlags: true,
+
+		EnvPrefix:           "SFE_",
+		FallbackEnvPrefixes: []string{"SEED_"},
+	})
 	if err != nil {
 		return seederr.Wrap(err)
 	}
