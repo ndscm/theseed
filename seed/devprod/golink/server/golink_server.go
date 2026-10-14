@@ -25,9 +25,11 @@ var embedFs embed.FS
 var flagPort = seedflag.DefineString("port", "4656", "Port") // Default port assignment magic word: GOLN
 
 func run() error {
-	_, err := seedinit.Initialize(
-		seedinit.WithFallbackEnvPrefix("SEED_"),
-	)
+	_, err := seedinit.Initialize(&seedinit.InitializeOptions{
+		LogFlags: true,
+
+		FallbackEnvPrefixes: []string{"SEED_"},
+	})
 	if err != nil {
 		return seederr.Wrap(err)
 	}
