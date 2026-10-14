@@ -31,10 +31,12 @@ var flagPlaypen = seedflag.DefineString("playpen", "", "Playpen user handle (e.g
 const SIGRT3 = syscall.Signal(37)
 
 func run() error {
-	_, err := seedinit.Initialize(
-		seedinit.WithEnvPrefix("AMADEUS_"),
-		seedinit.WithFallbackEnvPrefix("STEINS_"),
-	)
+	_, err := seedinit.Initialize(&seedinit.InitializeOptions{
+		LogFlags: true,
+
+		EnvPrefix:           "AMADEUS_",
+		FallbackEnvPrefixes: []string{"STEINS_"},
+	})
 	if err != nil {
 		return seederr.Wrap(err)
 	}
