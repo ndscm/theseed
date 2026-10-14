@@ -30,7 +30,7 @@ type GlobalParseOptions struct {
 
 	EnvPrefix string
 
-	FallbackEnvPrefix string
+	FallbackEnvPrefixes []string
 }
 
 type CommandFlags struct {
@@ -248,18 +248,24 @@ func Parse(opts *GlobalParseOptions) ([]string, error) {
 			if err != nil {
 				return nil, seederr.Wrap(err)
 			}
-		} else if opts.FallbackEnvPrefix != "" && strings.HasPrefix(parts[0], opts.FallbackEnvPrefix) {
-			pure := strings.TrimPrefix(parts[0], opts.FallbackEnvPrefix)
-			name := strings.ToLower(strings.TrimSpace(pure))
-			value := strings.TrimSpace(parts[1])
-			item, ok := globalFlags.flags[name]
-			if !ok {
-				continue
-			}
-			seedlog.Infof("Loaded fallback env flag: %s=%s", parts[0], value)
-			err := item.Set(value)
-			if err != nil {
-				return nil, seederr.Wrap(err)
+		} else {
+			for _, fallbackPrefix := range opts.FallbackEnvPrefixes {
+				if fallbackPrefix == "" || !strings.HasPrefix(parts[0], fallbackPrefix) {
+					continue
+				}
+				pure := strings.TrimPrefix(parts[0], fallbackPrefix)
+				name := strings.ToLower(strings.TrimSpace(pure))
+				value := strings.TrimSpace(parts[1])
+				item, ok := globalFlags.flags[name]
+				if !ok {
+					continue
+				}
+				err := item.Set(value)
+				if err != nil {
+					return nil, seederr.Wrap(err)
+				}
+				seedlog.Infof("Loaded fallback env flag: %s=%s", parts[0], item.String())
+				break
 			}
 		}
 	}
