@@ -308,7 +308,7 @@ func normalize(imagePath string) error {
 }
 
 func run() error {
-	args, err := seedinit.Initialize()
+	args, err := seedinit.Initialize(nil)
 	if err != nil {
 		return seederr.Wrap(err)
 	}
