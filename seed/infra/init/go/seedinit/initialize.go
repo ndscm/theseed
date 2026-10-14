@@ -125,7 +125,7 @@ type fallbackEnvPrefixOption struct {
 }
 
 func (o *fallbackEnvPrefixOption) apply(opts *InitializeOptions) {
-	opts.FallbackEnvPrefix = o.prefix
+	opts.FallbackEnvPrefixes = append(opts.FallbackEnvPrefixes, o.prefix)
 }
 
 func WithFallbackEnvPrefix(prefix string) initializeOption {
