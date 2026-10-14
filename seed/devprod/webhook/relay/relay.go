@@ -88,7 +88,9 @@ func relay(ctx context.Context, to string, authorization string, data []byte) er
 }
 
 func run() error {
-	_, err := seedinit.Initialize()
+	_, err := seedinit.Initialize(&seedinit.InitializeOptions{
+		LogFlags: true,
+	})
 	if err != nil {
 		return seederr.Wrap(err)
 	}
