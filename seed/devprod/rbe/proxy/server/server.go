@@ -528,10 +528,12 @@ func listen(address string) (net.Listener, error) {
 }
 
 func run() error {
-	_, err := seedinit.Initialize(
-		seedinit.WithEnvPrefix("RBE_PROXY_"),
-		seedinit.WithFallbackEnvPrefix("SEED_"),
-	)
+	_, err := seedinit.Initialize(&seedinit.InitializeOptions{
+		LogFlags: true,
+
+		EnvPrefix:           "RBE_PROXY_",
+		FallbackEnvPrefixes: []string{"SEED_"},
+	})
 	if err != nil {
 		return seederr.Wrap(err)
 	}
