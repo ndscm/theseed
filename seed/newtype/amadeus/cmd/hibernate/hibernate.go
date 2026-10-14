@@ -15,9 +15,9 @@ import (
 var flagWait = seedflag.DefineBool("wait", false, "Wait for hibernation to complete")
 
 func run() error {
-	_, err := seedinit.Initialize(
-		seedinit.WithFallbackEnvPrefix("SEED_"),
-	)
+	_, err := seedinit.Initialize(&seedinit.InitializeOptions{
+		FallbackEnvPrefixes: []string{"SEED_"},
+	})
 	if err != nil {
 		return seederr.Wrap(err)
 	}
