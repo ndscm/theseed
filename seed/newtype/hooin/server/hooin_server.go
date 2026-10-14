@@ -81,9 +81,11 @@ func (h *OfficeConnectHandler) HandleConnect(
 var _ bidirequestservice.ConnectHandler = (*OfficeConnectHandler)(nil)
 
 func run() error {
-	_, err := seedinit.Initialize(
-		seedinit.WithFallbackEnvPrefix("SEED_"),
-	)
+	_, err := seedinit.Initialize(&seedinit.InitializeOptions{
+		LogFlags: true,
+
+		FallbackEnvPrefixes: []string{"SEED_"},
+	})
 	if err != nil {
 		return seederr.Wrap(err)
 	}
