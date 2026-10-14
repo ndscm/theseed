@@ -252,10 +252,10 @@ func formatToken(format string, token *oauth2.Token) ([]byte, error) {
 }
 
 func run() error {
-	_, err := seedinit.Initialize(
-		seedinit.WithEnvPrefix("CREDENTIAL_HELPER_"),
-		seedinit.WithFallbackEnvPrefix("SEED_"),
-	)
+	_, err := seedinit.Initialize(&seedinit.InitializeOptions{
+		EnvPrefix:           "CREDENTIAL_HELPER_",
+		FallbackEnvPrefixes: []string{"SEED_"},
+	})
 	if err != nil {
 		return seederr.Wrap(err)
 	}
