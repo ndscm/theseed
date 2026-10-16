@@ -150,6 +150,17 @@ func bfsChangedFiles(paths []string) []string {
 	return ordered
 }
 
+func NdSecretSession() error {
+	secretSession, err := secret.UseSecretSession()
+	if err != nil {
+		return seederr.Wrap(err)
+	}
+	if secretSession == nil {
+		return seederr.WrapErrorf("no active secret session")
+	}
+	return nil
+}
+
 func NdSecretSync(
 	scmProvider scm.Provider,
 	repo *scm.WorkingRepo, userHandle string, space string,
@@ -361,6 +372,11 @@ func NdSecret(scmProvider scm.Provider, options NdSecretOptions) error {
 		}
 	}
 	switch subcommand {
+	case "session":
+		err := NdSecretSession()
+		if err != nil {
+			return seederr.Wrap(err)
+		}
 	case "sync":
 		err := NdSecretSync(scmProvider, repo, userHandle, space)
 		if err != nil {
