@@ -2,10 +2,12 @@ package age
 
 import (
 	"bytes"
+	"encoding/json/v2"
 	"fmt"
 	"os"
 	"os/exec"
 	"path/filepath"
+	"slices"
 	"strings"
 
 	"github.com/ndscm/theseed/seed/devprod/ndscm/secret"
@@ -14,6 +16,18 @@ import (
 	"github.com/ndscm/theseed/seed/infra/shell/go/seedshell"
 	"golang.org/x/term"
 )
+
+type AgeInspect struct {
+	Version string `json:"version"`
+
+	Postquantum string `json:"postquantum"`
+
+	Armor bool `json:"armor"`
+
+	StanzaTypes []string `json:"stanza_types"`
+
+	Sizes map[string]int `json:"sizes"`
+}
 
 // `age-keygen -pq | age -p -a > key.age`
 func generateKey(keyPath string) error {
@@ -146,6 +160,58 @@ func appendRecipient(recipientsPath string, recipient string) error {
 	return nil
 }
 
+func decryptWithSession(ageKeyFile string) ([]byte, error) {
+	inspectBytes, err := seedshell.PureOutput("age-inspect", "--json", ageKeyFile)
+	if err != nil {
+		return nil, seederr.Wrap(err)
+	}
+	inspect := AgeInspect{}
+	err = json.Unmarshal(inspectBytes, &inspect)
+	if err != nil {
+		return nil, seederr.Wrap(err)
+	}
+	if !slices.Contains(inspect.StanzaTypes, "scrypt") {
+		return nil, nil
+	}
+
+	secretSession, err := secret.UseSecretSession()
+	if err != nil {
+		return nil, seederr.Wrap(err)
+	}
+	if secretSession == nil {
+		return nil, nil
+	}
+	decryptedKey, err := secretSession.Load(ageKeyFile)
+	if err == nil && len(decryptedKey) > 0 {
+		return decryptedKey, nil
+	}
+
+	fmt.Fprintf(os.Stderr, "Unlock %v and cache it in the secret session? [y/N] ", ageKeyFile)
+	answer := ""
+	_, err = fmt.Fscanln(os.Stdin, &answer)
+	if err != nil {
+		return nil, seederr.WrapErrorf("failed to read answer")
+	}
+	answer = strings.ToLower(strings.TrimSpace(answer))
+	if answer != "y" {
+		return nil, seederr.WrapErrorf("please set environment variable ND_SECRET_SESSION=none and restart")
+	}
+
+	decryptedKey, err = seedshell.PureOutput("age", "-d", ageKeyFile)
+	if err != nil {
+		return nil, seederr.Wrap(err)
+	}
+	err = secretSession.Save(ageKeyFile, decryptedKey)
+	if err != nil {
+		return nil, seederr.Wrap(err)
+	}
+	decryptedKey, err = secretSession.Load(ageKeyFile)
+	if err != nil {
+		return nil, seederr.Wrap(err)
+	}
+	return decryptedKey, nil
+}
+
 type AgeProvider struct{}
 
 func (a *AgeProvider) Keygen(worktreePath string) error {
@@ -236,10 +302,30 @@ func (a *AgeProvider) Decrypt(worktreePath string, secretPath string) error {
 	if ageKeyFile == "" {
 		ageKeyFile = filepath.Join(worktreePath, "key.age")
 	}
-	secretAbsPath := filepath.Join(worktreePath, secretPath)
-	err := seedshell.PureRun("age", "-d", "-i", ageKeyFile, secretAbsPath)
+
+	sessionDecryptedKey, err := decryptWithSession(ageKeyFile)
 	if err != nil {
 		return seederr.Wrap(err)
+	}
+
+	secretAbsPath := filepath.Join(worktreePath, secretPath)
+	if len(sessionDecryptedKey) > 0 {
+		// sessionDecryptedKey is set: pipe the cached identity to age via stdin
+		stdinOption := func(cmd *exec.Cmd) {
+			cmd.Stdin = bytes.NewReader(sessionDecryptedKey)
+		}
+		err = seedshell.PureOptionsRun(
+			[]seedshell.RunOption{stdinOption},
+			"age", "-d", "-i", "/dev/stdin", secretAbsPath,
+		)
+		if err != nil {
+			return seederr.Wrap(err)
+		}
+	} else {
+		err = seedshell.PureRun("age", "-d", "-i", ageKeyFile, secretAbsPath)
+		if err != nil {
+			return seederr.Wrap(err)
+		}
 	}
 	return nil
 }
