@@ -18,6 +18,17 @@ const (
 	stampGroupWatch  = "w"
 )
 
+func checkExist(path string) (bool, os.FileInfo, error) {
+	stat, err := os.Stat(path)
+	if err != nil {
+		if os.IsNotExist(err) {
+			return false, stat, nil
+		}
+		return false, stat, seederr.Wrap(err)
+	}
+	return true, stat, nil
+}
+
 type Crc32cChecksum struct {
 	Crc32c uint32
 	Path   string
@@ -29,12 +40,12 @@ func (c Crc32cChecksum) String() string {
 
 func Crc32c(worktreePath string, repoPath string) ([]byte, error) {
 	targetPath := filepath.Join(worktreePath, repoPath)
-	targetStat, err := os.Stat(targetPath)
+	targetExist, targetStat, err := checkExist(targetPath)
 	if err != nil {
-		if os.IsNotExist(err) {
-			return nil, nil
-		}
 		return nil, seederr.Wrap(err)
+	}
+	if !targetExist {
+		return nil, nil
 	}
 
 	checksums := []Crc32cChecksum{}
@@ -122,48 +133,55 @@ type WatcherStamper struct {
 	checksums      map[string]*PathChecksums
 }
 
-func (ws *WatcherStamper) checkChanged(stampGroup string, repoPath string) (bool, error) {
+// checkStamp checks whether the target file has changed since it was last
+// stamped.
+//
+// It is not pure: if the target file no longer exists, the stored stamp
+// (checksum file) is removed.
+//
+// It returns stamped and changed. changed reports that the file content and
+// the last stamped checksum mismatch, which includes the case where no stamp
+// exists. stamped reports that the checksum file exists after the check,
+// regardless of whether it matched.
+func (ws *WatcherStamper) checkStamp(
+	stampGroup string, repoPath string,
+) (stamped bool, changed bool, err error) {
 	watcherStampHome := filepath.Join(ws.worktreePath, ".cache", "ndscm", "stamp", ws.watcherDigest)
 	targetPath := filepath.Join(ws.worktreePath, repoPath)
 	checksumsPath := filepath.Join(watcherStampHome, repoPath, stampGroup, "checksums.crc32c")
 
-	targetStat, err := os.Stat(targetPath)
+	targetExist, targetStat, err := checkExist(targetPath)
 	if err != nil {
-		if os.IsNotExist(err) {
-			_, err := os.Stat(checksumsPath)
-			if err != nil {
-				if !os.IsNotExist(err) {
-					return false, seederr.Wrap(err)
-				}
-			} else {
-				err := os.Remove(checksumsPath)
-				if err != nil {
-					return false, seederr.Wrap(err)
-				}
-			}
-			cacheKey := stampGroup + "/" + repoPath
-			delete(ws.checksums, cacheKey)
-			return true, nil
+		return false, false, seederr.Wrap(err)
+	}
+
+	if !targetExist {
+		checksumsExist, _, err := checkExist(checksumsPath)
+		if err != nil {
+			return false, false, seederr.Wrap(err)
 		}
-		return false, seederr.Wrap(err)
+		if checksumsExist {
+			err := os.Remove(checksumsPath)
+			if err != nil {
+				return false, false, seederr.Wrap(err)
+			}
+		}
+		cacheKey := stampGroup + "/" + repoPath
+		delete(ws.checksums, cacheKey)
+		return false, true, nil
 	}
 
 	cacheKey := stampGroup + "/" + repoPath
 	pathChecksums, ok := ws.checksums[cacheKey]
 	if !ok {
-		checksumsStat, err := os.Stat(checksumsPath)
+		checksumsExist, checksumsStat, err := checkExist(checksumsPath)
 		if err != nil {
-			if !os.IsNotExist(err) {
-				return false, seederr.Wrap(err)
-			}
-			pathChecksums = &PathChecksums{
-				HasOriginal: false,
-			}
-			ws.checksums[cacheKey] = pathChecksums
-		} else {
+			return false, false, seederr.Wrap(err)
+		}
+		if checksumsExist {
 			originalChecksums, err := os.ReadFile(checksumsPath)
 			if err != nil {
-				return false, seederr.Wrap(err)
+				return false, false, seederr.Wrap(err)
 			}
 			pathChecksums = &PathChecksums{
 				HasOriginal:       true,
@@ -171,37 +189,44 @@ func (ws *WatcherStamper) checkChanged(stampGroup string, repoPath string) (bool
 				OriginalChecksums: originalChecksums,
 			}
 			ws.checksums[cacheKey] = pathChecksums
+		} else {
+			pathChecksums = &PathChecksums{
+				HasOriginal: false,
+			}
+			ws.checksums[cacheKey] = pathChecksums
 		}
 	}
 
 	if pathChecksums.HasOriginal && pathChecksums.OriginalTime.After(targetStat.ModTime()) {
-		return false, nil
+		return true, false, nil
 	}
 
 	if pathChecksums.NewTime.IsZero() || pathChecksums.NewTime.Before(targetStat.ModTime()) {
 		newChecksums, err := Crc32c(ws.worktreePath, repoPath)
 		if err != nil {
-			return false, seederr.Wrap(err)
+			return false, false, seederr.Wrap(err)
 		}
 		pathChecksums.NewTime = time.Now()
 		pathChecksums.NewChecksums = newChecksums
 		ws.checksums[cacheKey] = pathChecksums
 	}
 
-	if bytes.Equal(pathChecksums.OriginalChecksums, pathChecksums.NewChecksums) {
-		return false, nil
+	if pathChecksums.HasOriginal && bytes.Equal(pathChecksums.OriginalChecksums, pathChecksums.NewChecksums) {
+		return true, false, nil
 	}
-	return true, nil
+	return pathChecksums.HasOriginal, true, nil
 }
 
-func (ws *WatcherStamper) CheckChanged(stampGroup string, repoPath string) (bool, error) {
+func (ws *WatcherStamper) CheckStamp(
+	stampGroup string, repoPath string,
+) (stamped bool, changed bool, err error) {
 	ws.checksumsMutex.Lock()
 	defer ws.checksumsMutex.Unlock()
-	return ws.checkChanged(stampGroup, repoPath)
+	return ws.checkStamp(stampGroup, repoPath)
 }
 
 func (ws *WatcherStamper) stamp(stampGroup string, repoPath string) (bool, error) {
-	changed, err := ws.checkChanged(stampGroup, repoPath)
+	_, changed, err := ws.checkStamp(stampGroup, repoPath)
 	if err != nil {
 		return false, seederr.Wrap(err)
 	}
@@ -300,12 +325,14 @@ func (rs *RepoStamper) watcherStamper(watcher *Watcher) (*WatcherStamper, error)
 	return ws, nil
 }
 
-func (rs *RepoStamper) CheckChanged(watcher *Watcher, stampGroup string, repoPath string) (bool, error) {
+func (rs *RepoStamper) CheckStamp(
+	watcher *Watcher, stampGroup string, repoPath string,
+) (stamped bool, changed bool, err error) {
 	ws, err := rs.watcherStamper(watcher)
 	if err != nil {
-		return false, seederr.Wrap(err)
+		return false, false, seederr.Wrap(err)
 	}
-	return ws.CheckChanged(stampGroup, repoPath)
+	return ws.CheckStamp(stampGroup, repoPath)
 }
 
 func (rs *RepoStamper) Stamp(watcher *Watcher, stampGroup string, repoPath string) (bool, error) {

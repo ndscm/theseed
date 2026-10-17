@@ -101,9 +101,7 @@ func NdRun(scmProvider scm.Provider, options NdRunOptions) error {
 	}
 
 	if len(careRepoPaths) == 0 {
-		if options.All {
-			careRepoPaths = scmRepoPaths
-		} else if options.Changed {
+		if !options.All && options.Changed {
 			dirtySet := map[string]bool{}
 			headChanges, err := scmProvider.ListCommitFiles("HEAD")
 			if err != nil {
@@ -141,6 +139,8 @@ func NdRun(scmProvider scm.Provider, options NdRunOptions) error {
 
 	err = r.Run(&runner.RunOptions{
 		Phases: options.Phases,
+
+		All: options.All,
 
 		DirConfigPaths: dirConfigRepoPaths,
 
