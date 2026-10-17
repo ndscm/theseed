@@ -246,11 +246,15 @@ func NdMelt(scmProvider scm.Provider, options NdMeltOptions) error {
 		dropLocks := [][]*regexp.Regexp{}
 		switch options.Lock {
 		case "drop":
-			scmFilePaths, err := scmProvider.ListFiles(worktreePath)
+			scmRepoPaths, err := scmProvider.ListFiles(worktreePath)
 			if err != nil {
 				return seederr.Wrap(err)
 			}
-			repoAnalysis, err := runner.AnalyseRepo(worktreePath, []string{"lock"}, scmFilePaths)
+			repoAnalysis, err := runner.AnalyseRepo(worktreePath, &runner.AnalyseRepoOptions{
+				Phases: []string{"lock"},
+
+				SourcePaths: scmRepoPaths,
+			})
 			if err != nil {
 				return seederr.Wrap(err)
 			}

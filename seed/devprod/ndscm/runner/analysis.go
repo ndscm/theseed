@@ -119,14 +119,14 @@ func (ra RepoAnalysis) String() string {
 	return string(b)
 }
 
-func collectRelPaths(dir string, scmFilePaths []string) []string {
+func collectRelPaths(dir string, sourcePaths []string) []string {
 	relPaths := []string{}
-	for _, fp := range scmFilePaths {
-		rel, err := filepath.Rel(dir, fp)
-		if err != nil || strings.HasPrefix(rel, "..") {
+	for _, sourcePath := range sourcePaths {
+		relPath, err := filepath.Rel(dir, sourcePath)
+		if err != nil || strings.HasPrefix(relPath, "..") {
 			continue
 		}
-		relPaths = append(relPaths, rel)
+		relPaths = append(relPaths, relPath)
 	}
 	sort.Strings(relPaths)
 	return relPaths
@@ -161,12 +161,21 @@ func prefixPaths(dir string, paths []string) []string {
 	return result
 }
 
+type analyseDirOptions struct {
+	Phases []string
+
+	SourcePaths []string
+}
+
 func analyseDir(
-	scmDirPath string, dirConfig *configloader.DirConfig, phases []string, scmFilePaths []string,
+	scmDirPath string, dirConfig *configloader.DirConfig, opts *analyseDirOptions,
 ) (map[string]RepoPhase, error) {
-	relPaths := collectRelPaths(scmDirPath, scmFilePaths)
+	if opts == nil {
+		opts = &analyseDirOptions{}
+	}
+	relPaths := collectRelPaths(scmDirPath, opts.SourcePaths)
 	result := map[string]RepoPhase{}
-	for _, phase := range phases {
+	for _, phase := range opts.Phases {
 		rules := map[string]configloader.WatchGenerateRule{}
 		switch phase {
 		case "format":
@@ -308,8 +317,18 @@ func mergeRepoPhase(basePhase RepoPhase, newPhase RepoPhase) RepoPhase {
 	}
 }
 
-func AnalyseRepo(worktreePath string, phases []string, scmFilePaths []string) (*RepoAnalysis, error) {
-	dirConfigs, err := configloader.LoadDirConfigs(worktreePath, scmFilePaths)
+type AnalyseRepoOptions struct {
+	Phases []string
+
+	SourcePaths []string
+}
+
+func AnalyseRepo(worktreePath string, opts *AnalyseRepoOptions) (*RepoAnalysis, error) {
+	if opts == nil {
+		opts = &AnalyseRepoOptions{}
+	}
+
+	dirConfigs, err := configloader.LoadDirConfigs(worktreePath, opts.SourcePaths)
 	if err != nil {
 		return nil, seederr.Wrap(err)
 	}
@@ -317,7 +336,11 @@ func AnalyseRepo(worktreePath string, phases []string, scmFilePaths []string) (*
 	scmDirPaths := []string{}
 	for dirConfigPath, dirConfig := range dirConfigs {
 		scmDirPath := filepath.Dir(dirConfigPath)
-		dirPhases, err := analyseDir(scmDirPath, dirConfig, phases, scmFilePaths)
+		dirPhases, err := analyseDir(scmDirPath, dirConfig, &analyseDirOptions{
+			Phases: opts.Phases,
+
+			SourcePaths: opts.SourcePaths,
+		})
 		if err != nil {
 			return nil, seederr.Wrap(err)
 		}
@@ -344,7 +367,7 @@ func AnalyseRepo(worktreePath string, phases []string, scmFilePaths []string) (*
 	}
 
 	bazelGroundPhases := strings.Split(flagUseBazelGround.Get(), ",")
-	for _, phase := range phases {
+	for _, phase := range opts.Phases {
 		// The phases are forced to run sequentially for now to avoid breaking the bazel managed tools for each phase.
 		candidates := []string{}
 		switch phase {
