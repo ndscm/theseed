@@ -9,6 +9,7 @@ go_library(
     srcs = [
         "analysis.go",
         "bazel.go",
+        "build_system.go",
         "runner.go",
         "stamp.go",
     ],

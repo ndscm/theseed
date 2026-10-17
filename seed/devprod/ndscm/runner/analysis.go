@@ -6,7 +6,6 @@ import (
 	"encoding/json/v2"
 	"path/filepath"
 	"regexp"
-	"slices"
 	"sort"
 	"strings"
 
@@ -163,7 +162,7 @@ func prefixPaths(dir string, paths []string) []string {
 }
 
 func analyseDir(
-	scmDirPath string, dirConfig *configloader.DirConfig, phases []string, scmFilePaths []string, buildSystems []string,
+	scmDirPath string, dirConfig *configloader.DirConfig, phases []string, scmFilePaths []string,
 ) (map[string]RepoPhase, error) {
 	relPaths := collectRelPaths(scmDirPath, scmFilePaths)
 	result := map[string]RepoPhase{}
@@ -202,29 +201,35 @@ func analyseDir(
 			if len(matches) == 0 {
 				continue
 			}
+
 			runTasks := []RunTask{}
-			if slices.Contains(buildSystems, "bazel") && rule.Bazel != nil {
-				if len(rule.Run) > 0 {
-					return nil, seederr.WrapErrorf("watcher rule should not contain both run and bazel.run")
+			for _, candidateBuildSystem := range BuildSystems() {
+				switch candidateBuildSystem {
+				case "bazel":
+					if rule.Bazel != nil && len(rule.Bazel.Run) > 0 {
+						for _, cmd := range rule.Bazel.Run {
+							runTasks = append(runTasks, RunTask{
+								DirPath:      scmDirPath,
+								BazelTargets: []string(rule.Bazel.Build),
+								Cmd:          cmd,
+							})
+						}
+					}
+				case "buck":
+					if rule.Buck != nil && len(rule.Buck.Run) > 0 {
+						for _, cmd := range rule.Buck.Run {
+							runTasks = append(runTasks, RunTask{
+								DirPath: scmDirPath,
+								Cmd:     cmd,
+							})
+						}
+					}
 				}
-				for _, cmd := range rule.Bazel.Run {
-					runTasks = append(runTasks, RunTask{
-						DirPath:      scmDirPath,
-						BazelTargets: []string(rule.Bazel.Build),
-						Cmd:          cmd,
-					})
+				if len(runTasks) > 0 {
+					break
 				}
-			} else if slices.Contains(buildSystems, "buck") && rule.Buck != nil {
-				if len(rule.Run) > 0 {
-					return nil, seederr.WrapErrorf("watcher rule should not contain both run and buck.run")
-				}
-				for _, cmd := range rule.Buck.Run {
-					runTasks = append(runTasks, RunTask{
-						DirPath: scmDirPath,
-						Cmd:     cmd,
-					})
-				}
-			} else if len(rule.Run) > 0 {
+			}
+			if len(runTasks) == 0 && len(rule.Run) > 0 {
 				for _, cmd := range rule.Run {
 					runTasks = append(runTasks, RunTask{
 						DirPath: scmDirPath,
@@ -235,6 +240,7 @@ func analyseDir(
 			if len(runTasks) == 0 {
 				continue
 			}
+
 			if phase == "format" {
 				for _, relPath := range matches {
 					scmTargetFilePath := filepath.Join(scmDirPath, relPath)
@@ -302,7 +308,7 @@ func mergeRepoPhase(basePhase RepoPhase, newPhase RepoPhase) RepoPhase {
 	}
 }
 
-func AnalyseRepo(worktreePath string, phases []string, scmFilePaths []string, buildSystems []string) (*RepoAnalysis, error) {
+func AnalyseRepo(worktreePath string, phases []string, scmFilePaths []string) (*RepoAnalysis, error) {
 	dirConfigs, err := configloader.LoadDirConfigs(worktreePath, scmFilePaths)
 	if err != nil {
 		return nil, seederr.Wrap(err)
@@ -311,7 +317,7 @@ func AnalyseRepo(worktreePath string, phases []string, scmFilePaths []string, bu
 	scmDirPaths := []string{}
 	for dirConfigPath, dirConfig := range dirConfigs {
 		scmDirPath := filepath.Dir(dirConfigPath)
-		dirPhases, err := analyseDir(scmDirPath, dirConfig, phases, scmFilePaths, buildSystems)
+		dirPhases, err := analyseDir(scmDirPath, dirConfig, phases, scmFilePaths)
 		if err != nil {
 			return nil, seederr.Wrap(err)
 		}
