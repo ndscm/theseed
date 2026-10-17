@@ -250,7 +250,7 @@ func NdMelt(scmProvider scm.Provider, options NdMeltOptions) error {
 			if err != nil {
 				return seederr.Wrap(err)
 			}
-			repoAnalysis, err := runner.AnalyseRepo(worktreePath, []string{"lock"}, scmFilePaths, runner.BuildSystems())
+			repoAnalysis, err := runner.AnalyseRepo(worktreePath, []string{"lock"}, scmFilePaths)
 			if err != nil {
 				return seederr.Wrap(err)
 			}
