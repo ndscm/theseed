@@ -82,20 +82,15 @@ type BazelGround struct {
 
 	targetMapMutex sync.RWMutex
 	targetMap      map[string]BazelTargetInfo
+}
 
-	builtMutex sync.Mutex
-	built      bool
+func (gnd *BazelGround) setUse(use bool) {
+	gnd.use = use
 }
 
 func (gnd *BazelGround) collect(phase RepoPhase) error {
-	gnd.builtMutex.Lock()
-	defer gnd.builtMutex.Unlock()
-
 	if gnd.targetMap == nil {
 		return seederr.WrapErrorf("bazel ground not initialized")
-	}
-	if gnd.built {
-		return seederr.WrapErrorf("collect after build is not allowed")
 	}
 
 	gnd.targetMapMutex.Lock()
@@ -120,13 +115,6 @@ func (gnd *BazelGround) build(worktreePath string) error {
 		return nil
 	}
 
-	gnd.builtMutex.Lock()
-	defer gnd.builtMutex.Unlock()
-
-	if gnd.built {
-		return seederr.WrapErrorf("build bazel tools twice is not allowed")
-	}
-
 	gnd.targetMapMutex.Lock()
 	defer gnd.targetMapMutex.Unlock()
 
@@ -137,7 +125,6 @@ func (gnd *BazelGround) build(worktreePath string) error {
 	sort.Strings(bazelTargets)
 
 	if len(bazelTargets) == 0 {
-		gnd.built = true
 		return nil
 	}
 
@@ -193,7 +180,6 @@ func (gnd *BazelGround) build(worktreePath string) error {
 		gnd.targetMap[bazelTarget] = info
 	}
 
-	gnd.built = true
 	return nil
 }
 

@@ -53,6 +53,8 @@ type Runner struct {
 
 	bazelGround *BazelGround
 
+	watchingMap map[string][]*Watcher
+
 	targetLocks *sync.Map
 }
 
@@ -121,20 +123,7 @@ func (r *Runner) runWatcher(watcher *Watcher) (map[string]bool, error) {
 	return watcherDirtySet, nil
 }
 
-func (r *Runner) runPhase(repoPhase *RepoPhase) (map[string]bool, error) {
-	r.bazelGround = NewBazelGround(r.worktreePath, repoPhase.UseBazelGround)
-	err := r.bazelGround.collect(*repoPhase)
-	if err != nil {
-		return nil, seederr.Wrap(err)
-	}
-	err = r.bazelGround.build(r.worktreePath)
-	if err != nil {
-		return nil, seederr.Wrap(err)
-	}
-
-	r.targetLocks = &sync.Map{}
-	watching := generateWatchingMap(repoPhase)
-
+func (r *Runner) runWatchingMap() (map[string]bool, error) {
 	errGroup := errgroup.Group{}
 	errGroup.SetLimit(r.workerCount)
 	errsMutex := sync.Mutex{}
@@ -147,7 +136,7 @@ func (r *Runner) runPhase(repoPhase *RepoPhase) (map[string]bool, error) {
 		round++
 		seen := map[*Watcher]bool{}
 		roundDirty := sync.Map{}
-		for _, watchers := range watching {
+		for _, watchers := range r.watchingMap {
 			for _, watcher := range watchers {
 				if seen[watcher] {
 					continue
@@ -226,8 +215,34 @@ func (r *Runner) runPhase(repoPhase *RepoPhase) (map[string]bool, error) {
 		seedlog.Infof("Finished round %d: dirty=%v", round, roundDirtySet)
 	}
 
-	seedlog.Infof("Finished phase: count=%d", finalCount)
+	seedlog.Infof("Triggered watchers: count=%d", finalCount)
 	return phaseDirtySet, nil
+}
+
+func (r *Runner) collectPhase(repoPhase *RepoPhase) error {
+	// Watchers from every phase are accumulated into a single shared bazel
+	// ground and can run intermixed, so "use bazel ground" is a run-wide
+	// property rather than a per-phase one: it is only safe when every
+	// participating phase opts in. As soon as one phase opts out we disable the
+	// bazel ground for the rest of the run, and we never re-enable it. The
+	// disable is intentionally one-way (there is no setUse(true) path) — a later
+	// opt-in phase cannot undo an earlier phase's incompatibility.
+	if !repoPhase.UseBazelGround {
+		r.bazelGround.setUse(false)
+	}
+	err := r.bazelGround.collect(*repoPhase)
+	if err != nil {
+		return seederr.Wrap(err)
+	}
+
+	if r.watchingMap == nil {
+		r.watchingMap = map[string][]*Watcher{}
+	}
+	phaseWatchingMap := generateWatchingMap(repoPhase)
+	for target, watchers := range phaseWatchingMap {
+		r.watchingMap[target] = append(r.watchingMap[target], watchers...)
+	}
+	return nil
 }
 
 type RunOptions struct {
@@ -299,10 +314,16 @@ func (r *Runner) Run(opts *RunOptions) error {
 		}
 	}
 
+	r.bazelGround = NewBazelGround(r.worktreePath, true)
+	r.targetLocks = &sync.Map{}
 	for _, phase := range r.phases {
 		repoPhase, ok := repoAnalysis.Phases[phase]
 		if !ok {
 			continue
+		}
+		err := r.collectPhase(&repoPhase)
+		if err != nil {
+			return seederr.Wrap(err)
 		}
 
 		skipPhase := true
@@ -334,10 +355,15 @@ func (r *Runner) Run(opts *RunOptions) error {
 		}
 
 		seedlog.Infof("Started phase: phase=%q", phase)
-		_, err := r.runPhase(&repoPhase)
+		err = r.bazelGround.build(r.worktreePath)
 		if err != nil {
 			return seederr.Wrap(err)
 		}
+		_, err = r.runWatchingMap()
+		if err != nil {
+			return seederr.Wrap(err)
+		}
+		seedlog.Infof("Finished phase: phase=%q", phase)
 	}
 	return nil
 }
