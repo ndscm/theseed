@@ -223,6 +223,8 @@ func (r *Runner) runPhase(repoPhase *RepoPhase) (map[string]bool, error) {
 type RunOptions struct {
 	Phases []string
 
+	DirConfigPaths []string
+
 	SourcePaths []string
 
 	CarePaths []string
@@ -241,6 +243,8 @@ func (r *Runner) Run(opts *RunOptions) error {
 
 	repoAnalysis, err := AnalyseRepo(r.worktreePath, &AnalyseRepoOptions{
 		Phases: opts.Phases,
+
+		DirConfigPaths: opts.DirConfigPaths,
 
 		SourcePaths: opts.SourcePaths,
 	})

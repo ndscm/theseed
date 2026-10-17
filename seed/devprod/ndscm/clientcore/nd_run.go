@@ -128,8 +128,10 @@ func NdRun(scmProvider scm.Provider, options NdRunOptions) error {
 		}
 	}
 
+	seedlog.Debugf("CareRepoPaths: %v", careRepoPaths)
 	dirConfigRepoPaths := scanDirConfigs(worktreePath, careRepoPaths)
-	sourcePaths := mergeRepoPaths(scmRepoPaths, careRepoPaths, dirConfigRepoPaths)
+	seedlog.Debugf("DirConfigPaths: %v", dirConfigRepoPaths)
+	sourcePaths := mergeRepoPaths(scmRepoPaths, careRepoPaths)
 	r, err := runner.CreateRunner(worktreePath, &runner.RunnerOptions{
 		WorkerCount: options.Workers,
 	})
@@ -139,6 +141,8 @@ func NdRun(scmProvider scm.Provider, options NdRunOptions) error {
 
 	err = r.Run(&runner.RunOptions{
 		Phases: options.Phases,
+
+		DirConfigPaths: dirConfigRepoPaths,
 
 		SourcePaths: sourcePaths,
 
