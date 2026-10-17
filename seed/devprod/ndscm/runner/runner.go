@@ -239,7 +239,11 @@ func (r *Runner) Run(opts *RunOptions) error {
 		return nil
 	}
 
-	repoAnalysis, err := AnalyseRepo(r.worktreePath, opts.Phases, opts.SourcePaths)
+	repoAnalysis, err := AnalyseRepo(r.worktreePath, &AnalyseRepoOptions{
+		Phases: opts.Phases,
+
+		SourcePaths: opts.SourcePaths,
+	})
 	if err != nil {
 		return seederr.Wrap(err)
 	}
