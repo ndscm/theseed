@@ -175,16 +175,18 @@ export type DirConfig = {
 
       /** Bazel targets to build and run for this task. */
       bazel?: {
+        /** Disable optimized bazel ground. */
+        disableGround?: boolean
         /** Bazel target(s) to build before the task runs. */
-        build: string | string[]
-        /** Bazel command(s) to execute via `bazel run`. */
-        run: string | string[]
+        build?: string | string[]
+        /** Shell command(s) to run with bazel ground template substituted. */
+        run?: string | string[]
       }
 
       /** Buck targets to run for this task. */
       buck?: {
-        /** Buck command(s) to execute. */
-        run: string | string[]
+        /** Shell command(s) to run when buck is enabled. */
+        run?: string | string[]
       }
     }
   }
@@ -215,16 +217,18 @@ export type DirConfig = {
 
       /** Bazel targets to build and run for this task. */
       bazel?: {
+        /** Disable optimized bazel ground. */
+        disableGround?: boolean
         /** Bazel target(s) to build before the task runs. */
-        build: string | string[]
-        /** Bazel command(s) to execute via `bazel run`. */
-        run: string | string[]
+        build?: string | string[]
+        /** Shell command(s) to run with bazel ground template substituted. */
+        run?: string | string[]
       }
 
       /** Buck targets to run for this task. */
       buck?: {
-        /** Buck command(s) to execute. */
-        run: string | string[]
+        /** Shell command(s) to run when buck is enabled. */
+        run?: string | string[]
       }
     }
   }
@@ -273,16 +277,18 @@ export type DirConfig = {
 
       /** Bazel targets to build and run for this task. */
       bazel?: {
+        /** Disable optimized bazel ground. */
+        disableGround?: boolean
         /** Bazel target(s) to build before the task runs. */
-        build: string | string[]
-        /** Bazel command(s) to execute via `bazel run`. */
-        run: string | string[]
+        build?: string | string[]
+        /** Shell command(s) to run with bazel ground template substituted. */
+        run?: string | string[]
       }
 
       /** Buck targets to run for this task. */
       buck?: {
-        /** Buck command(s) to execute. */
-        run: string | string[]
+        /** Shell command(s) to run when buck is enabled. */
+        run?: string | string[]
       }
     }
   }
@@ -331,6 +337,22 @@ export type DirConfig = {
 
       /** Shell command(s) to run. An array is executed sequentially. */
       run: string | string[]
+
+      /** Bazel targets to build and run for this task. */
+      bazel?: {
+        /** Disable optimized bazel ground. */
+        disableGround?: boolean
+        /** Bazel target(s) to build before the task runs. */
+        build?: string | string[]
+        /** Shell command(s) to run with bazel ground template substituted. */
+        run?: string | string[]
+      }
+
+      /** Buck targets to run for this task. */
+      buck?: {
+        /** Shell command(s) to run when buck is enabled. */
+        run?: string | string[]
+      }
     }
   }
 
@@ -379,6 +401,22 @@ export type DirConfig = {
       /** Shell command(s) to run. An array is executed sequentially. */
       run: string | string[]
 
+      /** Bazel targets to build and run for this task. */
+      bazel?: {
+        /** Disable optimized bazel ground. */
+        disableGround?: boolean
+        /** Bazel target(s) to build before the task runs. */
+        build?: string | string[]
+        /** Shell command(s) to run with bazel ground template substituted. */
+        run?: string | string[]
+      }
+
+      /** Buck targets to run for this task. */
+      buck?: {
+        /** Shell command(s) to run when buck is enabled. */
+        run?: string | string[]
+      }
+
       /**
        * When `true`, this task's regenerated lock file is committed in a
        * separate commit rather than combined with the directory's other
@@ -412,6 +450,22 @@ export type DirConfig = {
 
       /** Shell command(s) to run. */
       run: string | string[]
+
+      /** Bazel targets to build and run for this task. */
+      bazel?: {
+        /** Disable optimized bazel ground. */
+        disableGround?: boolean
+        /** Bazel target(s) to build before the task runs. */
+        build?: string | string[]
+        /** Shell command(s) to run with bazel ground template substituted. */
+        run?: string | string[]
+      }
+
+      /** Buck targets to run for this task. */
+      buck?: {
+        /** Shell command(s) to run when buck is enabled. */
+        run?: string | string[]
+      }
     }
   }
 
@@ -439,6 +493,22 @@ export type DirConfig = {
 
       /** Shell command(s) to run. */
       run: string | string[]
+
+      /** Bazel targets to build and run for this task. */
+      bazel?: {
+        /** Disable optimized bazel ground. */
+        disableGround?: boolean
+        /** Bazel target(s) to build before the task runs. */
+        build?: string | string[]
+        /** Shell command(s) to run with bazel ground template substituted. */
+        run?: string | string[]
+      }
+
+      /** Buck targets to run for this task. */
+      buck?: {
+        /** Shell command(s) to run when buck is enabled. */
+        run?: string | string[]
+      }
     }
   }
 
