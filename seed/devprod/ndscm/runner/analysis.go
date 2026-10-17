@@ -320,6 +320,8 @@ func mergeRepoPhase(basePhase RepoPhase, newPhase RepoPhase) RepoPhase {
 type AnalyseRepoOptions struct {
 	Phases []string
 
+	DirConfigPaths []string
+
 	SourcePaths []string
 }
 
@@ -328,10 +330,15 @@ func AnalyseRepo(worktreePath string, opts *AnalyseRepoOptions) (*RepoAnalysis, 
 		opts = &AnalyseRepoOptions{}
 	}
 
-	dirConfigs, err := configloader.LoadDirConfigs(worktreePath, opts.SourcePaths)
+	dirConfigPaths := opts.DirConfigPaths
+	if len(dirConfigPaths) == 0 {
+		dirConfigPaths = opts.SourcePaths
+	}
+	dirConfigs, err := configloader.LoadDirConfigs(worktreePath, dirConfigPaths)
 	if err != nil {
 		return nil, seederr.Wrap(err)
 	}
+
 	scmDirPhases := map[string]map[string]RepoPhase{}
 	scmDirPaths := []string{}
 	for dirConfigPath, dirConfig := range dirConfigs {
