@@ -91,18 +91,18 @@ func NdRun(scmProvider scm.Provider, options NdRunOptions) error {
 		careRepoPaths = append(careRepoPaths, careRepoPath)
 	}
 
-	scmFilePaths := []string{}
+	scmRepoPaths := []string{}
 	if !options.SkipScmScan {
 		scmFiles, err := scmProvider.ListFiles(worktreePath)
 		if err != nil {
 			return seederr.Wrap(err)
 		}
-		scmFilePaths = scmFiles
+		scmRepoPaths = scmFiles
 	}
 
 	if len(careRepoPaths) == 0 {
 		if options.All {
-			careRepoPaths = scmFilePaths
+			careRepoPaths = scmRepoPaths
 		} else if options.Changed {
 			dirtySet := map[string]bool{}
 			headChanges, err := scmProvider.ListCommitFiles("HEAD")
@@ -129,13 +129,21 @@ func NdRun(scmProvider scm.Provider, options NdRunOptions) error {
 	}
 
 	dirConfigRepoPaths := scanDirConfigs(worktreePath, careRepoPaths)
-	allRepoPaths := mergeRepoPaths(scmFilePaths, careRepoPaths, dirConfigRepoPaths)
-	r, err := runner.CreateRunner(options.Workers, worktreePath, allRepoPaths)
+	sourcePaths := mergeRepoPaths(scmRepoPaths, careRepoPaths, dirConfigRepoPaths)
+	r, err := runner.CreateRunner(worktreePath, &runner.RunnerOptions{
+		WorkerCount: options.Workers,
+	})
 	if err != nil {
 		return seederr.Wrap(err)
 	}
 
-	err = r.Run(options.Phases, careRepoPaths)
+	err = r.Run(&runner.RunOptions{
+		Phases: options.Phases,
+
+		SourcePaths: sourcePaths,
+
+		CarePaths: careRepoPaths,
+	})
 	if err != nil {
 		return seederr.Wrap(err)
 	}
