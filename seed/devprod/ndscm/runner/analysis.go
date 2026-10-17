@@ -33,6 +33,12 @@ type RunTask struct {
 type Watcher struct {
 	Phase string `json:"phase"`
 
+	// Passive controls what triggers the watcher to run. Normally a watcher runs
+	// when its stamp is missing or when its watch list is updated. When Passive is
+	// set, a missing stamp alone does not trigger a run; only an updated watch list
+	// does. This is typically useful for formatter watchers.
+	Passive bool `json:"passive"`
+
 	// Targets lists the output file paths produced by this rule.
 	Targets []string `json:"targets"`
 
@@ -234,6 +240,7 @@ func analyseDir(
 					scmTargetFilePath := filepath.Join(scmDirPath, relPath)
 					watchers = append(watchers, Watcher{
 						Phase:   phase,
+						Passive: true,
 						Targets: []string{scmTargetFilePath},
 						Watch:   []string{scmTargetFilePath},
 						Run:     runTasks,
