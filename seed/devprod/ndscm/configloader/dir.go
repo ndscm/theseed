@@ -1,6 +1,8 @@
 package configloader
 
 type BazelWatcherRule struct {
+	DisableGround bool `json:"disableGround,omitempty"`
+
 	Build StringOrStrings `json:"build"`
 	Run   StringOrStrings `json:"run"`
 }

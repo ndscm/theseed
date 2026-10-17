@@ -14,7 +14,9 @@ import (
 	"github.com/ndscm/theseed/seed/infra/flag/go/seedflag"
 )
 
-var flagUseBazelGround = seedflag.DefineString("use_bazel_ground", "", "Use bazel ground to optimize bazel command execution.")
+var flagBazelGround = seedflag.DefineBool(
+	"bazel_ground", true,
+	"Use bazel ground to optimize bazel command execution.")
 
 type RunTask struct {
 	// DirPath is the directory to run the command in.
@@ -194,6 +196,7 @@ func analyseDir(
 			rules = dirConfig.Test
 		}
 
+		useBazelGround := flagBazelGround.Get()
 		watchers := []Watcher{}
 		ruleKeys := []string{}
 		for ruleKey := range rules {
@@ -250,6 +253,10 @@ func analyseDir(
 				continue
 			}
 
+			if rule.Bazel != nil && rule.Bazel.DisableGround {
+				useBazelGround = false
+			}
+
 			if phase == "format" {
 				for _, relPath := range matches {
 					scmTargetFilePath := filepath.Join(scmDirPath, relPath)
@@ -288,6 +295,8 @@ func analyseDir(
 			continue
 		}
 		result[phase] = RepoPhase{
+			UseBazelGround: useBazelGround,
+
 			Watchers: watchers,
 		}
 	}
@@ -313,7 +322,10 @@ func mergeRepoPhase(basePhase RepoPhase, newPhase RepoPhase) RepoPhase {
 
 	return RepoPhase{
 		Prerequisites: prerequisites,
-		Watchers:      append(basePhase.Watchers, newPhase.Watchers...),
+
+		UseBazelGround: basePhase.UseBazelGround && newPhase.UseBazelGround,
+
+		Watchers: append(basePhase.Watchers, newPhase.Watchers...),
 	}
 }
 
@@ -373,7 +385,6 @@ func AnalyseRepo(worktreePath string, opts *AnalyseRepoOptions) (*RepoAnalysis, 
 		}
 	}
 
-	bazelGroundPhases := strings.Split(flagUseBazelGround.Get(), ",")
 	for _, phase := range opts.Phases {
 		// The phases are forced to run sequentially for now to avoid breaking the bazel managed tools for each phase.
 		candidates := []string{}
@@ -400,17 +411,9 @@ func AnalyseRepo(worktreePath string, opts *AnalyseRepoOptions) (*RepoAnalysis, 
 			}
 		}
 
-		useBazelGround := false
-		for _, p := range bazelGroundPhases {
-			if p == phase {
-				useBazelGround = true
-				break
-			}
-		}
-
 		result.Phases[phase] = RepoPhase{
 			Prerequisites:  prerequisites,
-			UseBazelGround: useBazelGround,
+			UseBazelGround: result.Phases[phase].UseBazelGround,
 			Watchers:       result.Phases[phase].Watchers,
 		}
 	}
