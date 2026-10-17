@@ -7,6 +7,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"runtime"
 	"slices"
 	"strings"
 	"sync"
@@ -51,8 +52,6 @@ type Runner struct {
 	workerCount int
 
 	worktreePath string
-
-	scmFilePaths []string
 
 	phases []string
 
@@ -229,15 +228,26 @@ func (r *Runner) runPhase(repoPhase *RepoPhase) (map[string]bool, error) {
 	return phaseDirtySet, nil
 }
 
-func (r *Runner) Run(phases []string, careRepoPaths []string) error {
+type RunOptions struct {
+	Phases []string
+
+	SourcePaths []string
+
+	CarePaths []string
+}
+
+func (r *Runner) Run(opts *RunOptions) error {
+	if opts == nil {
+		opts = &RunOptions{}
+	}
 	if len(r.phases) > 0 {
 		return seederr.WrapErrorf("phases have already been set, cannot run again")
 	}
-	if len(phases) == 0 {
+	if len(opts.Phases) == 0 {
 		return nil
 	}
 
-	repoAnalysis, err := AnalyseRepo(r.worktreePath, phases, r.scmFilePaths, BuildSystems())
+	repoAnalysis, err := AnalyseRepo(r.worktreePath, opts.Phases, opts.SourcePaths, BuildSystems())
 	if err != nil {
 		return seederr.Wrap(err)
 	}
@@ -260,8 +270,8 @@ func (r *Runner) Run(phases []string, careRepoPaths []string) error {
 	r.phases = sortedPhases
 	r.repoStamper = NewRepoStamper(r.worktreePath)
 
-	if len(careRepoPaths) > 0 {
-		careAnalysis, err := CareAnalysis(repoAnalysis, careRepoPaths)
+	if len(opts.CarePaths) > 0 {
+		careAnalysis, err := CareAnalysis(repoAnalysis, opts.CarePaths)
 		if err != nil {
 			return seederr.Wrap(err)
 		}
@@ -308,13 +318,23 @@ func (r *Runner) Run(phases []string, careRepoPaths []string) error {
 	return nil
 }
 
+type RunnerOptions struct {
+	WorkerCount int
+}
+
 func CreateRunner(
-	workerCount int, worktreePath string, scmFilePaths []string,
+	worktreePath string, opts *RunnerOptions,
 ) (*Runner, error) {
+	if opts == nil {
+		opts = &RunnerOptions{}
+	}
+	if opts.WorkerCount == 0 {
+		opts.WorkerCount = runtime.NumCPU()
+	}
+
 	r := &Runner{
-		workerCount:  workerCount,
+		workerCount:  opts.WorkerCount,
 		worktreePath: worktreePath,
-		scmFilePaths: scmFilePaths,
 	}
 	return r, nil
 }
