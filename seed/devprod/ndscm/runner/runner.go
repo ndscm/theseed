@@ -47,6 +47,8 @@ type Runner struct {
 
 	phases []string
 
+	all bool
+
 	repoStamper *RepoStamper
 
 	bazelGround *BazelGround
@@ -167,13 +169,21 @@ func (r *Runner) runPhase(repoPhase *RepoPhase) (map[string]bool, error) {
 
 				hasDirty := false
 				for _, watching := range watcher.Watch {
-					changed, err := r.repoStamper.CheckChanged(watcher, stampGroupWatch, watching)
+					stamped, changed, err := r.repoStamper.CheckStamp(watcher, stampGroupWatch, watching)
 					if err != nil {
 						return nil, seederr.Wrap(err)
 					}
-					if changed {
-						hasDirty = true
+					if !changed {
+						continue
 					}
+					// A passive watcher runs only when its watch list is
+					// updated, not when its stamp is missing. A missing stamp
+					// is exactly the changed-but-not-stamped case, so skip it.
+					// With all set, stamps are reset, so run regardless.
+					if watcher.Passive && !stamped && !r.all {
+						continue
+					}
+					hasDirty = true
 				}
 				if !hasDirty {
 					continue
@@ -223,6 +233,8 @@ func (r *Runner) runPhase(repoPhase *RepoPhase) (map[string]bool, error) {
 type RunOptions struct {
 	Phases []string
 
+	All bool
+
 	DirConfigPaths []string
 
 	SourcePaths []string
@@ -240,6 +252,7 @@ func (r *Runner) Run(opts *RunOptions) error {
 	if len(opts.Phases) == 0 {
 		return nil
 	}
+	r.all = opts.All
 
 	repoAnalysis, err := AnalyseRepo(r.worktreePath, &AnalyseRepoOptions{
 		Phases: opts.Phases,
@@ -275,11 +288,15 @@ func (r *Runner) Run(opts *RunOptions) error {
 		if err != nil {
 			return seederr.Wrap(err)
 		}
-		err = r.repoStamper.RemoveStamps(careAnalysis)
+		repoAnalysis = careAnalysis
+		r.all = true
+	}
+
+	if r.all {
+		err := r.repoStamper.RemoveStamps(repoAnalysis)
 		if err != nil {
 			return seederr.Wrap(err)
 		}
-		repoAnalysis = careAnalysis
 	}
 
 	for _, phase := range r.phases {
@@ -291,14 +308,21 @@ func (r *Runner) Run(opts *RunOptions) error {
 		skipPhase := true
 		for _, watcher := range repoPhase.Watchers {
 			for _, watching := range watcher.Watch {
-				changed, err := r.repoStamper.CheckChanged(&watcher, stampGroupWatch, watching)
+				stamped, changed, err := r.repoStamper.CheckStamp(&watcher, stampGroupWatch, watching)
 				if err != nil {
 					return seederr.Wrap(err)
 				}
-				if changed {
-					skipPhase = false
-					break
+				if !changed {
+					continue
 				}
+				// A passive watcher is not triggered by a missing stamp alone,
+				// so it must not keep the phase from being skipped. With all
+				// set, stamps are reset, so the phase must still run.
+				if watcher.Passive && !stamped && !r.all {
+					continue
+				}
+				skipPhase = false
+				break
 			}
 			if !skipPhase {
 				break
