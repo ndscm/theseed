@@ -65,7 +65,7 @@ func ndCheck(args []string) error {
 		All:     cmdFlags.all.Get(),
 		Changed: false,
 
-		Phases: []string{"vendor", "bootstrap", "tidy", "lock", "build", "test"},
+		Phases: []string{"format", "vendor", "bootstrap", "tidy", "lock", "build", "test"},
 	})
 	if err != nil {
 		return seederr.Wrap(err)
