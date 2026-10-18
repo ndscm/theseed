@@ -46,10 +46,7 @@ export default {
     },
     go: {
       watch: "\\.(go)$",
-      bazel: {
-        build: "//seed/devprod/format/gofmt",
-        run: '{{BAZEL_RUN}} -w "{{TARGET}}"',
-      },
+      run: 'gofmt -w "{{TARGET}}"',
     },
     groovy: {
       watch: "(^|/)Jenkinsfile$",
@@ -106,7 +103,7 @@ export default {
     go: {
       target: "go.mod",
       watch: "\\.go$",
-      run: "bazel run @rules_go//go -- mod tidy -e",
+      run: "go mod tidy -e",
     },
     gazelle_python: {
       target: "gazelle_python.yaml",
@@ -135,7 +132,7 @@ export default {
     go: {
       target: "go.sum",
       watch: "^go.mod$",
-      run: "bazel run @rules_go//go -- mod tidy -e",
+      run: "go mod tidy -e",
       granularity: true,
     },
     pnpm: {
