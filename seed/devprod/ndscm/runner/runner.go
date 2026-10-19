@@ -13,10 +13,15 @@ import (
 	"sync"
 
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
+	"github.com/ndscm/theseed/seed/infra/flag/go/seedflag"
 	"github.com/ndscm/theseed/seed/infra/log/go/seedlog"
 	"github.com/ndscm/theseed/seed/infra/shell/go/seedshell"
 	"golang.org/x/sync/errgroup"
 )
+
+var flagFail = seedflag.DefineString(
+	"fail", "collect",
+	"[fast,collect]")
 
 var bashEscapeReplacer = strings.NewReplacer(
 	`\`, `\\`,
@@ -40,6 +45,19 @@ func generateWatchingMap(repoPhase *RepoPhase) map[string][]*Watcher {
 	return watching
 }
 
+type RunError struct {
+	cmd string
+	err error
+}
+
+func (r *RunError) Unwrap() error {
+	return r.err
+}
+
+func (r *RunError) Error() string {
+	return r.err.Error()
+}
+
 type Runner struct {
 	workerCount int
 
@@ -56,6 +74,21 @@ type Runner struct {
 	watchingMap map[string][]*Watcher
 
 	targetLocks *sync.Map
+
+	errorsMutex sync.Mutex
+	errors      map[*Watcher]*RunError
+}
+
+func (r *Runner) recordError(watcher *Watcher, runError *RunError) {
+	r.errorsMutex.Lock()
+	defer r.errorsMutex.Unlock()
+	r.errors[watcher] = runError
+}
+
+func (r *Runner) clearError(watcher *Watcher) {
+	r.errorsMutex.Lock()
+	defer r.errorsMutex.Unlock()
+	delete(r.errors, watcher)
 }
 
 func (r *Runner) runWatcher(watcher *Watcher) (map[string]bool, error) {
@@ -71,6 +104,7 @@ func (r *Runner) runWatcher(watcher *Watcher) (map[string]bool, error) {
 		defer mu.Unlock()
 	}
 
+	runError := (*RunError)(nil)
 	for _, runTask := range watcher.Run {
 		dirAbsPath := filepath.Join(r.worktreePath, runTask.DirPath)
 		bashCmd := runTask.Cmd
@@ -99,9 +133,23 @@ func (r *Runner) runWatcher(watcher *Watcher) (map[string]bool, error) {
 			}},
 			"bash", "-c", bashCmd)
 		if err != nil {
-			return nil, seederr.Wrap(err)
+			runError = &RunError{cmd: bashCmd, err: err}
+			break
 		}
 	}
+
+	if runError != nil {
+		if flagFail.Get() == "fast" {
+			return nil, seederr.Wrap(runError)
+		}
+		seedlog.Warnf("Run error: %v", runError.cmd)
+		r.recordError(watcher, runError)
+		return nil, nil
+	}
+
+	// The watcher succeeded this time; drop any error recorded for it in an
+	// earlier round or phase so a later success clears an earlier failure.
+	r.clearError(watcher)
 
 	for _, watchRepoPath := range watcher.Watch {
 		_, err := r.repoStamper.Stamp(watcher, stampGroupWatch, watchRepoPath)
@@ -316,6 +364,7 @@ func (r *Runner) Run(opts *RunOptions) error {
 
 	r.bazelGround = NewBazelGround(r.worktreePath, true)
 	r.targetLocks = &sync.Map{}
+	r.errors = map[*Watcher]*RunError{}
 	for _, phase := range r.phases {
 		repoPhase, ok := repoAnalysis.Phases[phase]
 		if !ok {
@@ -357,13 +406,26 @@ func (r *Runner) Run(opts *RunOptions) error {
 		seedlog.Infof("Started phase: phase=%q", phase)
 		err = r.bazelGround.build(r.worktreePath)
 		if err != nil {
-			return seederr.Wrap(err)
+			if flagFail.Get() == "fast" {
+				return seederr.Wrap(err)
+			}
+			// fallback to not using bazel ground for this phase
+			r.bazelGround.setUse(false)
 		}
+
 		_, err = r.runWatchingMap()
 		if err != nil {
 			return seederr.Wrap(err)
 		}
 		seedlog.Infof("Finished phase: phase=%q", phase)
+	}
+
+	if len(r.errors) > 0 {
+		runErrors := make([]*RunError, 0, len(r.errors))
+		for _, runError := range r.errors {
+			runErrors = append(runErrors, runError)
+		}
+		return seederr.WrapErrorf("encountered errors: %v", runErrors)
 	}
 	return nil
 }
