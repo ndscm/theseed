@@ -3,6 +3,7 @@ resolver = "3"
 members = [
     "seed/devprod/dotslash/update",
     "seed/devprod/starter/rustcli",
+    "seed/devprod/xslash",
 ]
 
 [workspace.dependencies]
