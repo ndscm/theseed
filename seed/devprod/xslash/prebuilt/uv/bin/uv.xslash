@@ -1,0 +1,80 @@
+#!/usr/bin/env xslash
+
+{
+  "name": "uv",
+  "final": true,
+  "platforms": {
+    "darwin-amd64": {
+      "hash": "blake3",
+      "digest": "374f126123e46ff98e4da8ba0cc2a5b34124fc3019770db467a5ea2e7def7665",
+      "size": 17217446,
+      "format": "tar.gz",
+      "path": "uv-x86_64-apple-darwin/uv",
+      "providers": [
+        {
+          "url": "https://github.com/astral-sh/uv/releases/download/0.13.4/uv-x86_64-apple-darwin.tar.gz"
+        }
+      ]
+    },
+    "darwin-arm64": {
+      "hash": "blake3",
+      "digest": "8608b8f38d1aad18ee48c8feddae47a7941b559a8b8a0c413979eafd2aa5ab34",
+      "size": 14326193,
+      "format": "tar.gz",
+      "path": "uv-aarch64-apple-darwin/uv",
+      "providers": [
+        {
+          "url": "https://github.com/astral-sh/uv/releases/download/0.13.4/uv-aarch64-apple-darwin.tar.gz"
+        }
+      ]
+    },
+    "linux-amd64": {
+      "hash": "blake3",
+      "digest": "4201ed27eb5669546368da2e656cc968d98caba6fa4684cbed45f6831e181d9b",
+      "size": 16653835,
+      "format": "tar.gz",
+      "path": "uv-x86_64-unknown-linux-gnu/uv",
+      "providers": [
+        {
+          "url": "https://github.com/astral-sh/uv/releases/download/0.13.4/uv-x86_64-unknown-linux-gnu.tar.gz"
+        }
+      ]
+    },
+    "linux-arm64": {
+      "hash": "blake3",
+      "digest": "caaba4f5c188c261db0cfa6e20309069e1157dab028c748110aa11a71af407ce",
+      "size": 15769557,
+      "format": "tar.gz",
+      "path": "uv-aarch64-unknown-linux-gnu/uv",
+      "providers": [
+        {
+          "url": "https://github.com/astral-sh/uv/releases/download/0.13.4/uv-aarch64-unknown-linux-gnu.tar.gz"
+        }
+      ]
+    },
+    "windows-amd64": {
+      "hash": "blake3",
+      "digest": "9b107a7c91568ce7e576cd6fdf7cb9d981b9d6b346ad0a9f15163d346a021657",
+      "size": 15237259,
+      "format": "zip",
+      "path": "uv.exe",
+      "providers": [
+        {
+          "url": "https://github.com/astral-sh/uv/releases/download/0.13.4/uv-x86_64-pc-windows-msvc.zip"
+        }
+      ]
+    },
+    "windows-arm64": {
+      "hash": "blake3",
+      "digest": "a1ada8fadfc3ec383b700f7d3ab76442212fbc4bcaff2685edbf9a3f35454f10",
+      "size": 15595599,
+      "format": "zip",
+      "path": "uv.exe",
+      "providers": [
+        {
+          "url": "https://github.com/astral-sh/uv/releases/download/0.13.4/uv-aarch64-pc-windows-msvc.zip"
+        }
+      ]
+    }
+  }
+}
