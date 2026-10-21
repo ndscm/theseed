@@ -1,0 +1,81 @@
+{
+  "$ref": "#/definitions/XslashSkeleton",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "definitions": {
+    "XslashSkeleton": {
+      "additionalProperties": false,
+      "description": "The suggested skeleton type for creating or bumping xslash entries.",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "platforms": {
+          "additionalProperties": {
+            "additionalProperties": false,
+            "properties": {
+              "compose": {
+                "items": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "format": {
+                      "type": "string"
+                    },
+                    "path": {
+                      "type": "string"
+                    },
+                    "providers": {
+                      "items": {
+                        "additionalProperties": false,
+                        "properties": {
+                          "url": {
+                            "type": "string"
+                          }
+                        },
+                        "required": ["url"],
+                        "type": "object"
+                      },
+                      "type": "array"
+                    },
+                    "strip": {
+                      "type": "string"
+                    }
+                  },
+                  "required": ["providers"],
+                  "type": "object"
+                },
+                "type": "array"
+              },
+              "format": {
+                "type": "string"
+              },
+              "path": {
+                "type": "string"
+              },
+              "providers": {
+                "items": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "url": {
+                      "type": "string"
+                    }
+                  },
+                  "required": ["url"],
+                  "type": "object"
+                },
+                "type": "array"
+              },
+              "rw": {
+                "type": "boolean"
+              }
+            },
+            "required": ["path"],
+            "type": "object"
+          },
+          "type": "object"
+        }
+      },
+      "required": ["name"],
+      "type": "object"
+    }
+  }
+}
