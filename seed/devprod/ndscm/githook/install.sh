@@ -1,7 +1,7 @@
-#!/bin/bash
-set -eux
-set -o pipefail
-cd "$(dirname "${BASH_SOURCE[0]}")"
+#!/usr/bin/env bash
+set -euxo pipefail
+
+script_dir="$(dirname "${BASH_SOURCE[0]}")"
 
 # core.hooksPath redirects git to a custom hooks dir; git rev-parse --git-path
 # hooks ignores it, so installing here would silently have no effect.
@@ -27,5 +27,5 @@ if [[ -f "${hooks_dir}/commit-msg" ]]; then
   exit 1
 fi
 
-cp "./commit-msg" "${hooks_dir}/commit-msg"
+cp "${script_dir}/commit-msg" "${hooks_dir}/commit-msg"
 chmod +x "${hooks_dir}/commit-msg"
