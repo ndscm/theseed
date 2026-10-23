@@ -66,6 +66,9 @@ func LoadRepoConfig(worktreePath string) (*RepoConfig, error) {
 	seedlog.Debugf("Loading repo config: %s", repoConfigPath)
 	raw, err := os.ReadFile(repoConfigPath)
 	if err != nil {
+		if os.IsNotExist(err) {
+			return nil, nil
+		}
 		return nil, seederr.Wrap(err)
 	}
 	repoConfig := &RepoConfig{}

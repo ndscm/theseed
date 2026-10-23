@@ -5,6 +5,7 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
+	"strings"
 
 	"github.com/ndscm/theseed/seed/devprod/ndscm/configloader"
 	"github.com/ndscm/theseed/seed/devprod/ndscm/runner"
@@ -24,6 +25,46 @@ type NdMeltOptions struct {
 
 	Upstream string
 	Commit   string
+}
+
+func findUpstreamConfig(
+	worktreePath string, sourceFiles []string, upstreamName string,
+) (string, *configloader.UpstreamConfig, error) {
+	upstreamConfigPaths := configloader.FindUpstreamConfigs(worktreePath, sourceFiles)
+	upstreamConfigs, err := configloader.LoadUpstreamConfigs(worktreePath, upstreamConfigPaths)
+	if err != nil {
+		return "", nil, seederr.Wrap(err)
+	}
+
+	repoConfig, err := configloader.LoadRepoConfig(worktreePath)
+	if err != nil {
+		return "", nil, seederr.Wrap(err)
+	}
+	if repoConfig != nil && repoConfig.Upstream != nil {
+		upstreamConfigs["REPO.ndscm.ts"] = repoConfig.Upstream
+	}
+
+	foundConfigPath := ""
+	foundConfig := (*configloader.UpstreamConfig)(nil)
+	for configPath, upstreams := range upstreamConfigs {
+		found, ok := upstreams[upstreamName]
+		if !ok {
+			continue
+		}
+		if foundConfig != nil {
+			return "", nil, seederr.WrapErrorf(
+				"upstream %v is defined in multiple configs: %v, %v",
+				upstreamName, foundConfigPath, configPath,
+			)
+		}
+		foundConfigPath = configPath
+		foundConfig = &found
+	}
+
+	if foundConfigPath == "" {
+		return "", nil, seederr.WrapErrorf("upstream %v not found in any upstream config", upstreamName)
+	}
+	return foundConfigPath, foundConfig, nil
 }
 
 func getMeltWorktree(
@@ -156,14 +197,17 @@ func NdMelt(scmProvider scm.Provider, options NdMeltOptions) error {
 	if err != nil {
 		return seederr.Wrap(err)
 	}
-	repoConfig, err := configloader.LoadRepoConfig(devWorktreePath)
+
+	scmFiles, err := scmProvider.ListFiles(devWorktreePath)
 	if err != nil {
 		return seederr.Wrap(err)
 	}
-	upstreamConfig, ok := repoConfig.Upstream[upstreamName]
-	if !ok {
-		return seederr.WrapErrorf("upstream %v not found in repo config", upstreamName)
+	upstreamConfigPath, upstreamConfig, err := findUpstreamConfig(devWorktreePath, scmFiles, upstreamName)
+	if err != nil {
+		return seederr.Wrap(err)
 	}
+	upstreamDir := filepath.Dir(upstreamConfigPath)
+
 	if upstreamConfig.Converge != "melt" {
 		return seederr.WrapErrorf("upstream %v is not a melt upstream", upstreamName)
 	}
@@ -243,6 +287,9 @@ func NdMelt(scmProvider scm.Provider, options NdMeltOptions) error {
 			return seederr.WrapErrorf("unexpected new worktree path: %v (expected: %v)", newWorktreePath, worktreePath)
 		}
 
+		// dropLocks holds path patterns, grouped per lock watcher, for lock
+		// files to strip from upstream diffs. "drop" removes them so they are
+		// regenerated locally; "keep" lets upstream lockfiles flow through.
 		dropLocks := [][]*regexp.Regexp{}
 		switch options.Lock {
 		case "drop":
@@ -272,6 +319,12 @@ func NdMelt(scmProvider scm.Provider, options NdMeltOptions) error {
 			return seederr.WrapErrorf("unknown lock strategy %q, want one of: drop, keep", options.Lock)
 		}
 
+		// Upstream paths are relative to the upstream root; prefix them with
+		// the directory holding UPSTREAM.ndscm.ts so files land under it. `^`
+		// prepends the replacement; `$` is escaped since MoveDiff expands it.
+		upstreamPathPrefix := regexp.MustCompile(`^`)
+		upstreamPathReplace := strings.ReplaceAll(upstreamDir+"/", "$", "$$")
+
 		upstreamCommitIds, err := scmProvider.ListCommitIds(upstreamForkPoint, upstreamTipPoint)
 		if err != nil {
 			return seederr.Wrap(err)
@@ -285,9 +338,19 @@ func NdMelt(scmProvider scm.Provider, options NdMeltOptions) error {
 			if err != nil {
 				return seederr.Wrap(err)
 			}
+
+			// Prefix before dropping locks so the patch paths are
+			// repo-root-relative, matching the lock patterns.
+			if upstreamDir != "." {
+				patch.MoveDiff(upstreamPathPrefix, upstreamPathPrefix, upstreamPathReplace, upstreamPathReplace)
+			}
+
+			// Matching both the old and new path drops a diff only when both
+			// sides are lock files, sparing renames into/out of a lock path.
 			for _, lockGroup := range dropLocks {
 				patch.DropDiff(lockGroup, lockGroup)
 			}
+
 			newCommitPatch := patch.Render()
 			err = scmProvider.ApplyFormatPatch(newWorktreePath, newCommitPatch)
 			if err != nil {
