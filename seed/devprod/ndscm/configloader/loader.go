@@ -10,9 +10,29 @@ import (
 	"github.com/ndscm/theseed/seed/infra/tson/go/tson"
 )
 
-func LoadDirConfig(dirConfigPath string) (*DirConfig, error) {
-	seedlog.Debugf("Loading dir config: %s", dirConfigPath)
-	raw, err := os.ReadFile(dirConfigPath)
+func FindDirConfigs(worktreePath string, sourcePaths []string) []string {
+	result := []string{}
+	for _, sourcePath := range sourcePaths {
+		if filepath.Base(sourcePath) != "DIR.ndscm.ts" {
+			continue
+		}
+		dirConfigPath := filepath.Join(worktreePath, sourcePath)
+		_, err := os.Stat(dirConfigPath)
+		if os.IsNotExist(err) {
+			// The config was deleted (e.g. removed in the most recent commit)
+			// but may still appear in the scan paths so other rules can react
+			// to the deletion. There is nothing to load here.
+			continue
+		}
+		result = append(result, sourcePath)
+	}
+	return result
+}
+
+func LoadDirConfig(worktreePath string, dirConfigPath string) (*DirConfig, error) {
+	realPath := filepath.Join(worktreePath, dirConfigPath)
+	seedlog.Debugf("Loading dir config: %s", realPath)
+	raw, err := os.ReadFile(realPath)
 	if err != nil {
 		return nil, seederr.Wrap(err)
 	}
@@ -24,25 +44,17 @@ func LoadDirConfig(dirConfigPath string) (*DirConfig, error) {
 	return dirConfig, nil
 }
 
-func LoadDirConfigs(worktreePath string, scmFilePaths []string) (map[string]*DirConfig, error) {
+func LoadDirConfigs(worktreePath string, dirConfigPaths []string) (map[string]*DirConfig, error) {
 	result := map[string]*DirConfig{}
-	for _, scmFilePath := range scmFilePaths {
-		if filepath.Base(scmFilePath) != "DIR.ndscm.ts" {
-			continue
+	for _, dirConfigPath := range dirConfigPaths {
+		if filepath.Base(dirConfigPath) != "DIR.ndscm.ts" {
+			return nil, seederr.WrapErrorf("invalid dir config path: %v", dirConfigPath)
 		}
-		dirConfigPath := filepath.Join(worktreePath, scmFilePath)
-		_, err := os.Stat(dirConfigPath)
-		if os.IsNotExist(err) {
-			// The config was deleted (e.g. removed in the most recent commit)
-			// but may still appear in the scan paths so other rules can react
-			// to the deletion. There is nothing to load here.
-			continue
-		}
-		dirConfig, err := LoadDirConfig(dirConfigPath)
+		dirConfig, err := LoadDirConfig(worktreePath, dirConfigPath)
 		if err != nil {
 			return nil, seederr.Wrap(err)
 		}
-		result[scmFilePath] = dirConfig
+		result[dirConfigPath] = dirConfig
 	}
 	return result, nil
 }
