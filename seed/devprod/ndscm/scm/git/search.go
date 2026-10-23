@@ -67,7 +67,9 @@ func SearchForkPoint(gitDir string, ourTipPoint string, theirTipPoint string) (s
 			return "", "", seederr.WrapErrorf("expected at most one parent for commit %v, got %d", theirHash, len(theirMeta.Parents))
 		}
 		if !ourCanMove && !theirCanMove {
-			return "", "", seederr.WrapErrorf("no fork point found: both chains reached root at %v and %v", ourHash, theirHash)
+			// Disjoint histories: the chains share no commit. Return our
+			// initial commit as the fork point, and "" for theirs.
+			return ourHash, "", nil
 		}
 
 		if !theirCanMove || (ourCanMove && !ourMeta.CommitterTime.Before(theirMeta.CommitterTime)) {
