@@ -11,6 +11,7 @@ go_library(
         "dir.go",
         "loader.go",
         "repo.go",
+        "upstream.go",
     ],
     importpath = "github.com/ndscm/theseed/seed/devprod/ndscm/configloader",
     deps = [

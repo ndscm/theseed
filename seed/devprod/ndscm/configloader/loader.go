@@ -90,3 +90,63 @@ func LoadRepoConfig(worktreePath string) (*RepoConfig, error) {
 	}
 	return repoConfig, nil
 }
+
+func FindUpstreamConfigs(worktreePath string, sourcePaths []string) []string {
+	result := []string{}
+	for _, sourcePath := range sourcePaths {
+		if filepath.Base(sourcePath) != "UPSTREAM.ndscm.ts" {
+			continue
+		}
+		upstreamConfigPath := filepath.Join(worktreePath, sourcePath)
+		_, err := os.Stat(upstreamConfigPath)
+		if os.IsNotExist(err) {
+			// The config was deleted (e.g. removed in the most recent commit)
+			// but may still appear in the scan paths so other rules can react
+			// to the deletion. There is nothing to load here.
+			continue
+		}
+		result = append(result, sourcePath)
+	}
+	return result
+}
+
+func LoadUpstreamConfig(worktreePath string, upstreamConfigPath string) (map[string]UpstreamConfig, error) {
+	realPath := filepath.Join(worktreePath, upstreamConfigPath)
+	seedlog.Debugf("Loading upstream config: %s", realPath)
+	raw, err := os.ReadFile(realPath)
+	if err != nil {
+		return nil, seederr.Wrap(err)
+	}
+	upstreamConfig := map[string]UpstreamConfig{}
+	err = tson.Unmarshal(raw, &upstreamConfig)
+	if err != nil {
+		return nil, seederr.Wrap(err)
+	}
+	for upstreamName, config := range upstreamConfig {
+		if upstreamName == "" {
+			return nil, seederr.WrapErrorf("upstream name cannot be empty")
+		}
+		if config.Converge != "melt" {
+			return nil, seederr.WrapErrorf("dir upstream converge must be `melt`: %v", upstreamName)
+		}
+		if config.Scm != "git" {
+			return nil, seederr.WrapErrorf("dir upstream scm must be `git`: %v", upstreamName)
+		}
+	}
+	return upstreamConfig, nil
+}
+
+func LoadUpstreamConfigs(worktreePath string, upstreamConfigPaths []string) (map[string]map[string]UpstreamConfig, error) {
+	result := map[string]map[string]UpstreamConfig{}
+	for _, upstreamConfigPath := range upstreamConfigPaths {
+		if filepath.Base(upstreamConfigPath) != "UPSTREAM.ndscm.ts" {
+			return nil, seederr.WrapErrorf("invalid upstream config path: %v", upstreamConfigPath)
+		}
+		upstreamConfig, err := LoadUpstreamConfig(worktreePath, upstreamConfigPath)
+		if err != nil {
+			return nil, seederr.Wrap(err)
+		}
+		result[upstreamConfigPath] = upstreamConfig
+	}
+	return result, nil
+}
