@@ -1,9 +1,5 @@
 package configloader
 
-type RepoNdscmConfig struct {
-	Version string `json:"version,omitempty"`
-}
-
 type RepoUpstreamConfig struct {
 	Scm      string `json:"scm"`
 	Repo     string `json:"repo,omitempty"`
@@ -13,6 +9,5 @@ type RepoUpstreamConfig struct {
 }
 
 type RepoConfig struct {
-	Ndscm    RepoNdscmConfig               `json:"ndscm"`
 	Upstream map[string]RepoUpstreamConfig `json:"upstream,omitempty"`
 }
