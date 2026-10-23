@@ -1,6 +1,8 @@
 package git
 
 import (
+	"errors"
+	"slices"
 	"strings"
 
 	"github.com/ndscm/theseed/seed/devprod/ndscm/scm"
@@ -113,10 +115,55 @@ func SetBranchTracking(gitDir string, branchName string, tracking string) error 
 	if gitDir != "" {
 		gitArgs = append(gitArgs, "--git-dir", gitDir)
 	}
-	err := seedshell.ImpureRun("git", append(gitArgs, "branch", "--set-upstream-to="+tracking, branchName)...)
+
+	branchExists := true
+	_, err := GetBranch(gitDir, branchName)
 	if err != nil {
-		return seederr.WrapErrorf("failed to set tracking for branch %v: %w", branchName, err)
+		if !errors.Is(err, scm.ErrBranchNotFound) {
+			return seederr.Wrap(err)
+		}
+		branchExists = false
 	}
+
+	if !branchExists {
+		// Unborn branch (e.g. a fresh orphan worktree before its first commit)
+		// has no ref, so git branch --set-upstream-to refuses it. Write the
+		// tracking config directly, mirroring what --set-upstream-to records: a
+		// remote-tracking ref maps to its remote and the branch it mirrors; a
+		// local branch maps to remote "." and its own ref.
+		fullRefOutput, resolveErr := seedshell.PureOutput("git", append(slices.Clone(gitArgs), "rev-parse", "--symbolic-full-name", tracking)...)
+		if resolveErr != nil {
+			return seederr.WrapErrorf("failed to resolve tracking ref %v: %w", tracking, resolveErr)
+		}
+		fullRef := strings.TrimSpace(string(fullRefOutput))
+
+		remote := "."
+		merge := fullRef
+		if rest, ok := strings.CutPrefix(fullRef, "refs/remotes/"); ok {
+			remoteName, mergeBranch, found := strings.Cut(rest, "/")
+			if !found {
+				return seederr.WrapErrorf("unexpected remote tracking ref %v", fullRef)
+			}
+			remote = remoteName
+			merge = "refs/heads/" + mergeBranch
+		}
+
+		err = seedshell.ImpureRun("git", append(slices.Clone(gitArgs), "config", "branch."+branchName+".remote", remote)...)
+		if err != nil {
+			return seederr.WrapErrorf("failed to set tracking remote for branch %v: %w", branchName, err)
+		}
+		err = seedshell.ImpureRun("git", append(slices.Clone(gitArgs), "config", "branch."+branchName+".merge", merge)...)
+		if err != nil {
+			return seederr.WrapErrorf("failed to set tracking merge for branch %v: %w", branchName, err)
+		}
+	} else {
+		// Born branch: point it at its upstream directly.
+		err = seedshell.ImpureRun("git", append(gitArgs, "branch", "--set-upstream-to="+tracking, branchName)...)
+		if err != nil {
+			return seederr.WrapErrorf("failed to set tracking for branch %v: %w", branchName, err)
+		}
+	}
+
 	return nil
 }
 
