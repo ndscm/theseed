@@ -344,7 +344,7 @@ func AnalyseRepo(worktreePath string, opts *AnalyseRepoOptions) (*RepoAnalysis, 
 
 	dirConfigPaths := opts.DirConfigPaths
 	if len(dirConfigPaths) == 0 {
-		dirConfigPaths = opts.SourcePaths
+		dirConfigPaths = configloader.FindDirConfigs(worktreePath, opts.SourcePaths)
 	}
 	dirConfigs, err := configloader.LoadDirConfigs(worktreePath, dirConfigPaths)
 	if err != nil {
