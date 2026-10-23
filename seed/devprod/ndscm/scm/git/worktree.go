@@ -1,9 +1,11 @@
 package git
 
 import (
+	"errors"
 	"path/filepath"
 	"strings"
 
+	"github.com/ndscm/theseed/seed/devprod/ndscm/scm"
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
 	"github.com/ndscm/theseed/seed/infra/log/go/seedlog"
 	"github.com/ndscm/theseed/seed/infra/shell/go/seedshell"
@@ -163,10 +165,31 @@ func CreateBranchWorktree(gitDir string, monorepoHome string, branchName string)
 	if gitDir == "" {
 		return "", seederr.WrapErrorf("git dir is required")
 	}
+
 	worktreePath := filepath.Join(monorepoHome, branchName)
-	err := seedshell.ImpureRun("git", "--git-dir", gitDir, "worktree", "add", worktreePath, branchName)
+
+	branchExists := true
+	_, err := GetBranch(gitDir, branchName)
 	if err != nil {
-		return "", seederr.WrapErrorf("failed to add branch worktree %v: %w", worktreePath, err)
+		if !errors.Is(err, scm.ErrBranchNotFound) {
+			return "", seederr.Wrap(err)
+		}
+		branchExists = false
 	}
+
+	if !branchExists {
+		// The branch does not exist yet: create it as an unborn orphan branch
+		// in the new worktree so the first commit becomes its root.
+		err := seedshell.ImpureRun("git", "--git-dir", gitDir, "worktree", "add", "--orphan", "-b", branchName, worktreePath)
+		if err != nil {
+			return "", seederr.WrapErrorf("failed to add orphan worktree %v: %w", worktreePath, err)
+		}
+	} else {
+		err := seedshell.ImpureRun("git", "--git-dir", gitDir, "worktree", "add", worktreePath, branchName)
+		if err != nil {
+			return "", seederr.WrapErrorf("failed to add branch worktree %v: %w", worktreePath, err)
+		}
+	}
+
 	return worktreePath, nil
 }
