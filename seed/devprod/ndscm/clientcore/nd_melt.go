@@ -102,25 +102,53 @@ func createMeltWorktree(
 	if err != nil {
 		return "", seederr.Wrap(err)
 	}
-	err = scmProvider.CreateBranch(baseBranchName, fromPoint, tracking)
-	if err != nil {
-		return "", seederr.WrapErrorf("failed to create base branch %v: %v", baseBranchName, err)
+	meltWorktreePath := ""
+	if fromPoint == "" {
+		// disjoint: no shared upstream fork point. Create the base branch at the
+		// tracking initial commit (forkPoint). The worktree branch does not
+		// exist yet, so CreateWorktree roots it as an orphan and all upstream
+		// commits melt onto an empty tree; set its upstream to the base for nd
+		// sync. No base update is needed.
+		err = scmProvider.CreateBranch(baseBranchName, forkPoint, tracking)
+		if err != nil {
+			return "", seederr.WrapErrorf("failed to create base branch %v: %v", baseBranchName, err)
+		}
+		newWorktreePath, err := scmProvider.CreateWorktree(repo, branchName)
+		if err != nil {
+			return "", seederr.WrapErrorf("failed to create orphan worktree %v: %v", branchName, err)
+		}
+		err = scmProvider.SetBranchTracking(branchName, baseBranchName)
+		if err != nil {
+			return "", seederr.WrapErrorf("failed to set tracking for branch %v: %v", branchName, err)
+		}
+		meltWorktreePath = newWorktreePath
+	} else {
+		// Shared fork point: start the base and worktree branches at the
+		// upstream-side fork (fromPoint), then move the base to the
+		// tracking-side fork (forkPoint). The upstream commits after fromPoint
+		// are melted on top, and the base's fromPoint->forkPoint reflog entry
+		// tells nd sync where to rebase from.
+		err = scmProvider.CreateBranch(baseBranchName, fromPoint, tracking)
+		if err != nil {
+			return "", seederr.WrapErrorf("failed to create base branch %v: %v", baseBranchName, err)
+		}
+		err = scmProvider.CreateBranch(branchName, fromPoint, baseBranchName)
+		if err != nil {
+			return "", seederr.WrapErrorf("failed to create worktree branch %v: %v", branchName, err)
+		}
+		newWorktreePath, err := scmProvider.CreateWorktree(repo, branchName)
+		if err != nil {
+			return "", seederr.WrapErrorf("failed to create branch worktree %v: %v", branchName, err)
+		}
+		// Move base branch from fromPoint to forkPoint, creating a reflog
+		// entry that nd sync (git pull --rebase) uses to rebase onto.
+		err = scmProvider.UpdateBranch(baseBranchName, forkPoint)
+		if err != nil {
+			return "", seederr.WrapErrorf("failed to update base branch %v: %v", baseBranchName, err)
+		}
+		meltWorktreePath = newWorktreePath
 	}
-	err = scmProvider.CreateBranch(branchName, fromPoint, baseBranchName)
-	if err != nil {
-		return "", seederr.WrapErrorf("failed to create worktree branch %v: %v", branchName, err)
-	}
-	newWorktreePath, err := scmProvider.CreateWorktree(repo, branchName)
-	if err != nil {
-		return "", seederr.WrapErrorf("failed to create branch worktree %v: %v", branchName, err)
-	}
-	// Move base branch from fromPoint to forkPoint, creating a reflog
-	// entry that nd sync (git pull --rebase) uses to rebase onto.
-	err = scmProvider.UpdateBranch(baseBranchName, forkPoint)
-	if err != nil {
-		return "", seederr.WrapErrorf("failed to update base branch %v: %v", baseBranchName, err)
-	}
-	return newWorktreePath, nil
+	return meltWorktreePath, nil
 }
 
 func removeMeltWorktree(
@@ -274,8 +302,12 @@ func NdMelt(scmProvider scm.Provider, options NdMeltOptions) error {
 		if err != nil {
 			return seederr.Wrap(err)
 		}
-		seedlog.Infof("Found tracking fork point: %v", trackingForkPoint)
-		seedlog.Infof("Found upstream fork point: %v", upstreamForkPoint)
+		if upstreamForkPoint != "" {
+			seedlog.Infof("Found tracking fork point: %v", trackingForkPoint)
+			seedlog.Infof("Found upstream fork point: %v", upstreamForkPoint)
+		} else {
+			seedlog.Infof("No fork point found. Melting from history root: %v", trackingForkPoint)
+		}
 		newWorktreePath, err := createMeltWorktree(
 			scmProvider, repo, currentUserHandle,
 			upstreamName, upstreamForkPoint, tracking, trackingForkPoint,
