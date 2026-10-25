@@ -242,6 +242,11 @@ type FormatPatch struct {
 	diffs        []*FormatDiff
 }
 
+// DiffCount reports how many file diffs the patch currently holds.
+func (p *FormatPatch) DiffCount() int {
+	return len(p.diffs)
+}
+
 // PickDiff keeps only file diffs matching any pattern, removing the rest.
 func (p *FormatPatch) PickDiff(aPatterns []*regexp.Regexp, bPatterns []*regexp.Regexp) {
 	kept := []*FormatDiff{}
