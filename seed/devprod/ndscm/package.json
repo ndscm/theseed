@@ -1,7 +1,14 @@
 {
-  "name": "ndscm",
-  "version": "26.10.25",
+  "name": "ndscm-staging",
+  "version": "0.0.1",
   "files": [
-    "config"
-  ]
+    "config",
+    "config/schema.json"
+  ],
+  "scripts": {
+    "prepare": "ts-json-schema-generator --path 'config/**/*.ts' --type '*' --out 'config/schema.json'"
+  },
+  "devDependencies": {
+    "ts-json-schema-generator": "^2.9.0"
+  }
 }

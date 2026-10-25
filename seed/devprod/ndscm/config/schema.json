@@ -1,0 +1,1187 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "definitions": {
+    "AccessConfig": {
+      "additionalProperties": false,
+      "description": "Access control settings for a directory.\n\nThese are hints for tooling — actual enforcement happens in the code management system and the build system.\n\nOmitted fields inherit from the parent directory. When a field is provided, it fully overrides the parent value rather than extending it.",
+      "properties": {
+        "builder": {
+          "description": "People allowed to build code in this directory.",
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "coworker": {
+          "description": "People automatically assigned to review a change when it is submitted by a reviewer. This supports a workflow where reviewers do a first-round triage of external requests, and coworkers handle the final review and approval. Typically a subset of the owner and maintainers.",
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "files": {
+          "additionalProperties": {
+            "additionalProperties": false,
+            "description": "Same fields as the directory level, scoped to this file.",
+            "properties": {
+              "builder": {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "coworker": {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "maintainer": {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "owner": {
+                "type": "string"
+              },
+              "reader": {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "reviewer": {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              }
+            },
+            "type": "object"
+          },
+          "description": "Per-file access control overrides. Keys are file names relative to this directory. Directory names are ignored here — define their access control in the directory's own config file.",
+          "type": "object"
+        },
+        "maintainer": {
+          "description": "People who can approve changes in this directory.",
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "owner": {
+          "description": "The person responsible for code in this directory.",
+          "type": "string"
+        },
+        "reader": {
+          "description": "People with read access to code in this directory.",
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "reviewer": {
+          "description": "People automatically assigned to review any change in this directory, whether submitted by a team member or an outside contributor. Reviewers don't necessarily have approval power.",
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        }
+      },
+      "type": "object"
+    },
+    "DirConfig": {
+      "additionalProperties": false,
+      "description": "Per-directory ndscm configuration, defined in `DIR.ndscm.ts`.\n\nA `DirConfig` declares **what to run** when files change inside a managed directory. Each top-level key is a lifecycle phase; each phase contains named tasks with a `watch` pattern, an optional `target`, and one or more execution methods (`run`, `bazel`, `buck`):\n\n- `watch` — regex matched against changed file paths to decide whether   the task should fire.\n- `target` — output file(s) the task produces. Used to skip the task   when outputs are already up-to-date. Absent for format and test tasks.\n- `run` — shell command(s) to execute.\n- `bazel` — bazel targets to build and run. Only triggered when   `build_system` includes `bazel`. `build` target(s) are batched into   a single `bazel build` invocation per phase; `run` command(s) are   executed via `bazel run`.\n- `buck` — buck targets to run. Only triggered when `build_system`   includes `buck`. Optimized build ground is not supported for buck.\n\n### Lifecycle phases\n\n``` checkout ───┬──► format (individual)             │             └──► vendor ───┬──► build:bazel ──► test:bazel                            │                            └──► bootstrap ───┬──► build:other ──► test:other                                              │                                              └──► tidy + lock ──► test:tidy ```\n\n| Phase           | Outputs      | Purpose                                                            | | --------------- | ------------ | ------------------------------------------------------------------ | | **format**      | *(in-place)* | Auto-format individual files. Standalone — no heavy setup.         | | **vendor**      | gitignored   | Fetch deps for hermetic builds (bazel, buck).                      | | **bootstrap**   | gitignored   | Set up local dev env (editors, language servers, non-bazel tools). | | **tidy**        | git-tracked  | Regenerate checked-in files (`go.mod`, `BUILD.bazel`).             | | **lock**        | git-tracked  | Regenerate checked-in lock files (`go.sum`, `MODULE.bazel.lock`).  | | **build:bazel** | *(none)*     | Compile bazel artifacts. Depends on vendor only.                   | | **build:other** | gitignored   | Compile other artifacts. Can also depend on bootstrap.             | | **test:bazel**  | *(none)*     | Run bazel tests. Depends on vendor only.                           | | **test:other**  | *(none)*     | Run other tests. Also depends on bootstrap.                        | | **test:tidy**   | *(none)*     | Run tidy and lock tests.                                           |\n\n### Environment variables\n\nThe following environment variables are set for every `run` command:\n\n- `BUILD_WORKSPACE_DIRECTORY` — absolute path of the repo root.\n- `BUILD_WORKING_DIRECTORY` — absolute path of the task directory.\n\n### Template variables\n\nTemplate variables are substituted into `run` commands where applicable:\n\n- `{{TARGET}}` — absolute path of the file being processed. Only   available in format tasks.\n\nThe following are **bazel-only** template variables, available when `build_system` includes `bazel`:\n\n- `{{BAZEL_RUN}}` / `{{BAZEL_RUN[i]}}` — the executable output of the   first / i-th `bazel.build` target. When bazel ground is disabled,   expands to `bazel run <target> -- ` instead.\n- `{{BAZEL_EXECUTABLE}}` / `{{BAZEL_EXECUTABLE[i]}}` — the executable   path of the first / i-th `bazel.build` target. Empty when bazel   ground is disabled.\n- `{{BAZEL_BUILD}}` / `{{BAZEL_BUILD[i]}}` — the artifact output paths   (space-joined) of the first / i-th `bazel.build` target. Only   available when bazel ground is enabled.",
+      "properties": {
+        "bootstrap": {
+          "additionalProperties": {
+            "additionalProperties": false,
+            "properties": {
+              "bazel": {
+                "additionalProperties": false,
+                "description": "Bazel targets to build and run for this task.",
+                "properties": {
+                  "build": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "items": {
+                          "type": "string"
+                        },
+                        "type": "array"
+                      }
+                    ],
+                    "description": "Bazel target(s) to build before the task runs."
+                  },
+                  "disableGround": {
+                    "description": "Disable optimized bazel ground.",
+                    "type": "boolean"
+                  },
+                  "run": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "items": {
+                          "type": "string"
+                        },
+                        "type": "array"
+                      }
+                    ],
+                    "description": "Shell command(s) to run with bazel ground template substituted."
+                  }
+                },
+                "type": "object"
+              },
+              "buck": {
+                "additionalProperties": false,
+                "description": "Buck targets to run for this task.",
+                "properties": {
+                  "run": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "items": {
+                          "type": "string"
+                        },
+                        "type": "array"
+                      }
+                    ],
+                    "description": "Shell command(s) to run when buck is enabled."
+                  }
+                },
+                "type": "object"
+              },
+              "run": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "items": {
+                      "type": "string"
+                    },
+                    "type": "array"
+                  }
+                ],
+                "description": "Shell command to run."
+              },
+              "target": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "items": {
+                      "type": "string"
+                    },
+                    "type": "array"
+                  }
+                ],
+                "description": "Gitignored output file(s) or directory. Skipped when up-to-date."
+              },
+              "watch": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "items": {
+                      "type": "string"
+                    },
+                    "type": "array"
+                  }
+                ],
+                "description": "Regex matched against changed file paths."
+              },
+              "watchRepo": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "items": {
+                      "type": "string"
+                    },
+                    "type": "array"
+                  }
+                ],
+                "description": "Literal file paths (relative to repo root) added as extra Make prerequisites. Use this to express cross-project dependencies — e.g., this task must re-run when another project's build output changes."
+              }
+            },
+            "required": [
+              "target",
+              "watch"
+            ],
+            "type": "object"
+          },
+          "description": "Set up the local dev environment so editors, language servers, and non-bazel toolchains (`pnpm build`, `go build`) work correctly.\n\nOutputs are gitignored. May depend on bazel targets (e.g. code-generated files). Typically triggered by lockfile changes.",
+          "type": "object"
+        },
+        "build": {
+          "additionalProperties": {
+            "additionalProperties": false,
+            "properties": {
+              "bazel": {
+                "additionalProperties": false,
+                "description": "Bazel targets to build and run for this task.",
+                "properties": {
+                  "build": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "items": {
+                          "type": "string"
+                        },
+                        "type": "array"
+                      }
+                    ],
+                    "description": "Bazel target(s) to build before the task runs."
+                  },
+                  "disableGround": {
+                    "description": "Disable optimized bazel ground.",
+                    "type": "boolean"
+                  },
+                  "run": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "items": {
+                          "type": "string"
+                        },
+                        "type": "array"
+                      }
+                    ],
+                    "description": "Shell command(s) to run with bazel ground template substituted."
+                  }
+                },
+                "type": "object"
+              },
+              "buck": {
+                "additionalProperties": false,
+                "description": "Buck targets to run for this task.",
+                "properties": {
+                  "run": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "items": {
+                          "type": "string"
+                        },
+                        "type": "array"
+                      }
+                    ],
+                    "description": "Shell command(s) to run when buck is enabled."
+                  }
+                },
+                "type": "object"
+              },
+              "run": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "items": {
+                      "type": "string"
+                    },
+                    "type": "array"
+                  }
+                ],
+                "description": "Shell command(s) to run."
+              },
+              "target": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "items": {
+                      "type": "string"
+                    },
+                    "type": "array"
+                  }
+                ],
+                "description": "Output file(s) or directory produced by the build."
+              },
+              "watch": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "items": {
+                      "type": "string"
+                    },
+                    "type": "array"
+                  }
+                ],
+                "description": "Regex matched against changed file paths."
+              },
+              "watchRepo": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "items": {
+                      "type": "string"
+                    },
+                    "type": "array"
+                  }
+                ],
+                "description": "Literal file paths (relative to repo root) added as extra Make prerequisites. Use this to express cross-project dependencies — e.g., this task must re-run when another project's build output changes."
+              }
+            },
+            "required": [
+              "target",
+              "watch",
+              "run"
+            ],
+            "type": "object"
+          },
+          "description": "Compile or bundle artifacts from source.\n\nTwo paths: **bazel** builds depend on vendor; **other** builds (non-bazel toolchains) depend on bootstrap.",
+          "type": "object"
+        },
+        "format": {
+          "additionalProperties": {
+            "additionalProperties": false,
+            "properties": {
+              "bazel": {
+                "additionalProperties": false,
+                "description": "Bazel targets to build and run for this task.",
+                "properties": {
+                  "build": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "items": {
+                          "type": "string"
+                        },
+                        "type": "array"
+                      }
+                    ],
+                    "description": "Bazel target(s) to build before the task runs."
+                  },
+                  "disableGround": {
+                    "description": "Disable optimized bazel ground.",
+                    "type": "boolean"
+                  },
+                  "run": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "items": {
+                          "type": "string"
+                        },
+                        "type": "array"
+                      }
+                    ],
+                    "description": "Shell command(s) to run with bazel ground template substituted."
+                  }
+                },
+                "type": "object"
+              },
+              "buck": {
+                "additionalProperties": false,
+                "description": "Buck targets to run for this task.",
+                "properties": {
+                  "run": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "items": {
+                          "type": "string"
+                        },
+                        "type": "array"
+                      }
+                    ],
+                    "description": "Shell command(s) to run when buck is enabled."
+                  }
+                },
+                "type": "object"
+              },
+              "run": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "items": {
+                      "type": "string"
+                    },
+                    "type": "array"
+                  }
+                ],
+                "description": "Shell command executed via `bash -c`."
+              },
+              "watch": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "items": {
+                      "type": "string"
+                    },
+                    "type": "array"
+                  }
+                ],
+                "description": "Regex matched against changed file paths."
+              }
+            },
+            "required": [
+              "watch"
+            ],
+            "type": "object"
+          },
+          "description": "Auto-format individual changed files in place.\n\nStandalone — must not depend on bootstrap outputs or heavy setup (`node_modules`, `.venv`). Bazel-provided tools are fine.\n\n`run` receives the changed file path as `{{TARGET}}`.",
+          "type": "object"
+        },
+        "granularity": {
+          "additionalProperties": false,
+          "description": "Commit granularity for changes in this directory.\n\nWhen set, changes to this directory are grouped into a single separate commit rather than folded into a shared commit with other directories.",
+          "properties": {
+            "part": {
+              "description": "Segment appended to the commit prefix for this directory's commit.\n\nOnly used for the `\"linux\"`  {@link  style  } , and usually ends with `: `.",
+              "type": "string"
+            },
+            "prefix": {
+              "description": "Prefix prepended to the commit message for this directory's commit.\n\nOnly used for the `\"linux\"`  {@link  style  } , and usually end with `: `",
+              "type": "string"
+            },
+            "scope": {
+              "description": "Scope inserted into the commit message for this directory's commit.\n\nOnly used for the `\"conventional\"`  {@link  style  } .",
+              "type": "string"
+            },
+            "style": {
+              "description": "Commit message style the commit in this directory should follow.\n\n- `\"linux\"` — Linux-kernel style, `<project>: <sub>: verb summary`.\n- `\"conventional\"` — Conventional Commits, `type(scope/sub): verb summary`.\n- `\"freedom\"` — No enforced convention.",
+              "enum": [
+                "linux",
+                "conventional",
+                "freedom"
+              ],
+              "type": "string"
+            }
+          },
+          "required": [
+            "style"
+          ],
+          "type": "object"
+        },
+        "lock": {
+          "additionalProperties": {
+            "additionalProperties": false,
+            "properties": {
+              "bazel": {
+                "additionalProperties": false,
+                "description": "Bazel targets to build and run for this task.",
+                "properties": {
+                  "build": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "items": {
+                          "type": "string"
+                        },
+                        "type": "array"
+                      }
+                    ],
+                    "description": "Bazel target(s) to build before the task runs."
+                  },
+                  "disableGround": {
+                    "description": "Disable optimized bazel ground.",
+                    "type": "boolean"
+                  },
+                  "run": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "items": {
+                          "type": "string"
+                        },
+                        "type": "array"
+                      }
+                    ],
+                    "description": "Shell command(s) to run with bazel ground template substituted."
+                  }
+                },
+                "type": "object"
+              },
+              "buck": {
+                "additionalProperties": false,
+                "description": "Buck targets to run for this task.",
+                "properties": {
+                  "run": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "items": {
+                          "type": "string"
+                        },
+                        "type": "array"
+                      }
+                    ],
+                    "description": "Shell command(s) to run when buck is enabled."
+                  }
+                },
+                "type": "object"
+              },
+              "granularity": {
+                "description": "When `true`, this task's regenerated lock file is committed in a separate commit rather than combined with the directory's other changes.",
+                "type": "boolean"
+              },
+              "run": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "items": {
+                      "type": "string"
+                    },
+                    "type": "array"
+                  }
+                ],
+                "description": "Shell command(s) to run. An array is executed sequentially."
+              },
+              "target": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "items": {
+                      "type": "string"
+                    },
+                    "type": "array"
+                  }
+                ],
+                "description": "Git-tracked output file(s) regenerated by this command. Other modified files are treated as side effects."
+              },
+              "watch": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "items": {
+                      "type": "string"
+                    },
+                    "type": "array"
+                  }
+                ],
+                "description": "Regex matched against changed file paths."
+              },
+              "watchRepo": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "items": {
+                      "type": "string"
+                    },
+                    "type": "array"
+                  }
+                ],
+                "description": "Literal file paths (relative to repo root) added as extra Make prerequisites. Use this to express cross-project dependencies — e.g., this task must re-run when another project's build output changes."
+              }
+            },
+            "required": [
+              "target",
+              "watch",
+              "run"
+            ],
+            "type": "object"
+          },
+          "description": "Regenerate **git-tracked** lock files to keep them in sync with their sources.\n\nRuns after tidy, since lock files are derived from the config files that tidy produces.",
+          "type": "object"
+        },
+        "test": {
+          "additionalProperties": {
+            "additionalProperties": false,
+            "properties": {
+              "bazel": {
+                "additionalProperties": false,
+                "description": "Bazel targets to build and run for this task.",
+                "properties": {
+                  "build": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "items": {
+                          "type": "string"
+                        },
+                        "type": "array"
+                      }
+                    ],
+                    "description": "Bazel target(s) to build before the task runs."
+                  },
+                  "disableGround": {
+                    "description": "Disable optimized bazel ground.",
+                    "type": "boolean"
+                  },
+                  "run": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "items": {
+                          "type": "string"
+                        },
+                        "type": "array"
+                      }
+                    ],
+                    "description": "Shell command(s) to run with bazel ground template substituted."
+                  }
+                },
+                "type": "object"
+              },
+              "buck": {
+                "additionalProperties": false,
+                "description": "Buck targets to run for this task.",
+                "properties": {
+                  "run": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "items": {
+                          "type": "string"
+                        },
+                        "type": "array"
+                      }
+                    ],
+                    "description": "Shell command(s) to run when buck is enabled."
+                  }
+                },
+                "type": "object"
+              },
+              "run": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "items": {
+                      "type": "string"
+                    },
+                    "type": "array"
+                  }
+                ],
+                "description": "Shell command(s) to run."
+              },
+              "watch": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "items": {
+                      "type": "string"
+                    },
+                    "type": "array"
+                  }
+                ],
+                "description": "Regex matched against changed file paths."
+              }
+            },
+            "required": [
+              "watch",
+              "run"
+            ],
+            "type": "object"
+          },
+          "description": "Run tests when source files change. No `target` — tests produce no artifacts.\n\nThree paths: **bazel** tests follow bazel builds, **other** tests follow other builds, and **tidy** tests follow tidy and lock.",
+          "type": "object"
+        },
+        "tidy": {
+          "additionalProperties": {
+            "additionalProperties": false,
+            "properties": {
+              "bazel": {
+                "additionalProperties": false,
+                "description": "Bazel targets to build and run for this task.",
+                "properties": {
+                  "build": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "items": {
+                          "type": "string"
+                        },
+                        "type": "array"
+                      }
+                    ],
+                    "description": "Bazel target(s) to build before the task runs."
+                  },
+                  "disableGround": {
+                    "description": "Disable optimized bazel ground.",
+                    "type": "boolean"
+                  },
+                  "run": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "items": {
+                          "type": "string"
+                        },
+                        "type": "array"
+                      }
+                    ],
+                    "description": "Shell command(s) to run with bazel ground template substituted."
+                  }
+                },
+                "type": "object"
+              },
+              "buck": {
+                "additionalProperties": false,
+                "description": "Buck targets to run for this task.",
+                "properties": {
+                  "run": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "items": {
+                          "type": "string"
+                        },
+                        "type": "array"
+                      }
+                    ],
+                    "description": "Shell command(s) to run when buck is enabled."
+                  }
+                },
+                "type": "object"
+              },
+              "run": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "items": {
+                      "type": "string"
+                    },
+                    "type": "array"
+                  }
+                ],
+                "description": "Shell command(s) to run. An array is executed sequentially."
+              },
+              "target": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "items": {
+                      "type": "string"
+                    },
+                    "type": "array"
+                  }
+                ],
+                "description": "Git-tracked output file(s) regenerated by this command. Other modified files are treated as side effects."
+              },
+              "watch": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "items": {
+                      "type": "string"
+                    },
+                    "type": "array"
+                  }
+                ],
+                "description": "Regex matched against changed file paths."
+              },
+              "watchRepo": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "items": {
+                      "type": "string"
+                    },
+                    "type": "array"
+                  }
+                ],
+                "description": "Literal file paths (relative to repo root) added as extra Make prerequisites. Use this to express cross-project dependencies — e.g., this task must re-run when another project's build output changes."
+              }
+            },
+            "required": [
+              "target",
+              "watch",
+              "run"
+            ],
+            "type": "object"
+          },
+          "description": "Regenerate **git-tracked** files (`go.mod`, `BUILD.bazel`) to keep them in sync with their sources.\n\nUsually depends on bootstrap being up-to-date. Commands can be chained as an array when multiple steps are needed.",
+          "type": "object"
+        },
+        "vendor": {
+          "additionalProperties": {
+            "additionalProperties": false,
+            "properties": {
+              "bazel": {
+                "additionalProperties": false,
+                "description": "Bazel targets to build and run for this task.",
+                "properties": {
+                  "build": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "items": {
+                          "type": "string"
+                        },
+                        "type": "array"
+                      }
+                    ],
+                    "description": "Bazel target(s) to build before the task runs."
+                  },
+                  "disableGround": {
+                    "description": "Disable optimized bazel ground.",
+                    "type": "boolean"
+                  },
+                  "run": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "items": {
+                          "type": "string"
+                        },
+                        "type": "array"
+                      }
+                    ],
+                    "description": "Shell command(s) to run with bazel ground template substituted."
+                  }
+                },
+                "type": "object"
+              },
+              "buck": {
+                "additionalProperties": false,
+                "description": "Buck targets to run for this task.",
+                "properties": {
+                  "run": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "items": {
+                          "type": "string"
+                        },
+                        "type": "array"
+                      }
+                    ],
+                    "description": "Shell command(s) to run when buck is enabled."
+                  }
+                },
+                "type": "object"
+              },
+              "run": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "items": {
+                      "type": "string"
+                    },
+                    "type": "array"
+                  }
+                ],
+                "description": "Shell command to run."
+              },
+              "target": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "items": {
+                      "type": "string"
+                    },
+                    "type": "array"
+                  }
+                ],
+                "description": "Gitignored output file(s) or directory. Skipped when up-to-date."
+              },
+              "watch": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "items": {
+                      "type": "string"
+                    },
+                    "type": "array"
+                  }
+                ],
+                "description": "Regex matched against changed file paths."
+              },
+              "watchRepo": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "items": {
+                      "type": "string"
+                    },
+                    "type": "array"
+                  }
+                ],
+                "description": "Literal file paths (relative to repo root) added as extra Make prerequisites. Use this to express cross-project dependencies — e.g., this task must re-run when another project's build output changes."
+              }
+            },
+            "required": [
+              "target",
+              "watch"
+            ],
+            "type": "object"
+          },
+          "description": "Fetch vendored dependencies for bazel hermetic builds.\n\nOutputs are gitignored and regenerated on demand.",
+          "type": "object"
+        }
+      },
+      "type": "object"
+    },
+    "RepoConfig": {
+      "additionalProperties": false,
+      "description": "Repository-wide ndscm configuration, defined in `REPO.ndscm.ts` at the repository root. Each feature or development branch can override this config with its own `REPO.ndscm.ts`, allowing branches to carry branch-specific upstream definitions or tooling versions.",
+      "properties": {
+        "collaboration": {
+          "additionalProperties": false,
+          "description": "Collaboration surfaces for the repository: where issues are tracked and where pending code changes are discussed. Each surface can be backed by a different system, letting a repo mix ndscm-native tooling with GitHub.",
+          "properties": {
+            "review": {
+              "additionalProperties": false,
+              "description": "The discussion board for pending code changes.",
+              "properties": {
+                "branch": {
+                  "description": "Branch that stores the patches and discussions. Only used by the `\"ndscm\"` system. When empty, they are stored on the current branch.",
+                  "type": "string"
+                },
+                "system": {
+                  "description": "Backend hosting the review board.\n\n- `\"ndscm\"` — Stores patches and discussions on a branch.\n- `\"github\"` — Uses GitHub pull requests.",
+                  "enum": [
+                    "ndscm",
+                    "github"
+                  ],
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            },
+            "tracker": {
+              "additionalProperties": false,
+              "description": "The ticket tracker for issues, bugs, and feature requests.",
+              "properties": {
+                "branch": {
+                  "description": "Branch that stores the tickets. Only used by the `\"ndscm\"` system. When empty, tickets are stored on the current branch.",
+                  "type": "string"
+                },
+                "system": {
+                  "description": "The tracker system.\n\n- `\"ndscm\"` — Stores tickets on a branch.\n- `\"github\"` — Uses GitHub Issues.",
+                  "enum": [
+                    "ndscm",
+                    "github"
+                  ],
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            }
+          },
+          "type": "object"
+        },
+        "commit": {
+          "additionalProperties": false,
+          "properties": {
+            "rewrite": {
+              "items": {
+                "additionalProperties": false,
+                "properties": {
+                  "finish": {
+                    "type": "boolean"
+                  },
+                  "pattern": {
+                    "type": "string"
+                  },
+                  "replace": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "pattern"
+                ],
+                "type": "object"
+              },
+              "type": "array"
+            }
+          },
+          "type": "object"
+        },
+        "domain": {
+          "description": "Email domain for the repository. Access control identifies users and services by email address. When an email shares this domain, the domain part can be omitted — for example, `\"alice\"` is equivalent to `\"alice@example.com\"` if the repo domain is `\"example.com\"`.",
+          "type": "string"
+        },
+        "upstream": {
+          "additionalProperties": {
+            "additionalProperties": false,
+            "properties": {
+              "converge": {
+                "description": "How the local and upstream chains converge when syncing.\n\n- `\"rebase\"` — Rebase local patches onto the upstream tip.   Local patches are regenerated; the upstream chain stays   unchanged. Use this for feature and development branches.\n\n- `\"melt\"` — Rebase upstream patches onto the local tip.   Upstream patches are regenerated; the local chain stays   unchanged. Use this for long-lived integration branches   that absorb upstream changes without rewriting their own   history.",
+                "enum": [
+                  "rebase",
+                  "melt"
+                ],
+                "type": "string"
+              },
+              "local": {
+                "description": "Whether `tracking` names a local branch instead of a branch on `repo`. Defaults to `false`, in which case `tracking` is resolved against the remote.",
+                "type": "boolean"
+              },
+              "repo": {
+                "description": "Repository URL to fetch from. When omitted, the upstream lives in the same repository as the local branch — i.e., this entry describes a tracking relationship between two refs in the current repo rather than a remote source.",
+                "type": "string"
+              },
+              "scm": {
+                "const": "git",
+                "description": "Source control system used by the upstream. Only `\"git\"` is supported today.\n\nThis field is required rather than defaulted so that adding support for additional SCMs in the future does not silently change the meaning of existing configs. Forcing every entry to spell out `scm: \"git\"` keeps current users from being migrated out from under them when new options appear.",
+                "type": "string"
+              },
+              "tracking": {
+                "description": "Name of the branch to track on the upstream side.",
+                "type": "string"
+              }
+            },
+            "required": [
+              "scm",
+              "converge"
+            ],
+            "type": "object"
+          },
+          "description": "Upstream sources the repository can sync from. Each entry is keyed by a remote name (for example `\"theseed\"`) and describes how to fetch and track that source.\n\nThis config exists to share upstream definitions across the team and across branches in a single, reviewable file. It is not consumed by local git operations: ndscm does not use it to drive `git fetch`, `git pull`, `git rebase`, etc. Local git state (remotes, tracking branches, refspecs) is managed separately by git itself.",
+          "type": "object"
+        }
+      },
+      "type": "object"
+    },
+    "UpstreamConfig": {
+      "additionalProperties": {
+        "additionalProperties": false,
+        "properties": {
+          "converge": {
+            "const": "melt",
+            "description": "How the local and upstream commit chains are reconciled when syncing. Only `\"melt\"` is supported in the directory upstream config.\n\n- `\"melt\"` — Rebase the upstream patches onto the local tip,   regenerating them; the local chain is left unchanged. Use this   for long-lived integration branches that absorb upstream changes   without rewriting their own history.",
+            "type": "string"
+          },
+          "exclude": {
+            "description": "Path filters removing files from incoming upstream commits. Each pattern is a regex matched against file paths.\n\nApplied after  {@link  include  }  and before  {@link  rename  } : any path matching an `exclude` pattern is dropped, even if it was included.",
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "include": {
+            "description": "Path filters controlling which files from incoming upstream commits are kept. Each pattern is a regex matched against file paths.\n\nThe modifiers are applied one by one, in order, to every incoming commit:  {@link  include  }  first, then  {@link  exclude  } , then  {@link  rename  } .\n\nOnly paths matching at least one `include` pattern are carried over. When omitted, all paths are included.",
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "local": {
+            "description": "Whether `tracking` names a branch in the local repository rather than one on `repo`. Defaults to `false`, in which case `tracking` is resolved on the upstream side.",
+            "type": "boolean"
+          },
+          "rename": {
+            "description": "Path rewrites applied to incoming upstream commits. Each rule is a regex  {@link  match  } / {@link  replace  }  pair.\n\nApplied last, after  {@link  include  }  and  {@link  exclude  } , to the paths that survive filtering. Rules are applied in order.",
+            "items": {
+              "additionalProperties": false,
+              "properties": {
+                "match": {
+                  "description": "Regex matched against the file path.",
+                  "type": "string"
+                },
+                "replace": {
+                  "description": "Replacement for the matched portion. Supports regex backreferences.",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "match",
+                "replace"
+              ],
+              "type": "object"
+            },
+            "type": "array"
+          },
+          "repo": {
+            "description": "URL of the upstream repository. When omitted, the upstream lives in the same repository as the local branch — i.e., this entry describes a tracking relationship between two refs in the current repo rather than a remote source.",
+            "type": "string"
+          },
+          "scm": {
+            "const": "git",
+            "description": "Source control system used by the upstream. Only `\"git\"` is supported today.\n\nThis field is required rather than defaulted so that adding support for additional SCMs in the future does not silently change the meaning of existing configs. Forcing every entry to spell out `scm: \"git\"` keeps current users from being migrated out from under them when new options appear.",
+            "type": "string"
+          },
+          "tracking": {
+            "description": "Name of the branch to track. Resolved on the upstream `repo` by default, or in the local repository when `local` is `true`.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "converge",
+          "scm"
+        ],
+        "type": "object"
+      },
+      "description": "Upstream sources this directory can sync from, defined in `UPSTREAM.ndscm.ts`.\n\nAn `UpstreamConfig` is keyed by upstream name (for example `\"theseed\"`). Each entry declares **where** a source lives and **how** its commits are folded into the local branch:\n\n- `converge` — how the local and upstream commit chains are reconciled.\n- `scm` — source control system backing the upstream.\n- `repo` / `local` / `tracking` — which ref to track, and where it lives.\n- `include` / `exclude` / `rename` — path modifiers applied in order to   every incoming commit.\n\nThis config exists to share upstream definitions across the team and across branches in a single, reviewable file. It is not consumed by local git operations: ndscm does not use it to drive `git fetch`, `git pull`, `git rebase`, etc. Local git state (remotes, tracking branches, refspecs) is managed separately by git itself.",
+      "type": "object"
+    }
+  }
+}
