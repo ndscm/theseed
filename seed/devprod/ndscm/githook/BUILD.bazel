@@ -1,0 +1,14 @@
+load("@rules_go//go:def.bzl", "go_library")
+
+package(default_visibility = [
+    "//seed/devprod/ndscm:__subpackages__",
+])
+
+go_library(
+    name = "githook",
+    srcs = ["githook.go"],
+    embedsrcs = [
+        "commit-msg",
+    ],
+    importpath = "github.com/ndscm/theseed/seed/devprod/ndscm/githook",
+)
