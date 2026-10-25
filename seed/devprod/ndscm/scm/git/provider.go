@@ -6,6 +6,7 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/ndscm/theseed/seed/devprod/ndscm/githook"
 	"github.com/ndscm/theseed/seed/devprod/ndscm/scm"
 	"github.com/ndscm/theseed/seed/devprod/ndscm/user"
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
@@ -105,6 +106,12 @@ func (g *GitProvider) Connect(
 	err = SetConfig(gitDir, "user.email", userHandle+"@"+userDomain)
 	if err != nil {
 		return "", "", seederr.WrapErrorf("failed to set git user.email: %w", err)
+	}
+
+	err = os.WriteFile(filepath.Join(gitDir, "hooks", "commit-msg"),
+		[]byte(githook.HookCommitMsgChangeUuid()), 0755)
+	if err != nil {
+		return "", "", seederr.WrapErrorf("failed to create change uuid hook: %w", err)
 	}
 	return remoteMainBranch, worktreePath, nil
 }
