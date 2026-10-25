@@ -7,6 +7,7 @@ import (
 
 	"github.com/ndscm/theseed/seed/devprod/ndscm/scm"
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
+	"github.com/ndscm/theseed/seed/infra/log/go/seedlog"
 	"github.com/ndscm/theseed/seed/infra/shell/go/seedshell"
 )
 
@@ -78,10 +79,29 @@ func DeleteBranch(gitDir string, branchName string) error {
 	if gitDir != "" {
 		gitArgs = append(gitArgs, "--git-dir", gitDir)
 	}
-	err := seedshell.ImpureRun("git", append(gitArgs, "branch", "--delete", "--force", branchName)...)
+
+	// An unborn branch has no ref, so git branch --delete fails with "branch not found".
+	branchExists := true
+	_, err := GetBranch(gitDir, branchName)
 	if err != nil {
-		return seederr.WrapErrorf("failed to delete branch %v: %w", branchName, err)
+		if !errors.Is(err, scm.ErrBranchNotFound) {
+			return seederr.Wrap(err)
+		}
+		branchExists = false
 	}
+
+	if !branchExists {
+		err := seedshell.ImpureRun("git", append(gitArgs, "config", "--remove-section", "branch."+branchName)...)
+		if err != nil {
+			seedlog.Debugf("No branch configs for unborn branch: %v", branchName)
+		}
+	} else {
+		err := seedshell.ImpureRun("git", append(gitArgs, "branch", "--delete", "--force", branchName)...)
+		if err != nil {
+			return seederr.WrapErrorf("failed to delete branch %v: %w", branchName, err)
+		}
+	}
+
 	return nil
 }
 
