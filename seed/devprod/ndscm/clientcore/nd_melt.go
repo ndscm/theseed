@@ -67,6 +67,56 @@ func findUpstreamConfig(
 	return foundConfigPath, foundConfig, nil
 }
 
+type simpleRenamePattern struct {
+	match   *regexp.Regexp
+	replace string
+}
+
+type meltModifiers struct {
+	includePatterns []*regexp.Regexp
+
+	excludePatterns []*regexp.Regexp
+
+	renamePatterns []simpleRenamePattern
+}
+
+func compileMeltModifiers(upstreamConfig *configloader.UpstreamConfig) (*meltModifiers, error) {
+	includePatterns := []*regexp.Regexp{}
+	for _, pattern := range upstreamConfig.Include {
+		re, err := regexp.Compile(pattern)
+		if err != nil {
+			return nil, seederr.WrapErrorf("invalid include pattern %q: %v", pattern, err)
+		}
+		includePatterns = append(includePatterns, re)
+	}
+	excludePatterns := []*regexp.Regexp{}
+	for _, pattern := range upstreamConfig.Exclude {
+		re, err := regexp.Compile(pattern)
+		if err != nil {
+			return nil, seederr.WrapErrorf("invalid exclude pattern %q: %v", pattern, err)
+		}
+		excludePatterns = append(excludePatterns, re)
+	}
+	renamePatterns := []simpleRenamePattern{}
+	for _, rule := range upstreamConfig.Rename {
+		re, err := regexp.Compile(rule.Match)
+		if err != nil {
+			return nil, seederr.WrapErrorf("invalid rename match pattern %q: %v", rule.Match, err)
+		}
+		renamePatterns = append(renamePatterns, simpleRenamePattern{match: re, replace: rule.Replace})
+	}
+
+	if len(includePatterns) == 0 && len(excludePatterns) == 0 && len(renamePatterns) == 0 {
+		return nil, nil
+	}
+
+	return &meltModifiers{
+		includePatterns: includePatterns,
+		excludePatterns: excludePatterns,
+		renamePatterns:  renamePatterns,
+	}, nil
+}
+
 func getMeltWorktree(
 	monorepoHome string, ownerHandle string, upstreamName string,
 ) (string, string, bool) {
@@ -351,6 +401,11 @@ func NdMelt(scmProvider scm.Provider, options NdMeltOptions) error {
 			return seederr.WrapErrorf("unknown lock strategy %q, want one of: drop, keep", options.Lock)
 		}
 
+		pathPatterns, err := compileMeltModifiers(upstreamConfig)
+		if err != nil {
+			return seederr.Wrap(err)
+		}
+
 		// Upstream paths are relative to the upstream root; prefix them with
 		// the directory holding UPSTREAM.ndscm.ts so files land under it. `^`
 		// prepends the replacement; `$` is escaped since MoveDiff expands it.
@@ -369,6 +424,30 @@ func NdMelt(scmProvider scm.Provider, options NdMeltOptions) error {
 			patch, err := scalpel.ParseFormatPatch(commitId, commitPatch)
 			if err != nil {
 				return seederr.Wrap(err)
+			}
+
+			// Apply the configured path modifiers to the upstream-relative
+			// paths before prefixing. Matching both the old and new path keeps
+			// the convention used for lock drops below: a diff is kept/dropped
+			// only when both sides agree, sparing renames into/out of a path.
+			if len(pathPatterns.includePatterns) > 0 {
+				patch.PickDiff(pathPatterns.includePatterns, pathPatterns.includePatterns)
+			}
+			if len(pathPatterns.excludePatterns) > 0 {
+				patch.DropDiff(pathPatterns.excludePatterns, pathPatterns.excludePatterns)
+			}
+			for _, rule := range pathPatterns.renamePatterns {
+				patch.MoveDiff(rule.match, rule.match, rule.replace, rule.replace)
+			}
+
+			// If include/exclude/rename filtered out every diff, there is
+			// nothing of the upstream commit left to carry over, so drop it
+			// rather than applying an empty commit. This check runs before the
+			// lock drop below: a commit emptied only by lock stripping is still
+			// applied as an empty commit so the upstream history stays intact.
+			if patch.DiffCount() == 0 {
+				seedlog.Warnf("Dropping excluded commit: %v", commitId)
+				continue
 			}
 
 			// Prefix before dropping locks so the patch paths are
