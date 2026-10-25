@@ -1,0 +1,9 @@
+{
+  "name": "ndscm",
+  "version": "0.0.0",
+  "author": "ndscm",
+  "license": "MIT",
+  "files": [
+    "config"
+  ]
+}
