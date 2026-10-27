@@ -68,7 +68,8 @@ func findUpstreamConfig(
 }
 
 type simpleRenamePattern struct {
-	match   *regexp.Regexp
+	match *regexp.Regexp
+
 	replace string
 }
 
@@ -78,6 +79,32 @@ type meltModifiers struct {
 	excludePatterns []*regexp.Regexp
 
 	renamePatterns []simpleRenamePattern
+}
+
+func (m *meltModifiers) apply(path string) string {
+	if len(m.includePatterns) > 0 {
+		included := false
+		for _, re := range m.includePatterns {
+			if re.MatchString(path) {
+				included = true
+				break
+			}
+		}
+		if !included {
+			return ""
+		}
+	}
+	for _, re := range m.excludePatterns {
+		if re.MatchString(path) {
+			return ""
+		}
+	}
+	for _, renamePattern := range m.renamePatterns {
+		if renamePattern.match.MatchString(path) {
+			path = renamePattern.match.ReplaceAllString(path, renamePattern.replace)
+		}
+	}
+	return path
 }
 
 func compileMeltModifiers(upstreamConfig *configloader.UpstreamConfig) (*meltModifiers, error) {
@@ -115,6 +142,95 @@ func compileMeltModifiers(upstreamConfig *configloader.UpstreamConfig) (*meltMod
 		excludePatterns: excludePatterns,
 		renamePatterns:  renamePatterns,
 	}, nil
+}
+
+// constructMeltFromPoint builds a commit on top of upstreamForkPoint whose tree
+// has the melt modifiers and upstreamDir prefix already applied, so the rewritten
+// upstream patches apply cleanly on it. It anchors the commit on a scratch branch
+// and returns that branch name for the caller to resolve and later tear down.
+func constructMeltFromPoint(
+	scmProvider scm.Provider,
+	repo *scm.WorkingRepo, ownerHandle string,
+	upstreamName string, upstreamForkPoint string, upstreamDir string, modifiers *meltModifiers,
+) (string, error) {
+	scratchBranch := ownerHandle + "/wip/melt-scratch-" + upstreamName
+
+	// Clear any scratch branch/worktree left behind by a failed prior run.
+	err := scmProvider.RemoveWorktree(repo, scratchBranch)
+	if err != nil {
+		return "", seederr.Wrap(err)
+	}
+	err = scmProvider.DeleteBranch(repo, scratchBranch)
+	if err != nil {
+		return "", seederr.Wrap(err)
+	}
+
+	err = scmProvider.CreateBranch(scratchBranch, upstreamForkPoint, "")
+	if err != nil {
+		return "", seederr.WrapErrorf("failed to create melt fork point branch %v: %v", scratchBranch, err)
+	}
+	scratchWorktreePath, err := scmProvider.CreateWorktree(repo, scratchBranch)
+	if err != nil {
+		return "", seederr.WrapErrorf("failed to create melt fork point worktree %v: %v", scratchBranch, err)
+	}
+
+	scmFilePaths, err := scmProvider.ListFiles(scratchWorktreePath)
+	if err != nil {
+		return "", seederr.Wrap(err)
+	}
+
+	changed := false
+	for _, scmFilePath := range scmFilePaths {
+		newPath := scmFilePath
+		if modifiers != nil {
+			newPath = modifiers.apply(scmFilePath)
+		}
+		if newPath == "" {
+			err = os.Remove(filepath.Join(scratchWorktreePath, scmFilePath))
+			if err != nil {
+				return "", seederr.WrapErrorf("failed to drop %v: %v", scmFilePath, err)
+			}
+			changed = true
+			continue
+		}
+		if upstreamDir != "." {
+			newPath = upstreamDir + "/" + newPath
+		}
+		if newPath == scmFilePath {
+			continue
+		}
+		newAbsPath := filepath.Join(scratchWorktreePath, newPath)
+		err = os.MkdirAll(filepath.Dir(newAbsPath), 0755)
+		if err != nil {
+			return "", seederr.WrapErrorf("failed to create directory for %v: %v", newPath, err)
+		}
+		err = os.Rename(filepath.Join(scratchWorktreePath, scmFilePath), newAbsPath)
+		if err != nil {
+			return "", seederr.WrapErrorf("failed to move %v to %v: %v", scmFilePath, newPath, err)
+		}
+		changed = true
+	}
+
+	result := ""
+	if changed {
+		err = scmProvider.CreateCommit(scratchWorktreePath, "melt: prepare")
+		if err != nil {
+			return "", seederr.Wrap(err)
+		}
+		result = scratchBranch
+	}
+
+	err = scmProvider.RemoveWorktree(repo, scratchBranch)
+	if err != nil {
+		return "", seederr.Wrap(err)
+	}
+	if !changed {
+		err = scmProvider.DeleteBranch(repo, scratchBranch)
+		if err != nil {
+			return "", seederr.Wrap(err)
+		}
+	}
+	return result, nil
 }
 
 func getMeltWorktree(
@@ -358,15 +474,46 @@ func NdMelt(scmProvider scm.Provider, options NdMeltOptions) error {
 		} else {
 			seedlog.Infof("No fork point found. Melting from history root: %v", trackingForkPoint)
 		}
+
+		modifiers, err := compileMeltModifiers(upstreamConfig)
+		if err != nil {
+			return seederr.Wrap(err)
+		}
+
+		upstreamFromPoint := upstreamForkPoint
+		scratchBranch := ""
+		if (modifiers != nil || upstreamDir != ".") && upstreamForkPoint != "" {
+			scratchBranch, err = constructMeltFromPoint(
+				scmProvider, repo, currentUserHandle,
+				upstreamName, upstreamForkPoint, upstreamDir, modifiers,
+			)
+			if err != nil {
+				return seederr.Wrap(err)
+			}
+			if scratchBranch != "" {
+				upstreamFromPoint, err = scmProvider.GetBranch(scratchBranch)
+				if err != nil {
+					return seederr.Wrap(err)
+				}
+			}
+		}
+
 		newWorktreePath, err := createMeltWorktree(
 			scmProvider, repo, currentUserHandle,
-			upstreamName, upstreamForkPoint, tracking, trackingForkPoint,
+			upstreamName, upstreamFromPoint, tracking, trackingForkPoint,
 		)
 		if err != nil {
 			return seederr.Wrap(err)
 		}
 		if newWorktreePath != worktreePath {
 			return seederr.WrapErrorf("unexpected new worktree path: %v (expected: %v)", newWorktreePath, worktreePath)
+		}
+
+		if scratchBranch != "" {
+			err = scmProvider.DeleteBranch(repo, scratchBranch)
+			if err != nil {
+				return seederr.Wrap(err)
+			}
 		}
 
 		// dropLocks holds path patterns, grouped per lock watcher, for lock
@@ -401,11 +548,6 @@ func NdMelt(scmProvider scm.Provider, options NdMeltOptions) error {
 			return seederr.WrapErrorf("unknown lock strategy %q, want one of: drop, keep", options.Lock)
 		}
 
-		pathModifiers, err := compileMeltModifiers(upstreamConfig)
-		if err != nil {
-			return seederr.Wrap(err)
-		}
-
 		// Upstream paths are relative to the upstream root; prefix them with
 		// the directory holding UPSTREAM.ndscm.ts so files land under it. `^`
 		// prepends the replacement; `$` is escaped since MoveDiff expands it.
@@ -426,14 +568,14 @@ func NdMelt(scmProvider scm.Provider, options NdMeltOptions) error {
 				return seederr.Wrap(err)
 			}
 
-			if pathModifiers != nil {
-				if len(pathModifiers.includePatterns) > 0 {
-					patch.PickDiff(pathModifiers.includePatterns, pathModifiers.includePatterns)
+			if modifiers != nil {
+				if len(modifiers.includePatterns) > 0 {
+					patch.PickDiff(modifiers.includePatterns, modifiers.includePatterns)
 				}
-				if len(pathModifiers.excludePatterns) > 0 {
-					patch.DropDiff(pathModifiers.excludePatterns, pathModifiers.excludePatterns)
+				if len(modifiers.excludePatterns) > 0 {
+					patch.DropDiff(modifiers.excludePatterns, modifiers.excludePatterns)
 				}
-				for _, renamePattern := range pathModifiers.renamePatterns {
+				for _, renamePattern := range modifiers.renamePatterns {
 					patch.MoveDiff(
 						renamePattern.match,
 						renamePattern.match,
