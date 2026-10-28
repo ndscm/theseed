@@ -17,7 +17,6 @@ go_library(
         "nd_amend.go",
         "nd_apply.go",
         "nd_change.go",
-        "nd_check.go",
         "nd_commit.go",
         "nd_complete.go",
         "nd_connect.go",
