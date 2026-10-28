@@ -2,6 +2,7 @@ package git
 
 import (
 	"errors"
+	"os"
 	"path/filepath"
 	"strings"
 
@@ -150,11 +151,63 @@ func CreateWorktree(gitDir string, worktreePath string, branchName string) error
 	return nil
 }
 
+// verifyWorktree reports whether worktreePath exists on disk and whether it is a
+// worktree git knows about (registered), matching against the absolute paths
+// "git worktree list" emits.
+func verifyWorktree(gitDir string, worktreePath string) (bool, bool, error) {
+	exists := true
+	_, err := os.Stat(worktreePath)
+	if err != nil {
+		if !os.IsNotExist(err) {
+			return false, false, seederr.WrapErrorf("failed to stat worktree %v: %v", worktreePath, err)
+		}
+		exists = false
+	}
+
+	listOutput, err := seedshell.PureOutput("git", "--git-dir", gitDir, "worktree", "list", "--porcelain")
+	if err != nil {
+		return false, false, seederr.WrapErrorf("failed to list worktrees: %w", err)
+	}
+	cleanWorktreePath := filepath.Clean(worktreePath)
+	registered := false
+	for _, line := range strings.Split(string(listOutput), "\n") {
+		if !strings.HasPrefix(line, "worktree ") {
+			continue
+		}
+		listed := strings.TrimPrefix(line, "worktree ")
+		if filepath.Clean(listed) == cleanWorktreePath {
+			registered = true
+			break
+		}
+	}
+	return exists, registered, nil
+}
+
 func RemoveWorktree(gitDir string, worktreePath string) error {
 	if gitDir == "" {
 		return seederr.WrapErrorf("git dir is required")
 	}
-	err := seedshell.ImpureRun("git", "--git-dir", gitDir, "worktree", "remove", worktreePath)
+
+	// An unregistered worktree makes "git worktree remove" fail, so skip it and
+	// treat removing a non-existent worktree as a no-op, mirroring DeleteBranch.
+	exists, registered, err := verifyWorktree(gitDir, worktreePath)
+	if err != nil {
+		return seederr.Wrap(err)
+	}
+	if exists && !registered {
+		return seederr.WrapErrorf("path %v exists but is not a registered worktree", worktreePath)
+	}
+
+	if !registered {
+		return nil
+	}
+
+	gitArgs := []string{"--git-dir", gitDir, "worktree", "remove"}
+	if !exists {
+		gitArgs = append(gitArgs, "--force")
+	}
+	gitArgs = append(gitArgs, worktreePath)
+	err = seedshell.ImpureRun("git", gitArgs...)
 	if err != nil {
 		return seederr.WrapErrorf("failed to remove worktree %v: %w", worktreePath, err)
 	}
