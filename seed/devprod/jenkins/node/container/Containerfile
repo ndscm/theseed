@@ -73,6 +73,7 @@ RUN apt install -y lsb-release
 RUN apt install -y procps
 RUN apt install -y rsync
 
+RUN curl -fsSL "https://github.com/ndscm/xslash/releases/latest/download/xslash-linux-${TARGETARCH}" -o /usr/local/bin/xslash && chmod +x /usr/local/bin/xslash
 RUN curl -fsSL "https://github.com/facebook/dotslash/releases/latest/download/dotslash-ubuntu-22.04.$(uname -m).tar.gz" | tar xzvf - -C /usr/local/bin
 
 COPY ./bin/. /usr/local/bin/.
