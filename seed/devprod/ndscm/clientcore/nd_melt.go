@@ -522,14 +522,15 @@ func NdMelt(scmProvider scm.Provider, options NdMeltOptions) error {
 		dropLocks := [][]*regexp.Regexp{}
 		switch options.Lock {
 		case "drop":
-			scmRepoPaths, err := scmProvider.ListFiles(worktreePath)
-			if err != nil {
-				return seederr.Wrap(err)
-			}
-			repoAnalysis, err := runner.AnalyseRepo(worktreePath, &runner.AnalyseRepoOptions{
+			// Analyse the dev worktree, not the melt worktree. The melt worktree
+			// holds the include-filtered upstream tree, which may omit the config
+			// (e.g. DIR.ndscm.ts) that defines the lock rules; the dev worktree is
+			// the destination repo and always carries the full config, with lock
+			// targets already repo-root-relative to match the prefixed patch paths.
+			repoAnalysis, err := runner.AnalyseRepo(devWorktreePath, &runner.AnalyseRepoOptions{
 				Phases: []string{"lock"},
 
-				SourcePaths: scmRepoPaths,
+				SourcePaths: scmFiles,
 			})
 			if err != nil {
 				return seederr.Wrap(err)
