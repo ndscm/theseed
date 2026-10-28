@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"runtime"
 
 	"github.com/ndscm/theseed/seed/devprod/ndscm/clientcore"
@@ -8,6 +9,30 @@ import (
 	"github.com/ndscm/theseed/seed/infra/flag/go/seedflag"
 	"github.com/ndscm/theseed/seed/infra/log/go/seedlog"
 )
+
+func ndTestable(args []string) error {
+	seedflag.Finalize(args)
+	commit := ""
+	if len(args) > 1 {
+		return seederr.WrapErrorf("nd-testable usage: ndscm testable [commit]")
+	}
+	if len(args) == 1 {
+		commit = args[0]
+	}
+
+	cc := &clientcore.ClientCore{}
+	err := cc.Initialize()
+	if err != nil {
+		return seederr.Wrap(err)
+	}
+
+	testable, err := cc.CheckTestable(commit)
+	if err != nil {
+		return seederr.Wrap(err)
+	}
+	fmt.Printf("%v\n", testable)
+	return nil
+}
 
 type ndFormatFlags struct {
 	all     *seedflag.BoolFlag
