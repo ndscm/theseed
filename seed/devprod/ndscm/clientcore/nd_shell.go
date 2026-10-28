@@ -13,9 +13,6 @@ type NdShellOptions struct {
 }
 
 func NdShell(_ NdShellOptions) error {
-	if !seedshell.ShellEval() {
-		seedlog.Warnf("It's recommended to run nd-shell with --shell-eval")
-	}
 	shellSnippets := strings.Join([]string{
 		shelleval.NdSnippet(),
 		shelleval.NdCompletionsSnippet(),
@@ -23,8 +20,7 @@ func NdShell(_ NdShellOptions) error {
 	if seedshell.Dry() {
 		seedlog.Infof("Shell eval: %v", shellSnippets)
 		return nil
-	}
-	if seedshell.ShellEval() {
+	} else {
 		fmt.Printf("%v", shellSnippets)
 	}
 	return nil
