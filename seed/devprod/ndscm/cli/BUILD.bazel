@@ -16,7 +16,6 @@ go_library(
     srcs = [
         "nd_amend.go",
         "nd_apply.go",
-        "nd_build.go",
         "nd_change.go",
         "nd_check.go",
         "nd_commit.go",
