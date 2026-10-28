@@ -153,7 +153,7 @@ func run() error {
 			return seederr.Wrap(err)
 		}
 	case "test":
-		err := ndT(args[1:])
+		err := ndTest(args[1:])
 		if err != nil {
 			return seederr.Wrap(err)
 		}
