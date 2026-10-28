@@ -1,4 +1,5 @@
 FROM ghcr.io/ndscm/ubuntu:latest
+ARG TARGETARCH
 
 RUN userdel --remove ubuntu || true
 
@@ -45,6 +46,7 @@ RUN systemctl mask systemd-resolved.service
 
 # Amadeus dependencies
 
+RUN curl -fsSL "https://github.com/ndscm/xslash/releases/latest/download/xslash-linux-${TARGETARCH}" -o /usr/local/bin/xslash && chmod +x /usr/local/bin/xslash
 RUN curl -fsSL "https://github.com/facebook/dotslash/releases/latest/download/dotslash-ubuntu-22.04.$(uname -m).tar.gz" \
   | tar fxz - -C /usr/local/bin --no-same-owner
 
