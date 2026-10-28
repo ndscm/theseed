@@ -33,7 +33,6 @@ go_library(
         "nd_split.go",
         "nd_submit.go",
         "nd_sync.go",
-        "nd_testable.go",
         "nd_ticket.go",
         "nd_uncut.go",
         "nd_user.go",
