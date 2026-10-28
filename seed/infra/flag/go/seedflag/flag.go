@@ -106,6 +106,20 @@ func (cf *CommandFlags) Parse(args []string, opts *ParseOptions) ([]string, erro
 		opts = &ParseOptions{}
 	}
 
+	// A literal "--" terminates flag parsing: everything from the first "--"
+	// onward is appended verbatim and never treated as a flag, even in
+	// AnywhereFlag mode. The "--" is kept rather than dropped so that re-parsing
+	// the same args in a later layer (global, then subcommand) stops at the same
+	// boundary; the terminal consumer drops it.
+	var passthrough []string
+	for i, arg := range args {
+		if arg == "--" {
+			passthrough = args[i:]
+			args = args[:i]
+			break
+		}
+	}
+
 	s := cf.newFlagSet(io.Discard)
 	finalArgs := []string{}
 	remainArgs := args
@@ -187,6 +201,7 @@ func (cf *CommandFlags) Parse(args []string, opts *ParseOptions) ([]string, erro
 		seedlog.Debugf("%s", cf.String())
 	}
 
+	finalArgs = append(finalArgs, passthrough...)
 	return finalArgs, nil
 }
 
@@ -282,8 +297,13 @@ func Parse(opts *GlobalParseOptions) ([]string, error) {
 // remaining token that still looks like a flag is by definition unclaimed by
 // either the global or the subcommand layer; Finalize prints usage and exits
 // non-zero in that case.
+//
+// A "--" marks end-of-flags, so only tokens before the first "--" are checked.
 func Finalize(args []string) {
 	for _, arg := range args {
+		if arg == "--" {
+			break
+		}
 		if strings.HasPrefix(arg, "-") {
 			seedlog.Errorf("Unknown flag: %s", arg)
 			globalFlags.PrintUsage()
