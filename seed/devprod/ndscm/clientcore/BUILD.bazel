@@ -1,4 +1,4 @@
-load("@rules_go//go:def.bzl", "go_library")
+load("@rules_go//go:def.bzl", "go_library", "go_test")
 
 go_library(
     name = "clientcore",
@@ -42,5 +42,14 @@ go_library(
         "//seed/infra/log/go/seedlog",
         "//seed/infra/shell/go/seedshell",
         "@com_github_google_uuid//:uuid",
+    ],
+)
+
+go_test(
+    name = "clientcore_test",
+    srcs = ["check_testable_test.go"],
+    embed = [":clientcore"],
+    deps = [
+        "//seed/devprod/ndscm/scm",
     ],
 )
