@@ -6,6 +6,7 @@ import (
 	"github.com/ndscm/theseed/seed/infra/flag/go/seedflag"
 )
 
+// Deprecated, use nd-hook instead
 func ndShell(args []string) error {
 	seedflag.Finalize(args)
 	if len(args) != 0 {
