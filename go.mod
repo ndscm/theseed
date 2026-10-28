@@ -13,7 +13,6 @@ require (
 	connectrpc.com/grpchealth v1.5.0
 	connectrpc.com/validate v0.6.0
 	entgo.io/ent v0.14.6
-	filippo.io/age v1.3.2
 	github.com/coder/websocket v1.8.15
 	github.com/creack/pty v1.1.24
 	github.com/getsops/sops/v3 v3.13.3
@@ -48,6 +47,7 @@ require (
 	cloud.google.com/go/longrunning v1.2.0 // indirect
 	cloud.google.com/go/monitoring v1.30.0 // indirect
 	cloud.google.com/go/storage v1.66.0 // indirect
+	filippo.io/age v1.3.2 // indirect
 	filippo.io/edwards25519 v1.2.0 // indirect
 	filippo.io/hpke v0.4.0 // indirect
 	github.com/Azure/azure-sdk-for-go/sdk/azcore v1.23.1 // indirect

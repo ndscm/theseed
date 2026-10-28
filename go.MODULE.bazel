@@ -29,7 +29,6 @@ use_repo(
     "com_github_rs_cors",
     "com_github_soheilhy_cmux",
     "io_entgo_ent",
-    "io_filippo_age",
     "org_golang_google_genproto_googleapis_api",
     "org_golang_google_grpc",
     "org_golang_google_protobuf",
