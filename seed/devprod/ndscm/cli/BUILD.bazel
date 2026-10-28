@@ -43,7 +43,6 @@ go_library(
         "nd_tidy.go",
         "nd_uncut.go",
         "nd_user.go",
-        "nd_vendor.go",
         "ndscm.go",
         "runner_commands.go",
     ],
