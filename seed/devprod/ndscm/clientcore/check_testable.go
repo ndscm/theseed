@@ -11,9 +11,14 @@ var flagBelong = seedflag.DefineString("belong", "auto",
 	"Belong branch for testable check. If set to auto, it will automatically find the belong branch on dev branch. If set to empty, the check will be disabled.",
 )
 
-func CheckTestable(scmProvider scm.Provider, commit string) (bool, error) {
-	belong := flagBelong.Get()
-	if belong == "" {
+func CheckTestable(scmProvider scm.Provider, commit string, belong *string) (bool, error) {
+	belongTo := ""
+	if belong != nil {
+		belongTo = *belong
+	} else {
+		belongTo = flagBelong.Get()
+	}
+	if belongTo == "" {
 		seedlog.Warnf("Testable check is disabled as belong is set to empty.")
 		return true, nil
 	}
@@ -31,7 +36,7 @@ func CheckTestable(scmProvider scm.Provider, commit string) (bool, error) {
 		return false, seederr.Wrap(err)
 	}
 
-	if belong == "auto" {
+	if belongTo == "auto" {
 		monorepoHome, err := scm.MonorepoHome()
 		if err != nil {
 			return false, seederr.Wrap(err)
@@ -82,23 +87,34 @@ func CheckTestable(scmProvider scm.Provider, commit string) (bool, error) {
 			}
 		}
 		if found {
-			belong = currentBranch
+			belongTo = currentBranch
 		} else {
 			seedlog.Warnf("Target is not found on worktree branch. target=%v, commit=%v, worktree=%v", targetCommit, targetCommitId, worktreeName)
-			belong = ""
+			belongTo = ""
 		}
 	}
-	seedlog.Debugf("Checking testable. target=%v belong=%v", targetCommitId, belong)
+	seedlog.Debugf("Checking testable. target=%v belong=%v", targetCommitId, belongTo)
 
 	testable := true
-	if belong != "" {
-		belongTrackingBranch, err := scmProvider.GetBranchTracking(belong)
+	if belongTo != "" {
+		belongTrackingBranch, err := scmProvider.GetBranchTracking(belongTo)
 		if err != nil {
 			belongTrackingBranch = ""
 		}
-		belongBranchCommitIds, err := scmProvider.ListCommitIds(belongTrackingBranch, belong)
+		belongBranchCommitIds, err := scmProvider.ListCommitIds(belongTrackingBranch, belongTo)
 		if err != nil {
 			return false, seederr.Wrap(err)
+		}
+
+		// A commit is clean when it carries no side-effect and is not itself a break
+		// (i.e. no later commit points a side-effect back at it). Clean commits are a
+		// consistent, testable checkpoint regardless of any open range above them.
+		targetHasSideEffect := false
+		for _, extended := range targetCommitMetadata.Extended {
+			if extended.Key == "side-effect-of-change-uuid" {
+				targetHasSideEffect = true
+				break
+			}
 		}
 
 		found := false
@@ -118,17 +134,30 @@ func CheckTestable(scmProvider scm.Provider, commit string) (bool, error) {
 				found = true
 				break
 			}
+			hasSideEffect := false
 			for _, extended := range commitMetadata.Extended {
 				if extended.Key == "side-effect-of-change-uuid" {
+					hasSideEffect = true
 					untestableRange[extended.Value] = commitMetadata.ChangeUuid
 				}
+			}
+			// A commit is a break when a later side-effect already pointed back at it,
+			// recorded as its change uuid sitting in untestableRange. A commit that is
+			// neither a side-effect nor a break is clean and resets the range so the
+			// untestable range stays continuous: a side-effect pointing back to an
+			// ancient break must not drag the clean commits in between into the range.
+			_, isBreak := untestableRange[commitMetadata.ChangeUuid]
+			if !hasSideEffect && !isBreak {
+				untestableRange = map[string]string{}
+				continue
 			}
 			delete(untestableRange, commitMetadata.ChangeUuid)
 		}
 		if !found {
-			return false, seederr.WrapErrorf("target is not found on belong branch. target=%v uid=%v belong=%v", targetCommit, targetCommitId, belong)
+			return false, seederr.WrapErrorf("target is not found on belong branch. target=%v uid=%v belong=%v", targetCommit, targetCommitId, belongTo)
 		}
-		testable = len(untestableRange) == 0
+		_, targetIsBreak := untestableRange[targetCommitMetadata.ChangeUuid]
+		testable = (!targetHasSideEffect && !targetIsBreak) || len(untestableRange) == 0
 		if !testable {
 			seedlog.Infof("Commit is not testable. commit=%v, untestable=%v", targetCommitId, untestableRange)
 		}

@@ -19,7 +19,7 @@ func (cc *ClientCore) Initialize() error {
 }
 
 func (cc *ClientCore) CheckTestable(commit string) (bool, error) {
-	return CheckTestable(cc.scmProvider, commit)
+	return CheckTestable(cc.scmProvider, commit, nil)
 }
 
 func (cc *ClientCore) NdAmend(options NdAmendOptions) error {
