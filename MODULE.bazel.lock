@@ -19168,7 +19168,7 @@
           "FILE:@@//Cargo.toml 943c3bce35ba27506826449060ca18d055883c93cb223a3c99bcb2708357a586",
           "FILE:@@//seed/devprod/dotslash/update/Cargo.toml f377951b81b6eba6fbf3d7a46caa7edf7b4bc55de60fa8b42d6bdb1c8fedcd28",
           "FILE:@@//seed/devprod/starter/rustcli/Cargo.toml c67b186e190849010435448cf083fde6251a27cf24ae993e91884c5529ee2a69",
-          "FILE:@@//seed/devprod/xslash/Cargo.toml dde616104373a906c07625d49783e40b66357a92b8e94f005ed1c012bb3e1f64"
+          "FILE:@@//seed/devprod/xslash/Cargo.toml f976198a01c0326c92b8302ea153c76e5f0b276ead53787636cec7d3cc79a847"
         ],
         "generatedRepoSpecs": {
           "crates": {
