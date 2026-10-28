@@ -1,7 +1,3 @@
-function _nd_list_changes {
-  git branch --list '*/change/*/*' 2>/dev/null | sed 's,[^/]*/[^/]*/[^/]*/,,'
-}
-
 function _nd_completions {
   local cur
   local prev
@@ -17,22 +13,7 @@ function _nd_completions {
     cword=$COMP_CWORD
   fi
 
-  if [[ $cword -eq 1 ]]; then
-    COMPREPLY=($(compgen -W "apply bootstrap build change check connect cut dev format lock melt run setup shell submit sync test tidy uncut vendor" -- "$cur"))
-    return
-  fi
-
-  # We keep each command separate to allow for more specific completions in the future
-  case "${words[1]}" in
-  "change")
-    local branches=$(_nd_list_changes)
-    COMPREPLY=($(compgen -W "$branches" -- "$cur"))
-    ;;
-  "submit")
-    local branches=$(_nd_list_changes)
-    COMPREPLY=($(compgen -W "$branches" -- "$cur"))
-    ;;
-  esac
+  COMPREPLY=($(ndscm complete --cur="${cur}" --cword="${cword}" -- "${words[@]}" 2>/dev/null))
 }
 
 if [[ -n "${BASH_VERSION:-}" ]]; then

@@ -38,6 +38,10 @@ func (cc *ClientCore) NdCommit(options NdCommitOptions) error {
 	return NdCommit(cc.scmProvider, options)
 }
 
+func (cc *ClientCore) NdComplete(options NdCompleteOptions) error {
+	return NdComplete(cc.scmProvider, options)
+}
+
 func (cc *ClientCore) NdConnect(options NdConnectOptions) error {
 	return NdConnect(cc.scmProvider, options)
 }
