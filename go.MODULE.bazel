@@ -1,15 +1,6 @@
 go_deps = use_extension("@gazelle//:extensions.bzl", "go_deps")
 go_deps.from_file(go_mod = "//:go.mod")
 
-# SOPS ships pre-generated *.pb.go in its keyservice package; disable proto rule
-# generation so gazelle uses those checked-in files instead of regenerating.
-go_deps.gazelle_override(
-    directives = [
-        "gazelle:proto disable_global",
-    ],
-    path = "github.com/getsops/sops/v3",
-)
-
 inject_repo(go_deps, "dev_cel_expr")
 
 use_repo(
@@ -19,7 +10,6 @@ use_repo(
     "com_connectrpc_validate",
     "com_github_coder_websocket",
     "com_github_creack_pty",
-    "com_github_getsops_sops_v3",
     "com_github_go_acme_lego_v5",
     "com_github_google_cel_go",
     "com_github_google_uuid",
