@@ -1,0 +1,101 @@
+load("//seed/devprod/starlark/archive:defs.bzl", "merge_tar")
+load("//seed/devprod/starlark/xslash:defs.bzl", "xslash_pack")
+
+exports_files(
+    glob(["bin/*"]),
+)
+
+xslash_pack(
+    name = "cargo-clippy_xslash",
+    out = "cargo-clippy.xslash",
+    skeleton = "bin/cargo-clippy.xslash",
+    symlinks = [
+        "cargo-clippy",
+    ],
+    visibility = ["//visibility:public"],
+)
+
+xslash_pack(
+    name = "cargo-fmt_xslash",
+    out = "cargo-fmt.xslash",
+    skeleton = "bin/cargo-fmt.xslash",
+    symlinks = [
+        "cargo-fmt",
+    ],
+    visibility = ["//visibility:public"],
+)
+
+xslash_pack(
+    name = "cargo_xslash",
+    out = "cargo.xslash",
+    skeleton = "bin/cargo.xslash",
+    symlinks = [
+        "cargo",
+    ],
+    visibility = ["//visibility:public"],
+)
+
+xslash_pack(
+    name = "rust-analyzer_xslash",
+    out = "rust-analyzer.xslash",
+    skeleton = "bin/rust-analyzer.xslash",
+    symlinks = [
+        "rust-analyzer",
+    ],
+    visibility = ["//visibility:public"],
+)
+
+xslash_pack(
+    name = "rust-gdb_xslash",
+    out = "rust-gdb.xslash",
+    skeleton = "bin/rust-gdb.xslash",
+    symlinks = [
+        "rust-gdb",
+    ],
+    visibility = ["//visibility:public"],
+)
+
+xslash_pack(
+    name = "rustc_xslash",
+    out = "rustc.xslash",
+    skeleton = "bin/rustc.xslash",
+    symlinks = [
+        "rustc",
+    ],
+    visibility = ["//visibility:public"],
+)
+
+xslash_pack(
+    name = "rustdoc_xslash",
+    out = "rustdoc.xslash",
+    skeleton = "bin/rustdoc.xslash",
+    symlinks = [
+        "rustdoc",
+    ],
+    visibility = ["//visibility:public"],
+)
+
+xslash_pack(
+    name = "rustfmt_xslash",
+    out = "rustfmt.xslash",
+    skeleton = "bin/rustfmt.xslash",
+    symlinks = [
+        "rustfmt",
+    ],
+    visibility = ["//visibility:public"],
+)
+
+merge_tar(
+    name = "xslash",
+    srcs = {
+        ":cargo_xslash": ".",
+        ":cargo-clippy_xslash": ".",
+        ":cargo-fmt_xslash": ".",
+        ":rust-analyzer_xslash": ".",
+        ":rust-gdb_xslash": ".",
+        ":rustc_xslash": ".",
+        ":rustdoc_xslash": ".",
+        ":rustfmt_xslash": ".",
+    },
+    visibility = ["//visibility:public"],
+)
