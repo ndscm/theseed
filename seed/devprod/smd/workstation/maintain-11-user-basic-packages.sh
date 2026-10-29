@@ -38,10 +38,12 @@ if [[ ",${maintain_scopes}," == *",user,"* ]]; then
       >"${HOME}/.local/bin/direnv.dotslash"
     chmod +x "${HOME}/.local/bin/direnv.dotslash"
     ln -s -f direnv.dotslash "${HOME}/.local/bin/direnv"
-    curl -fsSL "https://raw.githubusercontent.com/ndscm/theseed/refs/heads/main/seed/vendor/ndscm/bin/ndscm.dotslash" \
-      >"${HOME}/.local/bin/ndscm.dotslash"
-    chmod +x "${HOME}/.local/bin/ndscm.dotslash"
-    ln -s -f ndscm.dotslash "${HOME}/.local/bin/ndscm"
+
+    curl -fsSL "https://raw.githubusercontent.com/ndscm/theseed/refs/heads/main/seed/prebuilt/ndscm/bin/ndscm.xslash" \
+      -o "${HOME}/.local/bin/ndscm.xslash"
+    chmod +x "${HOME}/.local/bin/ndscm.xslash"
+    ln -s -f ndscm.xslash "${HOME}/.local/bin/nd"
+    ln -s -f ndscm.xslash "${HOME}/.local/bin/ndscm"
   fi
 
   printf "\e[32m[user] Check basic packages done.\e[0m\n"

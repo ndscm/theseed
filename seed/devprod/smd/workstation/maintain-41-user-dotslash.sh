@@ -7,6 +7,10 @@ if [[ ",${maintain_scopes}," == *",user,"* ]]; then
   printf "\e[34m[user] Checking dotslash tools...\e[0m\n"
 
   if [[ "${oslike}" == "debian" || "${oslike}" == "darwin" ]]; then
+    xslash -- create --skeleton ./seed/prebuilt/ndscm/bin/ndscm.xslash --final false --out "${HOME}/.local/bin/ndscm.xslash"
+    ln -s -f ndscm.xslash "${HOME}/.local/bin/nd"
+    ln -s -f ndscm.xslash "${HOME}/.local/bin/ndscm"
+
     cp -a -f ./seed/vendor/age/bin/age "${HOME}/.local/bin/age"
     cp -a -f ./seed/vendor/age/bin/age-inspect "${HOME}/.local/bin/age-inspect"
     cp -a -f ./seed/vendor/age/bin/age-inspect.dotslash "${HOME}/.local/bin/age-inspect.dotslash"
@@ -36,8 +40,6 @@ if [[ ",${maintain_scopes}," == *",user,"* ]]; then
     cp -a -f ./seed/vendor/llvm/bin/clang.dotslash "${HOME}/.local/bin/clang.dotslash"
     cp -a -f ./seed/vendor/llvm/bin/clangd "${HOME}/.local/bin/clangd"
     cp -a -f ./seed/vendor/llvm/bin/clangd.dotslash "${HOME}/.local/bin/clangd.dotslash"
-    cp -a -f ./seed/vendor/ndscm/bin/ndscm "${HOME}/.local/bin/ndscm"
-    cp -a -f ./seed/vendor/ndscm/bin/ndscm.dotslash "${HOME}/.local/bin/ndscm.dotslash"
     cp -a -f ./seed/vendor/node/bin/node "${HOME}/.local/bin/node"
     cp -a -f ./seed/vendor/node/bin/node.dotslash "${HOME}/.local/bin/node.dotslash"
     cp -a -f ./seed/vendor/node/bin/npm "${HOME}/.local/bin/npm"
