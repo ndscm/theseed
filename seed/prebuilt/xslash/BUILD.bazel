@@ -1,0 +1,77 @@
+load("@bazel_skylib//rules:native_binary.bzl", "native_binary")
+
+package(default_visibility = ["//visibility:public"])
+
+config_setting(
+    name = "darwin-amd64",
+    constraint_values = [
+        "@platforms//os:macos",
+        "@platforms//cpu:x86_64",
+    ],
+)
+
+config_setting(
+    name = "darwin-arm64",
+    constraint_values = [
+        "@platforms//os:macos",
+        "@platforms//cpu:aarch64",
+    ],
+)
+
+config_setting(
+    name = "linux-amd64",
+    constraint_values = [
+        "@platforms//os:linux",
+        "@platforms//cpu:x86_64",
+    ],
+)
+
+config_setting(
+    name = "linux-arm64",
+    constraint_values = [
+        "@platforms//os:linux",
+        "@platforms//cpu:aarch64",
+    ],
+)
+
+native_binary(
+    name = "xslash",
+    src = select({
+        ":darwin-amd64": "@xslash-darwin-amd64//file",
+        ":darwin-arm64": "@xslash-darwin-arm64//file",
+        ":linux-amd64": "@xslash-linux-amd64//file",
+        ":linux-arm64": "@xslash-linux-arm64//file",
+    }),
+    out = "xslash",
+    target_compatible_with = select({
+        ":darwin-amd64": [],
+        ":darwin-arm64": [],
+        ":linux-amd64": [],
+        ":linux-arm64": [],
+        "//conditions:default": ["@platforms//:incompatible"],
+    }),
+)
+
+native_binary(
+    name = "xslash-darwin-amd64",
+    src = "@xslash-darwin-amd64//file",
+    out = "xslash-darwin-amd64",
+)
+
+native_binary(
+    name = "xslash-darwin-arm64",
+    src = "@xslash-darwin-arm64//file",
+    out = "xslash-darwin-arm64",
+)
+
+native_binary(
+    name = "xslash-linux-amd64",
+    src = "@xslash-linux-amd64//file",
+    out = "xslash-linux-amd64",
+)
+
+native_binary(
+    name = "xslash-linux-arm64",
+    src = "@xslash-linux-arm64//file",
+    out = "xslash-linux-arm64",
+)
