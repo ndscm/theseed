@@ -25,7 +25,7 @@ pkg_tar(
         "//seed/vendor/docker:bin/docker.dotslash": "/usr/local/bin/docker",
         "//seed/vendor/gcloud:bin/gcloud.dotslash": "/usr/local/bin/gcloud",
         "//seed/vendor/github:bin/gh.dotslash": "/usr/local/bin/gh",
-        "//seed/vendor/ndscm:bin/ndscm.dotslash": "/usr/local/bin/ndscm",
+        "//seed/prebuilt/ndscm:bin/ndscm.xslash": "/usr/local/bin/ndscm",
     },
     mode = "0755",
 )
