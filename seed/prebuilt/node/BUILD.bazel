@@ -1,0 +1,46 @@
+load("//seed/devprod/starlark/archive:defs.bzl", "merge_tar")
+load("//seed/devprod/starlark/xslash:defs.bzl", "xslash_pack")
+
+exports_files(
+    glob(["bin/*"]),
+)
+
+xslash_pack(
+    name = "node_xslash",
+    out = "node.xslash",
+    skeleton = "bin/node.xslash",
+    symlinks = [
+        "node",
+    ],
+    visibility = ["//visibility:public"],
+)
+
+xslash_pack(
+    name = "npm_xslash",
+    out = "npm.xslash",
+    skeleton = "bin/npm.xslash",
+    symlinks = [
+        "npm",
+    ],
+    visibility = ["//visibility:public"],
+)
+
+xslash_pack(
+    name = "npx_xslash",
+    out = "npx.xslash",
+    skeleton = "bin/npx.xslash",
+    symlinks = [
+        "npx",
+    ],
+    visibility = ["//visibility:public"],
+)
+
+merge_tar(
+    name = "xslash",
+    srcs = {
+        ":node_xslash": ".",
+        ":npm_xslash": ".",
+        ":npx_xslash": ".",
+    },
+    visibility = ["//visibility:public"],
+)
