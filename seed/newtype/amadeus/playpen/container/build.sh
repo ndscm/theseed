@@ -11,6 +11,7 @@ export CONTAINER_ENGINE="${container_engine}"
 mkdir -p ./seed/newtype/amadeus/playpen/container/bin/
 
 xslash -- create --skeleton ./seed/prebuilt/ndscm/bin/ndscm.xslash --out ./seed/newtype/amadeus/playpen/container/bin/ndscm.xslash --symlink nd --symlink ndscm
+xslash -- create --skeleton ./seed/prebuilt/pnpm/bin/pnpm.xslash --out ./seed/newtype/amadeus/playpen/container/bin/pnpm.xslash --symlink pnpm
 
 cp -a -f ./seed/vendor/bazel/bin/bazel ./seed/newtype/amadeus/playpen/container/bin/bazel
 cp -a -f ./seed/vendor/bazel/bin/bazelisk ./seed/newtype/amadeus/playpen/container/bin/bazelisk
@@ -43,8 +44,6 @@ cp -a -f ./seed/vendor/node/bin/npm ./seed/newtype/amadeus/playpen/container/bin
 cp -a -f ./seed/vendor/node/bin/npm.dotslash ./seed/newtype/amadeus/playpen/container/bin/npm.dotslash
 cp -a -f ./seed/vendor/node/bin/npx ./seed/newtype/amadeus/playpen/container/bin/npx
 cp -a -f ./seed/vendor/node/bin/npx.dotslash ./seed/newtype/amadeus/playpen/container/bin/npx.dotslash
-cp -a -f ./seed/vendor/node/bin/pnpm ./seed/newtype/amadeus/playpen/container/bin/pnpm
-cp -a -f ./seed/vendor/node/bin/pnpm.dotslash ./seed/newtype/amadeus/playpen/container/bin/pnpm.dotslash
 cp -a -f ./seed/vendor/podman/bin/podman-remote ./seed/newtype/amadeus/playpen/container/bin/podman-remote
 cp -a -f ./seed/vendor/podman/bin/podman-remote.dotslash ./seed/newtype/amadeus/playpen/container/bin/podman-remote.dotslash
 cp -a -f ./seed/vendor/uv/bin/uv ./seed/newtype/amadeus/playpen/container/bin/uv
