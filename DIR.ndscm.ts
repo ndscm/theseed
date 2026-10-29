@@ -82,7 +82,7 @@ export default {
       // delegate to this single entry point.
       target: "node_modules",
       watch: "^pnpm-lock.yaml$",
-      run: 'bazel run @pnpm//:pnpm -- --dir "$(pwd)" install',
+      run: "pnpm install",
     },
     uv: {
       target: ".venv",
@@ -142,7 +142,7 @@ export default {
         "(^|/)package.json$",
         "^pnpm-workspace.yaml$",
       ],
-      run: 'bazel run @pnpm//:pnpm -- --dir "$(pwd)" install',
+      run: "pnpm install",
       granularity: true,
     },
     uv: {
