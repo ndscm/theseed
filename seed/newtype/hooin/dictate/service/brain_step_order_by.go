@@ -2,7 +2,7 @@ package service
 
 import (
 	"encoding/base64"
-	"encoding/json"
+	"encoding/json/v2"
 	"strings"
 
 	"entgo.io/ent/dialect/sql"
