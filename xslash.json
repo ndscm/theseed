@@ -3,6 +3,7 @@
   "gofmt": "seed/prebuilt/go/bin/gofmt.xslash",
   "nd": "seed/prebuilt/ndscm/bin/ndscm.xslash",
   "ndscm": "seed/prebuilt/ndscm/bin/ndscm.xslash",
+  "pnpm": "seed/prebuilt/pnpm/bin/pnpm.xslash",
   "uv": "seed/prebuilt/uv/bin/uv.xslash",
   "uvx": "seed/prebuilt/uv/bin/uvx.xslash"
 }
