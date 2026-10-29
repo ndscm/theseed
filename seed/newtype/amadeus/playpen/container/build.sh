@@ -10,7 +10,7 @@ export CONTAINER_ENGINE="${container_engine}"
 
 mkdir -p ./seed/newtype/amadeus/playpen/container/bin/
 
-xslash -- create --skeleton ./seed/prebuilt/ndscm/bin/ndscm.xslash --final false --out ./seed/newtype/amadeus/playpen/container/bin/ndscm.xslash
+xslash -- create --skeleton ./seed/prebuilt/ndscm/bin/ndscm.xslash --final=false --out ./seed/newtype/amadeus/playpen/container/bin/ndscm.xslash
 ln -s -f ndscm.xslash ./seed/newtype/amadeus/playpen/container/bin/nd
 ln -s -f ndscm.xslash ./seed/newtype/amadeus/playpen/container/bin/ndscm
 
