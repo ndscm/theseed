@@ -99,6 +99,9 @@ export default {
       ],
       watch: "(^|/)BUILD.bazel$",
       run: "bazel mod tidy",
+      bazel: {
+        disableGround: true,
+      },
     },
     go: {
       target: "go.mod",
@@ -109,11 +112,17 @@ export default {
       target: "gazelle_python.yaml",
       watch: ["^pyproject.toml$", "^uv.lock$"],
       run: "bazel run //:update_gazelle_python_manifest",
+      bazel: {
+        disableGround: true,
+      },
     },
     gazelle_build: {
       target: "BUILD.bazel",
       watch: "(^|/)BUILD.bazel$",
       run: "bazel run //:gazelle",
+      bazel: {
+        disableGround: true,
+      },
     },
   },
   lock: {
@@ -122,12 +131,18 @@ export default {
       watch: "(^|/)BUILD.bazel$",
       run: "bazel mod deps --lockfile_mode=update",
       granularity: true,
+      bazel: {
+        disableGround: true,
+      },
     },
     cargo: {
       target: "Cargo.lock",
       watch: "(^|/)Cargo.toml$",
       run: "bazel run @rules_rust//tools/upstream_wrapper:cargo -- build",
       granularity: true,
+      bazel: {
+        disableGround: true,
+      },
     },
     go: {
       target: "go.sum",
@@ -156,10 +171,16 @@ export default {
     bazel_build: {
       watch: "^.*$",
       run: "bazel build //...",
+      bazel: {
+        disableGround: true,
+      },
     },
     bazel_test: {
       watch: "^.*$",
       run: "bazel test //...",
+      bazel: {
+        disableGround: true,
+      },
     },
   },
 } satisfies DirConfig
