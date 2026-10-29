@@ -10,7 +10,7 @@ export default {
       target: "dist",
       watchRepo: ["node_modules"],
       watch: "\\.(ts|tsx|js|jsx|json|css|html)$",
-      run: 'bazel run @pnpm//:pnpm -- --dir "$(pwd)" build',
+      run: "pnpm build",
     },
   },
 } satisfies DirConfig
