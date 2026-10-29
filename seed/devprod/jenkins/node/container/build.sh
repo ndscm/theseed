@@ -17,6 +17,10 @@ mkdir -p ./seed/devprod/jenkins/node/container/bin/
 cp -f ./seed/vendor/docker/bin/docker ./seed/devprod/jenkins/node/container/bin/docker
 cp -f ./seed/vendor/github/bin/gh ./seed/devprod/jenkins/node/container/bin/gh
 
+xslash -- create --skeleton ./seed/prebuilt/go/bin/go.xslash --final false --out ./seed/devprod/jenkins/node/container/bin/go.xslash
+ln -s -f go.xslash ./seed/devprod/jenkins/node/container/bin/go
+xslash -- create --skeleton ./seed/prebuilt/go/bin/gofmt.xslash --final false --out ./seed/devprod/jenkins/node/container/bin/gofmt.xslash
+ln -s -f gofmt.xslash ./seed/devprod/jenkins/node/container/bin/gofmt
 xslash -- create --skeleton ./seed/prebuilt/ndscm/bin/ndscm.xslash --final false --out ./seed/devprod/jenkins/node/container/bin/ndscm.xslash
 ln -s -f ndscm.xslash ./seed/devprod/jenkins/node/container/bin/nd
 ln -s -f ndscm.xslash ./seed/devprod/jenkins/node/container/bin/ndscm
