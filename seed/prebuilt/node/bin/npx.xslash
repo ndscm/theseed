@@ -1,0 +1,79 @@
+#!/usr/bin/env xslash
+{
+  "name": "npx",
+  "final": true,
+  "platforms": {
+    "darwin-amd64": {
+      "hash": "blake3",
+      "digest": "de2aa2f23e1344d964d2f05c4af11644eed2ae081c78168085ca6fe10167cf33",
+      "size": 32052496,
+      "format": "tar.xz",
+      "path": "node-v26.7.0-darwin-x64/bin/npx",
+      "providers": [
+        {
+          "url": "https://nodejs.org/dist/v26.7.0/node-v26.7.0-darwin-x64.tar.xz"
+        }
+      ]
+    },
+    "darwin-arm64": {
+      "hash": "blake3",
+      "digest": "d36cb0830be306bf654c8c16c5b14c06a1f7373712128315808a2ec7070983bb",
+      "size": 30222604,
+      "format": "tar.xz",
+      "path": "node-v26.7.0-darwin-arm64/bin/npx",
+      "providers": [
+        {
+          "url": "https://nodejs.org/dist/v26.7.0/node-v26.7.0-darwin-arm64.tar.xz"
+        }
+      ]
+    },
+    "linux-amd64": {
+      "hash": "blake3",
+      "digest": "63c6c654d06963fc229fd9226fcb8a54e90522fb3045a4be7b550be5c8802b86",
+      "size": 33539588,
+      "format": "tar.xz",
+      "path": "node-v26.7.0-linux-x64/bin/npx",
+      "providers": [
+        {
+          "url": "https://nodejs.org/dist/v26.7.0/node-v26.7.0-linux-x64.tar.xz"
+        }
+      ]
+    },
+    "linux-arm64": {
+      "hash": "blake3",
+      "digest": "4ce47bde4b7e3fa6086556a096a9d386178aa7d699a3b13fc32025623222a951",
+      "size": 32581212,
+      "format": "tar.xz",
+      "path": "node-v26.7.0-linux-arm64/bin/npx",
+      "providers": [
+        {
+          "url": "https://nodejs.org/dist/v26.7.0/node-v26.7.0-linux-arm64.tar.xz"
+        }
+      ]
+    },
+    "windows-amd64": {
+      "hash": "blake3",
+      "digest": "228237c59f4d11990d947ee27403a892a60991c621760468361ff5870378545e",
+      "size": 41182557,
+      "format": "zip",
+      "path": "node-v26.7.0-win-x64/npx.cmd",
+      "providers": [
+        {
+          "url": "https://nodejs.org/dist/v26.7.0/node-v26.7.0-win-x64.zip"
+        }
+      ]
+    },
+    "windows-arm64": {
+      "hash": "blake3",
+      "digest": "44c1b7e2e7ed8206fb3ce9ed523ffdba555f013154c49b6bf43697990eee28e9",
+      "size": 36809093,
+      "format": "zip",
+      "path": "node-v26.7.0-win-arm64/npx.cmd",
+      "providers": [
+        {
+          "url": "https://nodejs.org/dist/v26.7.0/node-v26.7.0-win-arm64.zip"
+        }
+      ]
+    }
+  }
+}
