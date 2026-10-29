@@ -65,6 +65,7 @@ RunInit=true
 Network=host
 EnvironmentFile=%S/jenkins-node/env
 Secret=jenkins_agent_secret
+Volume=/mnt/data/jenkins/node/bazelrc:/home/jenkins/.bazelrc:ro,Z
 Volume=/mnt/data/jenkins/node/config/git:/home/jenkins/.config/git:ro,Z
 Volume=/mnt/volatile/jenkins/node/agent:/home/jenkins/agent:U,Z
 Volume=/mnt/volatile/jenkins/node/cache:/home/jenkins/.cache:U,Z
