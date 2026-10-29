@@ -39,12 +39,12 @@ type Jwks struct {
 	Keys []Jwk `json:"keys"`
 
 	// Inline holds any JWK Set members not matched by a typed field above. The
-	// ",inline" option makes json v2 treat it as an inline sink, so a single
+	// ",embed" option makes json v2 treat it as an embedded fallback, so a single
 	// Unmarshal decodes the known fields and collects the rest here. Each member
 	// is kept as raw JSON so its value can be decoded on demand into the type the
 	// caller expects, without an eager decode to any that would lose number
 	// precision.
-	Inline map[string]jsontext.Value `json:",inline"`
+	Inline map[string]jsontext.Value `json:",embed"`
 }
 
 func DecodeJwks(bytes []byte) (*Jwks, error) {
