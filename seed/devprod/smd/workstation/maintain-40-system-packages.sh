@@ -35,8 +35,6 @@ if [[ ",${maintain_scopes}," == *",system,"* ]]; then
     sudo -E apt install -y ssh
     sudo -E apt install -y vim
     sudo -E apt install -y zsh
-
-    sudo -E snap install --classic go
   fi
 
   if [[ "${oslike}" == "darwin" ]]; then
