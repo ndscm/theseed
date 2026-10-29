@@ -1,0 +1,79 @@
+#!/usr/bin/env xslash
+{
+  "name": "go",
+  "final": true,
+  "platforms": {
+    "darwin-amd64": {
+      "hash": "blake3",
+      "digest": "7d41f4725edd01632e049d71e83ba139840782f0c2e1bfa9b4e12776a677e75d",
+      "size": 71684980,
+      "format": "tar.gz",
+      "path": "go/bin/go",
+      "providers": [
+        {
+          "url": "https://go.dev/dl/go1.27.0.darwin-amd64.tar.gz"
+        }
+      ]
+    },
+    "darwin-arm64": {
+      "hash": "blake3",
+      "digest": "e78cfac5eb39834611381080d4f36877d3398cb6b573f4a1e6f16356da494555",
+      "size": 68303667,
+      "format": "tar.gz",
+      "path": "go/bin/go",
+      "providers": [
+        {
+          "url": "https://go.dev/dl/go1.27.0.darwin-arm64.tar.gz"
+        }
+      ]
+    },
+    "linux-amd64": {
+      "hash": "blake3",
+      "digest": "eec1af03d0e724d4a33ef9f4dd109917e552aea33c523fbb36f962164adc9c24",
+      "size": 70523269,
+      "format": "tar.gz",
+      "path": "go/bin/go",
+      "providers": [
+        {
+          "url": "https://go.dev/dl/go1.27.0.linux-amd64.tar.gz"
+        }
+      ]
+    },
+    "linux-arm64": {
+      "hash": "blake3",
+      "digest": "3555b5c213c382d742987255fb4185aa07e03e31706d9d97b181464423e2ca56",
+      "size": 66988980,
+      "format": "tar.gz",
+      "path": "go/bin/go",
+      "providers": [
+        {
+          "url": "https://go.dev/dl/go1.27.0.linux-arm64.tar.gz"
+        }
+      ]
+    },
+    "windows-amd64": {
+      "hash": "blake3",
+      "digest": "eae1f4f192259c5722aaa56ab557d99d9f92c22ad4f4f450f8d62e264e706007",
+      "size": 78924880,
+      "format": "zip",
+      "path": "go/bin/go.exe",
+      "providers": [
+        {
+          "url": "https://go.dev/dl/go1.27.0.windows-amd64.zip"
+        }
+      ]
+    },
+    "windows-arm64": {
+      "hash": "blake3",
+      "digest": "59b248eeb00743a8f52f27eb5b094f5d8de6f6b1939a64920d90b479bc9c8aa1",
+      "size": 75031536,
+      "format": "zip",
+      "path": "go/bin/go.exe",
+      "providers": [
+        {
+          "url": "https://go.dev/dl/go1.27.0.windows-arm64.zip"
+        }
+      ]
+    }
+  }
+}
