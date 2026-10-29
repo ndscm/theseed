@@ -9,6 +9,11 @@ export CONTAINER_ENGINE="${container_engine}"
 ./seed/devprod/container/ubuntu/build.sh
 
 mkdir -p ./seed/newtype/amadeus/playpen/container/bin/
+
+xslash -- create --skeleton ./seed/prebuilt/ndscm/bin/ndscm.xslash --final false --out ./seed/newtype/amadeus/playpen/container/bin/ndscm.xslash
+ln -s -f ndscm.xslash ./seed/newtype/amadeus/playpen/container/bin/nd
+ln -s -f ndscm.xslash ./seed/newtype/amadeus/playpen/container/bin/ndscm
+
 cp -a -f ./seed/vendor/bazel/bin/bazel ./seed/newtype/amadeus/playpen/container/bin/bazel
 cp -a -f ./seed/vendor/bazel/bin/bazelisk ./seed/newtype/amadeus/playpen/container/bin/bazelisk
 cp -a -f ./seed/vendor/bazel/bin/bazelisk.dotslash ./seed/newtype/amadeus/playpen/container/bin/bazelisk.dotslash
@@ -34,8 +39,6 @@ cp -a -f ./seed/vendor/llvm/bin/clang-format.dotslash ./seed/newtype/amadeus/pla
 cp -a -f ./seed/vendor/llvm/bin/clang.dotslash ./seed/newtype/amadeus/playpen/container/bin/clang.dotslash
 cp -a -f ./seed/vendor/llvm/bin/clangd ./seed/newtype/amadeus/playpen/container/bin/clangd
 cp -a -f ./seed/vendor/llvm/bin/clangd.dotslash ./seed/newtype/amadeus/playpen/container/bin/clangd.dotslash
-cp -a -f ./seed/vendor/ndscm/bin/ndscm ./seed/newtype/amadeus/playpen/container/bin/ndscm
-cp -a -f ./seed/vendor/ndscm/bin/ndscm.dotslash ./seed/newtype/amadeus/playpen/container/bin/ndscm.dotslash
 cp -a -f ./seed/vendor/node/bin/node ./seed/newtype/amadeus/playpen/container/bin/node
 cp -a -f ./seed/vendor/node/bin/node.dotslash ./seed/newtype/amadeus/playpen/container/bin/node.dotslash
 cp -a -f ./seed/vendor/node/bin/npm ./seed/newtype/amadeus/playpen/container/bin/npm
