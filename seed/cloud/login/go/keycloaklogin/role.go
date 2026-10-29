@@ -21,7 +21,7 @@ func VerifyRole(openidUser *openid.OpenidUserInfo, clientId string, role string)
 	if clientId == "" {
 		return seederr.WrapErrorf("no client id to verify role for user %s (%s)", openidUser.PreferredUsername, openidUser.Sub)
 	}
-	rawResourceAccess, ok := openidUser.Inline["resource_access"]
+	rawResourceAccess, ok := openidUser.Embed["resource_access"]
 	if !ok {
 		return seederr.WrapErrorf("no resource access for user %s (%s)", openidUser.PreferredUsername, openidUser.Sub)
 	}

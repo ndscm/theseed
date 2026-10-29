@@ -64,7 +64,7 @@ type ScopeMatcher func(scope string) bool
 func VerifyResourcePermission(
 	openidUser *openid.OpenidUserInfo, resourceMatcher ResourceMatcher, scopeMatcher ScopeMatcher,
 ) error {
-	rawAuthorization, ok := openidUser.Inline["authorization"]
+	rawAuthorization, ok := openidUser.Embed["authorization"]
 	if !ok {
 		return seederr.WrapErrorf("no authorization claim for user %s (%s); token is not an RPT", openidUser.PreferredUsername, openidUser.Sub)
 	}
