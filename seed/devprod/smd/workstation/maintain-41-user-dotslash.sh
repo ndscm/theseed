@@ -10,6 +10,7 @@ if [[ ",${maintain_scopes}," == *",user,"* ]]; then
     xslash -- create --skeleton ./seed/prebuilt/go/bin/go.xslash --out "${HOME}/.local/bin/go.xslash" --symlink go
     xslash -- create --skeleton ./seed/prebuilt/go/bin/gofmt.xslash --out "${HOME}/.local/bin/gofmt.xslash" --symlink gofmt
     xslash -- create --skeleton ./seed/prebuilt/ndscm/bin/ndscm.xslash --out "${HOME}/.local/bin/ndscm.xslash" --symlink nd --symlink ndscm
+    xslash -- create --skeleton ./seed/prebuilt/pnpm/bin/pnpm.xslash --out "${HOME}/.local/bin/pnpm.xslash" --symlink pnpm
 
     cp -a -f ./seed/vendor/age/bin/age "${HOME}/.local/bin/age"
     cp -a -f ./seed/vendor/age/bin/age-inspect "${HOME}/.local/bin/age-inspect"
@@ -46,8 +47,6 @@ if [[ ",${maintain_scopes}," == *",user,"* ]]; then
     cp -a -f ./seed/vendor/node/bin/npm.dotslash "${HOME}/.local/bin/npm.dotslash"
     cp -a -f ./seed/vendor/node/bin/npx "${HOME}/.local/bin/npx"
     cp -a -f ./seed/vendor/node/bin/npx.dotslash "${HOME}/.local/bin/npx.dotslash"
-    cp -a -f ./seed/vendor/node/bin/pnpm "${HOME}/.local/bin/pnpm"
-    cp -a -f ./seed/vendor/node/bin/pnpm.dotslash "${HOME}/.local/bin/pnpm.dotslash"
     cp -a -f ./seed/vendor/podman/bin/podman-remote "${HOME}/.local/bin/podman-remote"
     cp -a -f ./seed/vendor/podman/bin/podman-remote.dotslash "${HOME}/.local/bin/podman-remote.dotslash"
     cp -a -f ./seed/vendor/rust/bin/rustup "${HOME}/.local/bin/rustup"
