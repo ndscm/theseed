@@ -21,6 +21,7 @@ pkg_tar(
     name = "bin_layer_tar",
     files = {
         "@dotslash_release_linux_x86_64//:bin": "/usr/local/bin/dotslash",
+        "@xslash-linux-amd64//file": "/usr/local/bin/xslash",
         "//seed/vendor/docker:bin/docker.dotslash": "/usr/local/bin/docker",
         "//seed/vendor/gcloud:bin/gcloud.dotslash": "/usr/local/bin/gcloud",
         "//seed/vendor/github:bin/gh.dotslash": "/usr/local/bin/gh",
