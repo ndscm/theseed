@@ -26,13 +26,13 @@ type OpenidConfiguration struct {
 	// See: https://datatracker.ietf.org/doc/html/rfc8628#section-7.4
 	DeviceAuthorizationEndpoint string `json:"device_authorization_endpoint,omitempty"`
 
-	// Inline holds provider metadata members not matched by a typed field
+	// Embed holds provider metadata members not matched by a typed field
 	// above. The ",embed" option makes json v2 treat it as an embedded fallback,
 	// so a single Unmarshal decodes the known fields and collects the rest here.
 	// Each member is kept as raw JSON so its value can be decoded on demand into
 	// the type the caller expects, without an eager decode to any that would
 	// lose number precision.
-	Inline map[string]jsontext.Value `json:",embed"`
+	Embed map[string]jsontext.Value `json:",embed"`
 }
 
 func DecodeOpenidConfiguration(bytes []byte) (*OpenidConfiguration, error) {

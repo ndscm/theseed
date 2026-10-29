@@ -88,13 +88,13 @@ type OpenidUserInfo struct {
 	// meaning, so which Providers send it, and what the values name, varies.
 	Groups []string `json:"groups,omitempty"`
 
-	// Inline holds the claims that have no field above, such as
+	// Embed holds the claims that have no field above, such as
 	// Provider-specific extensions. The ",embed" option makes json v2 treat it
 	// as an embedded fallback, so a single Unmarshal decodes the known claims and
 	// collects the rest here. Each member is kept as raw JSON so its value can
 	// be decoded on demand into the type the caller expects, without an eager
 	// decode to any that would lose number precision.
-	Inline map[string]jsontext.Value `json:",embed"`
+	Embed map[string]jsontext.Value `json:",embed"`
 }
 
 func DecodeOpenidUserInfo(bytes []byte) (*OpenidUserInfo, error) {
