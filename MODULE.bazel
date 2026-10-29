@@ -95,3 +95,7 @@ include("//seed/vendor/keycloak:keycloak.MODULE.bazel")
 ## VS Code
 
 include("//seed/vendor/vscode:vscode.MODULE.bazel")
+
+## Xslash
+
+include("//seed/prebuilt/xslash:xslash.MODULE.bazel")
