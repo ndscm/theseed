@@ -1,4 +1,6 @@
 {
+  "go": "seed/prebuilt/go/bin/go.xslash",
+  "gofmt": "seed/prebuilt/go/bin/gofmt.xslash",
   "nd": "seed/prebuilt/ndscm/bin/ndscm.xslash",
   "ndscm": "seed/prebuilt/ndscm/bin/ndscm.xslash",
   "uv": "seed/prebuilt/uv/bin/uv.xslash",
