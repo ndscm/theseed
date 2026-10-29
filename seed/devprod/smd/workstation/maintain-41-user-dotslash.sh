@@ -7,13 +7,9 @@ if [[ ",${maintain_scopes}," == *",user,"* ]]; then
   printf "\e[34m[user] Checking dotslash tools...\e[0m\n"
 
   if [[ "${oslike}" == "debian" || "${oslike}" == "darwin" ]]; then
-    xslash -- create --skeleton ./seed/prebuilt/go/bin/go.xslash --final=false --out "${HOME}/.local/bin/go.xslash"
-    ln -s -f go.xslash "${HOME}/.local/bin/go"
-    xslash -- create --skeleton ./seed/prebuilt/go/bin/gofmt.xslash --final=false --out "${HOME}/.local/bin/gofmt.xslash"
-    ln -s -f gofmt.xslash "${HOME}/.local/bin/gofmt"
-    xslash -- create --skeleton ./seed/prebuilt/ndscm/bin/ndscm.xslash --final=false --out "${HOME}/.local/bin/ndscm.xslash"
-    ln -s -f ndscm.xslash "${HOME}/.local/bin/nd"
-    ln -s -f ndscm.xslash "${HOME}/.local/bin/ndscm"
+    xslash -- create --skeleton ./seed/prebuilt/go/bin/go.xslash --out "${HOME}/.local/bin/go.xslash" --symlink go
+    xslash -- create --skeleton ./seed/prebuilt/go/bin/gofmt.xslash --out "${HOME}/.local/bin/gofmt.xslash" --symlink gofmt
+    xslash -- create --skeleton ./seed/prebuilt/ndscm/bin/ndscm.xslash --out "${HOME}/.local/bin/ndscm.xslash" --symlink nd --symlink ndscm
 
     cp -a -f ./seed/vendor/age/bin/age "${HOME}/.local/bin/age"
     cp -a -f ./seed/vendor/age/bin/age-inspect "${HOME}/.local/bin/age-inspect"
