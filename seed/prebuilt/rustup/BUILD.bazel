@@ -1,0 +1,22 @@
+load("//seed/devprod/starlark/xslash:defs.bzl", "xslash_pack")
+
+exports_files(
+    glob(["bin/*"]),
+)
+
+xslash_pack(
+    name = "rustup-init_xslash",
+    out = "rustup-init.xslash",
+    skeleton = "bin/rustup-init.xslash",
+    symlinks = [
+        "rustup",
+        "rustup-init",
+    ],
+    visibility = ["//visibility:public"],
+)
+
+alias(
+    name = "xslash",
+    actual = ":rustup-init_xslash",
+    visibility = ["//visibility:public"],
+)

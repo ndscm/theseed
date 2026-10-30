@@ -1,0 +1,73 @@
+#!/usr/bin/env xslash
+{
+  "name": "rustup-init",
+  "final": true,
+  "platforms": {
+    "darwin-amd64": {
+      "hash": "blake3",
+      "digest": "9ecc25272f14f5bbfe9d6fc96a748dbc7847dea626ce1b5b64b124e3d98d234c",
+      "size": 12911072,
+      "path": "rustup-init",
+      "providers": [
+        {
+          "url": "https://static.rust-lang.org/rustup/archive/1.29.2/x86_64-apple-darwin/rustup-init"
+        }
+      ]
+    },
+    "darwin-arm64": {
+      "hash": "blake3",
+      "digest": "482e9e8159f6ada50ed8a654eae064e031b91ca98c61db7cbe92797069fe68f4",
+      "size": 11321792,
+      "path": "rustup-init",
+      "providers": [
+        {
+          "url": "https://static.rust-lang.org/rustup/archive/1.29.2/aarch64-apple-darwin/rustup-init"
+        }
+      ]
+    },
+    "linux-amd64": {
+      "hash": "blake3",
+      "digest": "4200af22e6edaf4f5141951078be6be6572136288eaec17f6a4ac64071f2a393",
+      "size": 21139856,
+      "path": "rustup-init",
+      "providers": [
+        {
+          "url": "https://static.rust-lang.org/rustup/archive/1.29.2/x86_64-unknown-linux-gnu/rustup-init"
+        }
+      ]
+    },
+    "linux-arm64": {
+      "hash": "blake3",
+      "digest": "1d013b16901e2a1ff815f5317ae7157a157f4c14cc0cf78896c66a6c1bd3e7d1",
+      "size": 19930504,
+      "path": "rustup-init",
+      "providers": [
+        {
+          "url": "https://static.rust-lang.org/rustup/archive/1.29.2/aarch64-unknown-linux-gnu/rustup-init"
+        }
+      ]
+    },
+    "windows-amd64": {
+      "hash": "blake3",
+      "digest": "fe6b27b0c52b82a2af01757490056a04c1d119e8853136ab9922eb453c5d05e9",
+      "size": 12724224,
+      "path": "rustup-init.exe",
+      "providers": [
+        {
+          "url": "https://static.rust-lang.org/rustup/archive/1.29.2/x86_64-pc-windows-msvc/rustup-init.exe"
+        }
+      ]
+    },
+    "windows-arm64": {
+      "hash": "blake3",
+      "digest": "507ebaa779dc30b8709ffd645988d5b0c3c70387edfc5ba83e58dda87ab78526",
+      "size": 11277824,
+      "path": "rustup-init.exe",
+      "providers": [
+        {
+          "url": "https://static.rust-lang.org/rustup/archive/1.29.2/aarch64-pc-windows-msvc/rustup-init.exe"
+        }
+      ]
+    }
+  }
+}
