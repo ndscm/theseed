@@ -1,4 +1,5 @@
 {
+  "gh": "seed/prebuilt/github/bin/gh.xslash",
   "go": "seed/prebuilt/go/bin/go.xslash",
   "gofmt": "seed/prebuilt/go/bin/gofmt.xslash",
   "nd": "seed/prebuilt/ndscm/bin/ndscm.xslash",
