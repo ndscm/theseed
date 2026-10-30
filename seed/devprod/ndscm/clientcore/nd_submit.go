@@ -17,6 +17,8 @@ type NdSubmitOptions struct {
 
 	Owner string
 
+	MaxCommits int
+
 	FeatureName string
 	CutPoint    string
 }
@@ -108,7 +110,21 @@ func NdSubmit(scmProvider scm.Provider, options NdSubmitOptions) error {
 	if err != nil {
 		return seederr.Wrap(err)
 	}
-	err = scmProvider.ApplyCommitRange(worktreePath, trackingBranch, changeBranch)
+
+	submitPoint := changeBranch
+	if options.MaxCommits > 0 {
+		commitIds, err := scmProvider.ListCommitIds(trackingBranch, changeBranch)
+		if err != nil {
+			return seederr.Wrap(err)
+		}
+		if options.MaxCommits < len(commitIds) {
+			submitPoint = commitIds[options.MaxCommits-1]
+			seedlog.Warnf("Limiting submit branch to the first %d of %d commits (stopping at %v)",
+				options.MaxCommits, len(commitIds), submitPoint)
+		}
+	}
+
+	err = scmProvider.ApplyCommitRange(worktreePath, trackingBranch, submitPoint)
 	if err != nil {
 		return seederr.Wrap(err)
 	}

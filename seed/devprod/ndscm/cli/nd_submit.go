@@ -1,6 +1,7 @@
 package main
 
 import (
+	"strconv"
 	"strings"
 
 	"github.com/ndscm/theseed/seed/devprod/ndscm/clientcore"
@@ -13,6 +14,8 @@ type ndSubmitFlags struct {
 	remote *seedflag.StringFlag
 
 	owner *seedflag.StringFlag
+
+	maxCommits *seedflag.StringFlag
 }
 
 func parseNdSubmitFlags(args []string) (ndSubmitFlags, []string, error) {
@@ -21,6 +24,7 @@ func parseNdSubmitFlags(args []string) (ndSubmitFlags, []string, error) {
 	cmdFlags.force = cf.DefineBool("force", false, "Force cut even if the change branch already exists")
 	cmdFlags.remote = cf.DefineString("remote", "origin", "Remote identifier for submitting the branch")
 	cmdFlags.owner = cf.DefineString("owner", "", "Owner identifier for submitting the branch")
+	cmdFlags.maxCommits = cf.DefineString("max-commits", "0", "Cap the number of commits applied to the submit branch")
 	cmdArgs, err := cf.Parse(args, &seedflag.ParseOptions{
 		AnywhereFlag: true,
 	})
@@ -44,6 +48,10 @@ func ndSubmit(args []string) error {
 	if len(cmdArgs) == 2 {
 		cutPoint = strings.TrimSpace(cmdArgs[1])
 	}
+	maxCommits, err := strconv.Atoi(strings.TrimSpace(cmdFlags.maxCommits.Get()))
+	if err != nil || maxCommits < 0 {
+		return seederr.WrapErrorf("nd-submit: --max-commits must be a non-negative integer")
+	}
 	cc := &clientcore.ClientCore{}
 	err = cc.Initialize()
 	if err != nil {
@@ -53,6 +61,8 @@ func ndSubmit(args []string) error {
 		Force:  cmdFlags.force.Get(),
 		Remote: cmdFlags.remote.Get(),
 		Owner:  cmdFlags.owner.Get(),
+
+		MaxCommits: maxCommits,
 
 		FeatureName: featureName,
 		CutPoint:    cutPoint,
