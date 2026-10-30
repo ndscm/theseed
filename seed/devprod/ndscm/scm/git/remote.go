@@ -7,6 +7,19 @@ import (
 	"github.com/ndscm/theseed/seed/infra/shell/go/seedshell"
 )
 
+func GetRemoteUrl(gitDir string, remote string) (string, error) {
+	gitArgs := []string{}
+	if gitDir != "" {
+		gitArgs = append(gitArgs, "--git-dir", gitDir)
+	}
+	output, err := seedshell.PureOutput("git", append(gitArgs, "remote", "get-url", remote)...)
+	if err != nil {
+		return "", seederr.WrapErrorf("failed to get url for remote %v: %w", remote, err)
+	}
+	remoteUrl := strings.TrimSpace(string(output))
+	return remoteUrl, nil
+}
+
 func Fetch(gitDir string, remote string) error {
 	gitArgs := []string{}
 	if gitDir != "" {
