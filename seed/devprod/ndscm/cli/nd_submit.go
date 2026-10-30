@@ -40,10 +40,13 @@ func ndSubmit(args []string) error {
 	if err != nil {
 		return seederr.Wrap(err)
 	}
-	if len(cmdArgs) < 1 || len(cmdArgs) > 2 {
-		return seederr.WrapErrorf("nd-submit usage: nd submit [...flags] <feature-name> [<ref>|<hash>]")
+	if len(cmdArgs) > 2 {
+		return seederr.WrapErrorf("nd-submit usage: nd submit [...flags] [<feature-name>] [<ref>|<hash>]")
 	}
-	featureName := strings.TrimSpace(cmdArgs[0])
+	featureName := ""
+	if len(cmdArgs) >= 1 {
+		featureName = strings.TrimSpace(cmdArgs[0])
+	}
 	cutPoint := ""
 	if len(cmdArgs) == 2 {
 		cutPoint = strings.TrimSpace(cmdArgs[1])
