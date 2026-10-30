@@ -1,8 +1,10 @@
 package clientcore
 
 import (
+	"net/url"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/ndscm/theseed/seed/devprod/ndscm/scm"
 	"github.com/ndscm/theseed/seed/devprod/ndscm/user"
@@ -21,6 +23,46 @@ type NdSubmitOptions struct {
 
 	FeatureName string
 	CutPoint    string
+}
+
+func guessChangeRequestUrl(scmProvider scm.Provider, remote string, tracking string, submitBranch string) (string, error) {
+	remoteUrl, err := scmProvider.GetRemoteUrl(remote)
+	if err != nil {
+		return "", seederr.Wrap(err)
+	}
+
+	normalizedUrl := remoteUrl
+	if !strings.Contains(remoteUrl, "://") {
+		userHost, hostPath, found := strings.Cut(remoteUrl, ":")
+		if found && !strings.Contains(userHost, "/") {
+			normalizedUrl = "ssh://" + userHost + "/" + hostPath
+		}
+	}
+	parsedUrl, err := url.Parse(normalizedUrl)
+	if err != nil {
+		return "", seederr.Wrap(err)
+	}
+	repoPath := strings.Trim(strings.TrimSuffix(parsedUrl.Path, ".git"), "/")
+	if repoPath == "" {
+		return "", seederr.WrapErrorf("failed to parse repo path for %v", remoteUrl)
+	}
+
+	// The submit branch should merge into its tracking upstream, so target that
+	// branch explicitly instead of letting the host default to the repo's default
+	// branch. tracking is a remote-tracking ref ("<remote>/<branch>"); drop the
+	// remote to get the branch name as it exists on the remote.
+	_, baseBranch, found := strings.Cut(tracking, "/")
+	if !found {
+		baseBranch = tracking
+	}
+
+	crUrl := ""
+	switch parsedUrl.Hostname() {
+	case "github.com":
+		crUrl = "https://github.com/" + repoPath +
+			"/compare/" + baseBranch + "..." + submitBranch + "?expand=1"
+	}
+	return crUrl, nil
 }
 
 // ndSubmitBranchOptions describes how to materialize a submit branch: the suffix naming the
@@ -121,6 +163,10 @@ func ndSubmitBranch(
 	err = scmProvider.DeleteBranch(repo, submitBranch)
 	if err != nil {
 		return seederr.Wrap(err)
+	}
+	crUrl, err := guessChangeRequestUrl(scmProvider, options.remote, options.tracking, submitBranch)
+	if err == nil && crUrl != "" {
+		seedlog.Infof("Create a change request: %v", crUrl)
 	}
 	return nil
 }
