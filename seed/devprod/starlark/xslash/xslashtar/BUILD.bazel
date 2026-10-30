@@ -1,0 +1,23 @@
+load("@rules_go//go:def.bzl", "go_binary", "go_library")
+
+package(default_visibility = [
+    "//seed/devprod/starlark/xslash:__subpackages__",
+])
+
+go_library(
+    name = "xslashtar_lib",
+    srcs = ["xslashtar.go"],
+    importpath = "github.com/ndscm/theseed/seed/devprod/starlark/xslash/xslashtar",
+    visibility = ["//visibility:private"],
+    deps = [
+        "//seed/infra/error/go/seederr",
+        "//seed/infra/flag/go/seedflag",
+        "//seed/infra/init/go/seedinit",
+        "//seed/infra/log/go/seedlog",
+    ],
+)
+
+go_binary(
+    name = "xslashtar",
+    embed = [":xslashtar_lib"],
+)
