@@ -10,6 +10,7 @@ export CONTAINER_ENGINE="${container_engine}"
 
 mkdir -p ./seed/newtype/amadeus/playpen/container/bin/
 
+xslash -- create --skeleton ./seed/prebuilt/github/bin/gh.xslash --out ./seed/newtype/amadeus/playpen/container/bin/gh.xslash --symlink gh
 xslash -- create --skeleton ./seed/prebuilt/ndscm/bin/ndscm.xslash --out ./seed/newtype/amadeus/playpen/container/bin/ndscm.xslash --symlink nd --symlink ndscm
 xslash -- create --skeleton ./seed/prebuilt/pnpm/bin/pnpm.xslash --out ./seed/newtype/amadeus/playpen/container/bin/pnpm.xslash --symlink pnpm
 
@@ -26,8 +27,6 @@ cp -a -f ./seed/vendor/crane/bin/crane ./seed/newtype/amadeus/playpen/container/
 cp -a -f ./seed/vendor/crane/bin/crane.dotslash ./seed/newtype/amadeus/playpen/container/bin/crane.dotslash
 cp -a -f ./seed/vendor/docker/bin/docker ./seed/newtype/amadeus/playpen/container/bin/docker
 cp -a -f ./seed/vendor/docker/bin/docker.dotslash ./seed/newtype/amadeus/playpen/container/bin/docker.dotslash
-cp -a -f ./seed/vendor/github/bin/gh ./seed/newtype/amadeus/playpen/container/bin/gh
-cp -a -f ./seed/vendor/github/bin/gh.dotslash ./seed/newtype/amadeus/playpen/container/bin/gh.dotslash
 cp -a -f ./seed/vendor/jq/bin/jq ./seed/newtype/amadeus/playpen/container/bin/jq
 cp -a -f ./seed/vendor/jq/bin/jq.dotslash ./seed/newtype/amadeus/playpen/container/bin/jq.dotslash
 cp -a -f ./seed/vendor/lego/bin/lego ./seed/newtype/amadeus/playpen/container/bin/lego
