@@ -3,27 +3,27 @@ http_file = use_repo_rule("@bazel_tools//tools/build_defs/repo:http.bzl", "http_
 http_file(
     name = "xslash-darwin-amd64",
     executable = True,
-    integrity = "sha256-4BwUcgXUz1qAWVKbhLE+eQCqym2f/rNmliTWbmvPyZs=",
-    urls = ["https://github.com/ndscm/xslash/releases/download/v26.10.30/xslash-darwin-amd64"],
+    integrity = "sha256-6mMly59en+QWctm1jiYXFQrL6qyeQ7KROSxlEdofp3k=",
+    urls = ["https://github.com/ndscm/xslash/releases/download/v26.10.31/xslash-darwin-amd64"],
 )
 
 http_file(
     name = "xslash-darwin-arm64",
     executable = True,
-    integrity = "sha256-+XGjznvGzwe3OIcKpl6VIVcS71MDAA0FXn7+0jlFMGM=",
-    urls = ["https://github.com/ndscm/xslash/releases/download/v26.10.30/xslash-darwin-arm64"],
+    integrity = "sha256-PbnLvjtDE86TX3X6pQ5jSgCPCJ8uC2umNIXMBi2b0ro=",
+    urls = ["https://github.com/ndscm/xslash/releases/download/v26.10.31/xslash-darwin-arm64"],
 )
 
 http_file(
     name = "xslash-linux-amd64",
     executable = True,
-    integrity = "sha256-J5l/uKPT51yptmJx58djFq1Y+xvOGCq96aGseuZjlbE=",
-    urls = ["https://github.com/ndscm/xslash/releases/download/v26.10.30/xslash-linux-amd64"],
+    integrity = "sha256-JTzGvPLB2AmVymgtmVci7cL3kTHXbMwxf2skAVBh6QI=",
+    urls = ["https://github.com/ndscm/xslash/releases/download/v26.10.31/xslash-linux-amd64"],
 )
 
 http_file(
     name = "xslash-linux-arm64",
     executable = True,
-    integrity = "sha256-fxZfu0A155W3a0WC2By1U8GWVfW3YcnKWZswt7ioGqc=",
-    urls = ["https://github.com/ndscm/xslash/releases/download/v26.10.30/xslash-linux-arm64"],
+    integrity = "sha256-GIu68cQf88sI0sVVVe1hc9rGI1920VTWIzCSWjzv/Og=",
+    urls = ["https://github.com/ndscm/xslash/releases/download/v26.10.31/xslash-linux-arm64"],
 )
