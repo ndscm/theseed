@@ -166,6 +166,9 @@ type Provider interface {
 
 	// # remote
 
+	// GetRemoteUrl returns the configured URL for remote.
+	GetRemoteUrl(remote string) (string, error)
+
 	// FetchAll fetches updates from every configured remote and prunes
 	// remote-tracking refs that no longer exist upstream.
 	FetchAll() error
