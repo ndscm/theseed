@@ -7,6 +7,7 @@ if [[ ",${maintain_scopes}," == *",user,"* ]]; then
   printf "\e[34m[user] Checking dotslash tools...\e[0m\n"
 
   if [[ "${oslike}" == "debian" || "${oslike}" == "darwin" ]]; then
+    xslash -- create --skeleton ./seed/prebuilt/github/bin/gh.xslash --out "${HOME}/.local/bin/gh.xslash" --symlink gh
     xslash -- create --skeleton ./seed/prebuilt/go/bin/go.xslash --out "${HOME}/.local/bin/go.xslash" --symlink go
     xslash -- create --skeleton ./seed/prebuilt/go/bin/gofmt.xslash --out "${HOME}/.local/bin/gofmt.xslash" --symlink gofmt
     xslash -- create --skeleton ./seed/prebuilt/ndscm/bin/ndscm.xslash --out "${HOME}/.local/bin/ndscm.xslash" --symlink nd --symlink ndscm
@@ -29,8 +30,6 @@ if [[ ",${maintain_scopes}," == *",user,"* ]]; then
     cp -a -f ./seed/vendor/claude/bin/claude.dotslash "${HOME}/.local/bin/claude.dotslash"
     cp -a -f ./seed/vendor/crane/bin/crane "${HOME}/.local/bin/crane"
     cp -a -f ./seed/vendor/crane/bin/crane.dotslash "${HOME}/.local/bin/crane.dotslash"
-    cp -a -f ./seed/vendor/github/bin/gh "${HOME}/.local/bin/gh"
-    cp -a -f ./seed/vendor/github/bin/gh.dotslash "${HOME}/.local/bin/gh.dotslash"
     cp -a -f ./seed/vendor/jq/bin/jq "${HOME}/.local/bin/jq"
     cp -a -f ./seed/vendor/jq/bin/jq.dotslash "${HOME}/.local/bin/jq.dotslash"
     cp -a -f ./seed/vendor/lego/bin/lego "${HOME}/.local/bin/lego"
