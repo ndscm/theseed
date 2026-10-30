@@ -1,3 +1,22 @@
+load("//seed/devprod/starlark/xslash:defs.bzl", "xslash_pack")
+
 exports_files(
     glob(["bin/*"]),
+)
+
+xslash_pack(
+    name = "ndscm_xslash",
+    out = "ndscm.xslash",
+    skeleton = "bin/ndscm.xslash",
+    symlinks = [
+        "nd",
+        "ndscm",
+    ],
+    visibility = ["//visibility:public"],
+)
+
+alias(
+    name = "xslash",
+    actual = ":ndscm_xslash",
+    visibility = ["//visibility:public"],
 )
