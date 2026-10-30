@@ -386,6 +386,11 @@ func AnalyseRepo(worktreePath string, opts *AnalyseRepoOptions) (*RepoAnalysis, 
 	}
 
 	for _, phase := range opts.Phases {
+		repoPhase, ok := result.Phases[phase]
+		if !ok || len(repoPhase.Watchers) == 0 {
+			continue
+		}
+
 		// The phases are forced to run sequentially for now to avoid breaking the bazel managed tools for each phase.
 		candidates := []string{}
 		switch phase {
@@ -413,8 +418,8 @@ func AnalyseRepo(worktreePath string, opts *AnalyseRepoOptions) (*RepoAnalysis, 
 
 		result.Phases[phase] = RepoPhase{
 			Prerequisites:  prerequisites,
-			UseBazelGround: result.Phases[phase].UseBazelGround,
-			Watchers:       result.Phases[phase].Watchers,
+			UseBazelGround: repoPhase.UseBazelGround,
+			Watchers:       repoPhase.Watchers,
 		}
 	}
 
