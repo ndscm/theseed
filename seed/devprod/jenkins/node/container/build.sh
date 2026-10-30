@@ -15,8 +15,8 @@ export CONTAINER_ENGINE="${container_engine}"
 mkdir -p ./seed/devprod/jenkins/node/container/bin/
 
 cp -f ./seed/vendor/docker/bin/docker ./seed/devprod/jenkins/node/container/bin/docker
-cp -f ./seed/vendor/github/bin/gh ./seed/devprod/jenkins/node/container/bin/gh
 
+xslash -- create --skeleton ./seed/prebuilt/github/bin/gh.xslash --out ./seed/devprod/jenkins/node/container/bin/gh.xslash --symlink gh
 xslash -- create --skeleton ./seed/prebuilt/go/bin/go.xslash --out ./seed/devprod/jenkins/node/container/bin/go.xslash --symlink go
 xslash -- create --skeleton ./seed/prebuilt/go/bin/gofmt.xslash --out ./seed/devprod/jenkins/node/container/bin/gofmt.xslash --symlink gofmt
 xslash -- create --skeleton ./seed/prebuilt/ndscm/bin/ndscm.xslash --out ./seed/devprod/jenkins/node/container/bin/ndscm.xslash --symlink nd --symlink ndscm
