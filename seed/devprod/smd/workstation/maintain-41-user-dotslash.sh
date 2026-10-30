@@ -12,6 +12,14 @@ if [[ ",${maintain_scopes}," == *",user,"* ]]; then
     xslash -- create --skeleton ./seed/prebuilt/go/bin/gofmt.xslash --out "${HOME}/.local/bin/gofmt.xslash" --symlink gofmt
     xslash -- create --skeleton ./seed/prebuilt/ndscm/bin/ndscm.xslash --out "${HOME}/.local/bin/ndscm.xslash" --symlink nd --symlink ndscm
     xslash -- create --skeleton ./seed/prebuilt/pnpm/bin/pnpm.xslash --out "${HOME}/.local/bin/pnpm.xslash" --symlink pnpm
+    xslash -- create --skeleton ./seed/prebuilt/rust/bin/cargo-clippy.xslash --out "${HOME}/.local/bin/cargo-clippy.xslash" --symlink cargo-clippy
+    xslash -- create --skeleton ./seed/prebuilt/rust/bin/cargo-fmt.xslash --out "${HOME}/.local/bin/cargo-fmt.xslash" --symlink cargo-fmt
+    xslash -- create --skeleton ./seed/prebuilt/rust/bin/cargo.xslash --out "${HOME}/.local/bin/cargo.xslash" --symlink cargo
+    xslash -- create --skeleton ./seed/prebuilt/rust/bin/rust-analyzer.xslash --out "${HOME}/.local/bin/rust-analyzer.xslash" --symlink rust-analyzer
+    xslash -- create --skeleton ./seed/prebuilt/rust/bin/rust-gdb.xslash --out "${HOME}/.local/bin/rust-gdb.xslash" --symlink rust-gdb
+    xslash -- create --skeleton ./seed/prebuilt/rust/bin/rustc.xslash --out "${HOME}/.local/bin/rustc.xslash" --symlink rustc
+    xslash -- create --skeleton ./seed/prebuilt/rust/bin/rustdoc.xslash --out "${HOME}/.local/bin/rustdoc.xslash" --symlink rustdoc
+    xslash -- create --skeleton ./seed/prebuilt/rust/bin/rustfmt.xslash --out "${HOME}/.local/bin/rustfmt.xslash" --symlink rustfmt
 
     cp -a -f ./seed/vendor/age/bin/age "${HOME}/.local/bin/age"
     cp -a -f ./seed/vendor/age/bin/age-inspect "${HOME}/.local/bin/age-inspect"
