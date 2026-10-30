@@ -13,6 +13,8 @@
   "rustc": "seed/prebuilt/rust/bin/rustc.xslash",
   "rustdoc": "seed/prebuilt/rust/bin/rustdoc.xslash",
   "rustfmt": "seed/prebuilt/rust/bin/rustfmt.xslash",
+  "rustup-init": "seed/prebuilt/rustup/bin/rustup-init.xslash",
+  "rustup": "seed/prebuilt/rustup/bin/rustup-init.xslash",
   "uv": "seed/prebuilt/uv/bin/uv.xslash",
   "uvx": "seed/prebuilt/uv/bin/uvx.xslash"
 }
