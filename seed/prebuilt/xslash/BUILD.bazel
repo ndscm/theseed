@@ -75,3 +75,45 @@ native_binary(
     src = "@xslash-linux-arm64//file",
     out = "xslash-linux-arm64",
 )
+
+native_binary(
+    name = "xslash-helper",
+    src = select({
+        ":darwin-amd64": "@xslash-helper-darwin-amd64//file",
+        ":darwin-arm64": "@xslash-helper-darwin-arm64//file",
+        ":linux-amd64": "@xslash-helper-linux-amd64//file",
+        ":linux-arm64": "@xslash-helper-linux-arm64//file",
+    }),
+    out = "xslash-helper",
+    target_compatible_with = select({
+        ":darwin-amd64": [],
+        ":darwin-arm64": [],
+        ":linux-amd64": [],
+        ":linux-arm64": [],
+        "//conditions:default": ["@platforms//:incompatible"],
+    }),
+)
+
+native_binary(
+    name = "xslash-helper-darwin-amd64",
+    src = "@xslash-helper-darwin-amd64//file",
+    out = "xslash-helper-darwin-amd64",
+)
+
+native_binary(
+    name = "xslash-helper-darwin-arm64",
+    src = "@xslash-helper-darwin-arm64//file",
+    out = "xslash-helper-darwin-arm64",
+)
+
+native_binary(
+    name = "xslash-helper-linux-amd64",
+    src = "@xslash-helper-linux-amd64//file",
+    out = "xslash-helper-linux-amd64",
+)
+
+native_binary(
+    name = "xslash-helper-linux-arm64",
+    src = "@xslash-helper-linux-arm64//file",
+    out = "xslash-helper-linux-arm64",
+)

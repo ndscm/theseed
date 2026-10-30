@@ -33,4 +33,16 @@ platforms=(
     printf '    urls = ["%s"],\n' "${url}"
     printf ')\n'
   done
+  for platform in "${platforms[@]}"; do
+    url="https://github.com/ndscm/xslash/releases/download/${tag}/xslash-helper-${platform}"
+    digest="$(jq -r --arg name "xslash-helper-${platform}" '.assets[] | select(.name == $name) | .digest' <<<"${release}")"
+    integrity="sha256-$(printf '%s' "${digest#sha256:}" | xxd -r -p | openssl base64 -A)"
+    printf '\n'
+    printf 'http_file(\n'
+    printf '    name = "xslash-helper-%s",\n' "${platform}"
+    printf '    executable = True,\n'
+    printf '    integrity = "%s",\n' "${integrity}"
+    printf '    urls = ["%s"],\n' "${url}"
+    printf ')\n'
+  done
 } >./xslash.MODULE.bazel
