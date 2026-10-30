@@ -258,6 +258,10 @@ func (g *GitProvider) SignOff(worktreePath string) error {
 
 // # remote
 
+func (g *GitProvider) GetRemoteUrl(remote string) (string, error) {
+	return GetRemoteUrl("", remote)
+}
+
 func (g *GitProvider) FetchAll() error {
 	return FetchAll("")
 }
