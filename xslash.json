@@ -8,6 +8,8 @@
   "nd": "seed/prebuilt/ndscm/bin/ndscm.xslash",
   "ndscm": "seed/prebuilt/ndscm/bin/ndscm.xslash",
   "pnpm": "seed/prebuilt/pnpm/bin/pnpm.xslash",
+  "python": "seed/prebuilt/python/bin/python3.xslash",
+  "python3": "seed/prebuilt/python/bin/python3.xslash",
   "rust-analyzer": "seed/prebuilt/rust/bin/rust-analyzer.xslash",
   "rust-gdb": "seed/prebuilt/rust/bin/rust-gdb.xslash",
   "rustc": "seed/prebuilt/rust/bin/rustc.xslash",
