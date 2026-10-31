@@ -1,0 +1,19 @@
+load("//seed/devprod/starlark/xslash:defs.bzl", "xslash_pack")
+
+exports_files(
+    glob(["bin/*"]),
+)
+
+xslash_pack(
+    name = "shfmt_xslash",
+    out = "shfmt.xslash",
+    skeleton = "bin/shfmt.xslash",
+    symlinks = ["shfmt"],
+    visibility = ["//visibility:public"],
+)
+
+alias(
+    name = "xslash",
+    actual = ":shfmt_xslash",
+    visibility = ["//visibility:public"],
+)

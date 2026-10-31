@@ -7,9 +7,15 @@ if [[ ",${maintain_scopes}," == *",user,"* ]]; then
   printf "\e[34m[user] Checking dotslash tools...\e[0m\n"
 
   if [[ "${oslike}" == "debian" || "${oslike}" == "darwin" ]]; then
+    xslash -- create --skeleton ./seed/prebuilt/age/bin/age-inspect.xslash --out "${HOME}/.local/bin/age-inspect.xslash" --symlink age-inspect
+    xslash -- create --skeleton ./seed/prebuilt/age/bin/age-keygen.xslash --out "${HOME}/.local/bin/age-keygen.xslash" --symlink age-keygen
+    xslash -- create --skeleton ./seed/prebuilt/age/bin/age.xslash --out "${HOME}/.local/bin/age.xslash" --symlink age
+    xslash -- create --skeleton ./seed/prebuilt/crane/bin/crane.xslash --out "${HOME}/.local/bin/crane.xslash" --symlink crane
     xslash -- create --skeleton ./seed/prebuilt/github/bin/gh.xslash --out "${HOME}/.local/bin/gh.xslash" --symlink gh
     xslash -- create --skeleton ./seed/prebuilt/go/bin/go.xslash --out "${HOME}/.local/bin/go.xslash" --symlink go
     xslash -- create --skeleton ./seed/prebuilt/go/bin/gofmt.xslash --out "${HOME}/.local/bin/gofmt.xslash" --symlink gofmt
+    xslash -- create --skeleton ./seed/prebuilt/jq/bin/jq.xslash --out "${HOME}/.local/bin/jq.xslash" --symlink jq
+    xslash -- create --skeleton ./seed/prebuilt/lego/bin/lego.xslash --out "${HOME}/.local/bin/lego.xslash" --symlink lego
     xslash -- create --skeleton ./seed/prebuilt/ndscm/bin/ndscm.xslash --out "${HOME}/.local/bin/ndscm.xslash" --symlink nd --symlink ndscm
     xslash -- create --skeleton ./seed/prebuilt/node/bin/node.xslash --out "${HOME}/.local/bin/node.xslash" --symlink node
     xslash -- create --skeleton ./seed/prebuilt/node/bin/npm.xslash --out "${HOME}/.local/bin/npm.xslash" --symlink npm
@@ -25,15 +31,11 @@ if [[ ",${maintain_scopes}," == *",user,"* ]]; then
     xslash -- create --skeleton ./seed/prebuilt/rust/bin/rustdoc.xslash --out "${HOME}/.local/bin/rustdoc.xslash" --symlink rustdoc
     xslash -- create --skeleton ./seed/prebuilt/rust/bin/rustfmt.xslash --out "${HOME}/.local/bin/rustfmt.xslash" --symlink rustfmt
     xslash -- create --skeleton ./seed/prebuilt/rustup/bin/rustup-init.xslash --out "${HOME}/.local/bin/rustup-init.xslash" --symlink rustup --symlink rustup-init
+    xslash -- create --skeleton ./seed/prebuilt/shfmt/bin/shfmt.xslash --out "${HOME}/.local/bin/shfmt.xslash" --symlink shfmt
+    xslash -- create --skeleton ./seed/prebuilt/sops/bin/sops.xslash --out "${HOME}/.local/bin/sops.xslash" --symlink sops
     xslash -- create --skeleton ./seed/prebuilt/uv/bin/uv.xslash --out "${HOME}/.local/bin/uv.xslash" --symlink uv
     xslash -- create --skeleton ./seed/prebuilt/uv/bin/uvx.xslash --out "${HOME}/.local/bin/uvx.xslash" --symlink uvx
 
-    cp -a -f ./seed/vendor/age/bin/age "${HOME}/.local/bin/age"
-    cp -a -f ./seed/vendor/age/bin/age-inspect "${HOME}/.local/bin/age-inspect"
-    cp -a -f ./seed/vendor/age/bin/age-inspect.dotslash "${HOME}/.local/bin/age-inspect.dotslash"
-    cp -a -f ./seed/vendor/age/bin/age-keygen "${HOME}/.local/bin/age-keygen"
-    cp -a -f ./seed/vendor/age/bin/age-keygen.dotslash "${HOME}/.local/bin/age-keygen.dotslash"
-    cp -a -f ./seed/vendor/age/bin/age.dotslash "${HOME}/.local/bin/age.dotslash"
     cp -a -f ./seed/vendor/bazel/bin/bazel "${HOME}/.local/bin/bazel"
     cp -a -f ./seed/vendor/bazel/bin/bazelisk "${HOME}/.local/bin/bazelisk"
     cp -a -f ./seed/vendor/bazel/bin/bazelisk.dotslash "${HOME}/.local/bin/bazelisk.dotslash"
@@ -43,12 +45,6 @@ if [[ ",${maintain_scopes}," == *",user,"* ]]; then
     cp -a -f ./seed/vendor/buck/bin/reindeer.dotslash "${HOME}/.local/bin/reindeer.dotslash"
     cp -a -f ./seed/vendor/claude/bin/claude "${HOME}/.local/bin/claude"
     cp -a -f ./seed/vendor/claude/bin/claude.dotslash "${HOME}/.local/bin/claude.dotslash"
-    cp -a -f ./seed/vendor/crane/bin/crane "${HOME}/.local/bin/crane"
-    cp -a -f ./seed/vendor/crane/bin/crane.dotslash "${HOME}/.local/bin/crane.dotslash"
-    cp -a -f ./seed/vendor/jq/bin/jq "${HOME}/.local/bin/jq"
-    cp -a -f ./seed/vendor/jq/bin/jq.dotslash "${HOME}/.local/bin/jq.dotslash"
-    cp -a -f ./seed/vendor/lego/bin/lego "${HOME}/.local/bin/lego"
-    cp -a -f ./seed/vendor/lego/bin/lego.dotslash "${HOME}/.local/bin/lego.dotslash"
     cp -a -f ./seed/vendor/llvm/bin/clang "${HOME}/.local/bin/clang"
     cp -a -f ./seed/vendor/llvm/bin/clang-format "${HOME}/.local/bin/clang-format"
     cp -a -f ./seed/vendor/llvm/bin/clang-format.dotslash "${HOME}/.local/bin/clang-format.dotslash"
@@ -57,8 +53,6 @@ if [[ ",${maintain_scopes}," == *",user,"* ]]; then
     cp -a -f ./seed/vendor/llvm/bin/clangd.dotslash "${HOME}/.local/bin/clangd.dotslash"
     cp -a -f ./seed/vendor/podman/bin/podman-remote "${HOME}/.local/bin/podman-remote"
     cp -a -f ./seed/vendor/podman/bin/podman-remote.dotslash "${HOME}/.local/bin/podman-remote.dotslash"
-    cp -a -f ./seed/vendor/sops/bin/sops "${HOME}/.local/bin/sops"
-    cp -a -f ./seed/vendor/sops/bin/sops.dotslash "${HOME}/.local/bin/sops.dotslash"
   fi
 
   if [[ "${oslike}" == "debian" ]]; then

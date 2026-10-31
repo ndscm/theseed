@@ -1,0 +1,19 @@
+load("//seed/devprod/starlark/xslash:defs.bzl", "xslash_pack")
+
+exports_files(
+    glob(["bin/*"]),
+)
+
+xslash_pack(
+    name = "jq_xslash",
+    out = "jq.xslash",
+    skeleton = "bin/jq.xslash",
+    symlinks = ["jq"],
+    visibility = ["//visibility:public"],
+)
+
+alias(
+    name = "xslash",
+    actual = ":jq_xslash",
+    visibility = ["//visibility:public"],
+)

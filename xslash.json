@@ -1,11 +1,17 @@
 {
+  "age-inspect": "seed/prebuilt/age/bin/age-inspect.xslash",
+  "age-keygen": "seed/prebuilt/age/bin/age-keygen.xslash",
+  "age": "seed/prebuilt/age/bin/age.xslash",
   "cargo-clippy": "seed/prebuilt/rust/bin/cargo-clippy.xslash",
   "cargo-fmt": "seed/prebuilt/rust/bin/cargo-fmt.xslash",
   "cargo": "seed/prebuilt/rust/bin/cargo.xslash",
   "cloc": "seed/prebuilt/cloc/bin/cloc.xslash",
+  "crane": "seed/prebuilt/crane/bin/crane.xslash",
   "gh": "seed/prebuilt/github/bin/gh.xslash",
   "go": "seed/prebuilt/go/bin/go.xslash",
   "gofmt": "seed/prebuilt/go/bin/gofmt.xslash",
+  "jq": "seed/prebuilt/jq/bin/jq.xslash",
+  "lego": "seed/prebuilt/lego/bin/lego.xslash",
   "nd": "seed/prebuilt/ndscm/bin/ndscm.xslash",
   "ndscm": "seed/prebuilt/ndscm/bin/ndscm.xslash",
   "node": "seed/prebuilt/node/bin/node.xslash",
@@ -21,6 +27,8 @@
   "rustfmt": "seed/prebuilt/rust/bin/rustfmt.xslash",
   "rustup-init": "seed/prebuilt/rustup/bin/rustup-init.xslash",
   "rustup": "seed/prebuilt/rustup/bin/rustup-init.xslash",
+  "shfmt": "seed/prebuilt/shfmt/bin/shfmt.xslash",
+  "sops": "seed/prebuilt/sops/bin/sops.xslash",
   "uv": "seed/prebuilt/uv/bin/uv.xslash",
   "uvx": "seed/prebuilt/uv/bin/uvx.xslash"
 }

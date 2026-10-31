@@ -1,0 +1,79 @@
+#!/usr/bin/env xslash
+{
+  "name": "age-keygen",
+  "final": true,
+  "platforms": {
+    "darwin-amd64": {
+      "hash": "blake3",
+      "digest": "d88e1483e811afc8c56079f11e2b6b39f23e21041dd1613d711a2001cc700764",
+      "size": 19376787,
+      "format": "tar.gz",
+      "path": "age/age-keygen",
+      "providers": [
+        {
+          "url": "https://github.com/FiloSottile/age/releases/download/v1.3.2/age-v1.3.2-darwin-amd64.tar.gz"
+        }
+      ]
+    },
+    "darwin-arm64": {
+      "hash": "blake3",
+      "digest": "ccb5b4e83bf4ef7ac6f0909b8a6bde008b8f2f865572acbc7205e618e7229813",
+      "size": 18106798,
+      "format": "tar.gz",
+      "path": "age/age-keygen",
+      "providers": [
+        {
+          "url": "https://github.com/FiloSottile/age/releases/download/v1.3.2/age-v1.3.2-darwin-arm64.tar.gz"
+        }
+      ]
+    },
+    "linux-amd64": {
+      "hash": "blake3",
+      "digest": "c823fc14e0c64b2f3358945fe7b61e4bef0805f45b83dee7f2e2995fccb55c62",
+      "size": 19405817,
+      "format": "tar.gz",
+      "path": "age/age-keygen",
+      "providers": [
+        {
+          "url": "https://github.com/FiloSottile/age/releases/download/v1.3.2/age-v1.3.2-linux-amd64.tar.gz"
+        }
+      ]
+    },
+    "linux-arm64": {
+      "hash": "blake3",
+      "digest": "842df011003d958ab7ee045c8124d4d711eed3b88820bda4c95e1db2dfd89795",
+      "size": 17771923,
+      "format": "tar.gz",
+      "path": "age/age-keygen",
+      "providers": [
+        {
+          "url": "https://github.com/FiloSottile/age/releases/download/v1.3.2/age-v1.3.2-linux-arm64.tar.gz"
+        }
+      ]
+    },
+    "windows-amd64": {
+      "hash": "blake3",
+      "digest": "9a23b1866cfda3a4aad39922d40e7372e78f484c91561b2b39971bc800c3e5da",
+      "size": 20250704,
+      "format": "zip",
+      "path": "age/age-keygen.exe",
+      "providers": [
+        {
+          "url": "https://github.com/FiloSottile/age/releases/download/v1.3.2/age-v1.3.2-windows-amd64.zip"
+        }
+      ]
+    },
+    "windows-arm64": {
+      "hash": "blake3",
+      "digest": "fd32ab600f2311551975ee673573131b3f88b9cfb7cc88794a71c29d1cc31e47",
+      "size": 18467630,
+      "format": "zip",
+      "path": "age/age-keygen.exe",
+      "providers": [
+        {
+          "url": "https://github.com/FiloSottile/age/releases/download/v1.3.2/age-v1.3.2-windows-arm64.zip"
+        }
+      ]
+    }
+  }
+}
