@@ -1,0 +1,53 @@
+{
+  "name": "cloc",
+  "platforms": {
+    "darwin-amd64": {
+      "path": "cloc-{{TAG}}.pl",
+      "providers": [
+        {
+          "url": "https://github.com/AlDanial/cloc/releases/download/v{{TAG}}/cloc-{{TAG}}.pl"
+        }
+      ]
+    },
+    "darwin-arm64": {
+      "path": "cloc-{{TAG}}.pl",
+      "providers": [
+        {
+          "url": "https://github.com/AlDanial/cloc/releases/download/v{{TAG}}/cloc-{{TAG}}.pl"
+        }
+      ]
+    },
+    "linux-amd64": {
+      "path": "cloc-{{TAG}}.pl",
+      "providers": [
+        {
+          "url": "https://github.com/AlDanial/cloc/releases/download/v{{TAG}}/cloc-{{TAG}}.pl"
+        }
+      ]
+    },
+    "linux-arm64": {
+      "path": "cloc-{{TAG}}.pl",
+      "providers": [
+        {
+          "url": "https://github.com/AlDanial/cloc/releases/download/v{{TAG}}/cloc-{{TAG}}.pl"
+        }
+      ]
+    },
+    "windows-amd64": {
+      "path": "cloc-{{TAG}}.exe",
+      "providers": [
+        {
+          "url": "https://github.com/AlDanial/cloc/releases/download/v{{TAG}}/cloc-{{TAG}}.exe"
+        }
+      ]
+    },
+    "windows-arm64": {
+      "path": "cloc-{{TAG}}.exe",
+      "providers": [
+        {
+          "url": "https://github.com/AlDanial/cloc/releases/download/v{{TAG}}/cloc-{{TAG}}.exe"
+        }
+      ]
+    }
+  }
+}
