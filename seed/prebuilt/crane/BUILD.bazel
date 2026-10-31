@@ -1,0 +1,19 @@
+load("//seed/devprod/starlark/xslash:defs.bzl", "xslash_pack")
+
+exports_files(
+    glob(["bin/*"]),
+)
+
+xslash_pack(
+    name = "crane_xslash",
+    out = "crane.xslash",
+    skeleton = "bin/crane.xslash",
+    symlinks = ["crane"],
+    visibility = ["//visibility:public"],
+)
+
+alias(
+    name = "xslash",
+    actual = ":crane_xslash",
+    visibility = ["//visibility:public"],
+)
