@@ -10,6 +10,7 @@ if [[ ",${maintain_scopes}," == *",user,"* ]]; then
     xslash -- create --skeleton ./seed/prebuilt/age/bin/age-inspect.xslash --out "${HOME}/.local/bin/age-inspect.xslash" --symlink age-inspect
     xslash -- create --skeleton ./seed/prebuilt/age/bin/age-keygen.xslash --out "${HOME}/.local/bin/age-keygen.xslash" --symlink age-keygen
     xslash -- create --skeleton ./seed/prebuilt/age/bin/age.xslash --out "${HOME}/.local/bin/age.xslash" --symlink age
+    xslash -- create --skeleton ./seed/prebuilt/crane/bin/crane.xslash --out "${HOME}/.local/bin/crane.xslash" --symlink crane
     xslash -- create --skeleton ./seed/prebuilt/github/bin/gh.xslash --out "${HOME}/.local/bin/gh.xslash" --symlink gh
     xslash -- create --skeleton ./seed/prebuilt/go/bin/go.xslash --out "${HOME}/.local/bin/go.xslash" --symlink go
     xslash -- create --skeleton ./seed/prebuilt/go/bin/gofmt.xslash --out "${HOME}/.local/bin/gofmt.xslash" --symlink gofmt
@@ -44,8 +45,6 @@ if [[ ",${maintain_scopes}," == *",user,"* ]]; then
     cp -a -f ./seed/vendor/buck/bin/reindeer.dotslash "${HOME}/.local/bin/reindeer.dotslash"
     cp -a -f ./seed/vendor/claude/bin/claude "${HOME}/.local/bin/claude"
     cp -a -f ./seed/vendor/claude/bin/claude.dotslash "${HOME}/.local/bin/claude.dotslash"
-    cp -a -f ./seed/vendor/crane/bin/crane "${HOME}/.local/bin/crane"
-    cp -a -f ./seed/vendor/crane/bin/crane.dotslash "${HOME}/.local/bin/crane.dotslash"
     cp -a -f ./seed/vendor/llvm/bin/clang "${HOME}/.local/bin/clang"
     cp -a -f ./seed/vendor/llvm/bin/clang-format "${HOME}/.local/bin/clang-format"
     cp -a -f ./seed/vendor/llvm/bin/clang-format.dotslash "${HOME}/.local/bin/clang-format.dotslash"
