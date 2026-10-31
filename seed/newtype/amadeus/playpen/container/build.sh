@@ -12,6 +12,9 @@ mkdir -p ./seed/newtype/amadeus/playpen/container/bin/
 
 xslash -- create --skeleton ./seed/prebuilt/github/bin/gh.xslash --out ./seed/newtype/amadeus/playpen/container/bin/gh.xslash --symlink gh
 xslash -- create --skeleton ./seed/prebuilt/ndscm/bin/ndscm.xslash --out ./seed/newtype/amadeus/playpen/container/bin/ndscm.xslash --symlink nd --symlink ndscm
+xslash -- create --skeleton ./seed/prebuilt/node/bin/node.xslash --out ./seed/newtype/amadeus/playpen/container/bin/node.xslash --symlink node
+xslash -- create --skeleton ./seed/prebuilt/node/bin/npm.xslash --out ./seed/newtype/amadeus/playpen/container/bin/npm.xslash --symlink npm
+xslash -- create --skeleton ./seed/prebuilt/node/bin/npx.xslash --out ./seed/newtype/amadeus/playpen/container/bin/npx.xslash --symlink npx
 xslash -- create --skeleton ./seed/prebuilt/pnpm/bin/pnpm.xslash --out ./seed/newtype/amadeus/playpen/container/bin/pnpm.xslash --symlink pnpm
 xslash -- create --skeleton ./seed/prebuilt/python/bin/python3.xslash --out ./seed/newtype/amadeus/playpen/container/bin/python3.xslash --symlink python --symlink python3
 xslash -- create --skeleton ./seed/prebuilt/uv/bin/uv.xslash --out ./seed/newtype/amadeus/playpen/container/bin/uv.xslash --symlink uv
@@ -40,12 +43,6 @@ cp -a -f ./seed/vendor/llvm/bin/clang-format.dotslash ./seed/newtype/amadeus/pla
 cp -a -f ./seed/vendor/llvm/bin/clang.dotslash ./seed/newtype/amadeus/playpen/container/bin/clang.dotslash
 cp -a -f ./seed/vendor/llvm/bin/clangd ./seed/newtype/amadeus/playpen/container/bin/clangd
 cp -a -f ./seed/vendor/llvm/bin/clangd.dotslash ./seed/newtype/amadeus/playpen/container/bin/clangd.dotslash
-cp -a -f ./seed/vendor/node/bin/node ./seed/newtype/amadeus/playpen/container/bin/node
-cp -a -f ./seed/vendor/node/bin/node.dotslash ./seed/newtype/amadeus/playpen/container/bin/node.dotslash
-cp -a -f ./seed/vendor/node/bin/npm ./seed/newtype/amadeus/playpen/container/bin/npm
-cp -a -f ./seed/vendor/node/bin/npm.dotslash ./seed/newtype/amadeus/playpen/container/bin/npm.dotslash
-cp -a -f ./seed/vendor/node/bin/npx ./seed/newtype/amadeus/playpen/container/bin/npx
-cp -a -f ./seed/vendor/node/bin/npx.dotslash ./seed/newtype/amadeus/playpen/container/bin/npx.dotslash
 cp -a -f ./seed/vendor/podman/bin/podman-remote ./seed/newtype/amadeus/playpen/container/bin/podman-remote
 cp -a -f ./seed/vendor/podman/bin/podman-remote.dotslash ./seed/newtype/amadeus/playpen/container/bin/podman-remote.dotslash
 
