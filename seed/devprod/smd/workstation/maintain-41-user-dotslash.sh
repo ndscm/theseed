@@ -22,6 +22,8 @@ if [[ ",${maintain_scopes}," == *",user,"* ]]; then
     xslash -- create --skeleton ./seed/prebuilt/rust/bin/rustdoc.xslash --out "${HOME}/.local/bin/rustdoc.xslash" --symlink rustdoc
     xslash -- create --skeleton ./seed/prebuilt/rust/bin/rustfmt.xslash --out "${HOME}/.local/bin/rustfmt.xslash" --symlink rustfmt
     xslash -- create --skeleton ./seed/prebuilt/rustup/bin/rustup-init.xslash --out "${HOME}/.local/bin/rustup-init.xslash" --symlink rustup --symlink rustup-init
+    xslash -- create --skeleton ./seed/prebuilt/uv/bin/uv.xslash --out "${HOME}/.local/bin/uv.xslash" --symlink uv
+    xslash -- create --skeleton ./seed/prebuilt/uv/bin/uvx.xslash --out "${HOME}/.local/bin/uvx.xslash" --symlink uvx
 
     cp -a -f ./seed/vendor/age/bin/age "${HOME}/.local/bin/age"
     cp -a -f ./seed/vendor/age/bin/age-inspect "${HOME}/.local/bin/age-inspect"
@@ -60,10 +62,6 @@ if [[ ",${maintain_scopes}," == *",user,"* ]]; then
     cp -a -f ./seed/vendor/podman/bin/podman-remote.dotslash "${HOME}/.local/bin/podman-remote.dotslash"
     cp -a -f ./seed/vendor/sops/bin/sops "${HOME}/.local/bin/sops"
     cp -a -f ./seed/vendor/sops/bin/sops.dotslash "${HOME}/.local/bin/sops.dotslash"
-    cp -a -f ./seed/vendor/uv/bin/uv "${HOME}/.local/bin/uv"
-    cp -a -f ./seed/vendor/uv/bin/uv.dotslash "${HOME}/.local/bin/uv.dotslash"
-    cp -a -f ./seed/vendor/uv/bin/uvx "${HOME}/.local/bin/uvx"
-    cp -a -f ./seed/vendor/uv/bin/uvx.dotslash "${HOME}/.local/bin/uvx.dotslash"
   fi
 
   if [[ "${oslike}" == "debian" ]]; then
