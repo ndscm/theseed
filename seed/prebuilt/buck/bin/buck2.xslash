@@ -1,0 +1,79 @@
+#!/usr/bin/env xslash
+{
+  "name": "buck2",
+  "final": true,
+  "platforms": {
+    "darwin-amd64": {
+      "hash": "blake3",
+      "digest": "1959b2f85dbba714f5d1f7824e813b0fca81224117a51cec7db17b8ae9fc1012",
+      "size": 36655230,
+      "format": "zst",
+      "path": "buck2-x86_64-apple-darwin",
+      "providers": [
+        {
+          "url": "https://github.com/facebook/buck2/releases/download/2026-08-22/buck2-x86_64-apple-darwin.zst"
+        }
+      ]
+    },
+    "darwin-arm64": {
+      "hash": "blake3",
+      "digest": "15ff15f1c10b8ddb3e8b3d43ca73964dec3719a514d805119c5e5963257daefe",
+      "size": 34435267,
+      "format": "zst",
+      "path": "buck2-aarch64-apple-darwin",
+      "providers": [
+        {
+          "url": "https://github.com/facebook/buck2/releases/download/2026-08-22/buck2-aarch64-apple-darwin.zst"
+        }
+      ]
+    },
+    "linux-amd64": {
+      "hash": "blake3",
+      "digest": "afff180bc257de220f393ed4551693d877849cda012ac39cf9d4f7a27693848e",
+      "size": 39303524,
+      "format": "zst",
+      "path": "buck2-x86_64-unknown-linux-musl",
+      "providers": [
+        {
+          "url": "https://github.com/facebook/buck2/releases/download/2026-08-22/buck2-x86_64-unknown-linux-musl.zst"
+        }
+      ]
+    },
+    "linux-arm64": {
+      "hash": "blake3",
+      "digest": "52e2182d65630a0b68bb33ca9ae72b64c028668e5d02fe5fd46d8fcb3c361918",
+      "size": 37790120,
+      "format": "zst",
+      "path": "buck2-aarch64-unknown-linux-musl",
+      "providers": [
+        {
+          "url": "https://github.com/facebook/buck2/releases/download/2026-08-22/buck2-aarch64-unknown-linux-musl.zst"
+        }
+      ]
+    },
+    "windows-amd64": {
+      "hash": "blake3",
+      "digest": "ab36fa3ee1b4fe2e597b8bf0bfa27f815b64ff3f520b6456fe67cb48b24f85e6",
+      "size": 31803375,
+      "format": "zst",
+      "path": "buck2-x86_64-pc-windows-msvc.exe",
+      "providers": [
+        {
+          "url": "https://github.com/facebook/buck2/releases/download/2026-08-22/buck2-x86_64-pc-windows-msvc.exe.zst"
+        }
+      ]
+    },
+    "windows-arm64": {
+      "hash": "blake3",
+      "digest": "60f21563810f68dc208c4835511d112d652c191b43958b055d5ffad477d5712d",
+      "size": 30249010,
+      "format": "zst",
+      "path": "buck2-aarch64-pc-windows-msvc.exe",
+      "providers": [
+        {
+          "url": "https://github.com/facebook/buck2/releases/download/2026-08-22/buck2-aarch64-pc-windows-msvc.exe.zst"
+        }
+      ]
+    }
+  }
+}
