@@ -1,0 +1,53 @@
+{
+  "name": "sops",
+  "platforms": {
+    "darwin-amd64": {
+      "path": "sops",
+      "providers": [
+        {
+          "url": "https://github.com/getsops/sops/releases/download/{{TAG}}/sops-{{TAG}}.darwin.amd64"
+        }
+      ]
+    },
+    "darwin-arm64": {
+      "path": "sops",
+      "providers": [
+        {
+          "url": "https://github.com/getsops/sops/releases/download/{{TAG}}/sops-{{TAG}}.darwin.arm64"
+        }
+      ]
+    },
+    "linux-amd64": {
+      "path": "sops",
+      "providers": [
+        {
+          "url": "https://github.com/getsops/sops/releases/download/{{TAG}}/sops-{{TAG}}.linux.amd64"
+        }
+      ]
+    },
+    "linux-arm64": {
+      "path": "sops",
+      "providers": [
+        {
+          "url": "https://github.com/getsops/sops/releases/download/{{TAG}}/sops-{{TAG}}.linux.arm64"
+        }
+      ]
+    },
+    "windows-amd64": {
+      "path": "sops.exe",
+      "providers": [
+        {
+          "url": "https://github.com/getsops/sops/releases/download/{{TAG}}/sops-{{TAG}}.amd64.exe"
+        }
+      ]
+    },
+    "windows-arm64": {
+      "path": "sops.exe",
+      "providers": [
+        {
+          "url": "https://github.com/getsops/sops/releases/download/{{TAG}}/sops-{{TAG}}.arm64.exe"
+        }
+      ]
+    }
+  }
+}
