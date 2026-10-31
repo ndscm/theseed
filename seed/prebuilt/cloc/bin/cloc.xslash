@@ -1,0 +1,73 @@
+#!/usr/bin/env xslash
+{
+  "name": "cloc",
+  "final": true,
+  "platforms": {
+    "darwin-amd64": {
+      "hash": "blake3",
+      "digest": "b9ef3cc1444eae1c2d38a56ad1511c9f4288ec96916947ebf29a0122eb663a95",
+      "size": 811436,
+      "path": "cloc-2.10.pl",
+      "providers": [
+        {
+          "url": "https://github.com/AlDanial/cloc/releases/download/v2.10/cloc-2.10.pl"
+        }
+      ]
+    },
+    "darwin-arm64": {
+      "hash": "blake3",
+      "digest": "b9ef3cc1444eae1c2d38a56ad1511c9f4288ec96916947ebf29a0122eb663a95",
+      "size": 811436,
+      "path": "cloc-2.10.pl",
+      "providers": [
+        {
+          "url": "https://github.com/AlDanial/cloc/releases/download/v2.10/cloc-2.10.pl"
+        }
+      ]
+    },
+    "linux-amd64": {
+      "hash": "blake3",
+      "digest": "b9ef3cc1444eae1c2d38a56ad1511c9f4288ec96916947ebf29a0122eb663a95",
+      "size": 811436,
+      "path": "cloc-2.10.pl",
+      "providers": [
+        {
+          "url": "https://github.com/AlDanial/cloc/releases/download/v2.10/cloc-2.10.pl"
+        }
+      ]
+    },
+    "linux-arm64": {
+      "hash": "blake3",
+      "digest": "b9ef3cc1444eae1c2d38a56ad1511c9f4288ec96916947ebf29a0122eb663a95",
+      "size": 811436,
+      "path": "cloc-2.10.pl",
+      "providers": [
+        {
+          "url": "https://github.com/AlDanial/cloc/releases/download/v2.10/cloc-2.10.pl"
+        }
+      ]
+    },
+    "windows-amd64": {
+      "hash": "blake3",
+      "digest": "1c5e3eebb96beab734ba99940931646bdca7497c9905c5c6760bdc6b8ad4b574",
+      "size": 10002926,
+      "path": "cloc-2.10.exe",
+      "providers": [
+        {
+          "url": "https://github.com/AlDanial/cloc/releases/download/v2.10/cloc-2.10.exe"
+        }
+      ]
+    },
+    "windows-arm64": {
+      "hash": "blake3",
+      "digest": "1c5e3eebb96beab734ba99940931646bdca7497c9905c5c6760bdc6b8ad4b574",
+      "size": 10002926,
+      "path": "cloc-2.10.exe",
+      "providers": [
+        {
+          "url": "https://github.com/AlDanial/cloc/releases/download/v2.10/cloc-2.10.exe"
+        }
+      ]
+    }
+  }
+}
