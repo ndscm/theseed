@@ -1,0 +1,19 @@
+load("//seed/devprod/starlark/xslash:defs.bzl", "xslash_pack")
+
+exports_files(
+    glob(["bin/*"]),
+)
+
+xslash_pack(
+    name = "reindeer_xslash",
+    out = "reindeer.xslash",
+    skeleton = "bin/reindeer.xslash",
+    symlinks = ["reindeer"],
+    visibility = ["//visibility:public"],
+)
+
+alias(
+    name = "xslash",
+    actual = ":reindeer_xslash",
+    visibility = ["//visibility:public"],
+)
