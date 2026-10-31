@@ -11,6 +11,9 @@ if [[ ",${maintain_scopes}," == *",user,"* ]]; then
     xslash -- create --skeleton ./seed/prebuilt/go/bin/go.xslash --out "${HOME}/.local/bin/go.xslash" --symlink go
     xslash -- create --skeleton ./seed/prebuilt/go/bin/gofmt.xslash --out "${HOME}/.local/bin/gofmt.xslash" --symlink gofmt
     xslash -- create --skeleton ./seed/prebuilt/ndscm/bin/ndscm.xslash --out "${HOME}/.local/bin/ndscm.xslash" --symlink nd --symlink ndscm
+    xslash -- create --skeleton ./seed/prebuilt/node/bin/node.xslash --out "${HOME}/.local/bin/node.xslash" --symlink node
+    xslash -- create --skeleton ./seed/prebuilt/node/bin/npm.xslash --out "${HOME}/.local/bin/npm.xslash" --symlink npm
+    xslash -- create --skeleton ./seed/prebuilt/node/bin/npx.xslash --out "${HOME}/.local/bin/npx.xslash" --symlink npx
     xslash -- create --skeleton ./seed/prebuilt/pnpm/bin/pnpm.xslash --out "${HOME}/.local/bin/pnpm.xslash" --symlink pnpm
     xslash -- create --skeleton ./seed/prebuilt/python/bin/python3.xslash --out "${HOME}/.local/bin/python3.xslash" --symlink python --symlink python3
     xslash -- create --skeleton ./seed/prebuilt/rust/bin/cargo-clippy.xslash --out "${HOME}/.local/bin/cargo-clippy.xslash" --symlink cargo-clippy
@@ -52,12 +55,6 @@ if [[ ",${maintain_scopes}," == *",user,"* ]]; then
     cp -a -f ./seed/vendor/llvm/bin/clang.dotslash "${HOME}/.local/bin/clang.dotslash"
     cp -a -f ./seed/vendor/llvm/bin/clangd "${HOME}/.local/bin/clangd"
     cp -a -f ./seed/vendor/llvm/bin/clangd.dotslash "${HOME}/.local/bin/clangd.dotslash"
-    cp -a -f ./seed/vendor/node/bin/node "${HOME}/.local/bin/node"
-    cp -a -f ./seed/vendor/node/bin/node.dotslash "${HOME}/.local/bin/node.dotslash"
-    cp -a -f ./seed/vendor/node/bin/npm "${HOME}/.local/bin/npm"
-    cp -a -f ./seed/vendor/node/bin/npm.dotslash "${HOME}/.local/bin/npm.dotslash"
-    cp -a -f ./seed/vendor/node/bin/npx "${HOME}/.local/bin/npx"
-    cp -a -f ./seed/vendor/node/bin/npx.dotslash "${HOME}/.local/bin/npx.dotslash"
     cp -a -f ./seed/vendor/podman/bin/podman-remote "${HOME}/.local/bin/podman-remote"
     cp -a -f ./seed/vendor/podman/bin/podman-remote.dotslash "${HOME}/.local/bin/podman-remote.dotslash"
     cp -a -f ./seed/vendor/sops/bin/sops "${HOME}/.local/bin/sops"
