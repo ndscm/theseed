@@ -1,0 +1,19 @@
+load("//seed/devprod/starlark/xslash:defs.bzl", "xslash_pack")
+
+exports_files(
+    glob(["bin/*"]),
+)
+
+xslash_pack(
+    name = "lego_xslash",
+    out = "lego.xslash",
+    skeleton = "bin/lego.xslash",
+    symlinks = ["lego"],
+    visibility = ["//visibility:public"],
+)
+
+alias(
+    name = "xslash",
+    actual = ":lego_xslash",
+    visibility = ["//visibility:public"],
+)
