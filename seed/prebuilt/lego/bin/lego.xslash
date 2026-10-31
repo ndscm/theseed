@@ -1,0 +1,79 @@
+#!/usr/bin/env xslash
+{
+  "name": "lego",
+  "final": true,
+  "platforms": {
+    "darwin-amd64": {
+      "hash": "blake3",
+      "digest": "4565acdb2a8ab6b7d1ec49b8b8bc4c66e7675c4c7b995c4fe903db8dc1764e07",
+      "size": 21659164,
+      "format": "tar.gz",
+      "path": "lego",
+      "providers": [
+        {
+          "url": "https://github.com/go-acme/lego/releases/download/v5.4.0/lego_v5.4.0_darwin_amd64.tar.gz"
+        }
+      ]
+    },
+    "darwin-arm64": {
+      "hash": "blake3",
+      "digest": "d7d766e7fe9f158f5607deb40e1de25904cc62356e23238eb9114f63ecda2033",
+      "size": 20109816,
+      "format": "tar.gz",
+      "path": "lego",
+      "providers": [
+        {
+          "url": "https://github.com/go-acme/lego/releases/download/v5.4.0/lego_v5.4.0_darwin_arm64.tar.gz"
+        }
+      ]
+    },
+    "linux-amd64": {
+      "hash": "blake3",
+      "digest": "f1d4bd36d9789953ac6ec240a60b177d18e9c8b54e4ca373326696bd1d5cc3ae",
+      "size": 21026575,
+      "format": "tar.gz",
+      "path": "lego",
+      "providers": [
+        {
+          "url": "https://github.com/go-acme/lego/releases/download/v5.4.0/lego_v5.4.0_linux_amd64.tar.gz"
+        }
+      ]
+    },
+    "linux-arm64": {
+      "hash": "blake3",
+      "digest": "a8d866672aec4a5ee1f0c02c1337b4e1becdc4c631c3127c8638b772a2830674",
+      "size": 18969885,
+      "format": "tar.gz",
+      "path": "lego",
+      "providers": [
+        {
+          "url": "https://github.com/go-acme/lego/releases/download/v5.4.0/lego_v5.4.0_linux_arm64.tar.gz"
+        }
+      ]
+    },
+    "windows-amd64": {
+      "hash": "blake3",
+      "digest": "4f79f29fdfed40e4d37c2c1bb3022bf349b066edd8dff962d9a9ab5f9af29d79",
+      "size": 21277123,
+      "format": "zip",
+      "path": "lego.exe",
+      "providers": [
+        {
+          "url": "https://github.com/go-acme/lego/releases/download/v5.4.0/lego_v5.4.0_windows_amd64.zip"
+        }
+      ]
+    },
+    "windows-arm64": {
+      "hash": "blake3",
+      "digest": "f54ebbb21520c706bf63eef8c9718495139134e6ecdd50f0c847847bb8339f87",
+      "size": 18908620,
+      "format": "zip",
+      "path": "lego.exe",
+      "providers": [
+        {
+          "url": "https://github.com/go-acme/lego/releases/download/v5.4.0/lego_v5.4.0_windows_arm64.zip"
+        }
+      ]
+    }
+  }
+}
