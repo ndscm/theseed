@@ -21,6 +21,12 @@ EOF
   if [[ "${oslike}" == "debian" || "${oslike}" == "darwin" ]]; then
     cat <<EOF >>"${HOME}/.managed_shrc.tmp"
 
+## Xslash
+
+if command -v xslash >/dev/null 2>&1; then
+  eval "\$(xslash --hook)"
+fi
+
 ## Direnv
 
 if command -v direnv >/dev/null 2>&1; then
