@@ -25,6 +25,7 @@ if [[ ",${maintain_scopes}," == *",user,"* ]]; then
     xslash -- create --skeleton ./seed/prebuilt/rust/bin/rustdoc.xslash --out "${HOME}/.local/bin/rustdoc.xslash" --symlink rustdoc
     xslash -- create --skeleton ./seed/prebuilt/rust/bin/rustfmt.xslash --out "${HOME}/.local/bin/rustfmt.xslash" --symlink rustfmt
     xslash -- create --skeleton ./seed/prebuilt/rustup/bin/rustup-init.xslash --out "${HOME}/.local/bin/rustup-init.xslash" --symlink rustup --symlink rustup-init
+    xslash -- create --skeleton ./seed/prebuilt/shfmt/bin/shfmt.xslash --out "${HOME}/.local/bin/shfmt.xslash" --symlink shfmt
     xslash -- create --skeleton ./seed/prebuilt/uv/bin/uv.xslash --out "${HOME}/.local/bin/uv.xslash" --symlink uv
     xslash -- create --skeleton ./seed/prebuilt/uv/bin/uvx.xslash --out "${HOME}/.local/bin/uvx.xslash" --symlink uvx
 
