@@ -21,6 +21,7 @@
   "rustfmt": "seed/prebuilt/rust/bin/rustfmt.xslash",
   "rustup-init": "seed/prebuilt/rustup/bin/rustup-init.xslash",
   "rustup": "seed/prebuilt/rustup/bin/rustup-init.xslash",
+  "shfmt": "seed/prebuilt/shfmt/bin/shfmt.xslash",
   "uv": "seed/prebuilt/uv/bin/uv.xslash",
   "uvx": "seed/prebuilt/uv/bin/uvx.xslash"
 }
