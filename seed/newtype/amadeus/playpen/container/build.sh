@@ -14,6 +14,7 @@ xslash -- create --skeleton ./seed/prebuilt/age/bin/age-inspect.xslash --out ./s
 xslash -- create --skeleton ./seed/prebuilt/age/bin/age-keygen.xslash --out ./seed/newtype/amadeus/playpen/container/bin/age-keygen.xslash --symlink age-keygen
 xslash -- create --skeleton ./seed/prebuilt/age/bin/age.xslash --out ./seed/newtype/amadeus/playpen/container/bin/age.xslash --symlink age
 xslash -- create --skeleton ./seed/prebuilt/github/bin/gh.xslash --out ./seed/newtype/amadeus/playpen/container/bin/gh.xslash --symlink gh
+xslash -- create --skeleton ./seed/prebuilt/jq/bin/jq.xslash --out ./seed/newtype/amadeus/playpen/container/bin/jq.xslash --symlink jq
 xslash -- create --skeleton ./seed/prebuilt/lego/bin/lego.xslash --out ./seed/newtype/amadeus/playpen/container/bin/lego.xslash --symlink lego
 xslash -- create --skeleton ./seed/prebuilt/ndscm/bin/ndscm.xslash --out ./seed/newtype/amadeus/playpen/container/bin/ndscm.xslash --symlink nd --symlink ndscm
 xslash -- create --skeleton ./seed/prebuilt/node/bin/node.xslash --out ./seed/newtype/amadeus/playpen/container/bin/node.xslash --symlink node
@@ -39,8 +40,6 @@ cp -a -f ./seed/vendor/crane/bin/crane ./seed/newtype/amadeus/playpen/container/
 cp -a -f ./seed/vendor/crane/bin/crane.dotslash ./seed/newtype/amadeus/playpen/container/bin/crane.dotslash
 cp -a -f ./seed/vendor/docker/bin/docker ./seed/newtype/amadeus/playpen/container/bin/docker
 cp -a -f ./seed/vendor/docker/bin/docker.dotslash ./seed/newtype/amadeus/playpen/container/bin/docker.dotslash
-cp -a -f ./seed/vendor/jq/bin/jq ./seed/newtype/amadeus/playpen/container/bin/jq
-cp -a -f ./seed/vendor/jq/bin/jq.dotslash ./seed/newtype/amadeus/playpen/container/bin/jq.dotslash
 cp -a -f ./seed/vendor/llvm/bin/clang ./seed/newtype/amadeus/playpen/container/bin/clang
 cp -a -f ./seed/vendor/llvm/bin/clang-format ./seed/newtype/amadeus/playpen/container/bin/clang-format
 cp -a -f ./seed/vendor/llvm/bin/clang-format.dotslash ./seed/newtype/amadeus/playpen/container/bin/clang-format.dotslash
