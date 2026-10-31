@@ -14,6 +14,7 @@ xslash -- create --skeleton ./seed/prebuilt/age/bin/age-inspect.xslash --out ./s
 xslash -- create --skeleton ./seed/prebuilt/age/bin/age-keygen.xslash --out ./seed/newtype/amadeus/playpen/container/bin/age-keygen.xslash --symlink age-keygen
 xslash -- create --skeleton ./seed/prebuilt/age/bin/age.xslash --out ./seed/newtype/amadeus/playpen/container/bin/age.xslash --symlink age
 xslash -- create --skeleton ./seed/prebuilt/bazel/bin/bazelisk.xslash --out ./seed/newtype/amadeus/playpen/container/bin/bazelisk.xslash --symlink bazel --symlink bazelisk
+xslash -- create --skeleton ./seed/prebuilt/buck/bin/buck2.xslash --out ./seed/newtype/amadeus/playpen/container/bin/buck2.xslash --symlink buck2
 xslash -- create --skeleton ./seed/prebuilt/crane/bin/crane.xslash --out ./seed/newtype/amadeus/playpen/container/bin/crane.xslash --symlink crane
 xslash -- create --skeleton ./seed/prebuilt/github/bin/gh.xslash --out ./seed/newtype/amadeus/playpen/container/bin/gh.xslash --symlink gh
 xslash -- create --skeleton ./seed/prebuilt/jq/bin/jq.xslash --out ./seed/newtype/amadeus/playpen/container/bin/jq.xslash --symlink jq
@@ -29,8 +30,6 @@ xslash -- create --skeleton ./seed/prebuilt/sops/bin/sops.xslash --out ./seed/ne
 xslash -- create --skeleton ./seed/prebuilt/uv/bin/uv.xslash --out ./seed/newtype/amadeus/playpen/container/bin/uv.xslash --symlink uv
 xslash -- create --skeleton ./seed/prebuilt/uv/bin/uvx.xslash --out ./seed/newtype/amadeus/playpen/container/bin/uvx.xslash --symlink uvx
 
-cp -a -f ./seed/vendor/buck/bin/buck2 ./seed/newtype/amadeus/playpen/container/bin/buck2
-cp -a -f ./seed/vendor/buck/bin/buck2.dotslash ./seed/newtype/amadeus/playpen/container/bin/buck2.dotslash
 cp -a -f ./seed/vendor/buck/bin/reindeer ./seed/newtype/amadeus/playpen/container/bin/reindeer
 cp -a -f ./seed/vendor/buck/bin/reindeer.dotslash ./seed/newtype/amadeus/playpen/container/bin/reindeer.dotslash
 cp -a -f ./seed/vendor/claude/bin/claude ./seed/newtype/amadeus/playpen/container/bin/claude
