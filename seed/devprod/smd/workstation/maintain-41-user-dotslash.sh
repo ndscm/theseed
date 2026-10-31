@@ -29,6 +29,7 @@ if [[ ",${maintain_scopes}," == *",user,"* ]]; then
     xslash -- create --skeleton ./seed/prebuilt/rust/bin/rustfmt.xslash --out "${HOME}/.local/bin/rustfmt.xslash" --symlink rustfmt
     xslash -- create --skeleton ./seed/prebuilt/rustup/bin/rustup-init.xslash --out "${HOME}/.local/bin/rustup-init.xslash" --symlink rustup --symlink rustup-init
     xslash -- create --skeleton ./seed/prebuilt/shfmt/bin/shfmt.xslash --out "${HOME}/.local/bin/shfmt.xslash" --symlink shfmt
+    xslash -- create --skeleton ./seed/prebuilt/sops/bin/sops.xslash --out "${HOME}/.local/bin/sops.xslash" --symlink sops
     xslash -- create --skeleton ./seed/prebuilt/uv/bin/uv.xslash --out "${HOME}/.local/bin/uv.xslash" --symlink uv
     xslash -- create --skeleton ./seed/prebuilt/uv/bin/uvx.xslash --out "${HOME}/.local/bin/uvx.xslash" --symlink uvx
 
@@ -55,8 +56,6 @@ if [[ ",${maintain_scopes}," == *",user,"* ]]; then
     cp -a -f ./seed/vendor/llvm/bin/clangd.dotslash "${HOME}/.local/bin/clangd.dotslash"
     cp -a -f ./seed/vendor/podman/bin/podman-remote "${HOME}/.local/bin/podman-remote"
     cp -a -f ./seed/vendor/podman/bin/podman-remote.dotslash "${HOME}/.local/bin/podman-remote.dotslash"
-    cp -a -f ./seed/vendor/sops/bin/sops "${HOME}/.local/bin/sops"
-    cp -a -f ./seed/vendor/sops/bin/sops.dotslash "${HOME}/.local/bin/sops.dotslash"
   fi
 
   if [[ "${oslike}" == "debian" ]]; then
