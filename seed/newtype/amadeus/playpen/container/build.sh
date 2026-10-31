@@ -13,6 +13,7 @@ mkdir -p ./seed/newtype/amadeus/playpen/container/bin/
 xslash -- create --skeleton ./seed/prebuilt/github/bin/gh.xslash --out ./seed/newtype/amadeus/playpen/container/bin/gh.xslash --symlink gh
 xslash -- create --skeleton ./seed/prebuilt/ndscm/bin/ndscm.xslash --out ./seed/newtype/amadeus/playpen/container/bin/ndscm.xslash --symlink nd --symlink ndscm
 xslash -- create --skeleton ./seed/prebuilt/pnpm/bin/pnpm.xslash --out ./seed/newtype/amadeus/playpen/container/bin/pnpm.xslash --symlink pnpm
+xslash -- create --skeleton ./seed/prebuilt/python/bin/python3.xslash --out ./seed/newtype/amadeus/playpen/container/bin/python3.xslash --symlink python --symlink python3
 
 cp -a -f ./seed/vendor/bazel/bin/bazel ./seed/newtype/amadeus/playpen/container/bin/bazel
 cp -a -f ./seed/vendor/bazel/bin/bazelisk ./seed/newtype/amadeus/playpen/container/bin/bazelisk
