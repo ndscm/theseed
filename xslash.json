@@ -1,4 +1,7 @@
 {
+  "age-inspect": "seed/prebuilt/age/bin/age-inspect.xslash",
+  "age-keygen": "seed/prebuilt/age/bin/age-keygen.xslash",
+  "age": "seed/prebuilt/age/bin/age.xslash",
   "cargo-clippy": "seed/prebuilt/rust/bin/cargo-clippy.xslash",
   "cargo-fmt": "seed/prebuilt/rust/bin/cargo-fmt.xslash",
   "cargo": "seed/prebuilt/rust/bin/cargo.xslash",
