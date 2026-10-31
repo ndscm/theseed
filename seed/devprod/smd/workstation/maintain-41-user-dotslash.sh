@@ -7,6 +7,9 @@ if [[ ",${maintain_scopes}," == *",user,"* ]]; then
   printf "\e[34m[user] Checking dotslash tools...\e[0m\n"
 
   if [[ "${oslike}" == "debian" || "${oslike}" == "darwin" ]]; then
+    xslash -- create --skeleton ./seed/prebuilt/age/bin/age-inspect.xslash --out "${HOME}/.local/bin/age-inspect.xslash" --symlink age-inspect
+    xslash -- create --skeleton ./seed/prebuilt/age/bin/age-keygen.xslash --out "${HOME}/.local/bin/age-keygen.xslash" --symlink age-keygen
+    xslash -- create --skeleton ./seed/prebuilt/age/bin/age.xslash --out "${HOME}/.local/bin/age.xslash" --symlink age
     xslash -- create --skeleton ./seed/prebuilt/github/bin/gh.xslash --out "${HOME}/.local/bin/gh.xslash" --symlink gh
     xslash -- create --skeleton ./seed/prebuilt/go/bin/go.xslash --out "${HOME}/.local/bin/go.xslash" --symlink go
     xslash -- create --skeleton ./seed/prebuilt/go/bin/gofmt.xslash --out "${HOME}/.local/bin/gofmt.xslash" --symlink gofmt
@@ -29,12 +32,6 @@ if [[ ",${maintain_scopes}," == *",user,"* ]]; then
     xslash -- create --skeleton ./seed/prebuilt/uv/bin/uv.xslash --out "${HOME}/.local/bin/uv.xslash" --symlink uv
     xslash -- create --skeleton ./seed/prebuilt/uv/bin/uvx.xslash --out "${HOME}/.local/bin/uvx.xslash" --symlink uvx
 
-    cp -a -f ./seed/vendor/age/bin/age "${HOME}/.local/bin/age"
-    cp -a -f ./seed/vendor/age/bin/age-inspect "${HOME}/.local/bin/age-inspect"
-    cp -a -f ./seed/vendor/age/bin/age-inspect.dotslash "${HOME}/.local/bin/age-inspect.dotslash"
-    cp -a -f ./seed/vendor/age/bin/age-keygen "${HOME}/.local/bin/age-keygen"
-    cp -a -f ./seed/vendor/age/bin/age-keygen.dotslash "${HOME}/.local/bin/age-keygen.dotslash"
-    cp -a -f ./seed/vendor/age/bin/age.dotslash "${HOME}/.local/bin/age.dotslash"
     cp -a -f ./seed/vendor/bazel/bin/bazel "${HOME}/.local/bin/bazel"
     cp -a -f ./seed/vendor/bazel/bin/bazelisk "${HOME}/.local/bin/bazelisk"
     cp -a -f ./seed/vendor/bazel/bin/bazelisk.dotslash "${HOME}/.local/bin/bazelisk.dotslash"
