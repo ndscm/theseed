@@ -34,7 +34,7 @@ fi
 ## Ndscm
 
 if command -v ndscm >/dev/null 2>&1; then
-  eval "\$(ndscm --shell-eval shell)"
+  eval "\$(ndscm hook)"
 fi
 EOF
   fi
