@@ -25,6 +25,7 @@
   "rustup-init": "seed/prebuilt/rustup/bin/rustup-init.xslash",
   "rustup": "seed/prebuilt/rustup/bin/rustup-init.xslash",
   "shfmt": "seed/prebuilt/shfmt/bin/shfmt.xslash",
+  "sops": "seed/prebuilt/sops/bin/sops.xslash",
   "uv": "seed/prebuilt/uv/bin/uv.xslash",
   "uvx": "seed/prebuilt/uv/bin/uvx.xslash"
 }
