@@ -14,6 +14,8 @@ xslash -- create --skeleton ./seed/prebuilt/github/bin/gh.xslash --out ./seed/ne
 xslash -- create --skeleton ./seed/prebuilt/ndscm/bin/ndscm.xslash --out ./seed/newtype/amadeus/playpen/container/bin/ndscm.xslash --symlink nd --symlink ndscm
 xslash -- create --skeleton ./seed/prebuilt/pnpm/bin/pnpm.xslash --out ./seed/newtype/amadeus/playpen/container/bin/pnpm.xslash --symlink pnpm
 xslash -- create --skeleton ./seed/prebuilt/python/bin/python3.xslash --out ./seed/newtype/amadeus/playpen/container/bin/python3.xslash --symlink python --symlink python3
+xslash -- create --skeleton ./seed/prebuilt/uv/bin/uv.xslash --out ./seed/newtype/amadeus/playpen/container/bin/uv.xslash --symlink uv
+xslash -- create --skeleton ./seed/prebuilt/uv/bin/uvx.xslash --out ./seed/newtype/amadeus/playpen/container/bin/uvx.xslash --symlink uvx
 
 cp -a -f ./seed/vendor/bazel/bin/bazel ./seed/newtype/amadeus/playpen/container/bin/bazel
 cp -a -f ./seed/vendor/bazel/bin/bazelisk ./seed/newtype/amadeus/playpen/container/bin/bazelisk
@@ -46,10 +48,6 @@ cp -a -f ./seed/vendor/node/bin/npx ./seed/newtype/amadeus/playpen/container/bin
 cp -a -f ./seed/vendor/node/bin/npx.dotslash ./seed/newtype/amadeus/playpen/container/bin/npx.dotslash
 cp -a -f ./seed/vendor/podman/bin/podman-remote ./seed/newtype/amadeus/playpen/container/bin/podman-remote
 cp -a -f ./seed/vendor/podman/bin/podman-remote.dotslash ./seed/newtype/amadeus/playpen/container/bin/podman-remote.dotslash
-cp -a -f ./seed/vendor/uv/bin/uv ./seed/newtype/amadeus/playpen/container/bin/uv
-cp -a -f ./seed/vendor/uv/bin/uv.dotslash ./seed/newtype/amadeus/playpen/container/bin/uv.dotslash
-cp -a -f ./seed/vendor/uv/bin/uvx ./seed/newtype/amadeus/playpen/container/bin/uvx
-cp -a -f ./seed/vendor/uv/bin/uvx.dotslash ./seed/newtype/amadeus/playpen/container/bin/uvx.dotslash
 
 mkdir -p ./seed/newtype/amadeus/playpen/container/smd/workstation/
 cp -a -f ./seed/devprod/smd/workstation/setup.sh ./seed/newtype/amadeus/playpen/container/smd/workstation/setup.sh
