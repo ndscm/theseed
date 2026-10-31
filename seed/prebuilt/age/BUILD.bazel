@@ -1,0 +1,46 @@
+load("//seed/devprod/starlark/archive:defs.bzl", "merge_tar")
+load("//seed/devprod/starlark/xslash:defs.bzl", "xslash_pack")
+
+exports_files(
+    glob(["bin/*"]),
+)
+
+xslash_pack(
+    name = "age_xslash",
+    out = "age.xslash",
+    skeleton = "bin/age.xslash",
+    symlinks = [
+        "age",
+    ],
+    visibility = ["//visibility:public"],
+)
+
+xslash_pack(
+    name = "age-keygen_xslash",
+    out = "age-keygen.xslash",
+    skeleton = "bin/age-keygen.xslash",
+    symlinks = [
+        "age-keygen",
+    ],
+    visibility = ["//visibility:public"],
+)
+
+xslash_pack(
+    name = "age-inspect_xslash",
+    out = "age-inspect.xslash",
+    skeleton = "bin/age-inspect.xslash",
+    symlinks = [
+        "age-inspect",
+    ],
+    visibility = ["//visibility:public"],
+)
+
+merge_tar(
+    name = "xslash",
+    srcs = {
+        ":age_xslash": ".",
+        ":age-keygen_xslash": ".",
+        ":age-inspect_xslash": ".",
+    },
+    visibility = ["//visibility:public"],
+)

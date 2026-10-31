@@ -1,0 +1,59 @@
+{
+  "name": "age-keygen",
+  "platforms": {
+    "darwin-amd64": {
+      "path": "age/age-keygen",
+      "format": "tar.gz",
+      "providers": [
+        {
+          "url": "https://github.com/FiloSottile/age/releases/download/{{TAG}}/age-{{TAG}}-darwin-amd64.tar.gz"
+        }
+      ]
+    },
+    "darwin-arm64": {
+      "path": "age/age-keygen",
+      "format": "tar.gz",
+      "providers": [
+        {
+          "url": "https://github.com/FiloSottile/age/releases/download/{{TAG}}/age-{{TAG}}-darwin-arm64.tar.gz"
+        }
+      ]
+    },
+    "linux-amd64": {
+      "path": "age/age-keygen",
+      "format": "tar.gz",
+      "providers": [
+        {
+          "url": "https://github.com/FiloSottile/age/releases/download/{{TAG}}/age-{{TAG}}-linux-amd64.tar.gz"
+        }
+      ]
+    },
+    "linux-arm64": {
+      "path": "age/age-keygen",
+      "format": "tar.gz",
+      "providers": [
+        {
+          "url": "https://github.com/FiloSottile/age/releases/download/{{TAG}}/age-{{TAG}}-linux-arm64.tar.gz"
+        }
+      ]
+    },
+    "windows-amd64": {
+      "path": "age/age-keygen.exe",
+      "format": "zip",
+      "providers": [
+        {
+          "url": "https://github.com/FiloSottile/age/releases/download/{{TAG}}/age-{{TAG}}-windows-amd64.zip"
+        }
+      ]
+    },
+    "windows-arm64": {
+      "path": "age/age-keygen.exe",
+      "format": "zip",
+      "providers": [
+        {
+          "url": "https://github.com/FiloSottile/age/releases/download/{{TAG}}/age-{{TAG}}-windows-arm64.zip"
+        }
+      ]
+    }
+  }
+}
