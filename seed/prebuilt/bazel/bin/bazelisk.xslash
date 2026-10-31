@@ -1,0 +1,73 @@
+#!/usr/bin/env xslash
+{
+  "name": "bazelisk",
+  "final": true,
+  "platforms": {
+    "darwin-amd64": {
+      "hash": "blake3",
+      "digest": "19d80486c6918eae87e9b5f6e112d9bd4d6184e08e4a7d30c836665fee9ab7be",
+      "size": 6914048,
+      "path": "bazelisk",
+      "providers": [
+        {
+          "url": "https://github.com/bazelbuild/bazelisk/releases/download/v1.29.0/bazelisk-darwin-amd64"
+        }
+      ]
+    },
+    "darwin-arm64": {
+      "hash": "blake3",
+      "digest": "fc9e085f4592aaf142553acedbc38f42d8ceb73b745db72cc86bc9c4df26a9a2",
+      "size": 6659202,
+      "path": "bazelisk",
+      "providers": [
+        {
+          "url": "https://github.com/bazelbuild/bazelisk/releases/download/v1.29.0/bazelisk-darwin-arm64"
+        }
+      ]
+    },
+    "linux-amd64": {
+      "hash": "blake3",
+      "digest": "c14e2840efd5b2bc851a65ece052979b4cddabdc5be2f6153987f6239975f837",
+      "size": 6914232,
+      "path": "bazelisk",
+      "providers": [
+        {
+          "url": "https://github.com/bazelbuild/bazelisk/releases/download/v1.29.0/bazelisk-linux-amd64"
+        }
+      ]
+    },
+    "linux-arm64": {
+      "hash": "blake3",
+      "digest": "0f1c5fdcf165a85b9d2dccb40a3b1f15320d818e269382b1c2d250e357fe096e",
+      "size": 6553784,
+      "path": "bazelisk",
+      "providers": [
+        {
+          "url": "https://github.com/bazelbuild/bazelisk/releases/download/v1.29.0/bazelisk-linux-arm64"
+        }
+      ]
+    },
+    "windows-amd64": {
+      "hash": "blake3",
+      "digest": "4a93f86ec998c5019e893b3de9c4d148f650bbe177eef555cdae323ba2fc06aa",
+      "size": 10502144,
+      "path": "bazelisk.exe",
+      "providers": [
+        {
+          "url": "https://github.com/bazelbuild/bazelisk/releases/download/v1.29.0/bazelisk-windows-amd64.exe"
+        }
+      ]
+    },
+    "windows-arm64": {
+      "hash": "blake3",
+      "digest": "cc40daa2bf685f611ead88f7431e7d44f2b650cd127fcefba625bd50b5be2903",
+      "size": 9847296,
+      "path": "bazelisk.exe",
+      "providers": [
+        {
+          "url": "https://github.com/bazelbuild/bazelisk/releases/download/v1.29.0/bazelisk-windows-arm64.exe"
+        }
+      ]
+    }
+  }
+}
