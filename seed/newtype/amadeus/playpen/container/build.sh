@@ -17,6 +17,7 @@ xslash -- create --skeleton ./seed/prebuilt/node/bin/npm.xslash --out ./seed/new
 xslash -- create --skeleton ./seed/prebuilt/node/bin/npx.xslash --out ./seed/newtype/amadeus/playpen/container/bin/npx.xslash --symlink npx
 xslash -- create --skeleton ./seed/prebuilt/pnpm/bin/pnpm.xslash --out ./seed/newtype/amadeus/playpen/container/bin/pnpm.xslash --symlink pnpm
 xslash -- create --skeleton ./seed/prebuilt/python/bin/python3.xslash --out ./seed/newtype/amadeus/playpen/container/bin/python3.xslash --symlink python --symlink python3
+xslash -- create --skeleton ./seed/prebuilt/shfmt/bin/shfmt.xslash --out ./seed/newtype/amadeus/playpen/container/bin/shfmt.xslash --symlink shfmt
 xslash -- create --skeleton ./seed/prebuilt/uv/bin/uv.xslash --out ./seed/newtype/amadeus/playpen/container/bin/uv.xslash --symlink uv
 xslash -- create --skeleton ./seed/prebuilt/uv/bin/uvx.xslash --out ./seed/newtype/amadeus/playpen/container/bin/uvx.xslash --symlink uvx
 
