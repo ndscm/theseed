@@ -11,6 +11,7 @@ if [[ ",${maintain_scopes}," == *",user,"* ]]; then
     xslash -- create --skeleton ./seed/prebuilt/age/bin/age-keygen.xslash --out "${HOME}/.local/bin/age-keygen.xslash" --symlink age-keygen
     xslash -- create --skeleton ./seed/prebuilt/age/bin/age.xslash --out "${HOME}/.local/bin/age.xslash" --symlink age
     xslash -- create --skeleton ./seed/prebuilt/bazel/bin/bazelisk.xslash --out "${HOME}/.local/bin/bazelisk.xslash" --symlink bazel --symlink bazelisk
+    xslash -- create --skeleton ./seed/prebuilt/buck/bin/buck2.xslash --out "${HOME}/.local/bin/buck2.xslash" --symlink buck2
     xslash -- create --skeleton ./seed/prebuilt/crane/bin/crane.xslash --out "${HOME}/.local/bin/crane.xslash" --symlink crane
     xslash -- create --skeleton ./seed/prebuilt/github/bin/gh.xslash --out "${HOME}/.local/bin/gh.xslash" --symlink gh
     xslash -- create --skeleton ./seed/prebuilt/go/bin/go.xslash --out "${HOME}/.local/bin/go.xslash" --symlink go
@@ -37,8 +38,6 @@ if [[ ",${maintain_scopes}," == *",user,"* ]]; then
     xslash -- create --skeleton ./seed/prebuilt/uv/bin/uv.xslash --out "${HOME}/.local/bin/uv.xslash" --symlink uv
     xslash -- create --skeleton ./seed/prebuilt/uv/bin/uvx.xslash --out "${HOME}/.local/bin/uvx.xslash" --symlink uvx
 
-    cp -a -f ./seed/vendor/buck/bin/buck2 "${HOME}/.local/bin/buck2"
-    cp -a -f ./seed/vendor/buck/bin/buck2.dotslash "${HOME}/.local/bin/buck2.dotslash"
     cp -a -f ./seed/vendor/buck/bin/reindeer "${HOME}/.local/bin/reindeer"
     cp -a -f ./seed/vendor/buck/bin/reindeer.dotslash "${HOME}/.local/bin/reindeer.dotslash"
     cp -a -f ./seed/vendor/claude/bin/claude "${HOME}/.local/bin/claude"
