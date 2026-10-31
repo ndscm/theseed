@@ -9,6 +9,7 @@
   "gh": "seed/prebuilt/github/bin/gh.xslash",
   "go": "seed/prebuilt/go/bin/go.xslash",
   "gofmt": "seed/prebuilt/go/bin/gofmt.xslash",
+  "lego": "seed/prebuilt/lego/bin/lego.xslash",
   "nd": "seed/prebuilt/ndscm/bin/ndscm.xslash",
   "ndscm": "seed/prebuilt/ndscm/bin/ndscm.xslash",
   "node": "seed/prebuilt/node/bin/node.xslash",
