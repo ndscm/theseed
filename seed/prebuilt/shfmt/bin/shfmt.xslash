@@ -1,0 +1,73 @@
+#!/usr/bin/env xslash
+{
+  "name": "shfmt",
+  "final": true,
+  "platforms": {
+    "darwin-amd64": {
+      "hash": "blake3",
+      "digest": "026364142c327460d1ab90abbce75a1fd4d172b29d889954ca2e31558b4d8fe0",
+      "size": 3578208,
+      "path": "shfmt",
+      "providers": [
+        {
+          "url": "https://github.com/mvdan/sh/releases/download/v3.14.0/shfmt_v3.14.0_darwin_amd64"
+        }
+      ]
+    },
+    "darwin-arm64": {
+      "hash": "blake3",
+      "digest": "b53d092d16a43225195a4971528c6a7526a372b2232f0952fb22cb32af6e9103",
+      "size": 3391650,
+      "path": "shfmt",
+      "providers": [
+        {
+          "url": "https://github.com/mvdan/sh/releases/download/v3.14.0/shfmt_v3.14.0_darwin_arm64"
+        }
+      ]
+    },
+    "linux-amd64": {
+      "hash": "blake3",
+      "digest": "c700a685341575c056991b1f595c6bb1be9062f0c67bdcb6f79e19323cad60c3",
+      "size": 3567776,
+      "path": "shfmt",
+      "providers": [
+        {
+          "url": "https://github.com/mvdan/sh/releases/download/v3.14.0/shfmt_v3.14.0_linux_amd64"
+        }
+      ]
+    },
+    "linux-arm64": {
+      "hash": "blake3",
+      "digest": "f312dad84ff39fd18705fd645bc9b15af2e362f82c25f52595cd68807fd7fe03",
+      "size": 3342496,
+      "path": "shfmt",
+      "providers": [
+        {
+          "url": "https://github.com/mvdan/sh/releases/download/v3.14.0/shfmt_v3.14.0_linux_arm64"
+        }
+      ]
+    },
+    "windows-amd64": {
+      "hash": "blake3",
+      "digest": "69e42503a7df78bf17e58c17ce5d5d7e6e357c79914c90828cd53636eeca1835",
+      "size": 3800576,
+      "path": "shfmt.exe",
+      "providers": [
+        {
+          "url": "https://github.com/mvdan/sh/releases/download/v3.14.0/shfmt_v3.14.0_windows_amd64.exe"
+        }
+      ]
+    },
+    "windows-arm64": {
+      "hash": "blake3",
+      "digest": "69e42503a7df78bf17e58c17ce5d5d7e6e357c79914c90828cd53636eeca1835",
+      "size": 3800576,
+      "path": "shfmt.exe",
+      "providers": [
+        {
+          "url": "https://github.com/mvdan/sh/releases/download/v3.14.0/shfmt_v3.14.0_windows_amd64.exe"
+        }
+      ]
+    }
+  }
+}
