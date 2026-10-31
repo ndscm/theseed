@@ -24,6 +24,7 @@ if [[ ",${maintain_scopes}," == *",user,"* ]]; then
     xslash -- create --skeleton ./seed/prebuilt/node/bin/npx.xslash --out "${HOME}/.local/bin/npx.xslash" --symlink npx
     xslash -- create --skeleton ./seed/prebuilt/pnpm/bin/pnpm.xslash --out "${HOME}/.local/bin/pnpm.xslash" --symlink pnpm
     xslash -- create --skeleton ./seed/prebuilt/python/bin/python3.xslash --out "${HOME}/.local/bin/python3.xslash" --symlink python --symlink python3
+    xslash -- create --skeleton ./seed/prebuilt/reindeer/bin/reindeer.xslash --out "${HOME}/.local/bin/reindeer.xslash" --symlink reindeer
     xslash -- create --skeleton ./seed/prebuilt/rust/bin/cargo-clippy.xslash --out "${HOME}/.local/bin/cargo-clippy.xslash" --symlink cargo-clippy
     xslash -- create --skeleton ./seed/prebuilt/rust/bin/cargo-fmt.xslash --out "${HOME}/.local/bin/cargo-fmt.xslash" --symlink cargo-fmt
     xslash -- create --skeleton ./seed/prebuilt/rust/bin/cargo.xslash --out "${HOME}/.local/bin/cargo.xslash" --symlink cargo
@@ -38,8 +39,6 @@ if [[ ",${maintain_scopes}," == *",user,"* ]]; then
     xslash -- create --skeleton ./seed/prebuilt/uv/bin/uv.xslash --out "${HOME}/.local/bin/uv.xslash" --symlink uv
     xslash -- create --skeleton ./seed/prebuilt/uv/bin/uvx.xslash --out "${HOME}/.local/bin/uvx.xslash" --symlink uvx
 
-    cp -a -f ./seed/vendor/buck/bin/reindeer "${HOME}/.local/bin/reindeer"
-    cp -a -f ./seed/vendor/buck/bin/reindeer.dotslash "${HOME}/.local/bin/reindeer.dotslash"
     cp -a -f ./seed/vendor/claude/bin/claude "${HOME}/.local/bin/claude"
     cp -a -f ./seed/vendor/claude/bin/claude.dotslash "${HOME}/.local/bin/claude.dotslash"
     cp -a -f ./seed/vendor/llvm/bin/clang "${HOME}/.local/bin/clang"
