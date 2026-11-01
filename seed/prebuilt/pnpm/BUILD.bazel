@@ -1,0 +1,19 @@
+load("//seed/devprod/starlark/xslash:defs.bzl", "xslash_pack")
+
+exports_files(
+    glob(["bin/*"]),
+)
+
+xslash_pack(
+    name = "pnpm_xslash",
+    out = "pnpm.xslash",
+    skeleton = "bin/pnpm.xslash",
+    symlinks = ["pnpm"],
+    visibility = ["//visibility:public"],
+)
+
+alias(
+    name = "xslash",
+    actual = ":pnpm_xslash",
+    visibility = ["//visibility:public"],
+)
