@@ -1,0 +1,32 @@
+{
+  "name": "p4merge",
+  "platforms": {
+    "darwin-amd64": {
+      "path": "p4merge.app/Contents/MacOS/p4merge",
+      "format": "dmg",
+      "providers": [
+        {
+          "url": "https://filehost.perforce.com/perforce/{{DARWIN}}/bin.macosx12u/P4V.dmg"
+        }
+      ]
+    },
+    "darwin-arm64": {
+      "path": "p4merge.app/Contents/MacOS/p4merge",
+      "format": "dmg",
+      "providers": [
+        {
+          "url": "https://filehost.perforce.com/perforce/{{DARWIN}}/bin.macosx12u/P4V.dmg"
+        }
+      ]
+    },
+    "linux-amd64": {
+      "path": "p4v-{{VERSION}}/bin/p4merge",
+      "format": "tar.gz",
+      "providers": [
+        {
+          "url": "https://filehost.perforce.com/perforce/{{LINUX}}/bin.linux26x86_64/p4v.tgz"
+        }
+      ]
+    }
+  }
+}
