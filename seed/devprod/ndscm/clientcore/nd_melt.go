@@ -179,18 +179,32 @@ func constructMeltFromPoint(
 		return "", seederr.Wrap(err)
 	}
 
+	// Apply modifiers in two passes: delete every excluded path before performing
+	// any rename. A single pass processes paths in git's byte-sorted order, so a
+	// rename destination could be clobbered by a later excluded source that maps
+	// to the same path.
 	changed := false
 	for _, scmFilePath := range scmFilePaths {
 		newPath := scmFilePath
 		if modifiers != nil {
 			newPath = modifiers.apply(scmFilePath)
 		}
+		if newPath != "" {
+			continue
+		}
+		err = os.Remove(filepath.Join(scratchWorktreePath, scmFilePath))
+		if err != nil {
+			return "", seederr.WrapErrorf("failed to drop %v: %v", scmFilePath, err)
+		}
+		changed = true
+	}
+
+	for _, scmFilePath := range scmFilePaths {
+		newPath := scmFilePath
+		if modifiers != nil {
+			newPath = modifiers.apply(scmFilePath)
+		}
 		if newPath == "" {
-			err = os.Remove(filepath.Join(scratchWorktreePath, scmFilePath))
-			if err != nil {
-				return "", seederr.WrapErrorf("failed to drop %v: %v", scmFilePath, err)
-			}
-			changed = true
 			continue
 		}
 		if upstreamDir != "." {
