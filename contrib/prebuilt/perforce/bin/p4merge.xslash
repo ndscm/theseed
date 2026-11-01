@@ -1,0 +1,43 @@
+#!/usr/bin/env xslash
+{
+  "name": "p4merge",
+  "final": true,
+  "platforms": {
+    "darwin-amd64": {
+      "hash": "blake3",
+      "digest": "ca128057b1d195556c24da079880ee327b8c3aad261166e9f50b8228f62e2d3e",
+      "size": 609991551,
+      "format": "dmg",
+      "path": "p4merge.app/Contents/MacOS/p4merge",
+      "providers": [
+        {
+          "url": "https://filehost.perforce.com/perforce/r26.3/bin.macosx12u/P4V.dmg"
+        }
+      ]
+    },
+    "darwin-arm64": {
+      "hash": "blake3",
+      "digest": "ca128057b1d195556c24da079880ee327b8c3aad261166e9f50b8228f62e2d3e",
+      "size": 609991551,
+      "format": "dmg",
+      "path": "p4merge.app/Contents/MacOS/p4merge",
+      "providers": [
+        {
+          "url": "https://filehost.perforce.com/perforce/r26.3/bin.macosx12u/P4V.dmg"
+        }
+      ]
+    },
+    "linux-amd64": {
+      "hash": "blake3",
+      "digest": "7593b25291b4c513a2f80f76dbdc7eb8e7ca8162bac7adfc3a102cd4e0ecd061",
+      "size": 218605342,
+      "format": "tar.gz",
+      "path": "p4v-2026.3.3115448/bin/p4merge",
+      "providers": [
+        {
+          "url": "https://filehost.perforce.com/perforce/r26.3/bin.linux26x86_64/p4v.tgz"
+        }
+      ]
+    }
+  }
+}
