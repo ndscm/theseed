@@ -1,0 +1,35 @@
+load("//seed/devprod/starlark/archive:defs.bzl", "merge_tar")
+load("//seed/devprod/starlark/xslash:defs.bzl", "xslash_pack")
+
+exports_files(
+    glob(["bin/*"]),
+)
+
+xslash_pack(
+    name = "uv_xslash",
+    out = "uv.xslash",
+    skeleton = "bin/uv.xslash",
+    symlinks = [
+        "uv",
+    ],
+    visibility = ["//visibility:public"],
+)
+
+xslash_pack(
+    name = "uvx_xslash",
+    out = "uvx.xslash",
+    skeleton = "bin/uvx.xslash",
+    symlinks = [
+        "uvx",
+    ],
+    visibility = ["//visibility:public"],
+)
+
+merge_tar(
+    name = "xslash",
+    srcs = {
+        ":uv_xslash": ".",
+        ":uvx_xslash": ".",
+    },
+    visibility = ["//visibility:public"],
+)
