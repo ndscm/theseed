@@ -1,0 +1,22 @@
+load("//seed/devprod/starlark/xslash:defs.bzl", "xslash_pack")
+
+exports_files(
+    glob(["bin/*"]),
+)
+
+xslash_pack(
+    name = "python3_xslash",
+    out = "python3.xslash",
+    skeleton = "bin/python3.xslash",
+    symlinks = [
+        "python",
+        "python3",
+    ],
+    visibility = ["//visibility:public"],
+)
+
+alias(
+    name = "xslash",
+    actual = ":python3_xslash",
+    visibility = ["//visibility:public"],
+)
