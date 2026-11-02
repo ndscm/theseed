@@ -16,6 +16,7 @@
   "clang-format": "seed/prebuilt/llvm/bin/clang-format.xslash",
   "clang": "seed/prebuilt/llvm/bin/clang.xslash",
   "clangd": "seed/prebuilt/llvm/bin/clangd.xslash",
+  "claude": "seed/prebuilt/claude/bin/claude.xslash",
   "cloc": "seed/prebuilt/cloc/bin/cloc.xslash",
   "crane": "seed/prebuilt/crane/bin/crane.xslash",
   "docker": "seed/prebuilt/docker/bin/docker.xslash",
