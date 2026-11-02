@@ -1,0 +1,19 @@
+load("//seed/devprod/starlark/xslash:defs.bzl", "xslash_pack")
+
+exports_files(
+    glob(["bin/*"]),
+)
+
+xslash_pack(
+    name = "kubectl_xslash",
+    out = "kubectl.xslash",
+    skeleton = "bin/kubectl.xslash",
+    symlinks = ["kubectl"],
+    visibility = ["//visibility:public"],
+)
+
+alias(
+    name = "xslash",
+    actual = ":kubectl_xslash",
+    visibility = ["//visibility:public"],
+)
