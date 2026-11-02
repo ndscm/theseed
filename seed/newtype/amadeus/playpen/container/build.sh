@@ -24,6 +24,7 @@ xslash -- create --skeleton ./seed/prebuilt/node/bin/node.xslash --out ./seed/ne
 xslash -- create --skeleton ./seed/prebuilt/node/bin/npm.xslash --out ./seed/newtype/amadeus/playpen/container/bin/npm.xslash --symlink npm
 xslash -- create --skeleton ./seed/prebuilt/node/bin/npx.xslash --out ./seed/newtype/amadeus/playpen/container/bin/npx.xslash --symlink npx
 xslash -- create --skeleton ./seed/prebuilt/pnpm/bin/pnpm.xslash --out ./seed/newtype/amadeus/playpen/container/bin/pnpm.xslash --symlink pnpm
+xslash -- create --skeleton ./seed/prebuilt/podman/bin/podman-remote.xslash --out ./seed/newtype/amadeus/playpen/container/bin/podman-remote.xslash --symlink podman-remote
 xslash -- create --skeleton ./seed/prebuilt/python/bin/python3.xslash --out ./seed/newtype/amadeus/playpen/container/bin/python3.xslash --symlink python --symlink python3
 xslash -- create --skeleton ./seed/prebuilt/reindeer/bin/reindeer.xslash --out ./seed/newtype/amadeus/playpen/container/bin/reindeer.xslash --symlink reindeer
 xslash -- create --skeleton ./seed/prebuilt/shfmt/bin/shfmt.xslash --out ./seed/newtype/amadeus/playpen/container/bin/shfmt.xslash --symlink shfmt
@@ -41,8 +42,6 @@ cp -a -f ./seed/vendor/llvm/bin/clang-format.dotslash ./seed/newtype/amadeus/pla
 cp -a -f ./seed/vendor/llvm/bin/clang.dotslash ./seed/newtype/amadeus/playpen/container/bin/clang.dotslash
 cp -a -f ./seed/vendor/llvm/bin/clangd ./seed/newtype/amadeus/playpen/container/bin/clangd
 cp -a -f ./seed/vendor/llvm/bin/clangd.dotslash ./seed/newtype/amadeus/playpen/container/bin/clangd.dotslash
-cp -a -f ./seed/vendor/podman/bin/podman-remote ./seed/newtype/amadeus/playpen/container/bin/podman-remote
-cp -a -f ./seed/vendor/podman/bin/podman-remote.dotslash ./seed/newtype/amadeus/playpen/container/bin/podman-remote.dotslash
 
 mkdir -p ./seed/newtype/amadeus/playpen/container/smd/workstation/
 cp -a -f ./seed/devprod/smd/workstation/setup.sh ./seed/newtype/amadeus/playpen/container/smd/workstation/setup.sh
