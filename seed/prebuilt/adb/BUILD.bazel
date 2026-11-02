@@ -1,0 +1,35 @@
+load("//seed/devprod/starlark/archive:defs.bzl", "merge_tar")
+load("//seed/devprod/starlark/xslash:defs.bzl", "xslash_pack")
+
+exports_files(
+    glob(["bin/*"]),
+)
+
+xslash_pack(
+    name = "adb_xslash",
+    out = "adb.xslash",
+    skeleton = "bin/adb.xslash",
+    symlinks = [
+        "adb",
+    ],
+    visibility = ["//visibility:public"],
+)
+
+xslash_pack(
+    name = "fastboot_xslash",
+    out = "fastboot.xslash",
+    skeleton = "bin/fastboot.xslash",
+    symlinks = [
+        "fastboot",
+    ],
+    visibility = ["//visibility:public"],
+)
+
+merge_tar(
+    name = "xslash",
+    srcs = {
+        ":adb_xslash": ".",
+        ":fastboot_xslash": ".",
+    },
+    visibility = ["//visibility:public"],
+)
