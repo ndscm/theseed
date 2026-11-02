@@ -1,0 +1,57 @@
+load("//seed/devprod/starlark/archive:defs.bzl", "merge_tar")
+load("//seed/devprod/starlark/xslash:defs.bzl", "xslash_pack")
+
+exports_files(
+    glob(["bin/*"]),
+)
+
+xslash_pack(
+    name = "android_xslash",
+    out = "android.xslash",
+    skeleton = "bin/android.xslash",
+    symlinks = [
+        "android",
+    ],
+    visibility = ["//visibility:public"],
+)
+
+xslash_pack(
+    name = "apkanalyzer_xslash",
+    out = "apkanalyzer.xslash",
+    skeleton = "bin/apkanalyzer.xslash",
+    symlinks = [
+        "apkanalyzer",
+    ],
+    visibility = ["//visibility:public"],
+)
+
+xslash_pack(
+    name = "avdmanager_xslash",
+    out = "avdmanager.xslash",
+    skeleton = "bin/avdmanager.xslash",
+    symlinks = [
+        "avdmanager",
+    ],
+    visibility = ["//visibility:public"],
+)
+
+xslash_pack(
+    name = "sdkmanager_xslash",
+    out = "sdkmanager.xslash",
+    skeleton = "bin/sdkmanager.xslash",
+    symlinks = [
+        "sdkmanager",
+    ],
+    visibility = ["//visibility:public"],
+)
+
+merge_tar(
+    name = "xslash",
+    srcs = {
+        ":android_xslash": ".",
+        ":apkanalyzer_xslash": ".",
+        ":avdmanager_xslash": ".",
+        ":sdkmanager_xslash": ".",
+    },
+    visibility = ["//visibility:public"],
+)
