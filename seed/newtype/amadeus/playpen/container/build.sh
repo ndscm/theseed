@@ -23,6 +23,9 @@ xslash -- create --skeleton ./seed/prebuilt/github/bin/gh.xslash --out ./seed/ne
 xslash -- create --skeleton ./seed/prebuilt/jq/bin/jq.xslash --out ./seed/newtype/amadeus/playpen/container/bin/jq.xslash --symlink jq
 xslash -- create --skeleton ./seed/prebuilt/kubectl/bin/kubectl.xslash --out ./seed/newtype/amadeus/playpen/container/bin/kubectl.xslash --symlink kubectl
 xslash -- create --skeleton ./seed/prebuilt/lego/bin/lego.xslash --out ./seed/newtype/amadeus/playpen/container/bin/lego.xslash --symlink lego
+xslash -- create --skeleton ./seed/prebuilt/llvm/bin/clang-format.xslash --out ./seed/newtype/amadeus/playpen/container/bin/clang-format.xslash --symlink clang-format
+xslash -- create --skeleton ./seed/prebuilt/llvm/bin/clang.xslash --out ./seed/newtype/amadeus/playpen/container/bin/clang.xslash --symlink clang
+xslash -- create --skeleton ./seed/prebuilt/llvm/bin/clangd.xslash --out ./seed/newtype/amadeus/playpen/container/bin/clangd.xslash --symlink clangd
 xslash -- create --skeleton ./seed/prebuilt/minikube/bin/minikube.xslash --out ./seed/newtype/amadeus/playpen/container/bin/minikube.xslash --symlink minikube
 xslash -- create --skeleton ./seed/prebuilt/ndscm/bin/ndscm.xslash --out ./seed/newtype/amadeus/playpen/container/bin/ndscm.xslash --symlink nd --symlink ndscm
 xslash -- create --skeleton ./seed/prebuilt/node/bin/node.xslash --out ./seed/newtype/amadeus/playpen/container/bin/node.xslash --symlink node
@@ -39,12 +42,6 @@ xslash -- create --skeleton ./seed/prebuilt/uv/bin/uvx.xslash --out ./seed/newty
 
 cp -a -f ./seed/vendor/claude/bin/claude ./seed/newtype/amadeus/playpen/container/bin/claude
 cp -a -f ./seed/vendor/claude/bin/claude.dotslash ./seed/newtype/amadeus/playpen/container/bin/claude.dotslash
-cp -a -f ./seed/vendor/llvm/bin/clang ./seed/newtype/amadeus/playpen/container/bin/clang
-cp -a -f ./seed/vendor/llvm/bin/clang-format ./seed/newtype/amadeus/playpen/container/bin/clang-format
-cp -a -f ./seed/vendor/llvm/bin/clang-format.dotslash ./seed/newtype/amadeus/playpen/container/bin/clang-format.dotslash
-cp -a -f ./seed/vendor/llvm/bin/clang.dotslash ./seed/newtype/amadeus/playpen/container/bin/clang.dotslash
-cp -a -f ./seed/vendor/llvm/bin/clangd ./seed/newtype/amadeus/playpen/container/bin/clangd
-cp -a -f ./seed/vendor/llvm/bin/clangd.dotslash ./seed/newtype/amadeus/playpen/container/bin/clangd.dotslash
 
 mkdir -p ./seed/newtype/amadeus/playpen/container/smd/workstation/
 cp -a -f ./seed/devprod/smd/workstation/setup.sh ./seed/newtype/amadeus/playpen/container/smd/workstation/setup.sh
