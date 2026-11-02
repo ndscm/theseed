@@ -18,6 +18,7 @@ if [[ ",${maintain_scopes}," == *",user,"* ]]; then
     xslash -- create --skeleton ./seed/prebuilt/go/bin/go.xslash --out "${HOME}/.local/bin/go.xslash" --symlink go
     xslash -- create --skeleton ./seed/prebuilt/go/bin/gofmt.xslash --out "${HOME}/.local/bin/gofmt.xslash" --symlink gofmt
     xslash -- create --skeleton ./seed/prebuilt/jq/bin/jq.xslash --out "${HOME}/.local/bin/jq.xslash" --symlink jq
+    xslash -- create --skeleton ./seed/prebuilt/kubectl/bin/kubectl.xslash --out "${HOME}/.local/bin/kubectl.xslash" --symlink kubectl
     xslash -- create --skeleton ./seed/prebuilt/lego/bin/lego.xslash --out "${HOME}/.local/bin/lego.xslash" --symlink lego
     xslash -- create --skeleton ./seed/prebuilt/ndscm/bin/ndscm.xslash --out "${HOME}/.local/bin/ndscm.xslash" --symlink nd --symlink ndscm
     xslash -- create --skeleton ./seed/prebuilt/node/bin/node.xslash --out "${HOME}/.local/bin/node.xslash" --symlink node
