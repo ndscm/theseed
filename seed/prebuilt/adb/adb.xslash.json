@@ -1,0 +1,32 @@
+{
+  "name": "adb",
+  "platforms": {
+    "darwin-arm64": {
+      "path": "platform-tools/adb",
+      "format": "zip",
+      "providers": [
+        {
+          "url": "https://dl.google.com/android/repository/platform-tools_{{TAG}}-darwin.zip"
+        }
+      ]
+    },
+    "linux-amd64": {
+      "path": "platform-tools/adb",
+      "format": "zip",
+      "providers": [
+        {
+          "url": "https://dl.google.com/android/repository/platform-tools_{{TAG}}-linux.zip"
+        }
+      ]
+    },
+    "windows-amd64": {
+      "path": "platform-tools/adb",
+      "format": "zip",
+      "providers": [
+        {
+          "url": "https://dl.google.com/android/repository/platform-tools_{{TAG}}-win.zip"
+        }
+      ]
+    }
+  }
+}

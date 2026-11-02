@@ -1,0 +1,43 @@
+#!/usr/bin/env xslash
+{
+  "name": "fastboot",
+  "final": true,
+  "platforms": {
+    "darwin-arm64": {
+      "hash": "blake3",
+      "digest": "68eb5d346be302b56377d69e0b42adbbf81a6bcedbd3cb6df390c00788b7eb9e",
+      "size": 16110554,
+      "format": "zip",
+      "path": "platform-tools/fastboot",
+      "providers": [
+        {
+          "url": "https://dl.google.com/android/repository/platform-tools_r37.0.1-darwin.zip"
+        }
+      ]
+    },
+    "linux-amd64": {
+      "hash": "blake3",
+      "digest": "05cad8db65eba2d168baeed053ff7fc1304dbe6cb6c10ddfbdd16e737c82b6ed",
+      "size": 9054187,
+      "format": "zip",
+      "path": "platform-tools/fastboot",
+      "providers": [
+        {
+          "url": "https://dl.google.com/android/repository/platform-tools_r37.0.1-linux.zip"
+        }
+      ]
+    },
+    "windows-amd64": {
+      "hash": "blake3",
+      "digest": "b86bdd1b2bf4c3f8c0e9c4e298ee2a8cd3496d8f5d5f3d53ab566fdefd1435ec",
+      "size": 8044989,
+      "format": "zip",
+      "path": "platform-tools/fastboot",
+      "providers": [
+        {
+          "url": "https://dl.google.com/android/repository/platform-tools_r37.0.1-win.zip"
+        }
+      ]
+    }
+  }
+}
