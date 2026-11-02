@@ -1,0 +1,53 @@
+{
+  "name": "direnv",
+  "platforms": {
+    "darwin-amd64": {
+      "path": "direnv",
+      "providers": [
+        {
+          "url": "https://github.com/direnv/direnv/releases/download/{{TAG}}/direnv.darwin-amd64"
+        }
+      ]
+    },
+    "darwin-arm64": {
+      "path": "direnv",
+      "providers": [
+        {
+          "url": "https://github.com/direnv/direnv/releases/download/{{TAG}}/direnv.darwin-arm64"
+        }
+      ]
+    },
+    "linux-amd64": {
+      "path": "direnv",
+      "providers": [
+        {
+          "url": "https://github.com/direnv/direnv/releases/download/{{TAG}}/direnv.linux-amd64"
+        }
+      ]
+    },
+    "linux-arm64": {
+      "path": "direnv",
+      "providers": [
+        {
+          "url": "https://github.com/direnv/direnv/releases/download/{{TAG}}/direnv.linux-arm64"
+        }
+      ]
+    },
+    "windows-amd64": {
+      "path": "direnv.exe",
+      "providers": [
+        {
+          "url": "https://github.com/direnv/direnv/releases/download/{{TAG}}/direnv.windows-amd64"
+        }
+      ]
+    },
+    "windows-arm64": {
+      "path": "direnv.exe",
+      "providers": [
+        {
+          "url": "https://github.com/direnv/direnv/releases/download/{{TAG}}/direnv.windows-arm64"
+        }
+      ]
+    }
+  }
+}
