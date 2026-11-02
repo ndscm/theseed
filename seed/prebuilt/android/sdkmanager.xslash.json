@@ -1,0 +1,32 @@
+{
+  "name": "sdkmanager",
+  "platforms": {
+    "darwin-arm64": {
+      "path": "cmdline-tools/bin/sdkmanager",
+      "format": "zip",
+      "providers": [
+        {
+          "url": "https://dl.google.com/android/repository/commandlinetools-mac_arm64-{{TAG}}_latest.zip"
+        }
+      ]
+    },
+    "linux-amd64": {
+      "path": "cmdline-tools/bin/sdkmanager",
+      "format": "zip",
+      "providers": [
+        {
+          "url": "https://dl.google.com/android/repository/commandlinetools-linux-{{TAG}}_latest.zip"
+        }
+      ]
+    },
+    "windows-amd64": {
+      "path": "cmdline-tools/bin/sdkmanager",
+      "format": "zip",
+      "providers": [
+        {
+          "url": "https://dl.google.com/android/repository/commandlinetools-win-{{TAG}}_latest.zip"
+        }
+      ]
+    }
+  }
+}
