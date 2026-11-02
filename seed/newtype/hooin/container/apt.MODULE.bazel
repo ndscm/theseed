@@ -8,7 +8,7 @@ apt.sources_list(
         "resolute-updates",
     ],
     types = ["deb"],
-    uris = ["https://snapshot.ubuntu.com/ubuntu/20260901T000000Z"],
+    uris = ["https://snapshot.ubuntu.com/ubuntu/20261101T000000Z"],
 )
 apt.install(
     dependency_set = "seed_newtype_hooin_container_apt",
