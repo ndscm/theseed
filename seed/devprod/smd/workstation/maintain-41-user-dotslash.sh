@@ -19,6 +19,7 @@ if [[ ",${maintain_scopes}," == *",user,"* ]]; then
     xslash -- create --skeleton ./seed/prebuilt/atlas/bin/atlas.xslash --out "${HOME}/.local/bin/atlas.xslash" --symlink atlas
     xslash -- create --skeleton ./seed/prebuilt/bazel/bin/bazelisk.xslash --out "${HOME}/.local/bin/bazelisk.xslash" --symlink bazel --symlink bazelisk
     xslash -- create --skeleton ./seed/prebuilt/buck/bin/buck2.xslash --out "${HOME}/.local/bin/buck2.xslash" --symlink buck2
+    xslash -- create --skeleton ./seed/prebuilt/claude/bin/claude.xslash --out "${HOME}/.local/bin/claude.xslash" --symlink claude
     xslash -- create --skeleton ./seed/prebuilt/crane/bin/crane.xslash --out "${HOME}/.local/bin/crane.xslash" --symlink crane
     xslash -- create --skeleton ./seed/prebuilt/gcloud/bin/gcloud.xslash --out "${HOME}/.local/bin/gcloud.xslash" --symlink gcloud
     xslash -- create --skeleton ./seed/prebuilt/github/bin/gh.xslash --out "${HOME}/.local/bin/gh.xslash" --symlink gh
@@ -54,9 +55,6 @@ if [[ ",${maintain_scopes}," == *",user,"* ]]; then
     xslash -- create --skeleton ./seed/prebuilt/uv/bin/uvx.xslash --out "${HOME}/.local/bin/uvx.xslash" --symlink uvx
 
     xslash -- create --skeleton ./contrib/prebuilt/perforce/bin/p4merge.xslash --out "${HOME}/.local/bin/p4merge.xslash" --symlink p4merge
-
-    cp -a -f ./seed/vendor/claude/bin/claude "${HOME}/.local/bin/claude"
-    cp -a -f ./seed/vendor/claude/bin/claude.dotslash "${HOME}/.local/bin/claude.dotslash"
   fi
 
   printf "\e[32m[user] Check dotslash tools done.\e[0m\n"
