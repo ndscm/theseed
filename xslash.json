@@ -12,6 +12,7 @@
   "cloc": "seed/prebuilt/cloc/bin/cloc.xslash",
   "crane": "seed/prebuilt/crane/bin/crane.xslash",
   "docker": "seed/prebuilt/docker/bin/docker.xslash",
+  "gcloud": "seed/prebuilt/gcloud/bin/gcloud.xslash",
   "gh": "seed/prebuilt/github/bin/gh.xslash",
   "go": "seed/prebuilt/go/bin/go.xslash",
   "gofmt": "seed/prebuilt/go/bin/gofmt.xslash",
