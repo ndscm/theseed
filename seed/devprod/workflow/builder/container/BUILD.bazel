@@ -31,6 +31,7 @@ merge_tar(
     srcs = {
         ":xslash": "/usr/local/bin",
         "//seed/prebuilt/docker:xslash": "/usr/local/bin",
+        "//seed/prebuilt/gcloud:xslash": "/usr/local/bin",
         "//seed/prebuilt/github:xslash": "/usr/local/bin",
         "//seed/prebuilt/ndscm:xslash": "/usr/local/bin",
     },
@@ -40,7 +41,6 @@ pkg_tar(
     name = "bin_layer_tar",
     files = {
         "@dotslash_release_linux_x86_64//:bin": "/usr/local/bin/dotslash",
-        "//seed/vendor/gcloud:bin/gcloud.dotslash": "/usr/local/bin/gcloud",
     },
     mode = "0755",
     deps = [":xslash_layer_tar"],
