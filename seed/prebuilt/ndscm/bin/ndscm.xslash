@@ -5,49 +5,49 @@
   "platforms": {
     "darwin-amd64": {
       "hash": "blake3",
-      "digest": "6438fddfe70196864559ae52575875a818bf2e38e32c7f75977802d1f80e82e4",
-      "size": 2609979,
+      "digest": "4f0b8b075e3d43fd21bcabc9009369a50eda740974e90140d75d1ed4aa3db7e4",
+      "size": 2610050,
       "format": "tar.gz",
       "path": "ndscm",
       "providers": [
         {
-          "url": "https://github.com/ndscm/ndscm/releases/download/v26.10.30/ndscm-darwin-amd64.tar.gz"
+          "url": "https://github.com/ndscm/ndscm/releases/download/v26.11.2/ndscm-darwin-amd64.tar.gz"
         }
       ]
     },
     "darwin-arm64": {
       "hash": "blake3",
-      "digest": "6b84cdac671f57177ce8c51b166dd3e44d851ddbbdbbefa6826c6f1cc2f9353e",
-      "size": 2403011,
+      "digest": "0ce40942161375519ed20db137cd2d82b2e6d1af1748d3c2362d70554171e352",
+      "size": 2403291,
       "format": "tar.gz",
       "path": "ndscm",
       "providers": [
         {
-          "url": "https://github.com/ndscm/ndscm/releases/download/v26.10.30/ndscm-darwin-arm64.tar.gz"
+          "url": "https://github.com/ndscm/ndscm/releases/download/v26.11.2/ndscm-darwin-arm64.tar.gz"
         }
       ]
     },
     "linux-amd64": {
       "hash": "blake3",
-      "digest": "6964665649421100892eb37fe39d7102d5899d9bba0ce93ac095c699aa805d39",
-      "size": 2586283,
+      "digest": "3f1163cebb0c309a2ec15cf4d209010a8d188af4250ade6433150f2385877fc7",
+      "size": 2586594,
       "format": "tar.gz",
       "path": "ndscm",
       "providers": [
         {
-          "url": "https://github.com/ndscm/ndscm/releases/download/v26.10.30/ndscm-linux-amd64.tar.gz"
+          "url": "https://github.com/ndscm/ndscm/releases/download/v26.11.2/ndscm-linux-amd64.tar.gz"
         }
       ]
     },
     "linux-arm64": {
       "hash": "blake3",
-      "digest": "4dd2f11df983233990c0e3cc3c6ad4f500e695cdc5748b991aa01090947f1950",
-      "size": 2325583,
+      "digest": "2282e91234a7f4851dddabb90affe0425a9c511eee8a6eb982fbd1b23ccdbe5b",
+      "size": 2325912,
       "format": "tar.gz",
       "path": "ndscm",
       "providers": [
         {
-          "url": "https://github.com/ndscm/ndscm/releases/download/v26.10.30/ndscm-linux-arm64.tar.gz"
+          "url": "https://github.com/ndscm/ndscm/releases/download/v26.11.2/ndscm-linux-arm64.tar.gz"
         }
       ]
     }
