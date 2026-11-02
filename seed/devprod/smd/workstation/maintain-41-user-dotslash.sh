@@ -14,6 +14,7 @@ if [[ ",${maintain_scopes}," == *",user,"* ]]; then
     xslash -- create --skeleton ./seed/prebuilt/bazel/bin/bazelisk.xslash --out "${HOME}/.local/bin/bazelisk.xslash" --symlink bazel --symlink bazelisk
     xslash -- create --skeleton ./seed/prebuilt/buck/bin/buck2.xslash --out "${HOME}/.local/bin/buck2.xslash" --symlink buck2
     xslash -- create --skeleton ./seed/prebuilt/crane/bin/crane.xslash --out "${HOME}/.local/bin/crane.xslash" --symlink crane
+    xslash -- create --skeleton ./seed/prebuilt/gcloud/bin/gcloud.xslash --out "${HOME}/.local/bin/gcloud.xslash" --symlink gcloud
     xslash -- create --skeleton ./seed/prebuilt/github/bin/gh.xslash --out "${HOME}/.local/bin/gh.xslash" --symlink gh
     xslash -- create --skeleton ./seed/prebuilt/go/bin/go.xslash --out "${HOME}/.local/bin/go.xslash" --symlink go
     xslash -- create --skeleton ./seed/prebuilt/go/bin/gofmt.xslash --out "${HOME}/.local/bin/gofmt.xslash" --symlink gofmt
