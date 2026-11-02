@@ -39,6 +39,8 @@ if [[ ",${maintain_scopes}," == *",user,"* ]]; then
     xslash -- create --skeleton ./seed/prebuilt/uv/bin/uv.xslash --out "${HOME}/.local/bin/uv.xslash" --symlink uv
     xslash -- create --skeleton ./seed/prebuilt/uv/bin/uvx.xslash --out "${HOME}/.local/bin/uvx.xslash" --symlink uvx
 
+    xslash -- create --skeleton ./contrib/prebuilt/perforce/bin/p4merge.xslash --out "${HOME}/.local/bin/p4merge.xslash" --symlink p4merge
+
     cp -a -f ./seed/vendor/claude/bin/claude "${HOME}/.local/bin/claude"
     cp -a -f ./seed/vendor/claude/bin/claude.dotslash "${HOME}/.local/bin/claude.dotslash"
     cp -a -f ./seed/vendor/llvm/bin/clang "${HOME}/.local/bin/clang"
@@ -49,11 +51,6 @@ if [[ ",${maintain_scopes}," == *",user,"* ]]; then
     cp -a -f ./seed/vendor/llvm/bin/clangd.dotslash "${HOME}/.local/bin/clangd.dotslash"
     cp -a -f ./seed/vendor/podman/bin/podman-remote "${HOME}/.local/bin/podman-remote"
     cp -a -f ./seed/vendor/podman/bin/podman-remote.dotslash "${HOME}/.local/bin/podman-remote.dotslash"
-  fi
-
-  if [[ "${oslike}" == "debian" ]]; then
-    cp -a -f ./contrib/vendor/perforce/bin/p4merge "${HOME}/.local/bin/p4merge"
-    cp -a -f ./contrib/vendor/perforce/bin/p4merge.dotslash "${HOME}/.local/bin/p4merge.dotslash"
   fi
 
   printf "\e[32m[user] Check dotslash tools done.\e[0m\n"
