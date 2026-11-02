@@ -1,0 +1,79 @@
+#!/usr/bin/env xslash
+{
+  "name": "gcloud",
+  "final": true,
+  "platforms": {
+    "darwin-amd64": {
+      "hash": "blake3",
+      "digest": "c7d464e74a2e04bbbb02ed8af3bef7b3f6897ef9f9cad5257bd9764742daa412",
+      "size": 62222458,
+      "format": "tar.gz",
+      "path": "google-cloud-sdk/bin/gcloud",
+      "providers": [
+        {
+          "url": "https://storage.googleapis.com/cloud-sdk-release/google-cloud-cli-581.0.0-darwin-x86_64.tar.gz"
+        }
+      ]
+    },
+    "darwin-arm64": {
+      "hash": "blake3",
+      "digest": "01fdab7f5d6cfb6eda132a5a212f82eda35f97778c61a5b0265bc78b84a66aea",
+      "size": 62128574,
+      "format": "tar.gz",
+      "path": "google-cloud-sdk/bin/gcloud",
+      "providers": [
+        {
+          "url": "https://storage.googleapis.com/cloud-sdk-release/google-cloud-cli-581.0.0-darwin-arm.tar.gz"
+        }
+      ]
+    },
+    "linux-amd64": {
+      "hash": "blake3",
+      "digest": "dfa5c415506d1d042dee42f4486eada4694cd539ed1ed17d2b9b2f7482a89add",
+      "size": 96603011,
+      "format": "tar.gz",
+      "path": "google-cloud-sdk/bin/gcloud",
+      "providers": [
+        {
+          "url": "https://storage.googleapis.com/cloud-sdk-release/google-cloud-cli-581.0.0-linux-x86_64.tar.gz"
+        }
+      ]
+    },
+    "linux-arm64": {
+      "hash": "blake3",
+      "digest": "219c363b39cb2bd5021b248d8b1e9101464d1c0332c46bab119b965fd3ea5cfb",
+      "size": 62056813,
+      "format": "tar.gz",
+      "path": "google-cloud-sdk/bin/gcloud",
+      "providers": [
+        {
+          "url": "https://storage.googleapis.com/cloud-sdk-release/google-cloud-cli-581.0.0-linux-arm.tar.gz"
+        }
+      ]
+    },
+    "windows-amd64": {
+      "hash": "blake3",
+      "digest": "a24b541b23cd73eca058038cd54c5d8cfef6d4a044201b8331d09bd887208533",
+      "size": 85501775,
+      "format": "zip",
+      "path": "google-cloud-sdk/bin/gcloud.cmd",
+      "providers": [
+        {
+          "url": "https://storage.googleapis.com/cloud-sdk-release/google-cloud-cli-581.0.0-windows-x86_64.zip"
+        }
+      ]
+    },
+    "windows-arm64": {
+      "hash": "blake3",
+      "digest": "9566820f58a9fe6a390dba9ed6189e64d8d6b74f9226623c4e5313c57ac1da07",
+      "size": 83875800,
+      "format": "zip",
+      "path": "google-cloud-sdk/bin/gcloud.cmd",
+      "providers": [
+        {
+          "url": "https://storage.googleapis.com/cloud-sdk-release/google-cloud-cli-581.0.0-windows-arm.zip"
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,19 @@
+load("//seed/devprod/starlark/xslash:defs.bzl", "xslash_pack")
+
+exports_files(
+    glob(["bin/*"]),
+)
+
+xslash_pack(
+    name = "gcloud_xslash",
+    out = "gcloud.xslash",
+    skeleton = "bin/gcloud.xslash",
+    symlinks = ["gcloud"],
+    visibility = ["//visibility:public"],
+)
+
+alias(
+    name = "xslash",
+    actual = ":gcloud_xslash",
+    visibility = ["//visibility:public"],
+)
