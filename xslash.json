@@ -19,6 +19,7 @@
   "claude": "seed/prebuilt/claude/bin/claude.xslash",
   "cloc": "seed/prebuilt/cloc/bin/cloc.xslash",
   "crane": "seed/prebuilt/crane/bin/crane.xslash",
+  "direnv": "seed/prebuilt/direnv/bin/direnv.xslash",
   "docker": "seed/prebuilt/docker/bin/docker.xslash",
   "fastboot": "seed/prebuilt/adb/bin/fastboot.xslash",
   "gcloud": "seed/prebuilt/gcloud/bin/gcloud.xslash",
