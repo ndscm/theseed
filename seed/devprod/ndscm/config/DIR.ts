@@ -422,6 +422,11 @@ export type DirConfig = {
        * separate commit rather than combined with the directory's other
        * changes.
        */
+      granular?: boolean
+
+      /**
+       * @deprecated Renamed to {@link granular}.
+       */
       granularity?: boolean
     }
   }
