@@ -18,6 +18,7 @@
   "jq": "seed/prebuilt/jq/bin/jq.xslash",
   "kubectl": "seed/prebuilt/kubectl/bin/kubectl.xslash",
   "lego": "seed/prebuilt/lego/bin/lego.xslash",
+  "minikube": "seed/prebuilt/minikube/bin/minikube.xslash",
   "nd": "seed/prebuilt/ndscm/bin/ndscm.xslash",
   "ndscm": "seed/prebuilt/ndscm/bin/ndscm.xslash",
   "node": "seed/prebuilt/node/bin/node.xslash",
