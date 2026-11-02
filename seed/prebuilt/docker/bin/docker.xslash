@@ -1,0 +1,67 @@
+#!/usr/bin/env xslash
+{
+  "name": "docker",
+  "final": true,
+  "platforms": {
+    "darwin-amd64": {
+      "hash": "blake3",
+      "digest": "bf0cb51dedcd728a45b9802e7c72ec080bc08ae41bd744adf9a16803fe691d58",
+      "size": 20157447,
+      "format": "tar.gz",
+      "path": "docker/docker",
+      "providers": [
+        {
+          "url": "https://download.docker.com/mac/static/stable/x86_64/docker-29.7.2.tgz"
+        }
+      ]
+    },
+    "darwin-arm64": {
+      "hash": "blake3",
+      "digest": "c8ca1f8853af6be97265b4a9ea68a3edc34cf844d4a7485a9420fd574ad3404a",
+      "size": 18920558,
+      "format": "tar.gz",
+      "path": "docker/docker",
+      "providers": [
+        {
+          "url": "https://download.docker.com/mac/static/stable/aarch64/docker-29.7.2.tgz"
+        }
+      ]
+    },
+    "linux-amd64": {
+      "hash": "blake3",
+      "digest": "89d808dcd84f4fa20664091dfd1eec4e1aab00d32ec84fec8286f2030712ce6a",
+      "size": 85700518,
+      "format": "tar.gz",
+      "path": "docker/docker",
+      "providers": [
+        {
+          "url": "https://download.docker.com/linux/static/stable/x86_64/docker-29.7.2.tgz"
+        }
+      ]
+    },
+    "linux-arm64": {
+      "hash": "blake3",
+      "digest": "566fb46bc1035deb5d1bef9529a45fa1fb0c4a3e3ad62c3c40a1479fbd4743c6",
+      "size": 77323501,
+      "format": "tar.gz",
+      "path": "docker/docker",
+      "providers": [
+        {
+          "url": "https://download.docker.com/linux/static/stable/aarch64/docker-29.7.2.tgz"
+        }
+      ]
+    },
+    "windows-amd64": {
+      "hash": "blake3",
+      "digest": "fd6503f2755a0cb6f3723aeedd94b3bb674fe524f238014bfc4ccc4bad0a9556",
+      "size": 48486467,
+      "format": "zip",
+      "path": "docker/docker.exe",
+      "providers": [
+        {
+          "url": "https://download.docker.com/win/static/stable/x86_64/docker-29.7.2.zip"
+        }
+      ]
+    }
+  }
+}
