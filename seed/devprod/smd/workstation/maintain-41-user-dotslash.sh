@@ -21,6 +21,9 @@ if [[ ",${maintain_scopes}," == *",user,"* ]]; then
     xslash -- create --skeleton ./seed/prebuilt/jq/bin/jq.xslash --out "${HOME}/.local/bin/jq.xslash" --symlink jq
     xslash -- create --skeleton ./seed/prebuilt/kubectl/bin/kubectl.xslash --out "${HOME}/.local/bin/kubectl.xslash" --symlink kubectl
     xslash -- create --skeleton ./seed/prebuilt/lego/bin/lego.xslash --out "${HOME}/.local/bin/lego.xslash" --symlink lego
+    xslash -- create --skeleton ./seed/prebuilt/llvm/bin/clang-format.xslash --out "${HOME}/.local/bin/clang-format.xslash" --symlink clang-format
+    xslash -- create --skeleton ./seed/prebuilt/llvm/bin/clang.xslash --out "${HOME}/.local/bin/clang.xslash" --symlink clang
+    xslash -- create --skeleton ./seed/prebuilt/llvm/bin/clangd.xslash --out "${HOME}/.local/bin/clangd.xslash" --symlink clangd
     xslash -- create --skeleton ./seed/prebuilt/minikube/bin/minikube.xslash --out "${HOME}/.local/bin/minikube.xslash" --symlink minikube
     xslash -- create --skeleton ./seed/prebuilt/ndscm/bin/ndscm.xslash --out "${HOME}/.local/bin/ndscm.xslash" --symlink nd --symlink ndscm
     xslash -- create --skeleton ./seed/prebuilt/node/bin/node.xslash --out "${HOME}/.local/bin/node.xslash" --symlink node
@@ -48,12 +51,6 @@ if [[ ",${maintain_scopes}," == *",user,"* ]]; then
 
     cp -a -f ./seed/vendor/claude/bin/claude "${HOME}/.local/bin/claude"
     cp -a -f ./seed/vendor/claude/bin/claude.dotslash "${HOME}/.local/bin/claude.dotslash"
-    cp -a -f ./seed/vendor/llvm/bin/clang "${HOME}/.local/bin/clang"
-    cp -a -f ./seed/vendor/llvm/bin/clang-format "${HOME}/.local/bin/clang-format"
-    cp -a -f ./seed/vendor/llvm/bin/clang-format.dotslash "${HOME}/.local/bin/clang-format.dotslash"
-    cp -a -f ./seed/vendor/llvm/bin/clang.dotslash "${HOME}/.local/bin/clang.dotslash"
-    cp -a -f ./seed/vendor/llvm/bin/clangd "${HOME}/.local/bin/clangd"
-    cp -a -f ./seed/vendor/llvm/bin/clangd.dotslash "${HOME}/.local/bin/clangd.dotslash"
   fi
 
   printf "\e[32m[user] Check dotslash tools done.\e[0m\n"
