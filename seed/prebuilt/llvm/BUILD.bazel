@@ -1,0 +1,46 @@
+load("//seed/devprod/starlark/archive:defs.bzl", "merge_tar")
+load("//seed/devprod/starlark/xslash:defs.bzl", "xslash_pack")
+
+exports_files(
+    glob(["bin/*"]),
+)
+
+xslash_pack(
+    name = "clang_xslash",
+    out = "clang.xslash",
+    skeleton = "bin/clang.xslash",
+    symlinks = [
+        "clang",
+    ],
+    visibility = ["//visibility:public"],
+)
+
+xslash_pack(
+    name = "clang-format_xslash",
+    out = "clang-format.xslash",
+    skeleton = "bin/clang-format.xslash",
+    symlinks = [
+        "clang-format",
+    ],
+    visibility = ["//visibility:public"],
+)
+
+xslash_pack(
+    name = "clangd_xslash",
+    out = "clangd.xslash",
+    skeleton = "bin/clangd.xslash",
+    symlinks = [
+        "clangd",
+    ],
+    visibility = ["//visibility:public"],
+)
+
+merge_tar(
+    name = "xslash",
+    srcs = {
+        ":clang_xslash": ".",
+        ":clang-format_xslash": ".",
+        ":clangd_xslash": ".",
+    },
+    visibility = ["//visibility:public"],
+)
