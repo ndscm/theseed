@@ -130,7 +130,7 @@ export default {
       target: "MODULE.bazel.lock",
       watch: "(^|/)BUILD.bazel$",
       run: "bazel mod deps --lockfile_mode=update",
-      granularity: true,
+      granular: true,
       bazel: {
         disableGround: true,
       },
@@ -139,7 +139,7 @@ export default {
       target: "Cargo.lock",
       watch: "(^|/)Cargo.toml$",
       run: "bazel run @rules_rust//tools/upstream_wrapper:cargo -- build",
-      granularity: true,
+      granular: true,
       bazel: {
         disableGround: true,
       },
@@ -148,7 +148,7 @@ export default {
       target: "go.sum",
       watch: "^go.mod$",
       run: "go mod tidy -e",
-      granularity: true,
+      granular: true,
     },
     pnpm: {
       target: "pnpm-lock.yaml",
@@ -158,13 +158,13 @@ export default {
         "^pnpm-workspace.yaml$",
       ],
       run: "pnpm install",
-      granularity: true,
+      granular: true,
     },
     uv: {
       target: "uv.lock",
       watch: "^pyproject.toml$",
       run: "uv sync",
-      granularity: true,
+      granular: true,
     },
   },
   test: {
