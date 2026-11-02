@@ -1,0 +1,19 @@
+load("//seed/devprod/starlark/xslash:defs.bzl", "xslash_pack")
+
+exports_files(
+    glob(["bin/*"]),
+)
+
+xslash_pack(
+    name = "minikube_xslash",
+    out = "minikube.xslash",
+    skeleton = "bin/minikube.xslash",
+    symlinks = ["minikube"],
+    visibility = ["//visibility:public"],
+)
+
+alias(
+    name = "xslash",
+    actual = ":minikube_xslash",
+    visibility = ["//visibility:public"],
+)
