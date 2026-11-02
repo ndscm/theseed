@@ -1,0 +1,19 @@
+load("//seed/devprod/starlark/xslash:defs.bzl", "xslash_pack")
+
+exports_files(
+    glob(["bin/*"]),
+)
+
+xslash_pack(
+    name = "direnv_xslash",
+    out = "direnv.xslash",
+    skeleton = "bin/direnv.xslash",
+    symlinks = ["direnv"],
+    visibility = ["//visibility:public"],
+)
+
+alias(
+    name = "xslash",
+    actual = ":direnv_xslash",
+    visibility = ["//visibility:public"],
+)

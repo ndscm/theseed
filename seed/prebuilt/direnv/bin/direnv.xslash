@@ -1,0 +1,73 @@
+#!/usr/bin/env xslash
+{
+  "name": "direnv",
+  "final": true,
+  "platforms": {
+    "darwin-amd64": {
+      "hash": "blake3",
+      "digest": "ab98b3cf90a5e0ed99aac29f736855c99d1ebf1aa5fb109bc168c9bf08fe62a3",
+      "size": 8350032,
+      "path": "direnv",
+      "providers": [
+        {
+          "url": "https://github.com/direnv/direnv/releases/download/v2.37.1/direnv.darwin-amd64"
+        }
+      ]
+    },
+    "darwin-arm64": {
+      "hash": "blake3",
+      "digest": "c6eabcde5fbd389aa0f0ca2a3ded9be347ecf1b937794aa98738feccbdcef8b0",
+      "size": 7899154,
+      "path": "direnv",
+      "providers": [
+        {
+          "url": "https://github.com/direnv/direnv/releases/download/v2.37.1/direnv.darwin-arm64"
+        }
+      ]
+    },
+    "linux-amd64": {
+      "hash": "blake3",
+      "digest": "291b71c5ae8d47e7ff5ff3a7276275a1dff25d753069912bed593c78f5434519",
+      "size": 8151224,
+      "path": "direnv",
+      "providers": [
+        {
+          "url": "https://github.com/direnv/direnv/releases/download/v2.37.1/direnv.linux-amd64"
+        }
+      ]
+    },
+    "linux-arm64": {
+      "hash": "blake3",
+      "digest": "e6edd6b534ed664e084d72ae81ded52c437e1d57aae1f8420531a8293635afce",
+      "size": 7667896,
+      "path": "direnv",
+      "providers": [
+        {
+          "url": "https://github.com/direnv/direnv/releases/download/v2.37.1/direnv.linux-arm64"
+        }
+      ]
+    },
+    "windows-amd64": {
+      "hash": "blake3",
+      "digest": "e4db661c4a06cbe8db1fdc57f5300decc62d043dda6c39f21a56b81fe5bfdbde",
+      "size": 8418816,
+      "path": "direnv.exe",
+      "providers": [
+        {
+          "url": "https://github.com/direnv/direnv/releases/download/v2.37.1/direnv.windows-amd64"
+        }
+      ]
+    },
+    "windows-arm64": {
+      "hash": "blake3",
+      "digest": "85913676afc84bd0d4edf90f16ba10913c5033e765f0193d0b8f82e23dfd9b72",
+      "size": 7791104,
+      "path": "direnv.exe",
+      "providers": [
+        {
+          "url": "https://github.com/direnv/direnv/releases/download/v2.37.1/direnv.windows-arm64"
+        }
+      ]
+    }
+  }
+}
