@@ -1,0 +1,19 @@
+load("//seed/devprod/starlark/xslash:defs.bzl", "xslash_pack")
+
+exports_files(
+    glob(["bin/*"]),
+)
+
+xslash_pack(
+    name = "podman_remote_xslash",
+    out = "podman-remote.xslash",
+    skeleton = "bin/podman-remote.xslash",
+    symlinks = ["podman-remote"],
+    visibility = ["//visibility:public"],
+)
+
+alias(
+    name = "xslash",
+    actual = ":podman_remote_xslash",
+    visibility = ["//visibility:public"],
+)
