@@ -1,0 +1,59 @@
+{
+  "name": "gcloud",
+  "platforms": {
+    "darwin-amd64": {
+      "path": "google-cloud-sdk/bin/gcloud",
+      "format": "tar.gz",
+      "providers": [
+        {
+          "url": "https://storage.googleapis.com/cloud-sdk-release/google-cloud-cli-{{TAG}}-darwin-x86_64.tar.gz"
+        }
+      ]
+    },
+    "darwin-arm64": {
+      "path": "google-cloud-sdk/bin/gcloud",
+      "format": "tar.gz",
+      "providers": [
+        {
+          "url": "https://storage.googleapis.com/cloud-sdk-release/google-cloud-cli-{{TAG}}-darwin-arm.tar.gz"
+        }
+      ]
+    },
+    "linux-amd64": {
+      "path": "google-cloud-sdk/bin/gcloud",
+      "format": "tar.gz",
+      "providers": [
+        {
+          "url": "https://storage.googleapis.com/cloud-sdk-release/google-cloud-cli-{{TAG}}-linux-x86_64.tar.gz"
+        }
+      ]
+    },
+    "linux-arm64": {
+      "path": "google-cloud-sdk/bin/gcloud",
+      "format": "tar.gz",
+      "providers": [
+        {
+          "url": "https://storage.googleapis.com/cloud-sdk-release/google-cloud-cli-{{TAG}}-linux-arm.tar.gz"
+        }
+      ]
+    },
+    "windows-amd64": {
+      "path": "google-cloud-sdk/bin/gcloud.cmd",
+      "format": "zip",
+      "providers": [
+        {
+          "url": "https://storage.googleapis.com/cloud-sdk-release/google-cloud-cli-{{TAG}}-windows-x86_64.zip"
+        }
+      ]
+    },
+    "windows-arm64": {
+      "path": "google-cloud-sdk/bin/gcloud.cmd",
+      "format": "zip",
+      "providers": [
+        {
+          "url": "https://storage.googleapis.com/cloud-sdk-release/google-cloud-cli-{{TAG}}-windows-arm.zip"
+        }
+      ]
+    }
+  }
+}
