@@ -4,7 +4,7 @@ set -o pipefail
 cd "$(dirname "${BASH_SOURCE[0]}")/../../../.."
 
 if [[ ",${maintain_scopes}," == *",user,"* ]]; then
-  printf "\e[34m[user] Checking dotslash tools...\e[0m\n"
+  printf "\e[34m[user] Checking xslash tools...\e[0m\n"
 
   if [[ "${oslike}" == "debian" || "${oslike}" == "darwin" ]]; then
     xslash -- create --skeleton ./seed/prebuilt/adb/bin/adb.xslash --out "${HOME}/.local/bin/adb.xslash" --symlink adb
@@ -57,5 +57,5 @@ if [[ ",${maintain_scopes}," == *",user,"* ]]; then
     xslash -- create --skeleton ./contrib/prebuilt/perforce/bin/p4merge.xslash --out "${HOME}/.local/bin/p4merge.xslash" --symlink p4merge
   fi
 
-  printf "\e[32m[user] Check dotslash tools done.\e[0m\n"
+  printf "\e[32m[user] Check xslash tools done.\e[0m\n"
 fi

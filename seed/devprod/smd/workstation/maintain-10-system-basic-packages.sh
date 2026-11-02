@@ -10,7 +10,6 @@ if [[ ",${maintain_scopes}," == *",system,"* ]]; then
     sudo -E apt update
     sudo -E apt upgrade -y
     sudo -E apt install -y curl
-    sudo -E apt install -y direnv
     sudo -E apt install -y git
     sudo -E apt install -y netcat-openbsd
     sudo -E apt install -y ssh
@@ -28,12 +27,15 @@ if [[ ",${maintain_scopes}," == *",system,"* ]]; then
     fi
     eval "$(/opt/homebrew/bin/brew shellenv)"
 
-    brew install direnv
     brew install socat
 
     # `brew shellenv` prepends /opt/homebrew/bin to PATH, shadowing the repo's
-    # dotslash-managed toolchains (e.g. go) for the rest of this run. Reload
-    # direnv so the repo-managed PATH entries take precedence again.
+    # toolchains (e.g. go) for the rest of this run.
+
+    if command -v xslash >/dev/null 2>&1; then
+      eval "$(xslash --export --promote)"
+    fi
+
     if command -v direnv >/dev/null 2>&1; then
       direnv reload >/dev/null 2>&1 || true
       eval "$(direnv export bash)"

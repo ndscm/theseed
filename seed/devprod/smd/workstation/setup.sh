@@ -138,16 +138,6 @@ if [[ ",${maintain_scopes}," == *",user,"* ]]; then
     chmod +x "${HOME}/.local/bin/xslash"
   fi
 
-  if [[ "${oslike}" == "debian" ]]; then
-    curl -fsSL "https://github.com/facebook/dotslash/releases/latest/download/dotslash-ubuntu-22.04.$(uname -m).tar.gz" |
-      tar fxz - -C "${HOME}/.local/bin"
-  fi
-
-  if [[ "${oslike}" == "darwin" ]]; then
-    curl -fsSL https://github.com/facebook/dotslash/releases/latest/download/dotslash-macos.tar.gz |
-      tar fxz - -C "${HOME}/.local/bin"
-  fi
-
   if [[ "${oslike}" == "debian" || "${oslike}" == "darwin" ]]; then
     curl -fsSL "https://raw.githubusercontent.com/ndscm/theseed/refs/heads/main/seed/prebuilt/direnv/bin/direnv.xslash" \
       -o "${HOME}/.local/bin/direnv.xslash"
