@@ -21,6 +21,7 @@
   "npm": "seed/prebuilt/node/bin/npm.xslash",
   "npx": "seed/prebuilt/node/bin/npx.xslash",
   "pnpm": "seed/prebuilt/pnpm/bin/pnpm.xslash",
+  "podman-remote": "seed/prebuilt/podman/bin/podman-remote.xslash",
   "python": "seed/prebuilt/python/bin/python3.xslash",
   "python3": "seed/prebuilt/python/bin/python3.xslash",
   "reindeer": "seed/prebuilt/reindeer/bin/reindeer.xslash",
