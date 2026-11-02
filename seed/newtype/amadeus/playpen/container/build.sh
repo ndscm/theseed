@@ -13,6 +13,10 @@ mkdir -p ./seed/newtype/amadeus/playpen/container/bin/
 xslash -- create --skeleton ./seed/prebuilt/age/bin/age-inspect.xslash --out ./seed/newtype/amadeus/playpen/container/bin/age-inspect.xslash --symlink age-inspect
 xslash -- create --skeleton ./seed/prebuilt/age/bin/age-keygen.xslash --out ./seed/newtype/amadeus/playpen/container/bin/age-keygen.xslash --symlink age-keygen
 xslash -- create --skeleton ./seed/prebuilt/age/bin/age.xslash --out ./seed/newtype/amadeus/playpen/container/bin/age.xslash --symlink age
+xslash -- create --skeleton ./seed/prebuilt/android/bin/android.xslash --out ./seed/newtype/amadeus/playpen/container/bin/android.xslash --symlink android
+xslash -- create --skeleton ./seed/prebuilt/android/bin/apkanalyzer.xslash --out ./seed/newtype/amadeus/playpen/container/bin/apkanalyzer.xslash --symlink apkanalyzer
+xslash -- create --skeleton ./seed/prebuilt/android/bin/avdmanager.xslash --out ./seed/newtype/amadeus/playpen/container/bin/avdmanager.xslash --symlink avdmanager
+xslash -- create --skeleton ./seed/prebuilt/android/bin/sdkmanager.xslash --out ./seed/newtype/amadeus/playpen/container/bin/sdkmanager.xslash --symlink sdkmanager
 xslash -- create --skeleton ./seed/prebuilt/atlas/bin/atlas.xslash --out ./seed/newtype/amadeus/playpen/container/bin/atlas.xslash --symlink atlas
 xslash -- create --skeleton ./seed/prebuilt/bazel/bin/bazelisk.xslash --out ./seed/newtype/amadeus/playpen/container/bin/bazelisk.xslash --symlink bazel --symlink bazelisk
 xslash -- create --skeleton ./seed/prebuilt/buck/bin/buck2.xslash --out ./seed/newtype/amadeus/playpen/container/bin/buck2.xslash --symlink buck2
