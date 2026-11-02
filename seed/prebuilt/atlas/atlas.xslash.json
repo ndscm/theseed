@@ -1,0 +1,45 @@
+{
+  "name": "atlas",
+  "platforms": {
+    "darwin-amd64": {
+      "path": "atlas",
+      "providers": [
+        {
+          "url": "https://release.ariga.io/atlas/atlas-darwin-amd64-{{TAG}}"
+        }
+      ]
+    },
+    "darwin-arm64": {
+      "path": "atlas",
+      "providers": [
+        {
+          "url": "https://release.ariga.io/atlas/atlas-darwin-arm64-{{TAG}}"
+        }
+      ]
+    },
+    "linux-amd64": {
+      "path": "atlas",
+      "providers": [
+        {
+          "url": "https://release.ariga.io/atlas/atlas-linux-amd64-{{TAG}}"
+        }
+      ]
+    },
+    "linux-arm64": {
+      "path": "atlas",
+      "providers": [
+        {
+          "url": "https://release.ariga.io/atlas/atlas-linux-arm64-{{TAG}}"
+        }
+      ]
+    },
+    "windows-amd64": {
+      "path": "atlas.exe",
+      "providers": [
+        {
+          "url": "https://release.ariga.io/atlas/atlas-windows-amd64-{{TAG}}.exe"
+        }
+      ]
+    }
+  }
+}
