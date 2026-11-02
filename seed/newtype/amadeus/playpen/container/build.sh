@@ -20,6 +20,7 @@ xslash -- create --skeleton ./seed/prebuilt/crane/bin/crane.xslash --out ./seed/
 xslash -- create --skeleton ./seed/prebuilt/docker/bin/docker.xslash --out ./seed/newtype/amadeus/playpen/container/bin/docker.xslash --symlink docker
 xslash -- create --skeleton ./seed/prebuilt/github/bin/gh.xslash --out ./seed/newtype/amadeus/playpen/container/bin/gh.xslash --symlink gh
 xslash -- create --skeleton ./seed/prebuilt/jq/bin/jq.xslash --out ./seed/newtype/amadeus/playpen/container/bin/jq.xslash --symlink jq
+xslash -- create --skeleton ./seed/prebuilt/kubectl/bin/kubectl.xslash --out ./seed/newtype/amadeus/playpen/container/bin/kubectl.xslash --symlink kubectl
 xslash -- create --skeleton ./seed/prebuilt/lego/bin/lego.xslash --out ./seed/newtype/amadeus/playpen/container/bin/lego.xslash --symlink lego
 xslash -- create --skeleton ./seed/prebuilt/ndscm/bin/ndscm.xslash --out ./seed/newtype/amadeus/playpen/container/bin/ndscm.xslash --symlink nd --symlink ndscm
 xslash -- create --skeleton ./seed/prebuilt/node/bin/node.xslash --out ./seed/newtype/amadeus/playpen/container/bin/node.xslash --symlink node
