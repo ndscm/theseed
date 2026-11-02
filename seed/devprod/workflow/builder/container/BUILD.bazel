@@ -37,18 +37,9 @@ merge_tar(
     },
 )
 
-pkg_tar(
-    name = "bin_layer_tar",
-    files = {
-        "@dotslash_release_linux_x86_64//:bin": "/usr/local/bin/dotslash",
-    },
-    mode = "0755",
-    deps = [":xslash_layer_tar"],
-)
-
 layer_from_tar(
     name = "bin_layer",
-    src = ":bin_layer_tar",
+    src = ":xslash_layer_tar",
 )
 
 layer_single_platform(
