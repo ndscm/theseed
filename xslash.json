@@ -1,4 +1,5 @@
 {
+  "adb": "seed/prebuilt/adb/bin/adb.xslash",
   "age-inspect": "seed/prebuilt/age/bin/age-inspect.xslash",
   "age-keygen": "seed/prebuilt/age/bin/age-keygen.xslash",
   "age": "seed/prebuilt/age/bin/age.xslash",
@@ -18,6 +19,7 @@
   "cloc": "seed/prebuilt/cloc/bin/cloc.xslash",
   "crane": "seed/prebuilt/crane/bin/crane.xslash",
   "docker": "seed/prebuilt/docker/bin/docker.xslash",
+  "fastboot": "seed/prebuilt/adb/bin/fastboot.xslash",
   "gcloud": "seed/prebuilt/gcloud/bin/gcloud.xslash",
   "gh": "seed/prebuilt/github/bin/gh.xslash",
   "go": "seed/prebuilt/go/bin/go.xslash",
