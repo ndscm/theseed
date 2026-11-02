@@ -34,10 +34,10 @@ if [[ ",${maintain_scopes}," == *",user,"* ]]; then
   fi
 
   if [[ "${oslike}" == "debian" || "${oslike}" == "darwin" ]]; then
-    curl -fsSL "https://raw.githubusercontent.com/ndscm/theseed/refs/heads/main/seed/vendor/direnv/bin/direnv.dotslash" \
-      >"${HOME}/.local/bin/direnv.dotslash"
-    chmod +x "${HOME}/.local/bin/direnv.dotslash"
-    ln -s -f direnv.dotslash "${HOME}/.local/bin/direnv"
+    curl -fsSL "https://raw.githubusercontent.com/ndscm/theseed/refs/heads/main/seed/prebuilt/direnv/bin/direnv.xslash" \
+      -o "${HOME}/.local/bin/direnv.xslash"
+    chmod +x "${HOME}/.local/bin/direnv.xslash"
+    ln -s -f direnv.xslash "${HOME}/.local/bin/direnv"
 
     curl -fsSL "https://raw.githubusercontent.com/ndscm/theseed/refs/heads/main/seed/prebuilt/ndscm/bin/ndscm.xslash" \
       -o "${HOME}/.local/bin/ndscm.xslash"
