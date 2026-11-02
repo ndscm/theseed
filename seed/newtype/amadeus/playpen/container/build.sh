@@ -18,6 +18,7 @@ xslash -- create --skeleton ./seed/prebuilt/bazel/bin/bazelisk.xslash --out ./se
 xslash -- create --skeleton ./seed/prebuilt/buck/bin/buck2.xslash --out ./seed/newtype/amadeus/playpen/container/bin/buck2.xslash --symlink buck2
 xslash -- create --skeleton ./seed/prebuilt/crane/bin/crane.xslash --out ./seed/newtype/amadeus/playpen/container/bin/crane.xslash --symlink crane
 xslash -- create --skeleton ./seed/prebuilt/docker/bin/docker.xslash --out ./seed/newtype/amadeus/playpen/container/bin/docker.xslash --symlink docker
+xslash -- create --skeleton ./seed/prebuilt/gcloud/bin/gcloud.xslash --out ./seed/newtype/amadeus/playpen/container/bin/gcloud.xslash --symlink gcloud
 xslash -- create --skeleton ./seed/prebuilt/github/bin/gh.xslash --out ./seed/newtype/amadeus/playpen/container/bin/gh.xslash --symlink gh
 xslash -- create --skeleton ./seed/prebuilt/jq/bin/jq.xslash --out ./seed/newtype/amadeus/playpen/container/bin/jq.xslash --symlink jq
 xslash -- create --skeleton ./seed/prebuilt/kubectl/bin/kubectl.xslash --out ./seed/newtype/amadeus/playpen/container/bin/kubectl.xslash --symlink kubectl
