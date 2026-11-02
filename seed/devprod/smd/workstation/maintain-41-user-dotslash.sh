@@ -7,6 +7,8 @@ if [[ ",${maintain_scopes}," == *",user,"* ]]; then
   printf "\e[34m[user] Checking dotslash tools...\e[0m\n"
 
   if [[ "${oslike}" == "debian" || "${oslike}" == "darwin" ]]; then
+    xslash -- create --skeleton ./seed/prebuilt/adb/bin/adb.xslash --out "${HOME}/.local/bin/adb.xslash" --symlink adb
+    xslash -- create --skeleton ./seed/prebuilt/adb/bin/fastboot.xslash --out "${HOME}/.local/bin/fastboot.xslash" --symlink fastboot
     xslash -- create --skeleton ./seed/prebuilt/age/bin/age-inspect.xslash --out "${HOME}/.local/bin/age-inspect.xslash" --symlink age-inspect
     xslash -- create --skeleton ./seed/prebuilt/age/bin/age-keygen.xslash --out "${HOME}/.local/bin/age-keygen.xslash" --symlink age-keygen
     xslash -- create --skeleton ./seed/prebuilt/age/bin/age.xslash --out "${HOME}/.local/bin/age.xslash" --symlink age
