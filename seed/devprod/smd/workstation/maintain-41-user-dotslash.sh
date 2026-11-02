@@ -23,6 +23,7 @@ if [[ ",${maintain_scopes}," == *",user,"* ]]; then
     xslash -- create --skeleton ./seed/prebuilt/node/bin/npm.xslash --out "${HOME}/.local/bin/npm.xslash" --symlink npm
     xslash -- create --skeleton ./seed/prebuilt/node/bin/npx.xslash --out "${HOME}/.local/bin/npx.xslash" --symlink npx
     xslash -- create --skeleton ./seed/prebuilt/pnpm/bin/pnpm.xslash --out "${HOME}/.local/bin/pnpm.xslash" --symlink pnpm
+    xslash -- create --skeleton ./seed/prebuilt/podman/bin/podman-remote.xslash --out "${HOME}/.local/bin/podman-remote.xslash" --symlink podman-remote
     xslash -- create --skeleton ./seed/prebuilt/python/bin/python3.xslash --out "${HOME}/.local/bin/python3.xslash" --symlink python --symlink python3
     xslash -- create --skeleton ./seed/prebuilt/reindeer/bin/reindeer.xslash --out "${HOME}/.local/bin/reindeer.xslash" --symlink reindeer
     xslash -- create --skeleton ./seed/prebuilt/rust/bin/cargo-clippy.xslash --out "${HOME}/.local/bin/cargo-clippy.xslash" --symlink cargo-clippy
@@ -49,8 +50,6 @@ if [[ ",${maintain_scopes}," == *",user,"* ]]; then
     cp -a -f ./seed/vendor/llvm/bin/clang.dotslash "${HOME}/.local/bin/clang.dotslash"
     cp -a -f ./seed/vendor/llvm/bin/clangd "${HOME}/.local/bin/clangd"
     cp -a -f ./seed/vendor/llvm/bin/clangd.dotslash "${HOME}/.local/bin/clangd.dotslash"
-    cp -a -f ./seed/vendor/podman/bin/podman-remote "${HOME}/.local/bin/podman-remote"
-    cp -a -f ./seed/vendor/podman/bin/podman-remote.dotslash "${HOME}/.local/bin/podman-remote.dotslash"
   fi
 
   printf "\e[32m[user] Check dotslash tools done.\e[0m\n"
