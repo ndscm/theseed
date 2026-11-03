@@ -14,6 +14,11 @@ export type RepoConfig = {
   domain?: string
 
   /**
+   * Path to the primary directory branch developers should focus their work in.
+   */
+  home?: string
+
+  /**
    * Collaboration surfaces for the repository: where issues are tracked and
    * where pending code changes are discussed. Each surface can be backed by
    * a different system, letting a repo mix ndscm-native tooling with GitHub.
