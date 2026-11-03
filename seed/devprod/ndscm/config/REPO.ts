@@ -8,7 +8,7 @@ export type RepoConfig = {
   /**
    * Email domain for the repository. Access control identifies users and
    * services by email address. When an email shares this domain, the domain
-   * part can be omitted — for example, `"alice"` is equivalent to
+   * part can be omitted - for example, `"alice"` is equivalent to
    * `"alice@example.com"` if the repo domain is `"example.com"`.
    */
   domain?: string
@@ -26,8 +26,8 @@ export type RepoConfig = {
       /**
        * The tracker system.
        *
-       * - `"ndscm"` — Stores tickets on a branch.
-       * - `"github"` — Uses GitHub Issues.
+       * - `"ndscm"`: Stores tickets on a branch.
+       * - `"github"`: Uses GitHub Issues.
        */
       system?: "ndscm" | "github"
 
@@ -45,8 +45,8 @@ export type RepoConfig = {
       /**
        * Backend hosting the review board.
        *
-       * - `"ndscm"` — Stores patches and discussions on a branch.
-       * - `"github"` — Uses GitHub pull requests.
+       * - `"ndscm"`: Stores patches and discussions on a branch.
+       * - `"github"`: Uses GitHub pull requests.
        */
       system?: "ndscm" | "github"
 
@@ -85,7 +85,7 @@ export type RepoConfig = {
 
       /**
        * Repository URL to fetch from. When omitted, the upstream lives in
-       * the same repository as the local branch — i.e., this entry
+       * the same repository as the local branch - i.e., this entry
        * describes a tracking relationship between two refs in the current
        * repo rather than a remote source.
        */
@@ -106,11 +106,11 @@ export type RepoConfig = {
       /**
        * How the local and upstream chains converge when syncing.
        *
-       * - `"rebase"` — Rebase local patches onto the upstream tip.
+       * - `"rebase"`: Rebase local patches onto the upstream tip.
        *   Local patches are regenerated; the upstream chain stays
        *   unchanged. Use this for feature and development branches.
        *
-       * - `"melt"` — Rebase upstream patches onto the local tip.
+       * - `"melt"`: Rebase upstream patches onto the local tip.
        *   Upstream patches are regenerated; the local chain stays
        *   unchanged. Use this for long-lived integration branches
        *   that absorb upstream changes without rewriting their own
