@@ -75,7 +75,9 @@ export const LoginServiceProvider: React.FC<{
       return
     }
     setLoading(true)
-    window.location.href = `${window.location.origin}/auth/login?return=${encodeURIComponent(window.location.href)}`
+    const returnTo =
+      window.location.pathname + window.location.search + window.location.hash
+    window.location.href = `${window.location.origin}/auth/login?return=${encodeURIComponent(returnTo)}`
   }, [loading])
 
   useEffect(() => {
