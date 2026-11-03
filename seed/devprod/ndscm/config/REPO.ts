@@ -19,6 +19,89 @@ export type RepoConfig = {
   home?: string
 
   /**
+   * Advisory guidance on how freely to spend when weighing technical choices.
+   */
+  budget?: {
+    /**
+     * Overall spending level for the branch.
+     *
+     * ### `"low"`
+     *
+     * - Best for individual developers working with agents.
+     * - Always deploy as serverless functions.
+     * - By default, no long-running instances or databases.
+     * - No idle costs.
+     * - Deploy to prod only, with no staging environment.
+     * - Write unit tests only for critical logic.
+     * - Write hermetic integration tests only for common workflows.
+     *
+     * ### `"medium"`
+     *
+     * - Best for small tech teams.
+     * - Always deploy as serverless functions.
+     * - By default, allow a single long-running gateway instance.
+     * - By default, allow a single SQL database server.
+     * - Deploy to prod and staging environments.
+     * - Write unit tests for common workflows.
+     * - Write hermetic integration tests for every workflow.
+     *
+     * ### `"high"`
+     *
+     * - Best for medium tech teams.
+     * - Prefer serverless, but allow long-running instances for performance.
+     * - Allow different database engines where they bring performance.
+     * - Include staging and dev environments.
+     * - Isolate the development team from the deployment team.
+     * - Meet Cybersecurity Framework standards.
+     * - Write unit tests for every scenario.
+     * - Write hermetic integration tests for every scenario.
+     * - Write flaky staging tests.
+     *
+     * ### `"max"`
+     *
+     * - Best for large tech teams.
+     * - Pick whatever performs best.
+     * - Special process required for accessing customer data.
+     * - Monitor regressions and downtime.
+     * - Run Chaos Monkey in the production environment.
+     *
+     * ### `"ultra"`
+     *
+     * - No budget limit.
+     * - Pick the best-performing options.
+     * - Pick the best devprod options.
+     */
+    level?: "low" | "medium" | "high" | "max" | "ultra"
+
+    /**
+     * When enabled, relaxes the long-running service limits.
+     *
+     * - `"low"`: Permits a single gateway service.
+     * - `"medium"`: Permits additional long-running services such as a
+     *   message queue, mail, or drive.
+     * - `"high"` and above: No effect.
+     */
+    relaxLongRunning?: boolean
+
+    /**
+     * When enabled, relaxes the long-running database limits.
+     *
+     * - `"low"`: Permits a single SQL database service.
+     * - `"medium"`: Permits additional long-running database engines such
+     *   as Redis or MongoDB.
+     * - `"high"`: Permits multiple instances of the same database engine.
+     * - `"max"` and above: No effect.
+     */
+    relaxDatabase?: boolean
+
+    /**
+     * When enabled, runs non-user-facing, non-production services such as CI
+     * agents and AI agents on on-premises servers to cut costs.
+     */
+    onPremises?: boolean
+  }
+
+  /**
    * Collaboration surfaces for the repository: where issues are tracked and
    * where pending code changes are discussed. Each surface can be backed by
    * a different system, letting a repo mix ndscm-native tooling with GitHub.
