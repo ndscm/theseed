@@ -43,6 +43,27 @@ esac
 
 export EDITOR="vim"
 EOF
+
+    if [[ ! -f "${HOME}/.vimrc" ]] || [[ "$(head -n 1 "${HOME}/.vimrc")" == '" seed managed vimrc' ]]; then
+      cat <<EOF >${HOME}/.vimrc
+" seed managed vimrc
+set autoindent
+set encoding=utf-8
+set expandtab
+set fileformats=unix
+set hlsearch
+set incsearch
+set nocompatible
+set number
+set ruler
+set shiftwidth=4
+set softtabstop=4
+set tabstop=8
+set title
+syntax on
+EOF
+    fi
+
     cat <<EOF >${HOME}/.managed_shrc.tmp
 # Seed Managed Shell Run Commands
 
