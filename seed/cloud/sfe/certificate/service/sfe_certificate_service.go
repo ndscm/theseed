@@ -32,7 +32,7 @@ func (svc *SfeCertificateService) RenewCertificate(
 ) (*connect.Response[certificatepb.RenewCertificateResponse], error) {
 	domain := strings.ToLower(strings.Trim(strings.TrimSpace(request.Msg.Domain), "."))
 	// The challenger will also check user's permission to request certificate for the domain.
-	challengeProvider, err := svc.challenger(ctx, domain)
+	challengeProvider, err := svc.challenger.GetChallenge(ctx, domain)
 	if err != nil {
 		return nil, seederr.Wrap(err)
 	}

@@ -14,4 +14,6 @@ type AcmeChallenge interface {
 	) (*certificate.Resource, error)
 }
 
-type AcmeChallenger func(ctx context.Context, domain string) (AcmeChallenge, error)
+type AcmeChallenger interface {
+	GetChallenge(ctx context.Context, domain string) (AcmeChallenge, error)
+}

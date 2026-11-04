@@ -22,7 +22,9 @@ import (
 
 var flagPort = seedflag.DefineString("port", "7332", "Server port") // Default port assignment word: SFEC (7332)
 
-func challenger(ctx context.Context, domain string) (challenge.AcmeChallenge, error) {
+type acmeChallenger struct{}
+
+func (_ acmeChallenger) GetChallenge(ctx context.Context, domain string) (challenge.AcmeChallenge, error) {
 	loginUser, err := login.EnsureLoginUser(ctx)
 	if err != nil {
 		return nil, seederr.Wrap(err)
@@ -84,6 +86,7 @@ func run() error {
 
 	certificateStorage := localstorage.LoadLocalCertificateStorage()
 
+	challenger := &acmeChallenger{}
 	certificateSvc := certificateservice.NewSfeCertificateService(challenger, certificateStorage)
 	err = mux.Register(certificatepbconnect.NewSfeCertificateServiceHandler(
 		certificateSvc,
