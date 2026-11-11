@@ -1,6 +1,13 @@
 go_deps = use_extension("@gazelle//:extensions.bzl", "go_deps")
 go_deps.from_file(go_mod = "//:go.mod")
 
+# cel.dev/cel-go ships BUILD files with legacy go_default_library naming.
+# Regenerate them so the import-named targets its dependents reference exist.
+go_deps.gazelle_override(
+    build_file_generation = "on",
+    path = "cel.dev/cel-go",
+)
+
 inject_repo(go_deps, "dev_cel_expr")
 
 use_repo(
@@ -11,13 +18,13 @@ use_repo(
     "com_github_coder_websocket",
     "com_github_creack_pty",
     "com_github_go_acme_lego_v5",
-    "com_github_google_cel_go",
     "com_github_google_uuid",
     "com_github_jackc_pgx_v5",
     "com_github_lib_pq",
     "com_github_rogpeppe_go_internal",
     "com_github_rs_cors",
     "com_github_soheilhy_cmux",
+    "dev_cel_cel_go",
     "io_entgo_ent",
     "org_golang_google_genproto_googleapis_api",
     "org_golang_google_grpc",
