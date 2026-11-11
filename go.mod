@@ -10,9 +10,9 @@ replace github.com/ndscm/theseed => ./
 
 require (
 	cel.dev/cel-go v0.33.2
-	connectrpc.com/connect v1.20.0
+	connectrpc.com/connect v1.21.1
 	connectrpc.com/grpchealth v1.5.0
-	connectrpc.com/validate v0.6.0
+	connectrpc.com/validate v0.9.0
 	entgo.io/ent v0.14.6
 	github.com/coder/websocket v1.8.15
 	github.com/creack/pty v1.1.24
@@ -34,10 +34,11 @@ require (
 
 require (
 	ariga.io/atlas v1.3.0 // indirect
-	buf.build/gen/go/bufbuild/protovalidate/protocolbuffers/go v1.36.12-20260825204119-511051f7f437.1 // indirect
-	buf.build/go/protovalidate v1.3.0 // indirect
+	buf.build/gen/go/bufbuild/protovalidate/protocolbuffers/go v1.36.12-20260825204119-511051f7f437.2 // indirect
+	buf.build/go/protovalidate v1.4.0 // indirect
 	cel.dev/expr v0.25.3 // indirect
 	cloud.google.com/go/compute/metadata v0.9.0 // indirect
+	connectrpc.com/connect/v2 v2.0.2 // indirect
 	github.com/agext/levenshtein v1.2.3 // indirect
 	github.com/antlr4-go/antlr/v4 v4.13.1 // indirect
 	github.com/apparentlymart/go-textseg/v15 v15.0.0 // indirect
@@ -51,7 +52,6 @@ require (
 	github.com/go-jose/go-jose/v4 v4.1.4 // indirect
 	github.com/go-openapi/inflect v1.0.0 // indirect
 	github.com/go-test/deep v1.1.1 // indirect
-	github.com/google/cel-go v0.31.0 // indirect
 	github.com/google/go-cmp v0.7.0 // indirect
 	github.com/hashicorp/hcl/v2 v2.24.0 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
@@ -71,7 +71,6 @@ require (
 	github.com/rogpeppe/go-internal v1.16.0 // indirect
 	github.com/spf13/cobra v1.7.0 // indirect
 	github.com/spf13/pflag v1.0.10 // indirect
-	github.com/stretchr/testify v1.12.1 // indirect
 	github.com/zclconf/go-cty v1.19.0 // indirect
 	github.com/zclconf/go-cty-yaml v1.2.0 // indirect
 	go.yaml.in/yaml/v3 v3.0.5 // indirect
