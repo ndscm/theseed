@@ -1,0 +1,19 @@
+load("//seed/devprod/starlark/xslash:defs.bzl", "xslash_pack")
+
+exports_files(
+    glob(["bin/*"]),
+)
+
+xslash_pack(
+    name = "zig_xslash",
+    out = "zig.xslash",
+    skeleton = "bin/zig.xslash",
+    symlinks = ["zig"],
+    visibility = ["//visibility:public"],
+)
+
+alias(
+    name = "xslash",
+    actual = ":zig_xslash",
+    visibility = ["//visibility:public"],
+)
