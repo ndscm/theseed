@@ -18,8 +18,6 @@ esac
 EOF
 
     if command -v go >/dev/null 2>&1; then
-      go install -v github.com/bazelbuild/buildtools/buildifier@latest
-      go install -v github.com/bazelbuild/buildtools/buildozer@latest
       go install -v github.com/cweill/gotests/gotests@latest
       go install -v github.com/fatih/gomodifytags@latest
       go install -v github.com/go-delve/delve/cmd/dlv@latest
