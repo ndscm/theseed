@@ -12,6 +12,7 @@
   "buck2": "seed/prebuilt/buck/bin/buck2.xslash",
   "cargo-clippy": "seed/prebuilt/rust/bin/cargo-clippy.xslash",
   "cargo-fmt": "seed/prebuilt/rust/bin/cargo-fmt.xslash",
+  "cargo-zigbuild": "seed/prebuilt/cargo-zigbuild/bin/cargo-zigbuild.xslash",
   "cargo": "seed/prebuilt/rust/bin/cargo.xslash",
   "clang-format": "seed/prebuilt/llvm/bin/clang-format.xslash",
   "clang": "seed/prebuilt/llvm/bin/clang.xslash",
