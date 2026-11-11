@@ -1,0 +1,73 @@
+#!/usr/bin/env xslash
+{
+  "name": "buildozer",
+  "final": true,
+  "platforms": {
+    "darwin-amd64": {
+      "hash": "blake3",
+      "digest": "3a7b7c49fee9e772bd694691633c11cb8ef1f383402ad83b168e41039dd2dc87",
+      "size": 9905840,
+      "path": "buildozer",
+      "providers": [
+        {
+          "url": "https://github.com/bazel-contrib/buildtools/releases/download/v10.2.0/buildozer-darwin-amd64"
+        }
+      ]
+    },
+    "darwin-arm64": {
+      "hash": "blake3",
+      "digest": "f4d1ad4f5dbf7dc815b51b4e1eb7203170c4ac0cd17914665e47c46bd28f2759",
+      "size": 9467074,
+      "path": "buildozer",
+      "providers": [
+        {
+          "url": "https://github.com/bazel-contrib/buildtools/releases/download/v10.2.0/buildozer-darwin-arm64"
+        }
+      ]
+    },
+    "linux-amd64": {
+      "hash": "blake3",
+      "digest": "1342aa71d40f03f754382e79768fa5e93e5a34e42cf75683cbc4a6e98aeb5cfd",
+      "size": 9840357,
+      "path": "buildozer",
+      "providers": [
+        {
+          "url": "https://github.com/bazel-contrib/buildtools/releases/download/v10.2.0/buildozer-linux-amd64"
+        }
+      ]
+    },
+    "linux-arm64": {
+      "hash": "blake3",
+      "digest": "82d9ee026357a3e702e432703432b8865f91a185b0105c8c9fc664d1a0c93d3b",
+      "size": 9384251,
+      "path": "buildozer",
+      "providers": [
+        {
+          "url": "https://github.com/bazel-contrib/buildtools/releases/download/v10.2.0/buildozer-linux-arm64"
+        }
+      ]
+    },
+    "windows-amd64": {
+      "hash": "blake3",
+      "digest": "d6e31310cc01effc6bdac651aa05c7f47e854fb1d35f5ae813fd53c9441bd960",
+      "size": 9988608,
+      "path": "buildozer.exe",
+      "providers": [
+        {
+          "url": "https://github.com/bazel-contrib/buildtools/releases/download/v10.2.0/buildozer-windows-amd64.exe"
+        }
+      ]
+    },
+    "windows-arm64": {
+      "hash": "blake3",
+      "digest": "c93974b13a4379eda070a60ac6ef7675fdc129b4d71f9c0c5de0f5b47876bbd2",
+      "size": 9318912,
+      "path": "buildozer.exe",
+      "providers": [
+        {
+          "url": "https://github.com/bazel-contrib/buildtools/releases/download/v10.2.0/buildozer-windows-arm64.exe"
+        }
+      ]
+    }
+  }
+}
