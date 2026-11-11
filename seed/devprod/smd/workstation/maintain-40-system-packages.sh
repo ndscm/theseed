@@ -22,8 +22,6 @@ if [[ ",${maintain_scopes}," == *",system,"* ]]; then
     sudo -E apt install -y libxcb-cursor0
     sudo -E apt install -y lsb-release
     sudo -E apt install -y netcat-openbsd
-    sudo -E apt install -y p7zip-full
-    sudo -E apt install -y p7zip-rar
     sudo -E apt install -y rclone
     sudo -E apt install -y rsync
     sudo -E apt install -y ssh
