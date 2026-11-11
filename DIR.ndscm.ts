@@ -128,7 +128,13 @@ export default {
   lock: {
     bazel: {
       target: "MODULE.bazel.lock",
-      watch: "(^|/)BUILD.bazel$",
+      watch: [
+        // sort
+        "(^|/)BUILD.bazel$",
+        "\\.(MODULE.bazel)$",
+        "^Cargo.lock$",
+        "^MODULE.bazel$",
+      ],
       run: "bazel mod deps --lockfile_mode=update",
       granular: true,
       bazel: {
