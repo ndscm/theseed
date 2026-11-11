@@ -1,0 +1,19 @@
+load("//seed/devprod/starlark/xslash:defs.bzl", "xslash_pack")
+
+exports_files(
+    glob(["bin/*"]),
+)
+
+xslash_pack(
+    name = "cargo_zigbuild_xslash",
+    out = "cargo-zigbuild.xslash",
+    skeleton = "bin/cargo-zigbuild.xslash",
+    symlinks = ["cargo-zigbuild"],
+    visibility = ["//visibility:public"],
+)
+
+alias(
+    name = "xslash",
+    actual = ":cargo_zigbuild_xslash",
+    visibility = ["//visibility:public"],
+)
