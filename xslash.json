@@ -51,5 +51,6 @@
   "shfmt": "seed/prebuilt/shfmt/bin/shfmt.xslash",
   "sops": "seed/prebuilt/sops/bin/sops.xslash",
   "uv": "seed/prebuilt/uv/bin/uv.xslash",
-  "uvx": "seed/prebuilt/uv/bin/uvx.xslash"
+  "uvx": "seed/prebuilt/uv/bin/uvx.xslash",
+  "zig": "seed/prebuilt/zig/bin/zig.xslash"
 }
