@@ -1,0 +1,19 @@
+load("//seed/devprod/starlark/xslash:defs.bzl", "xslash_pack")
+
+exports_files(
+    glob(["bin/*"]),
+)
+
+xslash_pack(
+    name = "buildifier_xslash",
+    out = "buildifier.xslash",
+    skeleton = "bin/buildifier.xslash",
+    symlinks = ["buildifier"],
+    visibility = ["//visibility:public"],
+)
+
+alias(
+    name = "xslash",
+    actual = ":buildifier_xslash",
+    visibility = ["//visibility:public"],
+)

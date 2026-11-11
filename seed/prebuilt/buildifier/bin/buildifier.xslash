@@ -1,0 +1,73 @@
+#!/usr/bin/env xslash
+{
+  "name": "buildifier",
+  "final": true,
+  "platforms": {
+    "darwin-amd64": {
+      "hash": "blake3",
+      "digest": "1e487139f6ea365f50dc1705784da5cb6212f00199c22abeb6b324aa3f428e07",
+      "size": 10212352,
+      "path": "buildifier",
+      "providers": [
+        {
+          "url": "https://github.com/bazel-contrib/buildtools/releases/download/v10.2.0/buildifier-darwin-amd64"
+        }
+      ]
+    },
+    "darwin-arm64": {
+      "hash": "blake3",
+      "digest": "a72044b6c671d5b66b8af7544753c0a7061c9057db152cbcf31ce1e2e7cd8204",
+      "size": 9747106,
+      "path": "buildifier",
+      "providers": [
+        {
+          "url": "https://github.com/bazel-contrib/buildtools/releases/download/v10.2.0/buildifier-darwin-arm64"
+        }
+      ]
+    },
+    "linux-amd64": {
+      "hash": "blake3",
+      "digest": "04fde052c474da03681c74715731c277be57ef851cf595515a2b24563a2c5c99",
+      "size": 10125846,
+      "path": "buildifier",
+      "providers": [
+        {
+          "url": "https://github.com/bazel-contrib/buildtools/releases/download/v10.2.0/buildifier-linux-amd64"
+        }
+      ]
+    },
+    "linux-arm64": {
+      "hash": "blake3",
+      "digest": "09a763af1f2ff01b7755edea8ec9c764f08146ba35196b87605a6b2df865cab5",
+      "size": 9657532,
+      "path": "buildifier",
+      "providers": [
+        {
+          "url": "https://github.com/bazel-contrib/buildtools/releases/download/v10.2.0/buildifier-linux-arm64"
+        }
+      ]
+    },
+    "windows-amd64": {
+      "hash": "blake3",
+      "digest": "81aaeb521190ac5d1e0d68792faadf199eb934a67de5485645bdb1f7f9e7bd9c",
+      "size": 10277888,
+      "path": "buildifier.exe",
+      "providers": [
+        {
+          "url": "https://github.com/bazel-contrib/buildtools/releases/download/v10.2.0/buildifier-windows-amd64.exe"
+        }
+      ]
+    },
+    "windows-arm64": {
+      "hash": "blake3",
+      "digest": "602c971637e4d7e86d355e68fb956f64af1a575a13e18163acca689a3b218b81",
+      "size": 9591296,
+      "path": "buildifier.exe",
+      "providers": [
+        {
+          "url": "https://github.com/bazel-contrib/buildtools/releases/download/v10.2.0/buildifier-windows-arm64.exe"
+        }
+      ]
+    }
+  }
+}
