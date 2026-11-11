@@ -12,6 +12,8 @@ avdmanager seed/prebuilt/android/bin/avdmanager.xslash
 bazel seed/prebuilt/bazel/bin/bazelisk.xslash
 bazelisk seed/prebuilt/bazel/bin/bazelisk.xslash
 buck2 seed/prebuilt/buck/bin/buck2.xslash
+buildifier seed/prebuilt/buildifier/bin/buildifier.xslash
+buildozer seed/prebuilt/buildozer/bin/buildozer.xslash
 cargo seed/prebuilt/rust/bin/cargo.xslash
 cargo-clippy seed/prebuilt/rust/bin/cargo-clippy.xslash
 cargo-fmt seed/prebuilt/rust/bin/cargo-fmt.xslash
