@@ -9,6 +9,7 @@ tool github.com/rogpeppe/go-internal/fmtsort
 replace github.com/ndscm/theseed => ./
 
 require (
+	cel.dev/cel-go v0.33.2
 	connectrpc.com/connect v1.20.0
 	connectrpc.com/grpchealth v1.5.0
 	connectrpc.com/validate v0.6.0
@@ -16,7 +17,6 @@ require (
 	github.com/coder/websocket v1.8.15
 	github.com/creack/pty v1.1.24
 	github.com/go-acme/lego/v5 v5.4.0
-	github.com/google/cel-go v0.31.0
 	github.com/google/uuid v1.6.0
 	github.com/jackc/pgx/v5 v5.10.0
 	github.com/lib/pq v1.12.3
@@ -51,6 +51,7 @@ require (
 	github.com/go-jose/go-jose/v4 v4.1.4 // indirect
 	github.com/go-openapi/inflect v1.0.0 // indirect
 	github.com/go-test/deep v1.1.1 // indirect
+	github.com/google/cel-go v0.31.0 // indirect
 	github.com/google/go-cmp v0.7.0 // indirect
 	github.com/hashicorp/hcl/v2 v2.24.0 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
@@ -73,8 +74,6 @@ require (
 	github.com/stretchr/testify v1.12.1 // indirect
 	github.com/zclconf/go-cty v1.19.0 // indirect
 	github.com/zclconf/go-cty-yaml v1.2.0 // indirect
-	go.opentelemetry.io/otel v1.46.0 // indirect
-	go.opentelemetry.io/otel/sdk/metric v1.46.0 // indirect
 	go.yaml.in/yaml/v3 v3.0.5 // indirect
 	golang.org/x/crypto v0.55.0 // indirect
 	golang.org/x/exp v0.0.0-20260824195058-e88cd73687aa // indirect
