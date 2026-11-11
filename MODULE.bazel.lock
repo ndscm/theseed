@@ -19137,7 +19137,7 @@
           "REPO_MAPPING:rules_rust+,rules_cc rules_cc+",
           "REPO_MAPPING:rules_rust+,rules_rust rules_rust+",
           "FILE:@@//Cargo.lock 51951ad690331180966a0d28f5c71e138323d036aac36bf364d43aa497afe94b",
-          "FILE:@@//Cargo.toml e38db43ec0fb7fd821b70fb54429919b335b8d622fb08c9b072f0b3d0899a808",
+          "FILE:@@//Cargo.toml 8e048e4b4eb8409d508f2b950afc20d53b0ca81562c1301d5a77eba572a0ab6a",
           "FILE:@@//seed/devprod/dotslash/update/Cargo.toml f377951b81b6eba6fbf3d7a46caa7edf7b4bc55de60fa8b42d6bdb1c8fedcd28",
           "FILE:@@//seed/devprod/starter/rustcli/Cargo.toml c67b186e190849010435448cf083fde6251a27cf24ae993e91884c5529ee2a69",
           "FILE:@@//seed/devprod/xslash/Cargo.toml 1f1262444af75dbda86fa8b84a1a5406ddfca9f1789e9d9d3421ca16b9da9fc8"
