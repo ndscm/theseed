@@ -1,0 +1,53 @@
+{
+  "name": "buildifier",
+  "platforms": {
+    "darwin-amd64": {
+      "path": "buildifier",
+      "providers": [
+        {
+          "url": "https://github.com/bazel-contrib/buildtools/releases/download/{{TAG}}/buildifier-darwin-amd64"
+        }
+      ]
+    },
+    "darwin-arm64": {
+      "path": "buildifier",
+      "providers": [
+        {
+          "url": "https://github.com/bazel-contrib/buildtools/releases/download/{{TAG}}/buildifier-darwin-arm64"
+        }
+      ]
+    },
+    "linux-amd64": {
+      "path": "buildifier",
+      "providers": [
+        {
+          "url": "https://github.com/bazel-contrib/buildtools/releases/download/{{TAG}}/buildifier-linux-amd64"
+        }
+      ]
+    },
+    "linux-arm64": {
+      "path": "buildifier",
+      "providers": [
+        {
+          "url": "https://github.com/bazel-contrib/buildtools/releases/download/{{TAG}}/buildifier-linux-arm64"
+        }
+      ]
+    },
+    "windows-amd64": {
+      "path": "buildifier.exe",
+      "providers": [
+        {
+          "url": "https://github.com/bazel-contrib/buildtools/releases/download/{{TAG}}/buildifier-windows-amd64.exe"
+        }
+      ]
+    },
+    "windows-arm64": {
+      "path": "buildifier.exe",
+      "providers": [
+        {
+          "url": "https://github.com/bazel-contrib/buildtools/releases/download/{{TAG}}/buildifier-windows-arm64.exe"
+        }
+      ]
+    }
+  }
+}
