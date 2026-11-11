@@ -27,8 +27,8 @@ require (
 	golang.org/x/sync v0.25.0
 	golang.org/x/sys v0.50.0
 	golang.org/x/term v0.48.0
-	google.golang.org/genproto/googleapis/api v0.0.0-20260825221802-da73d73af1c5
-	google.golang.org/grpc v1.83.2
+	google.golang.org/genproto/googleapis/api v0.0.0-20261110000943-09e21b237f2c
+	google.golang.org/grpc v1.85.0
 	google.golang.org/protobuf v1.36.12
 )
 
@@ -79,7 +79,7 @@ require (
 	golang.org/x/mod v0.43.0 // indirect
 	golang.org/x/text v0.44.0 // indirect
 	golang.org/x/tools v0.52.1-0.20261106145633-d407941a339a // indirect
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20260825221802-da73d73af1c5 // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20261110000943-09e21b237f2c // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 	software.sslmate.com/src/go-pkcs12 v0.7.3 // indirect
 )
