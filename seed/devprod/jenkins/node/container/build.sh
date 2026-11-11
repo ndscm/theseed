@@ -14,6 +14,7 @@ export CONTAINER_ENGINE="${container_engine}"
 
 mkdir -p ./seed/devprod/jenkins/node/container/bin/
 
+xslash -- create --skeleton ./seed/prebuilt/direnv/bin/direnv.xslash --out ./seed/devprod/jenkins/node/container/bin/direnv.xslash --symlink direnv
 xslash -- create --skeleton ./seed/prebuilt/docker/bin/docker.xslash --out ./seed/devprod/jenkins/node/container/bin/docker.xslash --symlink docker
 xslash -- create --skeleton ./seed/prebuilt/github/bin/gh.xslash --out ./seed/devprod/jenkins/node/container/bin/gh.xslash --symlink gh
 xslash -- create --skeleton ./seed/prebuilt/go/bin/go.xslash --out ./seed/devprod/jenkins/node/container/bin/go.xslash --symlink go
