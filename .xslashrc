@@ -1,4 +1,6 @@
 # Sort lines (ascending, case sensitive)
+7z seed/prebuilt/7zip/bin/7zz.xslash
+7zz seed/prebuilt/7zip/bin/7zz.xslash
 adb seed/prebuilt/adb/bin/adb.xslash
 age seed/prebuilt/age/bin/age.xslash
 age-inspect seed/prebuilt/age/bin/age-inspect.xslash
