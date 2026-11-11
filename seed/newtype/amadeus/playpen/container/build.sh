@@ -10,6 +10,7 @@ export CONTAINER_ENGINE="${container_engine}"
 
 mkdir -p ./seed/newtype/amadeus/playpen/container/bin/
 
+xslash -- create --skeleton ./seed/prebuilt/7zip/bin/7zz.xslash --out ./seed/newtype/amadeus/playpen/container/bin/7zz.xslash --symlink 7z --symlink 7zz
 xslash -- create --skeleton ./seed/prebuilt/adb/bin/adb.xslash --out ./seed/newtype/amadeus/playpen/container/bin/adb.xslash --symlink adb
 xslash -- create --skeleton ./seed/prebuilt/adb/bin/fastboot.xslash --out ./seed/newtype/amadeus/playpen/container/bin/fastboot.xslash --symlink fastboot
 xslash -- create --skeleton ./seed/prebuilt/age/bin/age-inspect.xslash --out ./seed/newtype/amadeus/playpen/container/bin/age-inspect.xslash --symlink age-inspect
