@@ -3,8 +3,8 @@ package service
 import (
 	"fmt"
 
+	"cel.dev/cel-go/cel"
 	"entgo.io/ent/dialect/sql"
-	"github.com/google/cel-go/cel"
 	"github.com/ndscm/theseed/seed/infra/error/go/seederr"
 	exprpb "google.golang.org/genproto/googleapis/api/expr/v1alpha1"
 )
