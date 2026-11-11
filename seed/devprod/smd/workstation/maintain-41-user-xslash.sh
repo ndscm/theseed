@@ -20,6 +20,8 @@ if [[ ",${maintain_scopes}," == *",user,"* ]]; then
     xslash -- create --skeleton ./seed/prebuilt/atlas/bin/atlas.xslash --out "${HOME}/.local/bin/atlas.xslash" --symlink atlas
     xslash -- create --skeleton ./seed/prebuilt/bazel/bin/bazelisk.xslash --out "${HOME}/.local/bin/bazelisk.xslash" --symlink bazel --symlink bazelisk
     xslash -- create --skeleton ./seed/prebuilt/buck/bin/buck2.xslash --out "${HOME}/.local/bin/buck2.xslash" --symlink buck2
+    xslash -- create --skeleton ./seed/prebuilt/buildifier/bin/buildifier.xslash --out "${HOME}/.local/bin/buildifier.xslash" --symlink buildifier
+    xslash -- create --skeleton ./seed/prebuilt/buildozer/bin/buildozer.xslash --out "${HOME}/.local/bin/buildozer.xslash" --symlink buildozer
     xslash -- create --skeleton ./seed/prebuilt/claude/bin/claude.xslash --out "${HOME}/.local/bin/claude.xslash" --symlink claude
     xslash -- create --skeleton ./seed/prebuilt/crane/bin/crane.xslash --out "${HOME}/.local/bin/crane.xslash" --symlink crane
     xslash -- create --skeleton ./seed/prebuilt/gcloud/bin/gcloud.xslash --out "${HOME}/.local/bin/gcloud.xslash" --symlink gcloud
