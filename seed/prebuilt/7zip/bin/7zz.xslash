@@ -1,0 +1,77 @@
+#!/usr/bin/env xslash
+{
+  "name": "7zz",
+  "final": true,
+  "platforms": {
+    "darwin-amd64": {
+      "hash": "blake3",
+      "digest": "a4c74b0d2e4007472b42f44f9c3320140356cc3306e0407bacc4cea94cdaffe4",
+      "size": 965712,
+      "format": "tar.xz",
+      "path": "7zz",
+      "providers": [
+        {
+          "url": "https://github.com/ip7z/7zip/releases/download/26.06/7z2606-mac.tar.xz"
+        }
+      ]
+    },
+    "darwin-arm64": {
+      "hash": "blake3",
+      "digest": "a4c74b0d2e4007472b42f44f9c3320140356cc3306e0407bacc4cea94cdaffe4",
+      "size": 965712,
+      "format": "tar.xz",
+      "path": "7zz",
+      "providers": [
+        {
+          "url": "https://github.com/ip7z/7zip/releases/download/26.06/7z2606-mac.tar.xz"
+        }
+      ]
+    },
+    "linux-amd64": {
+      "hash": "blake3",
+      "digest": "5d6ced3a949c6c0229c1b5a18c62bd3e5734afa672e3828e734fdecd91fa715d",
+      "size": 1575552,
+      "format": "tar.xz",
+      "path": "7zzs",
+      "providers": [
+        {
+          "url": "https://github.com/ip7z/7zip/releases/download/26.06/7z2606-linux-x64.tar.xz"
+        }
+      ]
+    },
+    "linux-arm64": {
+      "hash": "blake3",
+      "digest": "bcaa0ac2c606223bdfb9c53dd6ea8f31484588afd3480dd1698e7213261bd0d8",
+      "size": 1326668,
+      "format": "tar.xz",
+      "path": "7zzs",
+      "providers": [
+        {
+          "url": "https://github.com/ip7z/7zip/releases/download/26.06/7z2606-linux-arm64.tar.xz"
+        }
+      ]
+    },
+    "windows-amd64": {
+      "hash": "blake3",
+      "digest": "f00f7c010c4a60e76b783a6e51d3ac8e30e358812cd0ee12e19e9b65041b2a72",
+      "size": 600064,
+      "path": "7zr.exe",
+      "providers": [
+        {
+          "url": "https://github.com/ip7z/7zip/releases/download/26.06/7zr.exe"
+        }
+      ]
+    },
+    "windows-arm64": {
+      "hash": "blake3",
+      "digest": "f00f7c010c4a60e76b783a6e51d3ac8e30e358812cd0ee12e19e9b65041b2a72",
+      "size": 600064,
+      "path": "7zr.exe",
+      "providers": [
+        {
+          "url": "https://github.com/ip7z/7zip/releases/download/26.06/7zr.exe"
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,57 @@
+{
+  "name": "7zz",
+  "platforms": {
+    "darwin-amd64": {
+      "path": "7zz",
+      "format": "tar.xz",
+      "providers": [
+        {
+          "url": "https://github.com/ip7z/7zip/releases/download/{{TAG}}/7z{{SUFFIX}}-mac.tar.xz"
+        }
+      ]
+    },
+    "darwin-arm64": {
+      "path": "7zz",
+      "format": "tar.xz",
+      "providers": [
+        {
+          "url": "https://github.com/ip7z/7zip/releases/download/{{TAG}}/7z{{SUFFIX}}-mac.tar.xz"
+        }
+      ]
+    },
+    "linux-amd64": {
+      "path": "7zzs",
+      "format": "tar.xz",
+      "providers": [
+        {
+          "url": "https://github.com/ip7z/7zip/releases/download/{{TAG}}/7z{{SUFFIX}}-linux-x64.tar.xz"
+        }
+      ]
+    },
+    "linux-arm64": {
+      "path": "7zzs",
+      "format": "tar.xz",
+      "providers": [
+        {
+          "url": "https://github.com/ip7z/7zip/releases/download/{{TAG}}/7z{{SUFFIX}}-linux-arm64.tar.xz"
+        }
+      ]
+    },
+    "windows-amd64": {
+      "path": "7zr.exe",
+      "providers": [
+        {
+          "url": "https://github.com/ip7z/7zip/releases/download/{{TAG}}/7zr.exe"
+        }
+      ]
+    },
+    "windows-arm64": {
+      "path": "7zr.exe",
+      "providers": [
+        {
+          "url": "https://github.com/ip7z/7zip/releases/download/{{TAG}}/7zr.exe"
+        }
+      ]
+    }
+  }
+}
