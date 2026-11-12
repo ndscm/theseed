@@ -217,7 +217,6 @@ manifest:
     pydantic_core: pydantic_core
     pydantic_settings: pydantic_settings
     pydub: pydub
-    pyee: pyee
     pygetwindow: pygetwindow
     pygments: pygments
     pymilvus: pymilvus
