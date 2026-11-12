@@ -210,7 +210,7 @@ overrides:
   'i18next@catalog:': 26.3.6
   'isbot@catalog:': 5.2.3
   'js-yaml@catalog:': 5.3.0
-  'lucide-react@catalog:': 1.32.0
+  'lucide-react@catalog:': 1.72.0
   'notistack@catalog:': 3.0.2
   'playwright@catalog:': 1.65.0
   'prettier-plugin-tailwindcss@catalog:': 0.8.1
@@ -791,8 +791,8 @@ importers:
         specifier: 1.71.0
         version: 1.71.0(@types/node@26.2.0)(react-dom@19.3.1(react@19.3.1))(typescript@7.0.2)
       lucide-react:
-        specifier: 1.32.0
-        version: 1.32.0(react@19.3.1)
+        specifier: 1.72.0
+        version: 1.72.0(@types/react@19.3.0)(react@19.3.1)
       react:
         specifier: 19.3.1
         version: 19.3.1
@@ -3982,10 +3982,14 @@ packages:
     resolution: {integrity: sha512-Jo6dJ04CmSjuznwJSS3pUeWmd/H0ffTlkXXgwZi+eq1UCmqQwCh+eLsYOYCwY991i2Fah4h1BEMCx4qThGbsiA==}
     engines: {node: '>=10'}
 
-  lucide-react@1.32.0:
-    resolution: {integrity: sha512-txX56hMFnRxPi1f9/nH69YN8uvAO6a7Y1KSWKjCDAtdD9+soEgmWuCt6iRm1pkxUZo2+YntSdsE1L6bIuKoY8Q==}
+  lucide-react@1.72.0:
+    resolution: {integrity: sha512-fbF5i1GU8GODETa3Q7rXqrJrcx3iPYrQtxthom103zGx+Z0BGwKYAW9s+9435ohYJ7hQm0av0PoZcqI1CRwNrg==}
     peerDependencies:
+      '@types/react': '*'
       react: ^16.5.1 || ^17.0.0 || ^18.0.0 || ^19.0.0
+    peerDependenciesMeta:
+      '@types/react':
+        optional: true
 
   magic-string@1.2.3:
     resolution: {integrity: sha512-Bpb0W2TbLKOZ7vJnOUnVRGq3WL2p+ISV29M6hYPL1AFCpyKZpdr5ytiXoTSSxRVhg8YW7f65+6gbG8WG6PCa/g==}
@@ -7991,9 +7995,11 @@ snapshots:
     dependencies:
       yallist: 4.0.0
 
-  lucide-react@1.32.0(react@19.3.1):
+  lucide-react@1.72.0(@types/react@19.3.0)(react@19.3.1):
     dependencies:
       react: 19.3.1
+    optionalDependencies:
+      '@types/react': 19.3.0
 
   magic-string@1.2.3:
     dependencies:
