@@ -153,10 +153,6 @@ manifest:
     intervaltree: intervaltree
     isort: isort
     isympy: sympy
-    jaraco.classes: jaraco.classes
-    jaraco.context: jaraco_context
-    jaraco.functools: jaraco_functools
-    jeepney: jeepney
     jinja2: jinja2
     jiter: jiter
     joserfc: joserfc
@@ -166,13 +162,11 @@ manifest:
     jsonschema_specifications: jsonschema_specifications
     jwt: pyjwt
     key_value: py_key_value_aio
-    keyring: keyring
     markdown_it: markdown_it_py
     markupsafe: markupsafe
     mcp: mcp
     mcp_types: mcp_types
     mdurl: mdurl
-    more_itertools: more_itertools
     mouseinfo: mouseinfo
     mpmath: mpmath
     multipart: python_multipart
@@ -235,7 +229,6 @@ manifest:
     rich_rst: rich_rst
     rpds: rpds_py
     rubicon.objc: rubicon_objc
-    secretstorage: secretstorage
     setuptools: setuptools
     six: six
     sniffio: sniffio
