@@ -739,7 +739,7 @@
     },
     "//seed/vendor/python:extensions.bzl%python_locks": {
       "general": {
-        "bzlTransitiveDigest": "XDSk7zYzxmc1GDTqx+1VW7NTd1RI9tAmtEHDoaxQWvU=",
+        "bzlTransitiveDigest": "+mSird7AdZYCxYsBfKrWvQod74HOM1r+VBjUQmFhbe8=",
         "usagesDigest": "KwmxsYD6Wmsy7wGjJs+8pRJN4BUVMmcpC1m2cFfmQhU=",
         "recordedInputs": [
           "REPO_MAPPING:,python_3_13_host rules_python++python+python_3_13_host"
