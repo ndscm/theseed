@@ -16,6 +16,9 @@ def _load_uv_lock_impl(rctx):
     script = rctx.path(rctx.attr.script)
     uv_lock = rctx.path(rctx.attr.uv_lock)
 
+    rctx.watch(script)
+    rctx.watch(uv_lock)
+
     result = rctx.execute([python, script, uv_lock])
     if result.return_code != 0:
         fail("export_requirements failed (exit %d):\n%s" % (
