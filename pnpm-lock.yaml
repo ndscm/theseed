@@ -221,7 +221,7 @@ overrides:
   'react@catalog:': 19.3.1
   'rollup@catalog:': 4.62.4
   'rxjs@catalog:': 7.8.2
-  'tailwind-merge@catalog:': 3.6.0
+  'tailwind-merge@catalog:': 3.7.0
   'tailwindcss@catalog:': 4.3.5
   'tslib@catalog:': 2.8.1
   'tsx@catalog:': 4.23.15
@@ -463,8 +463,8 @@ importers:
   seed/devprod/ts/grouping-tailwind:
     dependencies:
       tailwind-merge:
-        specifier: 3.6.0
-        version: 3.6.0
+        specifier: 3.7.0
+        version: 3.7.0
     devDependencies:
       '@types/node':
         specifier: 26.2.0
@@ -809,8 +809,8 @@ importers:
         specifier: 4.62.4
         version: 4.62.4
       tailwind-merge:
-        specifier: 3.6.0
-        version: 3.6.0
+        specifier: 3.7.0
+        version: 3.7.0
       tailwindcss:
         specifier: 4.3.5
         version: 4.3.5
@@ -4753,8 +4753,8 @@ packages:
   tailwind-merge@2.6.0:
     resolution: {integrity: sha512-P+Vu1qXfzediirmHOC3xKGAYeZtPcV9g76X+xg2FD4tYgR71ewMA35Y3sCz3zhiN/dwefRpJX0yBcgwi1fXNQA==}
 
-  tailwind-merge@3.6.0:
-    resolution: {integrity: sha512-uxL7qAVQriqRQPAyK3pj66VqskWqoZ37PW94jwOTwNfq/z9oyu1V+eqrZqtR2+fCiXdYOZe/Modt8GtvqNzu+w==}
+  tailwind-merge@3.7.0:
+    resolution: {integrity: sha512-XPPUyAc+cvspz3lHTcR/QgPfW2A0lv/xQNIjX3HGhLR+Nq2lHaLq5MtTesHn8GUr3W3DguT2KT5x3NVgRtYwmA==}
 
   tailwindcss@4.3.5:
     resolution: {integrity: sha512-FcQk9BuffmEHJP2G0XmB2SplU1aLTI7j07Kunk+U74Ny+XiWOtzXz9aujFZ/avntw1e2cOv/3PkgzflQ7gX2vQ==}
@@ -8765,7 +8765,7 @@ snapshots:
 
   tailwind-merge@2.6.0: {}
 
-  tailwind-merge@3.6.0: {}
+  tailwind-merge@3.7.0: {}
 
   tailwindcss@4.3.5: {}
 
