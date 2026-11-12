@@ -5,37 +5,37 @@
   "platforms": {
     "darwin-arm64": {
       "hash": "blake3",
-      "digest": "0cb28effe0d09299a3e54221b4f51bb7c4e6697c04b722d1effd5d4ed13b4f01",
-      "size": 156083281,
+      "digest": "17bda349f5d46e0ad244fabd74f0c738b6b12044c12f158033da821ad0ef7106",
+      "size": 155384151,
       "format": "zip",
       "path": "cmdline-tools/bin/sdkmanager",
       "providers": [
         {
-          "url": "https://dl.google.com/android/repository/commandlinetools-mac_arm64-15859902_latest.zip"
+          "url": "https://dl.google.com/android/repository/commandlinetools-mac_arm64-16111833_latest.zip"
         }
       ]
     },
     "linux-amd64": {
       "hash": "blake3",
-      "digest": "93c43ac104da91b9c856ec482164ff04a40e876249e3157e4ae1d95400e9287e",
-      "size": 181833628,
+      "digest": "008db42dfa0c3bb391bbf90081e434287369def6a54e2b00ed077891f2f8e595",
+      "size": 181052239,
       "format": "zip",
       "path": "cmdline-tools/bin/sdkmanager",
       "providers": [
         {
-          "url": "https://dl.google.com/android/repository/commandlinetools-linux-15859902_latest.zip"
+          "url": "https://dl.google.com/android/repository/commandlinetools-linux-16111833_latest.zip"
         }
       ]
     },
     "windows-amd64": {
       "hash": "blake3",
-      "digest": "5c684ed7acdc1cf5c879cce7c6377265d7aaa4987cdf8c024bca8e0c3a0ff65a",
-      "size": 155655386,
+      "digest": "5196312192748085986ddbae7a959b6b367e1dfc75210b6ae48e700abe6cb327",
+      "size": 154957218,
       "format": "zip",
       "path": "cmdline-tools/bin/sdkmanager",
       "providers": [
         {
-          "url": "https://dl.google.com/android/repository/commandlinetools-win-15859902_latest.zip"
+          "url": "https://dl.google.com/android/repository/commandlinetools-win-16111833_latest.zip"
         }
       ]
     }
