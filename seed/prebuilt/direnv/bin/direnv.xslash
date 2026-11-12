@@ -5,67 +5,67 @@
   "platforms": {
     "darwin-amd64": {
       "hash": "blake3",
-      "digest": "ab98b3cf90a5e0ed99aac29f736855c99d1ebf1aa5fb109bc168c9bf08fe62a3",
-      "size": 8350032,
+      "digest": "68e0a99ac78955b7a56c8af81310ef239c9b990e6c7b4b66450ec4c11038fd41",
+      "size": 8711696,
       "path": "direnv",
       "providers": [
         {
-          "url": "https://github.com/direnv/direnv/releases/download/v2.37.1/direnv.darwin-amd64"
+          "url": "https://github.com/direnv/direnv/releases/download/v2.38.2/direnv.darwin-amd64"
         }
       ]
     },
     "darwin-arm64": {
       "hash": "blake3",
-      "digest": "c6eabcde5fbd389aa0f0ca2a3ded9be347ecf1b937794aa98738feccbdcef8b0",
-      "size": 7899154,
+      "digest": "762e807af3df76da345c476e2789e2c5bffe831b675fe49599ca1f86feb88fe3",
+      "size": 8106530,
       "path": "direnv",
       "providers": [
         {
-          "url": "https://github.com/direnv/direnv/releases/download/v2.37.1/direnv.darwin-arm64"
+          "url": "https://github.com/direnv/direnv/releases/download/v2.38.2/direnv.darwin-arm64"
         }
       ]
     },
     "linux-amd64": {
       "hash": "blake3",
-      "digest": "291b71c5ae8d47e7ff5ff3a7276275a1dff25d753069912bed593c78f5434519",
-      "size": 8151224,
+      "digest": "c988e182e6ddd175ce5ecf0f0e359077fa205f18e3a59ae76a14e7df35b060e5",
+      "size": 8548514,
       "path": "direnv",
       "providers": [
         {
-          "url": "https://github.com/direnv/direnv/releases/download/v2.37.1/direnv.linux-amd64"
+          "url": "https://github.com/direnv/direnv/releases/download/v2.38.2/direnv.linux-amd64"
         }
       ]
     },
     "linux-arm64": {
       "hash": "blake3",
-      "digest": "e6edd6b534ed664e084d72ae81ded52c437e1d57aae1f8420531a8293635afce",
-      "size": 7667896,
+      "digest": "de6c0106c102c4554c9885faefbf3a2428a91692371314dc87ee9e0e7573983e",
+      "size": 7930018,
       "path": "direnv",
       "providers": [
         {
-          "url": "https://github.com/direnv/direnv/releases/download/v2.37.1/direnv.linux-arm64"
+          "url": "https://github.com/direnv/direnv/releases/download/v2.38.2/direnv.linux-arm64"
         }
       ]
     },
     "windows-amd64": {
       "hash": "blake3",
-      "digest": "e4db661c4a06cbe8db1fdc57f5300decc62d043dda6c39f21a56b81fe5bfdbde",
-      "size": 8418816,
+      "digest": "478eabf17169acacfe178c45693907b2ab2024187b5ff9aebd7196ab031a1095",
+      "size": 8831488,
       "path": "direnv.exe",
       "providers": [
         {
-          "url": "https://github.com/direnv/direnv/releases/download/v2.37.1/direnv.windows-amd64"
+          "url": "https://github.com/direnv/direnv/releases/download/v2.38.2/direnv.windows-amd64.exe"
         }
       ]
     },
     "windows-arm64": {
       "hash": "blake3",
-      "digest": "85913676afc84bd0d4edf90f16ba10913c5033e765f0193d0b8f82e23dfd9b72",
-      "size": 7791104,
+      "digest": "11204fcb9337f82a81235f260f3512864ebc790c15e0b3364d74bce89222c694",
+      "size": 8052736,
       "path": "direnv.exe",
       "providers": [
         {
-          "url": "https://github.com/direnv/direnv/releases/download/v2.37.1/direnv.windows-arm64"
+          "url": "https://github.com/direnv/direnv/releases/download/v2.38.2/direnv.windows-arm64.exe"
         }
       ]
     }

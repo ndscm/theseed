@@ -37,7 +37,7 @@
       "path": "direnv.exe",
       "providers": [
         {
-          "url": "https://github.com/direnv/direnv/releases/download/{{TAG}}/direnv.windows-amd64"
+          "url": "https://github.com/direnv/direnv/releases/download/{{TAG}}/direnv.windows-amd64.exe"
         }
       ]
     },
@@ -45,7 +45,7 @@
       "path": "direnv.exe",
       "providers": [
         {
-          "url": "https://github.com/direnv/direnv/releases/download/{{TAG}}/direnv.windows-arm64"
+          "url": "https://github.com/direnv/direnv/releases/download/{{TAG}}/direnv.windows-arm64.exe"
         }
       ]
     }
