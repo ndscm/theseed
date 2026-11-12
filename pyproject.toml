@@ -33,5 +33,5 @@ dependencies = [
     "requests==2.34.2",
     "srt==3.5.3",
     "torch==2.15.0",
-    "uvicorn==0.52.4",
+    "uvicorn==0.54.0",
 ]
