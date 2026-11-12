@@ -5,37 +5,37 @@
   "platforms": {
     "darwin-arm64": {
       "hash": "blake3",
-      "digest": "ea71e636f369bd344e87e8fc907edb55bf7fc3d3ae6119d3e77dfba6fcb554df",
-      "size": 1570051292,
+      "digest": "94644e3afbf9fc3d58b41e00ddca8c385d5ab0a582af51e18795673e883019a7",
+      "size": 1569733272,
       "format": "tar.xz",
-      "path": "LLVM-23.1.4-macOS-ARM64/bin/clang",
+      "path": "LLVM-23.1.5-macOS-ARM64/bin/clang",
       "providers": [
         {
-          "url": "https://github.com/llvm/llvm-project/releases/download/llvmorg-23.1.4/LLVM-23.1.4-macOS-ARM64.tar.xz"
+          "url": "https://github.com/llvm/llvm-project/releases/download/llvmorg-23.1.5/LLVM-23.1.5-macOS-ARM64.tar.xz"
         }
       ]
     },
     "linux-amd64": {
       "hash": "blake3",
-      "digest": "3e284d5f7266da1e751fadc0d7ce2dc2d9de5b0aa8b617f824696ff43641cbb0",
-      "size": 2017061664,
+      "digest": "45fce38d97e226d4b435f1927b5e1ea39ab675fdab214040fef6e2016875023f",
+      "size": 2014093084,
       "format": "tar.xz",
-      "path": "LLVM-23.1.4-Linux-X64/bin/clang",
+      "path": "LLVM-23.1.5-Linux-X64/bin/clang",
       "providers": [
         {
-          "url": "https://github.com/llvm/llvm-project/releases/download/llvmorg-23.1.4/LLVM-23.1.4-Linux-X64.tar.xz"
+          "url": "https://github.com/llvm/llvm-project/releases/download/llvmorg-23.1.5/LLVM-23.1.5-Linux-X64.tar.xz"
         }
       ]
     },
     "linux-arm64": {
       "hash": "blake3",
-      "digest": "9c5a6fb357c8892518c2d389072d0d9d62b4d6bdd9c2059fb7aaa01a37d7fa55",
-      "size": 1829686400,
+      "digest": "d2b194df1690be9ecbb45cde8338f4319f45452649f99da92eab8a99f4b4075a",
+      "size": 1828141344,
       "format": "tar.xz",
-      "path": "LLVM-23.1.4-Linux-ARM64/bin/clang",
+      "path": "LLVM-23.1.5-Linux-ARM64/bin/clang",
       "providers": [
         {
-          "url": "https://github.com/llvm/llvm-project/releases/download/llvmorg-23.1.4/LLVM-23.1.4-Linux-ARM64.tar.xz"
+          "url": "https://github.com/llvm/llvm-project/releases/download/llvmorg-23.1.5/LLVM-23.1.5-Linux-ARM64.tar.xz"
         }
       ]
     }
