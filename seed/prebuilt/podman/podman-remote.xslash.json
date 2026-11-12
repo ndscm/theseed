@@ -6,7 +6,7 @@
       "format": "zip",
       "providers": [
         {
-          "url": "https://github.com/containers/podman/releases/download/v{{TAG}}/podman-remote-release-darwin_arm64.zip"
+          "url": "https://github.com/podman-container-tools/podman/releases/download/v{{TAG}}/podman-remote-release-darwin_arm64.zip"
         }
       ]
     },
@@ -15,7 +15,7 @@
       "format": "tar.gz",
       "providers": [
         {
-          "url": "https://github.com/containers/podman/releases/download/v{{TAG}}/podman-remote-static-linux_amd64.tar.gz"
+          "url": "https://github.com/podman-container-tools/podman/releases/download/v{{TAG}}/podman-remote-static-linux_amd64.tar.gz"
         }
       ]
     },
@@ -24,7 +24,7 @@
       "format": "tar.gz",
       "providers": [
         {
-          "url": "https://github.com/containers/podman/releases/download/v{{TAG}}/podman-remote-static-linux_arm64.tar.gz"
+          "url": "https://github.com/podman-container-tools/podman/releases/download/v{{TAG}}/podman-remote-static-linux_arm64.tar.gz"
         }
       ]
     },
@@ -33,7 +33,7 @@
       "format": "zip",
       "providers": [
         {
-          "url": "https://github.com/containers/podman/releases/download/v{{TAG}}/podman-remote-release-windows_amd64.zip"
+          "url": "https://github.com/podman-container-tools/podman/releases/download/v{{TAG}}/podman-remote-release-windows_amd64.zip"
         }
       ]
     },
@@ -42,7 +42,7 @@
       "format": "zip",
       "providers": [
         {
-          "url": "https://github.com/containers/podman/releases/download/v{{TAG}}/podman-remote-release-windows_arm64.zip"
+          "url": "https://github.com/podman-container-tools/podman/releases/download/v{{TAG}}/podman-remote-release-windows_arm64.zip"
         }
       ]
     }

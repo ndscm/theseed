@@ -5,7 +5,7 @@ cd "$(dirname "${BASH_SOURCE[0]}")"
 tag="${1:-"$(cat ./TAG)"}"
 
 if [[ "${1:-}" == "latest" ]]; then
-  latest="$(curl -s "https://api.github.com/repos/containers/podman/releases/latest")"
+  latest="$(curl -s "https://api.github.com/repos/podman-container-tools/podman/releases/latest")"
   tag="$(jq -r '.tag_name | ltrimstr("v")' <<<"${latest}")"
   printf "%s\n" "${tag}" >./TAG
 fi
