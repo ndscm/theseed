@@ -1,5 +1,6 @@
 packages:
   - "seed/**"
+  - "!seed/devprod/xslash/prebuilt/prettier/standalone/**"
 allowBuilds:
   "@swc/core": true
   "@vscode/vsce-sign": true
