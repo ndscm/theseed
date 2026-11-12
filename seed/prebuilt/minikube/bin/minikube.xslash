@@ -5,56 +5,56 @@
   "platforms": {
     "darwin-amd64": {
       "hash": "blake3",
-      "digest": "ab1fd83eb662ef55d895efbcfb383e363241ca94a0fb7d1b33eec04cdee3cca1",
-      "size": 141216160,
+      "digest": "2f7af3aab106ff68e00b84d09c16a27a73330916e80327038fc7b2069562d62d",
+      "size": 149788640,
       "path": "minikube",
       "providers": [
         {
-          "url": "https://github.com/kubernetes/minikube/releases/download/v1.38.1/minikube-darwin-amd64"
+          "url": "https://github.com/kubernetes/minikube/releases/download/v1.39.0/minikube-darwin-amd64"
         }
       ]
     },
     "darwin-arm64": {
       "hash": "blake3",
-      "digest": "444d88ab488e49be1be0ddc9ed7fcd9702ebe4b061db22242ab1a9aad811049b",
-      "size": 135488786,
+      "digest": "6c928d0663a6295257da6131dcc75eb12582397a4b0649b75470c92d6ded68e0",
+      "size": 143223298,
       "path": "minikube",
       "providers": [
         {
-          "url": "https://github.com/kubernetes/minikube/releases/download/v1.38.1/minikube-darwin-arm64"
+          "url": "https://github.com/kubernetes/minikube/releases/download/v1.39.0/minikube-darwin-arm64"
         }
       ]
     },
     "linux-amd64": {
       "hash": "blake3",
-      "digest": "f4fe4c4bd254ef66d7922fecec32208263ed7eeaf9c70c5a28e1362018498e61",
-      "size": 134891912,
+      "digest": "83c0b116c3d9a8275634330389971ea6163410c02e8744c0f2b64c23612a89ba",
+      "size": 142610232,
       "path": "minikube",
       "providers": [
         {
-          "url": "https://github.com/kubernetes/minikube/releases/download/v1.38.1/minikube-linux-amd64"
+          "url": "https://github.com/kubernetes/minikube/releases/download/v1.39.0/minikube-linux-amd64"
         }
       ]
     },
     "linux-arm64": {
       "hash": "blake3",
-      "digest": "f5c9ffa0b6489349e99f89d4e3b65b314c1b67043060f238309484da3d3fecfe",
-      "size": 128832446,
+      "digest": "70c10e37c627361596c07142b50cdc9fe6386622e8408a6c8b4ba3b08478ba54",
+      "size": 135838135,
       "path": "minikube",
       "providers": [
         {
-          "url": "https://github.com/kubernetes/minikube/releases/download/v1.38.1/minikube-linux-arm64"
+          "url": "https://github.com/kubernetes/minikube/releases/download/v1.39.0/minikube-linux-arm64"
         }
       ]
     },
     "windows-amd64": {
       "hash": "blake3",
-      "digest": "3b63d16988728140b29104a0836b7cf2738919edc957b86e2bda8b9e6057461f",
-      "size": 136384512,
+      "digest": "5a6684eb912c385ba5739fd1ae38fdeff47d4e6d52f326a80a92f6e0389161ac",
+      "size": 144181248,
       "path": "minikube.exe",
       "providers": [
         {
-          "url": "https://github.com/kubernetes/minikube/releases/download/v1.38.1/minikube-windows-amd64.exe"
+          "url": "https://github.com/kubernetes/minikube/releases/download/v1.39.0/minikube-windows-amd64.exe"
         }
       ]
     }
