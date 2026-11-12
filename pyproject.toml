@@ -5,7 +5,7 @@ description = "theseed monorepo"
 readme = "README.md"
 requires-python = "==3.13.13"
 dependencies = [
-    "confluent-kafka==2.15.0",
+    "confluent-kafka==2.16.1",
     "fastapi==0.141.1",
     "fastmcp==4.0.5",
     "google==3.0.0",
