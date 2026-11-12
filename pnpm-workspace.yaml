@@ -7,11 +7,11 @@ allowBuilds:
   "keytar": true
   "protobufjs": true
 catalog:
-  "@bufbuild/protobuf": "^2.14.0"
-  "@bufbuild/protoc-gen-es": "^2.14.0"
-  "@connectrpc/connect": "^2.1.2"
-  "@connectrpc/connect-node": "^2.1.2"
-  "@connectrpc/connect-web": "^2.1.2"
+  "@bufbuild/protobuf": "^2.17.0"
+  "@bufbuild/protoc-gen-es": "^2.17.0"
+  "@connectrpc/connect": "^2.3.0"
+  "@connectrpc/connect-node": "^2.3.0"
+  "@connectrpc/connect-web": "^2.3.0"
   "@emotion/cache": "^11.14.0"
   "@emotion/react": "^11.14.0"
   "@emotion/styled": "^11.14.1"
@@ -74,11 +74,11 @@ catalog:
   "vite-tsconfig-paths": "^6.1.1"
 overrides:
   # Avoid unexpected upgrade of direct dependencies
-  "@bufbuild/protobuf@catalog:": "2.14.0"
-  "@bufbuild/protoc-gen-es@catalog:": "2.14.0"
-  "@connectrpc/connect-node@catalog:": "2.1.2"
-  "@connectrpc/connect-web@catalog:": "2.1.2"
-  "@connectrpc/connect@catalog:": "2.1.2"
+  "@bufbuild/protobuf@catalog:": "2.17.0"
+  "@bufbuild/protoc-gen-es@catalog:": "2.17.0"
+  "@connectrpc/connect-node@catalog:": "2.3.0"
+  "@connectrpc/connect-web@catalog:": "2.3.0"
+  "@connectrpc/connect@catalog:": "2.3.0"
   "@emotion/cache@catalog:": "11.14.0"
   "@emotion/react@catalog:": "11.14.0"
   "@emotion/styled@catalog:": "11.14.1"
