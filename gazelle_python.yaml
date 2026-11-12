@@ -36,7 +36,6 @@ manifest:
     attrs: attrs
     authlib: authlib
     beartype: beartype
-    bs4: beautifulsoup4
     bson: pymongo
     cachetools: cachetools
     caio: caio
@@ -137,7 +136,6 @@ manifest:
     google_auth_httplib2: google_auth_httplib2
     google_auth_oauthlib: google_auth_oauthlib
     googleapiclient: google_api_python_client
-    googlesearch: google
     greenlet: greenlet
     gridfs: pymongo
     griffe: griffelib
@@ -235,7 +233,6 @@ manifest:
     socks: PySocks
     sockshandler: PySocks
     sortedcontainers: sortedcontainers
-    soupsieve: soupsieve
     srt: srt
     srt_tools: srt
     sse_starlette: sse_starlette
