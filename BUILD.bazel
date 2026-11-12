@@ -43,13 +43,15 @@ npm_link_all_packages()
 # that mapping compiles evdev from source, which needs Linux kernel headers. That
 # compile only succeeds on a Linux host, so the manifest can only be regenerated
 # on Linux for now; on other hosts the target is incompatible and skipped.
+#
+# requirements is intentionally unset so the generated manifest has no
+# integrity field (a hash of the lock that churns on every uv.lock change).
+# The .test target then falls back to a diff_test against a regenerated
+# manifest instead of an integrity check.
 gazelle_python_manifest(
     name = "gazelle_python_manifest",
     modules_mapping = "//seed/devprod/python/modules_mapping",
     pip_repository_name = "pypi",
-    requirements = [
-        "@python_locks//:requirements.txt",
-    ],
     target_compatible_with = ["@platforms//os:linux"],
 )
 
