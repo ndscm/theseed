@@ -51,7 +51,7 @@
       "format": "zip",
       "providers": [
         {
-          "url": "https://storage.googleapis.com/cloud-sdk-release/google-cloud-cli-{{TAG}}-windows-arm.zip"
+          "url": "https://storage.googleapis.com/cloud-sdk-release/google-cloud-cli-{{TAG}}-windows-x86_64.zip"
         }
       ]
     }
