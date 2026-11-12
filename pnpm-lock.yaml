@@ -202,7 +202,7 @@ overrides:
   '@xterm/addon-fit@catalog:': 0.11.0
   '@xterm/xterm@catalog:': 6.0.0
   'babel-plugin-react-compiler@catalog:': 1.0.0
-  'daisyui@catalog:': 5.7.19
+  'daisyui@catalog:': 5.7.50
   'debug@catalog:': 4.4.3
   'fractional-indexing@catalog:': 4.0.0
   'http-proxy@catalog:': 1.18.1
@@ -782,8 +782,8 @@ importers:
         specifier: 6.0.0
         version: 6.0.0
       daisyui:
-        specifier: 5.7.19
-        version: 5.7.19
+        specifier: 5.7.50
+        version: 5.7.50
       i18next:
         specifier: 26.3.6
         version: 26.3.6(typescript@7.0.2)
@@ -3241,8 +3241,8 @@ packages:
   csstype@3.2.3:
     resolution: {integrity: sha512-z1HGKcYy2xA8AGQfwrn0PAy+PB7X/GSj3UVJW9qKyn43xWa+gl5nXmU4qqLMRzWVLFC8KusUX8T/0kCiOYpAIQ==}
 
-  daisyui@5.7.19:
-    resolution: {integrity: sha512-0ylsSwFdzecFBh1XKPw/FB74bYX1kiufv7/dFvj3FxrUMWGkACfwqIzIMrsxIMzUlKF6ZHwH6YaOwPNvQGGmsg==}
+  daisyui@5.7.50:
+    resolution: {integrity: sha512-+/LRqnTCoc7s/bJEKKwtJSwzeXCVdAmRdNmZeZzgHCaQ9PJyl7j+2V2U32GQDMyD+VDkP9e/+JGoC72Y1hLk7w==}
 
   debug@2.6.9:
     resolution: {integrity: sha512-bC7ElrdJaJnPbAP+1EotYvqZsb3ecl5wi6Bfi6BJTUcNowp6cvspg0jXznRTKDjm/E7AdgFBVeAPVMNcKGsHMA==}
@@ -7250,7 +7250,7 @@ snapshots:
 
   csstype@3.2.3: {}
 
-  daisyui@5.7.19: {}
+  daisyui@5.7.50: {}
 
   debug@2.6.9(supports-color@7.1.0):
     dependencies:
