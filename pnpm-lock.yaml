@@ -185,6 +185,7 @@ overrides:
   '@types/node@catalog:': 26.6.6
   '@types/react-dom@catalog:': 19.3.0
   '@types/react@catalog:': 19.3.0
+  '@types/vscode@^1.100.0': 1.146.0
   '@univerjs/core@catalog:': 1.4.0
   '@univerjs/design@catalog:': 1.4.0
   '@univerjs/docs-ui@catalog:': 1.4.0
@@ -507,8 +508,8 @@ importers:
         specifier: 26.6.6
         version: 26.6.6
       '@types/vscode':
-        specifier: ^1.100.0
-        version: 1.134.0
+        specifier: 1.146.0
+        version: 1.146.0
       '@vscode/vsce':
         specifier: 4.1.0
         version: 4.1.0(supports-color@7.1.0)
@@ -519,8 +520,8 @@ importers:
   seed/devprod/vscode/extension/web-file-system:
     devDependencies:
       '@types/vscode':
-        specifier: ^1.100.0
-        version: 1.134.0
+        specifier: 1.146.0
+        version: 1.146.0
       typescript:
         specifier: 7.0.2
         version: 7.0.2
@@ -2706,8 +2707,8 @@ packages:
   '@types/react@19.3.0':
     resolution: {integrity: sha512-N0rFCuH9YoxG9/m61l9MfpJKfmLOVU0em7ipIz6TRgSSkvReLB9vL85GB+yr8Bs5leqpvg96JSwF4ZS1s4viQg==}
 
-  '@types/vscode@1.134.0':
-    resolution: {integrity: sha512-NDEu0hg4sF7+vvFsADsktqUJ6f80LHSZvVK2Ovo1XiQ0/VHck1O3zst+ZZyVA/uvz6vo6LcuoqU2q48YMqOwWw==}
+  '@types/vscode@1.146.0':
+    resolution: {integrity: sha512-OtU25faeM997QQsW+D07FN9cX06j+EEI4aQaPw/UO3HWlCM39N1W7fG8ewhdZKluut31KffyMsmDzJzgMu6t8Q==}
 
   '@typescript/typescript-aix-ppc64@7.0.2':
     resolution: {integrity: sha512-MTKKkWB7p/0E9xi1d1tHtZ5PiLkGEMIq88pK2CubZjOsLtYTLqhgIgi6zepFa+9GHZ6h05NMCkQxGKiPXMxXtQ==}
@@ -6000,7 +6001,7 @@ snapshots:
     dependencies:
       csstype: 3.2.3
 
-  '@types/vscode@1.134.0': {}
+  '@types/vscode@1.146.0': {}
 
   '@typescript/typescript-aix-ppc64@7.0.2':
     optional: true
