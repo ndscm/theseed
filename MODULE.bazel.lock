@@ -24546,8 +24546,8 @@
             "https://files.pythonhosted.org/packages/e5/7a/8dd906bd22e79e47397a61742927f6747fe93242ef86645ee9092e610244/pyjwt-2.12.1-py3-none-any.whl": "sha256:28ca37c070cad8ba8cd9790cd940535d40274d22f80ab87f3ac6a713e6e8454c"
           },
           "pymilvus": {
-            "https://files.pythonhosted.org/packages/60/9d/7011887b29f452905745e8bd321f404068d5bfe78fe84e42c0b7cd81a065/pymilvus-3.0.1-py3-none-any.whl": "sha256:c5a8d5c1fa1de7b416e3529d383d8cc2e7da2170433ffa4a2d9087e14f70171a",
-            "https://files.pythonhosted.org/packages/c0/78/6bd0dba340706bc63346af96f0ebe36ff17f75404f5de935fda94d476c98/pymilvus-3.0.1.tar.gz": "sha256:c02389059088b18d6e598cd175541e445c772fab4926c5e527c4913be34887f1"
+            "https://files.pythonhosted.org/packages/77/27/05bf52d09e86454879e3c7f2a36de00134f23b2e3efed91957606f661682/pymilvus-3.0.3-py3-none-any.whl": "sha256:b487f0150be8af86e3caea53148d7ea9466650d99820a7b6e588d36de1387e42",
+            "https://files.pythonhosted.org/packages/f5/c9/99155a94c57ba4bc7a795600657e155fb4636a1c582ccdb9956cf3c98e62/pymilvus-3.0.3.tar.gz": "sha256:d439c039861e753841a0809825602cfb4f146d593f4479d83a3402b738e5968f"
           },
           "pymongo": {
             "https://files.pythonhosted.org/packages/00/b7/ec2c2bdde80e23693703f01805a1e37509e088127177f2d5758ca05c9a79/pymongo-4.19.0-cp314-cp314t-manylinux2014_aarch64.manylinux_2_17_aarch64.manylinux_2_28_aarch64.whl": "sha256:9dee18feff3203fa128798c6673c7795ef8a46d0b32c0e6b920c7b3f46129447",
