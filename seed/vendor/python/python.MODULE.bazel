@@ -1,5 +1,5 @@
-bazel_dep(name = "rules_python", version = "2.3.2")
-bazel_dep(name = "rules_python_gazelle_plugin", version = "2.3.2")
+bazel_dep(name = "rules_python", version = "2.4.6")
+bazel_dep(name = "rules_python_gazelle_plugin", version = "2.4.6")
 
 rules_python_config = use_extension("@rules_python//python/extensions:config.bzl", "config")
 rules_python_config.explicit_init_py(default = True)
