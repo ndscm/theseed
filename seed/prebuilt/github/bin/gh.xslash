@@ -5,73 +5,73 @@
   "platforms": {
     "darwin-amd64": {
       "hash": "blake3",
-      "digest": "7bc2730b0062659f38aadebf521424866dea8fc562732be6523484cbc76e55c5",
-      "size": 15521035,
+      "digest": "117fe716e9d15db4fdd0b95ca1ab40bf2e528b33646e91e6ad59adac2e69602c",
+      "size": 15683594,
       "format": "zip",
-      "path": "gh_2.98.0_macOS_amd64/bin/gh",
+      "path": "gh_2.104.0_macOS_amd64/bin/gh",
       "providers": [
         {
-          "url": "https://github.com/cli/cli/releases/download/v2.98.0/gh_2.98.0_macOS_amd64.zip"
+          "url": "https://github.com/cli/cli/releases/download/v2.104.0/gh_2.104.0_macOS_amd64.zip"
         }
       ]
     },
     "darwin-arm64": {
       "hash": "blake3",
-      "digest": "046042e1fb45883a35c7e59c7b409672cff8816171d901345f17ea1407a12ea8",
-      "size": 13938611,
+      "digest": "170407a66ce3498ab479709c0017d639c9df1a8c338411bf1583db179ad1f234",
+      "size": 14087367,
       "format": "zip",
-      "path": "gh_2.98.0_macOS_arm64/bin/gh",
+      "path": "gh_2.104.0_macOS_arm64/bin/gh",
       "providers": [
         {
-          "url": "https://github.com/cli/cli/releases/download/v2.98.0/gh_2.98.0_macOS_arm64.zip"
+          "url": "https://github.com/cli/cli/releases/download/v2.104.0/gh_2.104.0_macOS_arm64.zip"
         }
       ]
     },
     "linux-amd64": {
       "hash": "blake3",
-      "digest": "8c497aaaffe54b79508623592ea15a849e0f376f8cfb41b9f71254fb415ff791",
-      "size": 14863663,
+      "digest": "d40bf008b86e21d23aef759114c713ef8f262dd538b6a4a484736538e95f2dcb",
+      "size": 15007172,
       "format": "tar.gz",
-      "path": "gh_2.98.0_linux_amd64/bin/gh",
+      "path": "gh_2.104.0_linux_amd64/bin/gh",
       "providers": [
         {
-          "url": "https://github.com/cli/cli/releases/download/v2.98.0/gh_2.98.0_linux_amd64.tar.gz"
+          "url": "https://github.com/cli/cli/releases/download/v2.104.0/gh_2.104.0_linux_amd64.tar.gz"
         }
       ]
     },
     "linux-arm64": {
       "hash": "blake3",
-      "digest": "d6d617c80ad4a64fbc7f4e7fbacee254a8ff45a7c52d73a99770f1f189c47c99",
-      "size": 13523338,
+      "digest": "5a7e9fe62f9041c08ffed2683b824bb6d56587f9fd2495eec5eba5caef9925a1",
+      "size": 13642444,
       "format": "tar.gz",
-      "path": "gh_2.98.0_linux_arm64/bin/gh",
+      "path": "gh_2.104.0_linux_arm64/bin/gh",
       "providers": [
         {
-          "url": "https://github.com/cli/cli/releases/download/v2.98.0/gh_2.98.0_linux_arm64.tar.gz"
+          "url": "https://github.com/cli/cli/releases/download/v2.104.0/gh_2.104.0_linux_arm64.tar.gz"
         }
       ]
     },
     "windows-amd64": {
       "hash": "blake3",
-      "digest": "a676c26a7312f22c1f2f793234dcec1c1a6ed165f61bfbcd24ca102ae2f77eb4",
-      "size": 15035669,
+      "digest": "e9b201cfc5115287233d37d0f327f346c340b36d373af79c749ece2d2138bb28",
+      "size": 15169772,
       "format": "zip",
       "path": "bin/gh.exe",
       "providers": [
         {
-          "url": "https://github.com/cli/cli/releases/download/v2.98.0/gh_2.98.0_windows_amd64.zip"
+          "url": "https://github.com/cli/cli/releases/download/v2.104.0/gh_2.104.0_windows_amd64.zip"
         }
       ]
     },
     "windows-arm64": {
       "hash": "blake3",
-      "digest": "11bdb42594592a85081b9f71e91c4facb9af2004e1c765484a45e1569501a9c9",
-      "size": 13480281,
+      "digest": "4e8482093f6d09db9f5f18126884d8c8bb215bf0c12ffe4f982ee8444e142941",
+      "size": 13617206,
       "format": "zip",
       "path": "bin/gh.exe",
       "providers": [
         {
-          "url": "https://github.com/cli/cli/releases/download/v2.98.0/gh_2.98.0_windows_arm64.zip"
+          "url": "https://github.com/cli/cli/releases/download/v2.104.0/gh_2.104.0_windows_arm64.zip"
         }
       ]
     }
