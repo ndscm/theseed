@@ -182,7 +182,7 @@ overrides:
   '@trivago/prettier-plugin-sort-imports@catalog:': 6.0.2
   '@types/debug@catalog:': 4.1.13
   '@types/js-yaml@catalog:': 4.0.9
-  '@types/node@catalog:': 26.2.0
+  '@types/node@catalog:': 26.6.6
   '@types/react-dom@catalog:': 19.3.0
   '@types/react@catalog:': 19.3.0
   '@univerjs/core@catalog:': 0.25.1
@@ -252,8 +252,8 @@ importers:
         specifier: 6.0.2
         version: 6.0.2(prettier@3.8.3)(supports-color@7.1.0)
       '@types/node':
-        specifier: 26.2.0
-        version: 26.2.0
+        specifier: 26.6.6
+        version: 26.6.6
       babel-plugin-react-compiler:
         specifier: 1.0.0
         version: 1.0.0
@@ -303,8 +303,8 @@ importers:
   seed/cloud/login/ts/vite-plugin-unsafe-dev-login:
     devDependencies:
       '@types/node':
-        specifier: 26.2.0
-        version: 26.2.0
+        specifier: 26.6.6
+        version: 26.6.6
       rollup:
         specifier: 4.68.2
         version: 4.68.2
@@ -313,7 +313,7 @@ importers:
         version: 7.0.2
       vite:
         specifier: 8.3.8
-        version: 8.3.8(@types/node@26.2.0)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.12)(yaml@2.9.0)
+        version: 8.3.8(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.12)(yaml@2.9.0)
 
   seed/devprod/format/prettier:
     dependencies:
@@ -395,13 +395,13 @@ importers:
         version: 9.5.0(@emotion/react@11.14.0(@types/react@19.3.0)(react@19.3.1)(supports-color@7.1.0))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.3.0)(react@19.3.1)(supports-color@7.1.0))(@types/react@19.3.0)(react@19.3.1)(supports-color@7.1.0))(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       '@react-router/dev':
         specifier: 8.5.1
-        version: 8.5.1(@react-router/serve@8.5.1(react-router@8.5.1(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1))(supports-color@7.1.0)(typescript@7.0.2))(babel-plugin-macros@3.1.0)(react-router@8.5.1(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1))(supports-color@7.1.0)(typescript@7.0.2)(vite@8.3.8(@types/node@26.2.0)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.12)(yaml@2.9.0))
+        version: 8.5.1(@react-router/serve@8.5.1(react-router@8.5.1(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1))(supports-color@7.1.0)(typescript@7.0.2))(babel-plugin-macros@3.1.0)(react-router@8.5.1(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1))(supports-color@7.1.0)(typescript@7.0.2)(vite@8.3.8(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.12)(yaml@2.9.0))
       '@react-router/serve':
         specifier: 8.5.1
         version: 8.5.1(react-router@8.5.1(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1))(supports-color@7.1.0)(typescript@7.0.2)
       '@types/node':
-        specifier: 26.2.0
-        version: 26.2.0
+        specifier: 26.6.6
+        version: 26.6.6
       '@types/react':
         specifier: 19.3.0
         version: 19.3.0
@@ -413,7 +413,7 @@ importers:
         version: 26.3.6(typescript@7.0.2)
       i18next-cli:
         specifier: 1.71.0
-        version: 1.71.0(@types/node@26.2.0)(react-dom@19.3.1(react@19.3.1))(typescript@7.0.2)
+        version: 1.71.0(@types/node@26.6.6)(react-dom@19.3.1(react@19.3.1))(typescript@7.0.2)
       notistack:
         specifier: 3.0.2
         version: 3.0.2(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
@@ -434,10 +434,10 @@ importers:
         version: 7.0.2
       vite:
         specifier: 8.3.8
-        version: 8.3.8(@types/node@26.2.0)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.12)(yaml@2.9.0)
+        version: 8.3.8(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.12)(yaml@2.9.0)
       vite-tsconfig-paths:
         specifier: 6.1.1
-        version: 6.1.1(supports-color@7.1.0)(typescript@7.0.2)(vite@8.3.8(@types/node@26.2.0)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.12)(yaml@2.9.0))
+        version: 6.1.1(supports-color@7.1.0)(typescript@7.0.2)(vite@8.3.8(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.12)(yaml@2.9.0))
 
   seed/devprod/gotcha/tsx:
     dependencies:
@@ -467,8 +467,8 @@ importers:
         version: 3.7.0
     devDependencies:
       '@types/node':
-        specifier: 26.2.0
-        version: 26.2.0
+        specifier: 26.6.6
+        version: 26.6.6
       typescript:
         specifier: 7.0.2
         version: 7.0.2
@@ -489,8 +489,8 @@ importers:
         specifier: 4.0.9
         version: 4.0.9
       '@types/node':
-        specifier: 26.2.0
-        version: 26.2.0
+        specifier: 26.6.6
+        version: 26.6.6
       tslib:
         specifier: 2.9.1
         version: 2.9.1
@@ -504,8 +504,8 @@ importers:
   seed/devprod/vscode/extension/custom-formatter:
     devDependencies:
       '@types/node':
-        specifier: 26.2.0
-        version: 26.2.0
+        specifier: 26.6.6
+        version: 26.6.6
       '@types/vscode':
         specifier: ^1.100.0
         version: 1.134.0
@@ -562,8 +562,8 @@ importers:
   seed/infra/auth/ts:
     devDependencies:
       '@types/node':
-        specifier: 26.2.0
-        version: 26.2.0
+        specifier: 26.6.6
+        version: 26.6.6
       typescript:
         specifier: 7.0.2
         version: 7.0.2
@@ -571,8 +571,8 @@ importers:
   seed/infra/buildinfo/ts:
     devDependencies:
       '@types/node':
-        specifier: 26.2.0
-        version: 26.2.0
+        specifier: 26.6.6
+        version: 26.6.6
       typescript:
         specifier: 7.0.2
         version: 7.0.2
@@ -759,16 +759,16 @@ importers:
         version: 2.3.0(@bufbuild/protobuf@2.17.0)(@connectrpc/connect@2.3.0(@bufbuild/protobuf@2.17.0))
       '@react-router/dev':
         specifier: 8.5.1
-        version: 8.5.1(@react-router/serve@8.5.1(react-router@8.5.1(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1))(supports-color@7.1.0)(typescript@7.0.2))(babel-plugin-macros@3.1.0)(react-router@8.5.1(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1))(supports-color@7.1.0)(typescript@7.0.2)(vite@8.3.8(@types/node@26.2.0)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.12)(yaml@2.9.0))
+        version: 8.5.1(@react-router/serve@8.5.1(react-router@8.5.1(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1))(supports-color@7.1.0)(typescript@7.0.2))(babel-plugin-macros@3.1.0)(react-router@8.5.1(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1))(supports-color@7.1.0)(typescript@7.0.2)(vite@8.3.8(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.12)(yaml@2.9.0))
       '@react-router/serve':
         specifier: 8.5.1
         version: 8.5.1(react-router@8.5.1(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1))(supports-color@7.1.0)(typescript@7.0.2)
       '@tailwindcss/vite':
         specifier: 4.3.5
-        version: 4.3.5(vite@8.3.8(@types/node@26.2.0)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.12)(yaml@2.9.0))
+        version: 4.3.5(vite@8.3.8(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.12)(yaml@2.9.0))
       '@types/node':
-        specifier: 26.2.0
-        version: 26.2.0
+        specifier: 26.6.6
+        version: 26.6.6
       '@types/react':
         specifier: 19.3.0
         version: 19.3.0
@@ -789,7 +789,7 @@ importers:
         version: 26.3.6(typescript@7.0.2)
       i18next-cli:
         specifier: 1.71.0
-        version: 1.71.0(@types/node@26.2.0)(react-dom@19.3.1(react@19.3.1))(typescript@7.0.2)
+        version: 1.71.0(@types/node@26.6.6)(react-dom@19.3.1(react@19.3.1))(typescript@7.0.2)
       lucide-react:
         specifier: 1.72.0
         version: 1.72.0(@types/react@19.3.0)(react@19.3.1)
@@ -819,10 +819,10 @@ importers:
         version: 7.0.2
       vite:
         specifier: 8.3.8
-        version: 8.3.8(@types/node@26.2.0)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.12)(yaml@2.9.0)
+        version: 8.3.8(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.12)(yaml@2.9.0)
       vite-tsconfig-paths:
         specifier: 6.1.1
-        version: 6.1.1(supports-color@7.1.0)(typescript@7.0.2)(vite@8.3.8(@types/node@26.2.0)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.12)(yaml@2.9.0))
+        version: 6.1.1(supports-color@7.1.0)(typescript@7.0.2)(vite@8.3.8(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.12)(yaml@2.9.0))
 
   seed/newtype/playwright/proxy:
     dependencies:
@@ -898,13 +898,13 @@ importers:
         version: 9.5.0(@emotion/react@11.14.0(@types/react@19.3.0)(react@19.3.1)(supports-color@7.1.0))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.3.0)(react@19.3.1)(supports-color@7.1.0))(@types/react@19.3.0)(react@19.3.1)(supports-color@7.1.0))(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       '@react-router/dev':
         specifier: 8.5.1
-        version: 8.5.1(@react-router/serve@8.5.1(react-router@8.5.1(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1))(supports-color@7.1.0)(typescript@7.0.2))(babel-plugin-macros@3.1.0)(react-router@8.5.1(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1))(supports-color@7.1.0)(typescript@7.0.2)(vite@8.3.8(@types/node@26.2.0)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.12)(yaml@2.9.0))
+        version: 8.5.1(@react-router/serve@8.5.1(react-router@8.5.1(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1))(supports-color@7.1.0)(typescript@7.0.2))(babel-plugin-macros@3.1.0)(react-router@8.5.1(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1))(supports-color@7.1.0)(typescript@7.0.2)(vite@8.3.8(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.12)(yaml@2.9.0))
       '@react-router/serve':
         specifier: 8.5.1
         version: 8.5.1(react-router@8.5.1(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1))(supports-color@7.1.0)(typescript@7.0.2)
       '@types/node':
-        specifier: 26.2.0
-        version: 26.2.0
+        specifier: 26.6.6
+        version: 26.6.6
       '@types/react':
         specifier: 19.3.0
         version: 19.3.0
@@ -958,7 +958,7 @@ importers:
         version: 26.3.6(typescript@7.0.2)
       i18next-cli:
         specifier: 1.71.0
-        version: 1.71.0(@types/node@26.2.0)(react-dom@19.3.1(react@19.3.1))(typescript@7.0.2)
+        version: 1.71.0(@types/node@26.6.6)(react-dom@19.3.1(react@19.3.1))(typescript@7.0.2)
       notistack:
         specifier: 3.0.2
         version: 3.0.2(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
@@ -982,10 +982,10 @@ importers:
         version: 7.0.2
       vite:
         specifier: 8.3.8
-        version: 8.3.8(@types/node@26.2.0)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.12)(yaml@2.9.0)
+        version: 8.3.8(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.12)(yaml@2.9.0)
       vite-tsconfig-paths:
         specifier: 6.1.1
-        version: 6.1.1(supports-color@7.1.0)(typescript@7.0.2)(vite@8.3.8(@types/node@26.2.0)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.12)(yaml@2.9.0))
+        version: 6.1.1(supports-color@7.1.0)(typescript@7.0.2)(vite@8.3.8(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.12)(yaml@2.9.0))
 
   seed/visual/markdown/tsx:
     dependencies:
@@ -2642,8 +2642,8 @@ packages:
   '@types/ms@2.1.0':
     resolution: {integrity: sha512-GsCCIZDE/p3i96vtEqx+7dBUGXrc7zeSK3wwPHIaRThS+9OhWIXRqzs4d6k1SVU8g91DrNRWxWUGhp5KXQb2VA==}
 
-  '@types/node@26.2.0':
-    resolution: {integrity: sha512-5IviulTZeRNp2vAJ514cc/HUlY5nZ9fCbq9DMyC52BrhFZACo3nI0R7qBxhQmo/d27NFe96ur/b7Wwxklda+kg==}
+  '@types/node@26.6.6':
+    resolution: {integrity: sha512-MzQj+8Kx3XI40OmUAE6Qoh58ZMNstNNMwn2nfd3qWsfe7nDNSqJNzes4njhz6AHwrSHOffSLwXU6yb474Q4aog==}
 
   '@types/normalize-package-data@2.4.4':
     resolution: {integrity: sha512-37i+OaWTh9qeK4LSHPsyRC7NahnGotNuZvjLSgcPzblpHB3rrCJxAOgI5gCdKm7coonsaX1Of0ILiTcnZjbfxA==}
@@ -4896,8 +4896,8 @@ packages:
   underscore@1.13.8:
     resolution: {integrity: sha512-DXtD3ZtEQzc7M8m4cXotyHR+FAS18C64asBYY5vqZexfYryNNnDc02W4hKg3rdQuqOYas1jkseX0+nZXjTXnvQ==}
 
-  undici-types@8.3.0:
-    resolution: {integrity: sha512-j375ScV60dom+YkPFIfTLcOiPxkN/buHz5GobjLhixFuANaNs3C9l4GmrWqejgXWJ7BbJcFYpTEUkS1Ge8bpZQ==}
+  undici-types@8.9.0:
+    resolution: {integrity: sha512-KTDyRTYX8sWmKXAikPHHSyc63CRPETMctyjKFupcC6OBLXT3xsN0e9aF7m+mIXutFWpUXuedtowG7iLOzp0kQg==}
 
   undici@7.29.0:
     resolution: {integrity: sha512-IDxfleLmmbSskfWSUATiN1nfn2rDuvnMOqb5CWR92iIfojA0Ud+ulOAAEQ57LPr9rWmsreUyf5lwyao+7GNNVw==}
@@ -5544,122 +5544,122 @@ snapshots:
 
   '@inquirer/ansi@2.0.7': {}
 
-  '@inquirer/checkbox@5.2.3(@types/node@26.2.0)':
+  '@inquirer/checkbox@5.2.3(@types/node@26.6.6)':
     dependencies:
       '@inquirer/ansi': 2.0.7
-      '@inquirer/core': 12.0.1(@types/node@26.2.0)
+      '@inquirer/core': 12.0.1(@types/node@26.6.6)
       '@inquirer/figures': 2.0.8
-      '@inquirer/type': 4.1.0(@types/node@26.2.0)
+      '@inquirer/type': 4.1.0(@types/node@26.6.6)
     optionalDependencies:
-      '@types/node': 26.2.0
+      '@types/node': 26.6.6
 
-  '@inquirer/confirm@6.3.0(@types/node@26.2.0)':
+  '@inquirer/confirm@6.3.0(@types/node@26.6.6)':
     dependencies:
-      '@inquirer/core': 12.0.1(@types/node@26.2.0)
-      '@inquirer/type': 4.1.0(@types/node@26.2.0)
+      '@inquirer/core': 12.0.1(@types/node@26.6.6)
+      '@inquirer/type': 4.1.0(@types/node@26.6.6)
     optionalDependencies:
-      '@types/node': 26.2.0
+      '@types/node': 26.6.6
 
-  '@inquirer/core@12.0.1(@types/node@26.2.0)':
+  '@inquirer/core@12.0.1(@types/node@26.6.6)':
     dependencies:
       '@inquirer/ansi': 2.0.7
       '@inquirer/figures': 2.0.8
-      '@inquirer/type': 4.1.0(@types/node@26.2.0)
+      '@inquirer/type': 4.1.0(@types/node@26.6.6)
       cli-width: 4.1.0
       fast-wrap-ansi: 0.2.2
       mute-stream: 3.0.0
       signal-exit: 4.1.0
     optionalDependencies:
-      '@types/node': 26.2.0
+      '@types/node': 26.6.6
 
-  '@inquirer/editor@5.3.1(@types/node@26.2.0)':
+  '@inquirer/editor@5.3.1(@types/node@26.6.6)':
     dependencies:
-      '@inquirer/core': 12.0.1(@types/node@26.2.0)
-      '@inquirer/external-editor': 3.0.4(@types/node@26.2.0)
-      '@inquirer/type': 4.1.0(@types/node@26.2.0)
+      '@inquirer/core': 12.0.1(@types/node@26.6.6)
+      '@inquirer/external-editor': 3.0.4(@types/node@26.6.6)
+      '@inquirer/type': 4.1.0(@types/node@26.6.6)
     optionalDependencies:
-      '@types/node': 26.2.0
+      '@types/node': 26.6.6
 
-  '@inquirer/expand@5.1.3(@types/node@26.2.0)':
+  '@inquirer/expand@5.1.3(@types/node@26.6.6)':
     dependencies:
-      '@inquirer/core': 12.0.1(@types/node@26.2.0)
-      '@inquirer/type': 4.1.0(@types/node@26.2.0)
+      '@inquirer/core': 12.0.1(@types/node@26.6.6)
+      '@inquirer/type': 4.1.0(@types/node@26.6.6)
     optionalDependencies:
-      '@types/node': 26.2.0
+      '@types/node': 26.6.6
 
-  '@inquirer/external-editor@3.0.4(@types/node@26.2.0)':
+  '@inquirer/external-editor@3.0.4(@types/node@26.6.6)':
     dependencies:
       chardet: 2.2.0
       iconv-lite: 0.7.3
     optionalDependencies:
-      '@types/node': 26.2.0
+      '@types/node': 26.6.6
 
   '@inquirer/figures@2.0.8': {}
 
-  '@inquirer/input@5.1.4(@types/node@26.2.0)':
+  '@inquirer/input@5.1.4(@types/node@26.6.6)':
     dependencies:
-      '@inquirer/core': 12.0.1(@types/node@26.2.0)
-      '@inquirer/type': 4.1.0(@types/node@26.2.0)
+      '@inquirer/core': 12.0.1(@types/node@26.6.6)
+      '@inquirer/type': 4.1.0(@types/node@26.6.6)
     optionalDependencies:
-      '@types/node': 26.2.0
+      '@types/node': 26.6.6
 
-  '@inquirer/number@4.2.1(@types/node@26.2.0)':
+  '@inquirer/number@4.2.1(@types/node@26.6.6)':
     dependencies:
-      '@inquirer/core': 12.0.1(@types/node@26.2.0)
-      '@inquirer/type': 4.1.0(@types/node@26.2.0)
+      '@inquirer/core': 12.0.1(@types/node@26.6.6)
+      '@inquirer/type': 4.1.0(@types/node@26.6.6)
     optionalDependencies:
-      '@types/node': 26.2.0
+      '@types/node': 26.6.6
 
-  '@inquirer/password@5.2.0(@types/node@26.2.0)':
-    dependencies:
-      '@inquirer/ansi': 2.0.7
-      '@inquirer/core': 12.0.1(@types/node@26.2.0)
-      '@inquirer/type': 4.1.0(@types/node@26.2.0)
-    optionalDependencies:
-      '@types/node': 26.2.0
-
-  '@inquirer/prompts@8.7.0(@types/node@26.2.0)':
-    dependencies:
-      '@inquirer/checkbox': 5.2.3(@types/node@26.2.0)
-      '@inquirer/confirm': 6.3.0(@types/node@26.2.0)
-      '@inquirer/editor': 5.3.1(@types/node@26.2.0)
-      '@inquirer/expand': 5.1.3(@types/node@26.2.0)
-      '@inquirer/input': 5.1.4(@types/node@26.2.0)
-      '@inquirer/number': 4.2.1(@types/node@26.2.0)
-      '@inquirer/password': 5.2.0(@types/node@26.2.0)
-      '@inquirer/rawlist': 5.3.3(@types/node@26.2.0)
-      '@inquirer/search': 4.3.1(@types/node@26.2.0)
-      '@inquirer/select': 5.2.3(@types/node@26.2.0)
-    optionalDependencies:
-      '@types/node': 26.2.0
-
-  '@inquirer/rawlist@5.3.3(@types/node@26.2.0)':
-    dependencies:
-      '@inquirer/core': 12.0.1(@types/node@26.2.0)
-      '@inquirer/type': 4.1.0(@types/node@26.2.0)
-    optionalDependencies:
-      '@types/node': 26.2.0
-
-  '@inquirer/search@4.3.1(@types/node@26.2.0)':
-    dependencies:
-      '@inquirer/core': 12.0.1(@types/node@26.2.0)
-      '@inquirer/figures': 2.0.8
-      '@inquirer/type': 4.1.0(@types/node@26.2.0)
-    optionalDependencies:
-      '@types/node': 26.2.0
-
-  '@inquirer/select@5.2.3(@types/node@26.2.0)':
+  '@inquirer/password@5.2.0(@types/node@26.6.6)':
     dependencies:
       '@inquirer/ansi': 2.0.7
-      '@inquirer/core': 12.0.1(@types/node@26.2.0)
-      '@inquirer/figures': 2.0.8
-      '@inquirer/type': 4.1.0(@types/node@26.2.0)
+      '@inquirer/core': 12.0.1(@types/node@26.6.6)
+      '@inquirer/type': 4.1.0(@types/node@26.6.6)
     optionalDependencies:
-      '@types/node': 26.2.0
+      '@types/node': 26.6.6
 
-  '@inquirer/type@4.1.0(@types/node@26.2.0)':
+  '@inquirer/prompts@8.7.0(@types/node@26.6.6)':
+    dependencies:
+      '@inquirer/checkbox': 5.2.3(@types/node@26.6.6)
+      '@inquirer/confirm': 6.3.0(@types/node@26.6.6)
+      '@inquirer/editor': 5.3.1(@types/node@26.6.6)
+      '@inquirer/expand': 5.1.3(@types/node@26.6.6)
+      '@inquirer/input': 5.1.4(@types/node@26.6.6)
+      '@inquirer/number': 4.2.1(@types/node@26.6.6)
+      '@inquirer/password': 5.2.0(@types/node@26.6.6)
+      '@inquirer/rawlist': 5.3.3(@types/node@26.6.6)
+      '@inquirer/search': 4.3.1(@types/node@26.6.6)
+      '@inquirer/select': 5.2.3(@types/node@26.6.6)
     optionalDependencies:
-      '@types/node': 26.2.0
+      '@types/node': 26.6.6
+
+  '@inquirer/rawlist@5.3.3(@types/node@26.6.6)':
+    dependencies:
+      '@inquirer/core': 12.0.1(@types/node@26.6.6)
+      '@inquirer/type': 4.1.0(@types/node@26.6.6)
+    optionalDependencies:
+      '@types/node': 26.6.6
+
+  '@inquirer/search@4.3.1(@types/node@26.6.6)':
+    dependencies:
+      '@inquirer/core': 12.0.1(@types/node@26.6.6)
+      '@inquirer/figures': 2.0.8
+      '@inquirer/type': 4.1.0(@types/node@26.6.6)
+    optionalDependencies:
+      '@types/node': 26.6.6
+
+  '@inquirer/select@5.2.3(@types/node@26.6.6)':
+    dependencies:
+      '@inquirer/ansi': 2.0.7
+      '@inquirer/core': 12.0.1(@types/node@26.6.6)
+      '@inquirer/figures': 2.0.8
+      '@inquirer/type': 4.1.0(@types/node@26.6.6)
+    optionalDependencies:
+      '@types/node': 26.6.6
+
+  '@inquirer/type@4.1.0(@types/node@26.6.6)':
+    optionalDependencies:
+      '@types/node': 26.6.6
 
   '@jridgewell/gen-mapping@0.3.12':
     dependencies:
@@ -6130,7 +6130,7 @@ snapshots:
 
   '@radix-ui/rect@1.1.3': {}
 
-  '@react-router/dev@8.5.1(@react-router/serve@8.5.1(react-router@8.5.1(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1))(supports-color@7.1.0)(typescript@7.0.2))(babel-plugin-macros@3.1.0)(react-router@8.5.1(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1))(supports-color@7.1.0)(typescript@7.0.2)(vite@8.3.8(@types/node@26.2.0)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.12)(yaml@2.9.0))':
+  '@react-router/dev@8.5.1(@react-router/serve@8.5.1(react-router@8.5.1(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1))(supports-color@7.1.0)(typescript@7.0.2))(babel-plugin-macros@3.1.0)(react-router@8.5.1(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1))(supports-color@7.1.0)(typescript@7.0.2)(vite@8.3.8(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.12)(yaml@2.9.0))':
     dependencies:
       '@babel/core': 7.29.7(supports-color@7.1.0)
       '@babel/generator': 7.29.8
@@ -6156,7 +6156,7 @@ snapshots:
       semver: 7.8.5
       tinyglobby: 0.2.17
       valibot: 1.4.2(typescript@7.0.2)
-      vite: 8.3.8(@types/node@26.2.0)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.12)(yaml@2.9.0)
+      vite: 8.3.8(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.12)(yaml@2.9.0)
     optionalDependencies:
       '@react-router/serve': 8.5.1(react-router@8.5.1(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1))(supports-color@7.1.0)(typescript@7.0.2)
       typescript: 7.0.2
@@ -6530,12 +6530,12 @@ snapshots:
       '@tailwindcss/oxide-win32-arm64-msvc': 4.3.5
       '@tailwindcss/oxide-win32-x64-msvc': 4.3.5
 
-  '@tailwindcss/vite@4.3.5(vite@8.3.8(@types/node@26.2.0)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.12)(yaml@2.9.0))':
+  '@tailwindcss/vite@4.3.5(vite@8.3.8(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.12)(yaml@2.9.0))':
     dependencies:
       '@tailwindcss/node': 4.3.5
       '@tailwindcss/oxide': 4.3.5
       tailwindcss: 4.3.5
-      vite: 8.3.8(@types/node@26.2.0)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.12)(yaml@2.9.0)
+      vite: 8.3.8(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.12)(yaml@2.9.0)
 
   '@textlint/ast-node-types@15.8.0': {}
 
@@ -6594,9 +6594,9 @@ snapshots:
 
   '@types/ms@2.1.0': {}
 
-  '@types/node@26.2.0':
+  '@types/node@26.6.6':
     dependencies:
-      undici-types: 8.3.0
+      undici-types: 8.9.0
 
   '@types/normalize-package-data@2.4.4': {}
 
@@ -7757,7 +7757,7 @@ snapshots:
 
   human-signals@8.0.1: {}
 
-  i18next-cli@1.71.0(@types/node@26.2.0)(react-dom@19.3.1(react@19.3.1))(typescript@7.0.2):
+  i18next-cli@1.71.0(@types/node@26.6.6)(react-dom@19.3.1(react@19.3.1))(typescript@7.0.2):
     dependencies:
       '@croct/json5-parser': 0.2.2
       '@swc/core': 1.16.1
@@ -7767,7 +7767,7 @@ snapshots:
       glob: 13.0.6
       i18next: 26.3.6(typescript@7.0.2)
       i18next-resources-for-ts: 2.1.0
-      inquirer: 14.2.0(@types/node@26.2.0)
+      inquirer: 14.2.0(@types/node@26.6.6)
       jiti: 2.7.0
       jsonc-parser: 3.3.1
       magic-string: 1.2.3
@@ -7823,16 +7823,16 @@ snapshots:
   ini@1.3.0:
     optional: true
 
-  inquirer@14.2.0(@types/node@26.2.0):
+  inquirer@14.2.0(@types/node@26.6.6):
     dependencies:
       '@inquirer/ansi': 2.0.7
-      '@inquirer/core': 12.0.1(@types/node@26.2.0)
-      '@inquirer/prompts': 8.7.0(@types/node@26.2.0)
-      '@inquirer/type': 4.1.0(@types/node@26.2.0)
+      '@inquirer/core': 12.0.1(@types/node@26.6.6)
+      '@inquirer/prompts': 8.7.0(@types/node@26.6.6)
+      '@inquirer/type': 4.1.0(@types/node@26.6.6)
       mute-stream: 3.0.0
       run-async: 4.0.6
     optionalDependencies:
-      '@types/node': 26.2.0
+      '@types/node': 26.6.6
 
   ipaddr.js@1.9.1: {}
 
@@ -8387,7 +8387,7 @@ snapshots:
       '@protobufjs/path': 1.1.2
       '@protobufjs/pool': 1.1.0
       '@protobufjs/utf8': 1.1.2
-      '@types/node': 26.2.0
+      '@types/node': 26.6.6
       long: 5.3.2
 
   proxy-addr@2.0.7:
@@ -8961,7 +8961,7 @@ snapshots:
 
   underscore@1.13.8: {}
 
-  undici-types@8.3.0: {}
+  undici-types@8.9.0: {}
 
   undici@7.29.0: {}
 
@@ -9022,17 +9022,17 @@ snapshots:
 
   version-range@4.15.0: {}
 
-  vite-tsconfig-paths@6.1.1(supports-color@7.1.0)(typescript@7.0.2)(vite@8.3.8(@types/node@26.2.0)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.12)(yaml@2.9.0)):
+  vite-tsconfig-paths@6.1.1(supports-color@7.1.0)(typescript@7.0.2)(vite@8.3.8(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.12)(yaml@2.9.0)):
     dependencies:
       debug: 4.4.3(supports-color@7.1.0)
       globrex: 0.1.2
       tsconfck: 3.1.6(typescript@7.0.2)
-      vite: 8.3.8(@types/node@26.2.0)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.12)(yaml@2.9.0)
+      vite: 8.3.8(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.12)(yaml@2.9.0)
     transitivePeerDependencies:
       - supports-color
       - typescript
 
-  vite@8.3.8(@types/node@26.2.0)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.12)(yaml@2.9.0):
+  vite@8.3.8(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.12)(yaml@2.9.0):
     dependencies:
       lightningcss: 1.33.0
       picomatch: 4.0.7
@@ -9040,7 +9040,7 @@ snapshots:
       rolldown: 1.2.19
       tinyglobby: 0.2.17
     optionalDependencies:
-      '@types/node': 26.2.0
+      '@types/node': 26.6.6
       esbuild: 0.28.2
       fsevents: 2.3.3
       jiti: 2.7.0
