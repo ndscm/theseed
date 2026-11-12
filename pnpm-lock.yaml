@@ -174,7 +174,7 @@ overrides:
   '@fontsource/roboto@catalog:': 5.3.0
   '@mui/icons-material@catalog:': 9.3.1
   '@mui/material@catalog:': 9.3.1
-  '@playwright/cli@catalog:': 0.1.18
+  '@playwright/cli@catalog:': 0.1.23
   '@react-router/dev@catalog:': 8.3.1
   '@react-router/node@catalog:': 8.3.1
   '@react-router/serve@catalog:': 8.3.1
@@ -246,8 +246,8 @@ importers:
         specifier: 2.1.2
         version: 2.1.2(@bufbuild/protobuf@2.14.0)(@connectrpc/connect@2.1.2(@bufbuild/protobuf@2.14.0))
       '@playwright/cli':
-        specifier: 0.1.18
-        version: 0.1.18
+        specifier: 0.1.23
+        version: 0.1.23
       '@trivago/prettier-plugin-sort-imports':
         specifier: 6.0.2
         version: 6.0.2(prettier@3.8.3)(supports-color@7.1.0)
@@ -1691,8 +1691,8 @@ packages:
   '@oxc-project/types@0.147.0':
     resolution: {integrity: sha512-IJ3s6ltHLp45S0bh7phkX+gJO7A1Wuz2EaqpAhb8WjqDwbzMiWKHhyyT42tskaWjEYXtHtVCPpnBJVT9+dcRLg==}
 
-  '@playwright/cli@0.1.18':
-    resolution: {integrity: sha512-ggNfYYH+GsZTGUiBEL8f6N5j0seYEUE52v+fIWqK/A36QG36cL0EJ79qWTXYO2uZMUU7vm+jk3x0fKCPL6UuIw==}
+  '@playwright/cli@0.1.23':
+    resolution: {integrity: sha512-+TuHfVgpK1SIlwyV7bcZ9SRRhnVOAIwJwxZCgEh5LWkZuyGfSYnHNx8J7H78dhCwMyLkJtGb/j5XICjzEKzrfg==}
     engines: {node: '>=18'}
     hasBin: true
 
@@ -4276,8 +4276,8 @@ packages:
     engines: {node: '>=20'}
     hasBin: true
 
-  playwright-core@1.63.0-alpha-2026-08-05:
-    resolution: {integrity: sha512-YussvUybTfBtyYbGXWh43f+5kNP03wg98M6mu4DphYET7PSbNVajsdLGjWE1xrsjqOw32i2wFlRP7U5mcOpMZg==}
+  playwright-core@1.65.0-alpha-2026-10-30:
+    resolution: {integrity: sha512-LPMw8B/HRQKMcJeXTqWSrkB/AfCKKmbDQMbu0p7zg8MgibOWaKMjZWR/StAtrQkOxvOmZEju1o1TnPgdoOCwrg==}
     engines: {node: '>=20'}
     hasBin: true
 
@@ -4286,8 +4286,8 @@ packages:
     engines: {node: '>=20'}
     hasBin: true
 
-  playwright@1.63.0-alpha-2026-08-05:
-    resolution: {integrity: sha512-zbGZUK+JYkoDV3cUgfvh2czTBJL34Gmz5gHVI25xiIpvYSR17Q1M7TS8hnwECUe+IkKaeXbKrSyJTyogm2DVWw==}
+  playwright@1.65.0-alpha-2026-10-30:
+    resolution: {integrity: sha512-dmAJMVHKzHvMQjn+XDcaq/pxaZ0W6n8i78rwTM+VGRtQ3WBF5ZiSdB1yL/cyoYUGUMwg3jxN65KqC9cERaCbIg==}
     engines: {node: '>=20'}
     hasBin: true
 
@@ -5749,10 +5749,10 @@ snapshots:
 
   '@oxc-project/types@0.147.0': {}
 
-  '@playwright/cli@0.1.18':
+  '@playwright/cli@0.1.23':
     dependencies:
-      playwright: 1.63.0-alpha-2026-08-05
-      playwright-core: 1.63.0-alpha-2026-08-05
+      playwright: 1.65.0-alpha-2026-10-30
+      playwright-core: 1.65.0-alpha-2026-10-30
 
   '@popperjs/core@2.11.8': {}
 
@@ -8265,7 +8265,7 @@ snapshots:
 
   playwright-core@1.62.1: {}
 
-  playwright-core@1.63.0-alpha-2026-08-05: {}
+  playwright-core@1.65.0-alpha-2026-10-30: {}
 
   playwright@1.62.1:
     dependencies:
@@ -8273,11 +8273,9 @@ snapshots:
     optionalDependencies:
       fsevents: 2.3.2
 
-  playwright@1.63.0-alpha-2026-08-05:
+  playwright@1.65.0-alpha-2026-10-30:
     dependencies:
-      playwright-core: 1.63.0-alpha-2026-08-05
-    optionalDependencies:
-      fsevents: 2.3.2
+      playwright-core: 1.65.0-alpha-2026-10-30
 
   pluralize@2.0.0: {}
 
