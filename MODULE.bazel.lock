@@ -22473,46 +22473,46 @@
       }
     },
     "@@rules_nodejs+//nodejs:extensions.bzl%node": {
-      "26.7.0": {
-        "26.7.0-darwin_amd64": [
-          "node-v26.7.0-darwin-x64.tar.gz",
-          "node-v26.7.0-darwin-x64",
-          "f279d1ed28ce57f7788bf23435d2ad7fdd7438904ad5c4d8a1081a7cde3d4b96"
+      "26.13.1": {
+        "26.13.1-darwin_amd64": [
+          "node-v26.13.1-darwin-x64.tar.gz",
+          "node-v26.13.1-darwin-x64",
+          "82bb96078a24ca50b9c9a38f2379e6be6d87171fcd400fc14c8934b3bce96e2f"
         ],
-        "26.7.0-darwin_arm64": [
-          "node-v26.7.0-darwin-arm64.tar.gz",
-          "node-v26.7.0-darwin-arm64",
-          "7ee659a7768e641bbfd5360940660b8e8fd0052f77488f365562bac522fc15d4"
+        "26.13.1-darwin_arm64": [
+          "node-v26.13.1-darwin-arm64.tar.gz",
+          "node-v26.13.1-darwin-arm64",
+          "aec2514ea1ceb2ba52455e9ec65986f6749a06dd759e5db2a72e6889668c9735"
         ],
-        "26.7.0-linux_amd64": [
-          "node-v26.7.0-linux-x64.tar.xz",
-          "node-v26.7.0-linux-x64",
-          "982aa24dd8be4c889c6a8ab337ddff3b0896645b20f4239356e80552c16277ee"
+        "26.13.1-linux_amd64": [
+          "node-v26.13.1-linux-x64.tar.xz",
+          "node-v26.13.1-linux-x64",
+          "5c063e46bab0fbc1c17cc445d7ff129cbdcd0471be6ed83b6ab864f8143bc864"
         ],
-        "26.7.0-linux_arm64": [
-          "node-v26.7.0-linux-arm64.tar.xz",
-          "node-v26.7.0-linux-arm64",
-          "afc7a004018485092ac8985b817b0d5684472bd9472e0b57d2ab88737e50090d"
+        "26.13.1-linux_arm64": [
+          "node-v26.13.1-linux-arm64.tar.xz",
+          "node-v26.13.1-linux-arm64",
+          "89e1853138db51e8b82d3e98ba9c0d3f2956a28e5e55ea1b7e12d25aae92d5dd"
         ],
-        "26.7.0-linux_ppc64le": [
-          "node-v26.7.0-linux-ppc64le.tar.xz",
-          "node-v26.7.0-linux-ppc64le",
-          "c3f7cd5c9e149dce1f5955b182c21468ffa20f602aba863ca93cb198b76c07ea"
+        "26.13.1-linux_ppc64le": [
+          "node-v26.13.1-linux-ppc64le.tar.xz",
+          "node-v26.13.1-linux-ppc64le",
+          "06d5638602a919cb9a559eb92520862a387b4a0b170fed8883930b1eb392ec73"
         ],
-        "26.7.0-linux_s390x": [
-          "node-v26.7.0-linux-s390x.tar.xz",
-          "node-v26.7.0-linux-s390x",
-          "ff3a5c7b93a2ec4c6188ed9992495363a22892853db7ce466b57ce55119d20f4"
+        "26.13.1-linux_s390x": [
+          "node-v26.13.1-linux-s390x.tar.xz",
+          "node-v26.13.1-linux-s390x",
+          "2d65ece78005320dd13cccf15eeb30636a7352c18b92727f4b7c079de7d6969f"
         ],
-        "26.7.0-windows_amd64": [
-          "node-v26.7.0-win-x64.zip",
-          "node-v26.7.0-win-x64",
-          "d3bd72755141ed32bbcd841228ee81897c8a98d50dfa7dae2179399a0a7c90f8"
+        "26.13.1-windows_amd64": [
+          "node-v26.13.1-win-x64.zip",
+          "node-v26.13.1-win-x64",
+          "e2edda75bfb089654705cf65a13b58933bfd5f57148e8ebda916f58a2474f1f7"
         ],
-        "26.7.0-windows_arm64": [
-          "node-v26.7.0-win-arm64.zip",
-          "node-v26.7.0-win-arm64",
-          "be8775204cfceca5a73c30f91bf0de5e85274c01b776dc13f16b91aa251ebb01"
+        "26.13.1-windows_arm64": [
+          "node-v26.13.1-win-arm64.zip",
+          "node-v26.13.1-win-arm64",
+          "181ebe431b90787113a9e4fc80d38ce86d37888a353a0386de44d2872e48cb97"
         ]
       }
     },
