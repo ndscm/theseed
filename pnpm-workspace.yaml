@@ -70,7 +70,7 @@ catalog:
   "tslib": "^2.9.1"
   "tsx": "^4.23.15"
   "typescript": "^7.0.2"
-  "vite": "^8.2.2"
+  "vite": "^8.3.8"
   "vite-tsconfig-paths": "^6.1.1"
 overrides:
   # Avoid unexpected upgrade of direct dependencies
@@ -138,4 +138,4 @@ overrides:
   "tsx@catalog:": "4.23.15"
   "typescript@catalog:": "7.0.2"
   "vite-tsconfig-paths@catalog:": "6.1.1"
-  "vite@catalog:": "8.2.2"
+  "vite@catalog:": "8.3.8"
