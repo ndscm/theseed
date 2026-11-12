@@ -5,73 +5,73 @@
   "platforms": {
     "darwin-amd64": {
       "hash": "blake3",
-      "digest": "de2aa2f23e1344d964d2f05c4af11644eed2ae081c78168085ca6fe10167cf33",
-      "size": 32052496,
+      "digest": "a89f39dfd8107e51566ea26fec90e60cb214b2bf1b29d5ee66ff6dbea6a64cd6",
+      "size": 32743416,
       "format": "tar.xz",
-      "path": "node-v26.7.0-darwin-x64/bin/npm",
+      "path": "node-v26.13.1-darwin-x64/bin/npm",
       "providers": [
         {
-          "url": "https://nodejs.org/dist/v26.7.0/node-v26.7.0-darwin-x64.tar.xz"
+          "url": "https://nodejs.org/dist/v26.13.1/node-v26.13.1-darwin-x64.tar.xz"
         }
       ]
     },
     "darwin-arm64": {
       "hash": "blake3",
-      "digest": "d36cb0830be306bf654c8c16c5b14c06a1f7373712128315808a2ec7070983bb",
-      "size": 30222604,
+      "digest": "c4bd831cf48e7b3e1f01ec52ef298774aa4052c7c45059c6d17bf1a15efecf75",
+      "size": 30638176,
       "format": "tar.xz",
-      "path": "node-v26.7.0-darwin-arm64/bin/npm",
+      "path": "node-v26.13.1-darwin-arm64/bin/npm",
       "providers": [
         {
-          "url": "https://nodejs.org/dist/v26.7.0/node-v26.7.0-darwin-arm64.tar.xz"
+          "url": "https://nodejs.org/dist/v26.13.1/node-v26.13.1-darwin-arm64.tar.xz"
         }
       ]
     },
     "linux-amd64": {
       "hash": "blake3",
-      "digest": "63c6c654d06963fc229fd9226fcb8a54e90522fb3045a4be7b550be5c8802b86",
-      "size": 33539588,
+      "digest": "0cb1937c9d59645165aa95ac73ee8f87acd561bce7768b70cff15e61054a4562",
+      "size": 34093052,
       "format": "tar.xz",
-      "path": "node-v26.7.0-linux-x64/bin/npm",
+      "path": "node-v26.13.1-linux-x64/bin/npm",
       "providers": [
         {
-          "url": "https://nodejs.org/dist/v26.7.0/node-v26.7.0-linux-x64.tar.xz"
+          "url": "https://nodejs.org/dist/v26.13.1/node-v26.13.1-linux-x64.tar.xz"
         }
       ]
     },
     "linux-arm64": {
       "hash": "blake3",
-      "digest": "4ce47bde4b7e3fa6086556a096a9d386178aa7d699a3b13fc32025623222a951",
-      "size": 32581212,
+      "digest": "a5e81fa871fc9fa1b16847a768ed8339978a8fad2396037dc576cb66e9d29c1f",
+      "size": 33053848,
       "format": "tar.xz",
-      "path": "node-v26.7.0-linux-arm64/bin/npm",
+      "path": "node-v26.13.1-linux-arm64/bin/npm",
       "providers": [
         {
-          "url": "https://nodejs.org/dist/v26.7.0/node-v26.7.0-linux-arm64.tar.xz"
+          "url": "https://nodejs.org/dist/v26.13.1/node-v26.13.1-linux-arm64.tar.xz"
         }
       ]
     },
     "windows-amd64": {
       "hash": "blake3",
-      "digest": "228237c59f4d11990d947ee27403a892a60991c621760468361ff5870378545e",
-      "size": 41182557,
+      "digest": "39dfebf2e5fd3cfc9ad27c27dddf13cd325b139054685456dd4e52c3524a3217",
+      "size": 41166246,
       "format": "zip",
-      "path": "node-v26.7.0-win-x64/npm.cmd",
+      "path": "node-v26.13.1-win-x64/npm.cmd",
       "providers": [
         {
-          "url": "https://nodejs.org/dist/v26.7.0/node-v26.7.0-win-x64.zip"
+          "url": "https://nodejs.org/dist/v26.13.1/node-v26.13.1-win-x64.zip"
         }
       ]
     },
     "windows-arm64": {
       "hash": "blake3",
-      "digest": "44c1b7e2e7ed8206fb3ce9ed523ffdba555f013154c49b6bf43697990eee28e9",
-      "size": 36809093,
+      "digest": "2fc260567a34bb2f98b62bba69d7216f7e6fb06f2aa8e8a3f3f1e90f255e076e",
+      "size": 37036542,
       "format": "zip",
-      "path": "node-v26.7.0-win-arm64/npm.cmd",
+      "path": "node-v26.13.1-win-arm64/npm.cmd",
       "providers": [
         {
-          "url": "https://nodejs.org/dist/v26.7.0/node-v26.7.0-win-arm64.zip"
+          "url": "https://nodejs.org/dist/v26.13.1/node-v26.13.1-win-arm64.zip"
         }
       ]
     }
