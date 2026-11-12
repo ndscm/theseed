@@ -16,7 +16,7 @@ dependencies = [
     "httpx==0.28.1",
     "intervaltree==3.2.1",
     "isort==9.0.1",
-    "markupsafe==2.1.5",
+    "markupsafe==3.0.4",
     "mcp==2.1.1",
     "openai==3.6.0",
     "pillow==13.0.0",
