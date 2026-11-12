@@ -6,7 +6,7 @@ rules_python_config.explicit_init_py(default = True)
 
 python = use_extension("@rules_python//python/extensions:python.bzl", "python")
 python.toolchain(
-    python_version = "3.13",
+    python_version = "3.13.18",
 )
 use_repo(python, "python_3_13_host")
 
@@ -21,7 +21,7 @@ use_repo(python_locks, "python_locks")
 pip = use_extension("@rules_python//python/extensions:pip.bzl", "pip")
 pip.parse(
     hub_name = "pypi",
-    python_version = "3.13",
+    python_version = "3.13.18",
     requirements_lock = "@python_locks//:requirements.txt",
     # Resolve wheels for every platform we support so a single workstation can
     # introspect all wheels (e.g. to generate the gazelle modules mapping)
