@@ -5,67 +5,67 @@
   "platforms": {
     "darwin-amd64": {
       "hash": "blake3",
-      "digest": "61e4912331e08a9d6f5b2eb98d5361836e9f553cf4dece5306f110924b58fc7a",
-      "size": 63190160,
+      "digest": "57f34b4e295bd345c831a0c19afffcfaa517f3d770572189e01a5e0af06f424d",
+      "size": 63202672,
       "path": "kubectl",
       "providers": [
         {
-          "url": "https://dl.k8s.io/release/v1.37.0/bin/darwin/amd64/kubectl"
+          "url": "https://dl.k8s.io/release/v1.37.2/bin/darwin/amd64/kubectl"
         }
       ]
     },
     "darwin-arm64": {
       "hash": "blake3",
-      "digest": "cd703238de5f1eb30e29b8c2091afdab804516849ac16c01e76b6746039f9305",
-      "size": 59592530,
+      "digest": "52e65718fe5f96e87ca3cdffa637799aad13b43b56ed5bc26abd135507e70c77",
+      "size": 59609250,
       "path": "kubectl",
       "providers": [
         {
-          "url": "https://dl.k8s.io/release/v1.37.0/bin/darwin/arm64/kubectl"
+          "url": "https://dl.k8s.io/release/v1.37.2/bin/darwin/arm64/kubectl"
         }
       ]
     },
     "linux-amd64": {
       "hash": "blake3",
-      "digest": "6c3538145eae30c95af4d2d4a24aeaecdd79e0cb8bfe2773a49330821617eb8e",
-      "size": 61886626,
+      "digest": "878880b659ab18fc1ecec9daea52573bb0ab10458b648d7633f05df3f6c90770",
+      "size": 61890722,
       "path": "kubectl",
       "providers": [
         {
-          "url": "https://dl.k8s.io/release/v1.37.0/bin/linux/amd64/kubectl"
+          "url": "https://dl.k8s.io/release/v1.37.2/bin/linux/amd64/kubectl"
         }
       ]
     },
     "linux-arm64": {
       "hash": "blake3",
-      "digest": "d07b29ec6f637bad3406299536340df8ce4f836a5e00c001c0ebfcb0c680a0f8",
+      "digest": "ecea2443c5b089352027c4ba866429975132a37df82cfe93637ecd5533b3aade",
       "size": 57868450,
       "path": "kubectl",
       "providers": [
         {
-          "url": "https://dl.k8s.io/release/v1.37.0/bin/linux/arm64/kubectl"
+          "url": "https://dl.k8s.io/release/v1.37.2/bin/linux/arm64/kubectl"
         }
       ]
     },
     "windows-amd64": {
       "hash": "blake3",
-      "digest": "0baa93d4292bb296f729a91f17a0eafa3b6cca5b65ad005da0aac98a6ae64508",
-      "size": 63456768,
+      "digest": "2a43c332fa6274b13f4372a662695dada3a92aa90603ef8a6baa71f8af01aee7",
+      "size": 63470080,
       "path": "kubectl.exe",
       "providers": [
         {
-          "url": "https://dl.k8s.io/release/v1.37.0/bin/windows/amd64/kubectl.exe"
+          "url": "https://dl.k8s.io/release/v1.37.2/bin/windows/amd64/kubectl.exe"
         }
       ]
     },
     "windows-arm64": {
       "hash": "blake3",
-      "digest": "555759a23370a6342d251b9809afd6076e661d8f4c60e1e9303150220d7a0365",
-      "size": 58560512,
+      "digest": "3e7e183742fa2e696e7c9ea789d6d697eff138fe4c535d824324b52158230d7c",
+      "size": 58572288,
       "path": "kubectl.exe",
       "providers": [
         {
-          "url": "https://dl.k8s.io/release/v1.37.0/bin/windows/arm64/kubectl.exe"
+          "url": "https://dl.k8s.io/release/v1.37.2/bin/windows/arm64/kubectl.exe"
         }
       ]
     }
