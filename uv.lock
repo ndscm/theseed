@@ -1615,7 +1615,7 @@ crypto = [
 
 [[package]]
 name = "pymilvus"
-version = "3.0.1"
+version = "3.0.3"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "cachetools" },
@@ -1626,9 +1626,9 @@ dependencies = [
     { name = "python-dotenv" },
     { name = "requests" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/c0/78/6bd0dba340706bc63346af96f0ebe36ff17f75404f5de935fda94d476c98/pymilvus-3.0.1.tar.gz", hash = "sha256:c02389059088b18d6e598cd175541e445c772fab4926c5e527c4913be34887f1", size = 347593, upload-time = "2026-07-29T14:55:43.061Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/f5/c9/99155a94c57ba4bc7a795600657e155fb4636a1c582ccdb9956cf3c98e62/pymilvus-3.0.3.tar.gz", hash = "sha256:d439c039861e753841a0809825602cfb4f146d593f4479d83a3402b738e5968f", size = 390398, upload-time = "2026-11-10T10:06:55.973Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/60/9d/7011887b29f452905745e8bd321f404068d5bfe78fe84e42c0b7cd81a065/pymilvus-3.0.1-py3-none-any.whl", hash = "sha256:c5a8d5c1fa1de7b416e3529d383d8cc2e7da2170433ffa4a2d9087e14f70171a", size = 386820, upload-time = "2026-07-29T14:55:44.279Z" },
+    { url = "https://files.pythonhosted.org/packages/77/27/05bf52d09e86454879e3c7f2a36de00134f23b2e3efed91957606f661682/pymilvus-3.0.3-py3-none-any.whl", hash = "sha256:b487f0150be8af86e3caea53148d7ea9466650d99820a7b6e588d36de1387e42", size = 431798, upload-time = "2026-11-10T10:06:57.221Z" },
 ]
 
 [[package]]
@@ -2147,7 +2147,7 @@ requires-dist = [
     { name = "pydantic", specifier = "==2.13.5" },
     { name = "pydantic-settings", specifier = "==2.15.0" },
     { name = "pydub", specifier = "==0.25.1" },
-    { name = "pymilvus", specifier = "==3.0.1" },
+    { name = "pymilvus", specifier = "==3.0.3" },
     { name = "pymongo", specifier = "==4.19.0" },
     { name = "pynput", specifier = "==1.8.2" },
     { name = "pysocks", specifier = "==1.7.1" },
