@@ -5,56 +5,56 @@
   "platforms": {
     "darwin-amd64": {
       "hash": "blake3",
-      "digest": "265fab5fe3b099c51d3993bb59205ed5f6ad9023838f66d8140af0fc22ed6848",
-      "size": 126058408,
+      "digest": "a226022b535306f630e7e0685324608efb2604f7bfa7adb1272ed918d6326dab",
+      "size": 120176168,
       "path": "atlas",
       "providers": [
         {
-          "url": "https://release.ariga.io/atlas/atlas-darwin-amd64-v1.3.0"
+          "url": "https://release.ariga.io/atlas/atlas-darwin-amd64-v1.3.10-2da58eb-canary"
         }
       ]
     },
     "darwin-arm64": {
       "hash": "blake3",
-      "digest": "118956b1e4ac25e9b7c6dad875934a10604a74ad3002c5c306dcd565eb8f0ae7",
-      "size": 118064578,
+      "digest": "e788b024ee8cde91d2440ac18041419593884991e5e5c0b4025a41b1dfc133e9",
+      "size": 112025026,
       "path": "atlas",
       "providers": [
         {
-          "url": "https://release.ariga.io/atlas/atlas-darwin-arm64-v1.3.0"
+          "url": "https://release.ariga.io/atlas/atlas-darwin-arm64-v1.3.10-2da58eb-canary"
         }
       ]
     },
     "linux-amd64": {
       "hash": "blake3",
-      "digest": "7fde8c2eab586c22d453a7a396d8153b319d4345e60a6a13c7199bb8412e9358",
-      "size": 125569080,
+      "digest": "3e9687ba6946d2acf89e553d00df5803063fbbe6fbb07f2c00324c2ab7dc1c09",
+      "size": 119685112,
       "path": "atlas",
       "providers": [
         {
-          "url": "https://release.ariga.io/atlas/atlas-linux-amd64-v1.3.0"
+          "url": "https://release.ariga.io/atlas/atlas-linux-amd64-v1.3.10-2da58eb-canary"
         }
       ]
     },
     "linux-arm64": {
       "hash": "blake3",
-      "digest": "c76057c46300255fe7652b3e18b713894a1ad31dacdefdd1ad2f34a3198f7ac7",
-      "size": 116631776,
+      "digest": "938cb9741958d89d9d8e22963074955aa2406f8dbfa980b829d8ab03bd0f066b",
+      "size": 110637568,
       "path": "atlas",
       "providers": [
         {
-          "url": "https://release.ariga.io/atlas/atlas-linux-arm64-v1.3.0"
+          "url": "https://release.ariga.io/atlas/atlas-linux-arm64-v1.3.10-2da58eb-canary"
         }
       ]
     },
     "windows-amd64": {
       "hash": "blake3",
-      "digest": "b5ba2a08335e49d6e84fb4936638dc61a61d3b1c3701b59320078b4fa0724295",
-      "size": 128139272,
+      "digest": "e81d332ccbc247ec5024c4dc721548b8001974ec8fcd7761812a32f5bfbc6af7",
+      "size": 122101256,
       "path": "atlas.exe",
       "providers": [
         {
-          "url": "https://release.ariga.io/atlas/atlas-windows-amd64-v1.3.0.exe"
+          "url": "https://release.ariga.io/atlas/atlas-windows-amd64-v1.3.10-2da58eb-canary.exe"
         }
       ]
     }
