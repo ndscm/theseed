@@ -6,12 +6,12 @@ android_sdk_extension.configure(
         "build-tools;37.0.0",
         "cmake;4.1.2",
         "cmdline-tools;23.0",
-        "ndk;30.0.16138531",
+        "ndk;30.0.16248370",
         "platform-tools",
         "platforms;android-37.2",
     ],
     remove_files = [
-        "ndk/30.0.16138531/sources/third_party/googletest/test/BUILD.bazel",
+        "ndk/30.0.16248370/sources/third_party/googletest/test/BUILD.bazel",
     ],
     repository_file = "//seed/vendor/android/sdk:repository2-3.xml",
     repository_url = "https://dl.google.com/android/repository/",
@@ -59,7 +59,7 @@ single_version_override(
 
 android_ndk_repository_extension = use_extension("@rules_android_ndk//:extension.bzl", "android_ndk_repository_extension")
 android_ndk_repository_extension.configure(
-    ndk = "@android_sdk//:ndk/30.0.16138531/files",
+    ndk = "@android_sdk//:ndk/30.0.16248370/files",
 )
 use_repo(android_ndk_repository_extension, "androidndk")
 
