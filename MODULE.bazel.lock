@@ -56,13 +56,13 @@
     "https://bcr.bazel.build/modules/aspect_rules_js/1.33.1/MODULE.bazel": "db3e7f16e471cf6827059d03af7c21859e7a0d2bc65429a3a11f005d46fc501b",
     "https://bcr.bazel.build/modules/aspect_rules_js/1.39.0/MODULE.bazel": "aece421d479e3c31dc3e5f6d49a12acc2700457c03c556650ec7a0ff23fc0d95",
     "https://bcr.bazel.build/modules/aspect_rules_js/2.0.0/MODULE.bazel": "b45b507574aa60a92796e3e13c195cd5744b3b8aff516a9c0cb5ae6a048161c5",
-    "https://bcr.bazel.build/modules/aspect_rules_js/3.4.0/MODULE.bazel": "88844ac411e1961f4574a92f3c5be5b20d1c6997778c6b88316c5c3b4b60e284",
-    "https://bcr.bazel.build/modules/aspect_rules_js/3.4.0/source.json": "85e5822f00dcbe64a1eda1324119e289c8c03cacb5c3695dffee16397b529078",
+    "https://bcr.bazel.build/modules/aspect_rules_js/3.6.0/MODULE.bazel": "f7cd94cfa20f6a6dcf1d19d025b97a2a0298013296e4b3d3204c28ee46d0fcfa",
+    "https://bcr.bazel.build/modules/aspect_rules_js/3.6.0/source.json": "8d66ed9a83cc6ce80d85a9d8c95ce3fc355b2d359f74af8193efcdce35334a17",
     "https://bcr.bazel.build/modules/aspect_rules_lint/0.12.0/MODULE.bazel": "e767c5dbfeb254ec03275a7701b5cfde2c4d2873676804bc7cb27ddff3728fed",
-    "https://bcr.bazel.build/modules/aspect_rules_ts/3.10.0/MODULE.bazel": "69d06f57f30f4a2b6e53471584a9559d3b7cd7f891e1699876991230c7cabb95",
-    "https://bcr.bazel.build/modules/aspect_rules_ts/3.10.0/source.json": "56f28a3ddb55ceaaf57a1ef8d7195136789ca1d72d0c8a6a9eeaad313be4099d",
-    "https://bcr.bazel.build/modules/aspect_tools_telemetry/0.4.2/MODULE.bazel": "f31aa84151d31e98cffd43eb7217ccff5ec52bdd5f2d10db8f053aeb23342eca",
-    "https://bcr.bazel.build/modules/aspect_tools_telemetry/0.4.2/source.json": "d027d264e6b6e7fc421e38189f4374fcd14a67e0bd6e0e705de8c2185c3787e1",
+    "https://bcr.bazel.build/modules/aspect_rules_ts/3.10.1/MODULE.bazel": "035205a7834b0ed9724ed3c4790e12d1c779ef2520d72496ab234e6307715e6c",
+    "https://bcr.bazel.build/modules/aspect_rules_ts/3.10.1/source.json": "d42b6560206adb5524caad2abc40ae0b5b34478dd38184a9f6ea4a5fed848cd6",
+    "https://bcr.bazel.build/modules/aspect_tools_telemetry/0.5.1/MODULE.bazel": "9d94e5c22c0019995c0a3216a6abb1717dc3f35acccf4e6267a55d6df38367aa",
+    "https://bcr.bazel.build/modules/aspect_tools_telemetry/0.5.1/source.json": "dbe0a75bf1f741b18c7b72dd4d205fa5a45c8c135fee15f7fdd1a2b50ba0fdde",
     "https://bcr.bazel.build/modules/autosharding/0.0.0-20260826-3a21f69/MODULE.bazel": "2822e4e9f4f3fa1f617cb624878ee6d7ad39963894d10c92b8201269b81b1a0d",
     "https://bcr.bazel.build/modules/autosharding/0.0.0-20260826-3a21f69/source.json": "0129d3218755d52716b5c4dd5e3d28c3e92aea4ced9be39f259edc0bf3921c5a",
     "https://bcr.bazel.build/modules/bazel_features/0.1.0/MODULE.bazel": "47011d645b0f949f42ee67f2e8775188a9cf4a0a1528aa2fa4952f2fd00906fd",
@@ -94,6 +94,7 @@
     "https://bcr.bazel.build/modules/bazel_features/1.43.0/MODULE.bazel": "defa2226f06ba20550d6548c3a2ea2a7929634437a52973869c20c225450eb91",
     "https://bcr.bazel.build/modules/bazel_features/1.47.0/MODULE.bazel": "e34df3cb35b1684cfa69923a61ae3803595babd3942cd306a488d51400886b30",
     "https://bcr.bazel.build/modules/bazel_features/1.47.1/MODULE.bazel": "e6be691539341681678a68c2076771f6a73fcdc9823c5b6bf280d2e916d1ad80",
+    "https://bcr.bazel.build/modules/bazel_features/1.48.1/MODULE.bazel": "8f43b2b90bd70402825ab07a85bf26079935271e2662a1df37fe0de969aa3ecf",
     "https://bcr.bazel.build/modules/bazel_features/1.50.0/MODULE.bazel": "2083ef9c7a469f520890483ccf8e0189d6e71e2117e7752e15e6554433d5ae3e",
     "https://bcr.bazel.build/modules/bazel_features/1.50.0/source.json": "e0ee3debde2789ff56e4452e612d126925ba9ab64d4bde79c67f099d2902df9b",
     "https://bcr.bazel.build/modules/bazel_features/1.9.0/MODULE.bazel": "885151d58d90d8d9c811eb75e3288c11f850e1d6b481a8c9f766adee4712358b",
@@ -372,6 +373,8 @@
     "https://bcr.bazel.build/modules/libpfm/4.11.0.bcr.1/MODULE.bazel": "e5362dadc90aab6724c83a2cc1e67cbed9c89a05d97fb1f90053c8deb1e445c8",
     "https://bcr.bazel.build/modules/libpfm/4.11.0.bcr.1/source.json": "0646414d9037f8aad148781dd760bec90b0b25ac12fda5e03f8aadbd6b9c61e6",
     "https://bcr.bazel.build/modules/libpfm/4.11.0/MODULE.bazel": "45061ff025b301940f1e30d2c16bea596c25b176c8b6b3087e92615adbd52902",
+    "https://bcr.bazel.build/modules/libxml2/2.15.3/MODULE.bazel": "a6bffafd8aa8b0c13eaa4bf25d55be188ec8548549395f03e98c39bab264adaa",
+    "https://bcr.bazel.build/modules/libxml2/2.15.3/source.json": "fd7c420cb14981416c9fadd0db555bd1e249355e0e5b63b2ce15b92996b5fbfb",
     "https://bcr.bazel.build/modules/m4/1.4.21.bcr.8/MODULE.bazel": "7cd23493c2a00a245d2fdf60cba14cec51633f01ddae74656da00b7f2651b9f8",
     "https://bcr.bazel.build/modules/m4/1.4.21.bcr.8/source.json": "80f1e2066017fe93b10995c25c1c6f1316bdd405b3e3b4656b65db71f4c4fc9a",
     "https://bcr.bazel.build/modules/make/4.4.1.bcr.3/MODULE.bazel": "6a2e2cb66bee2cff121c3d69438c2e8743092bd1940f4a78e6076bb6b74b9eda",
@@ -490,8 +493,8 @@
     "https://bcr.bazel.build/modules/re2/2025-11-05.bcr.1/MODULE.bazel": "3d9d4995833fc0334fc5c88b56a05288dd25d651544cd7b2233bbd6357bbeba0",
     "https://bcr.bazel.build/modules/re2/2025-11-05.bcr.1/source.json": "7df1394aabda1c9bc188a302f5d54b1c657924edd04ebc57d2be29dbd7efd141",
     "https://bcr.bazel.build/modules/re2/2025-11-05/MODULE.bazel": "d97e240364f132017500a3af816493af7efd4be40aab2bb403ed449cc96f70a3",
-    "https://bcr.bazel.build/modules/rules_android/0.7.3/MODULE.bazel": "1fbc49fb397d31d74be83fe63eb0a5dc1a79df172ca90772166c35ab4cd67e7b",
-    "https://bcr.bazel.build/modules/rules_android/0.7.3/source.json": "80ffccd224a7f9b665f32360a64ba4228ba85c75fd0f6af43e290660147bb151",
+    "https://bcr.bazel.build/modules/rules_android/0.8.1/MODULE.bazel": "1870a20db4ac1a8d93aed2edab2615cc13dbbc0c0f2131339ab251c1a58809bf",
+    "https://bcr.bazel.build/modules/rules_android/0.8.1/source.json": "3a5595fcccd0128bfb77683793d3f6d7a87ba48fc3eff96581b9f2a90a7a78d7",
     "https://bcr.bazel.build/modules/rules_android_ndk/0.1.5/MODULE.bazel": "ab43d418846060de6396e3f1b515a692e945bcd92a9d4541fddcddc8589004ce",
     "https://bcr.bazel.build/modules/rules_android_ndk/0.1.5/source.json": "2950fc77b8e1f1e3874c4e073776f2258ce46926b43c236620c93517fd2e5865",
     "https://bcr.bazel.build/modules/rules_apple/3.13.0/MODULE.bazel": "b4559a2c6281ca3165275bb36c1f0ac74666632adc5bdb680e366de7ce845f43",
@@ -620,7 +623,6 @@
     "https://bcr.bazel.build/modules/rules_license/1.0.0/source.json": "a52c89e54cc311196e478f8382df91c15f7a2bfdf4c6cd0e2675cc2ff0b56efb",
     "https://bcr.bazel.build/modules/rules_nodejs/5.8.2/MODULE.bazel": "6bc03c8f37f69401b888023bf511cb6ee4781433b0cb56236b2e55a21e3a026a",
     "https://bcr.bazel.build/modules/rules_nodejs/6.2.0/MODULE.bazel": "ec27907f55eb34705adb4e8257952162a2d4c3ed0f0b3b4c3c1aad1fac7be35e",
-    "https://bcr.bazel.build/modules/rules_nodejs/6.7.3/MODULE.bazel": "c22a48b2a0dbf05a9dc5f83837bbc24c226c1f6e618de3c3a610044c9f336056",
     "https://bcr.bazel.build/modules/rules_nodejs/6.7.7/MODULE.bazel": "e80c95eebba3e38fa28ea0553ec580e4bffbbe8d0e8fa892457fa0e6b616f3d8",
     "https://bcr.bazel.build/modules/rules_nodejs/6.7.7/source.json": "60081c2448d70db3c5c0e75f55c0a55a22b2144646c21977c46c4986dacacdb6",
     "https://bcr.bazel.build/modules/rules_oci/2.3.0/MODULE.bazel": "49075197960c924c0a4d759b7c765c3d00a41d2fdd4a943b42823c1d016ab4ec",
@@ -757,9 +759,9 @@
     "//seed/devprod/android/sdk:extension.bzl%android_sdk_extension": {
       "general": {
         "bzlTransitiveDigest": "c4qLaows9VjC/BqfDE+CxkwrykuGbKyVnNI3HtwZMjU=",
-        "usagesDigest": "2yF2PYD0qWU76zfA9jeZ10Cd4w5y7PgI0dDNcpZW0yo=",
+        "usagesDigest": "snxf2J12gJyrAYaHxER4GXtCnzHmC+cjM+msth2qDqg=",
         "recordedInputs": [
-          "FILE:@@//seed/vendor/android/sdk/repository2-3.xml fc2503ca74b0b098fa1668619ff195c0dd118b722e1680bc7c822be4b3f2276a"
+          "FILE:@@//seed/vendor/android/sdk/repository2-3.xml d670de8bce15cc4ecf5d1a135f2168137ccbb8402111dfc8efcf9cb6f3b2f28f"
         ],
         "generatedRepoSpecs": {
           "android_sdk": {
@@ -769,13 +771,13 @@
                 "build-tools;37.0.0",
                 "cmake;4.1.2",
                 "cmdline-tools;23.0",
-                "ndk;30.0.16138531",
+                "ndk;30.0.16248370",
                 "platform-tools",
                 "platforms;android-37.2"
               ],
-              "packages_json": "{\"build-tools;37.0.0\":[{\"host_os\":\"linux\",\"sha1\":\"70954e99f4c3d9d46ee70fa32624672fe7cd6ebe\",\"url\":\"build-tools_r37_linux.zip\"},{\"host_os\":\"windows\",\"sha1\":\"e9c97e26b5b5678002e9d3fed632c841ae62d99f\",\"url\":\"build-tools_r37_windows.zip\"},{\"host_os\":\"macosx\",\"sha1\":\"eb080751b2b2028eb3604f571027d6f7b3c46321\",\"url\":\"build-tools_r37_macosx.zip\"}],\"cmake;4.1.2\":[{\"host_os\":\"linux\",\"sha1\":\"c8c4f1c19b75c56f28b9dcf1af928d25cf1a1471\",\"url\":\"cmake-4.1.2-linux.zip\"},{\"host_os\":\"macosx\",\"sha1\":\"a0578a0543942c7eb35822c88a516b87e5b9867a\",\"url\":\"cmake-4.1.2-darwin.zip\"},{\"host_os\":\"windows\",\"sha1\":\"06bc3fe29aa49297dcc11a2ffe3a999445df05ae\",\"url\":\"cmake-4.1.2-windows.zip\"}],\"cmdline-tools;23.0\":[{\"host_os\":\"linux\",\"sha1\":\"e025545c62a8e64c7559119566a569fb1dec5f60\",\"url\":\"commandlinetools-linux-16111833_latest.zip\"},{\"host_os\":\"macosx\",\"sha1\":\"112cf9618794a997ff273537d55bee02c22abffe\",\"url\":\"commandlinetools-mac_x86_64-16111833_latest.zip\"},{\"host_os\":\"macosx\",\"sha1\":\"ad03dc49bfacfd52c110b14104ea548b8a07e830\",\"url\":\"commandlinetools-mac_arm64-16111833_latest.zip\"},{\"host_os\":\"windows\",\"sha1\":\"57d04f2d75eb8e8fffc5000a987e5de4b5a63e9d\",\"url\":\"commandlinetools-win-16111833_latest.zip\"}],\"ndk;30.0.16138531\":[{\"host_os\":\"linux\",\"sha1\":\"f66e852ac01a57f74bcf6fd96dcea04dda5ea392\",\"url\":\"android-ndk-r30-beta3-linux.zip\"},{\"host_os\":\"macosx\",\"sha1\":\"f92d3e9526d0a62ab48bab66c0b942ee094e9f2c\",\"url\":\"android-ndk-r30-beta3-darwin.zip\"},{\"host_os\":\"windows\",\"sha1\":\"b89c9a0d141382a8311669a01db4af88b4067a8d\",\"url\":\"android-ndk-r30-beta3-windows.zip\"}],\"platform-tools\":[{\"host_os\":\"linux\",\"sha1\":\"477254aa5f903c15cf51001717bdf347fb6b53e0\",\"url\":\"platform-tools_r37.0.1-linux.zip\"},{\"host_os\":\"macosx\",\"sha1\":\"6ae73f4de6452dc57e62ec02b68eed92a4c21661\",\"url\":\"platform-tools_r37.0.1-darwin.zip\"},{\"host_os\":\"windows\",\"sha1\":\"e03e78b1d80b396f1c3358e31251cb31740e1110\",\"url\":\"platform-tools_r37.0.1-win.zip\"}],\"platforms;android-37.2\":[{\"host_os\":\"\",\"sha1\":\"4bec12a02162ff6852df50b5fcf8ee762b050966\",\"url\":\"platform-37.2_r01.zip\"}]}",
+              "packages_json": "{\"build-tools;37.0.0\":[{\"host_os\":\"linux\",\"sha1\":\"70954e99f4c3d9d46ee70fa32624672fe7cd6ebe\",\"url\":\"build-tools_r37_linux.zip\"},{\"host_os\":\"windows\",\"sha1\":\"e9c97e26b5b5678002e9d3fed632c841ae62d99f\",\"url\":\"build-tools_r37_windows.zip\"},{\"host_os\":\"macosx\",\"sha1\":\"eb080751b2b2028eb3604f571027d6f7b3c46321\",\"url\":\"build-tools_r37_macosx.zip\"}],\"cmake;4.1.2\":[{\"host_os\":\"linux\",\"sha1\":\"c8c4f1c19b75c56f28b9dcf1af928d25cf1a1471\",\"url\":\"cmake-4.1.2-linux.zip\"},{\"host_os\":\"macosx\",\"sha1\":\"a0578a0543942c7eb35822c88a516b87e5b9867a\",\"url\":\"cmake-4.1.2-darwin.zip\"},{\"host_os\":\"windows\",\"sha1\":\"06bc3fe29aa49297dcc11a2ffe3a999445df05ae\",\"url\":\"cmake-4.1.2-windows.zip\"}],\"cmdline-tools;23.0\":[{\"host_os\":\"linux\",\"sha1\":\"e025545c62a8e64c7559119566a569fb1dec5f60\",\"url\":\"commandlinetools-linux-16111833_latest.zip\"},{\"host_os\":\"macosx\",\"sha1\":\"112cf9618794a997ff273537d55bee02c22abffe\",\"url\":\"commandlinetools-mac_x86_64-16111833_latest.zip\"},{\"host_os\":\"macosx\",\"sha1\":\"ad03dc49bfacfd52c110b14104ea548b8a07e830\",\"url\":\"commandlinetools-mac_arm64-16111833_latest.zip\"},{\"host_os\":\"windows\",\"sha1\":\"57d04f2d75eb8e8fffc5000a987e5de4b5a63e9d\",\"url\":\"commandlinetools-win-16111833_latest.zip\"}],\"ndk;30.0.16248370\":[{\"host_os\":\"linux\",\"sha1\":\"5107f898313790e449e87eee2183d9a20602dee9\",\"url\":\"android-ndk-r30-linux.zip\"},{\"host_os\":\"macosx\",\"sha1\":\"c060be96767eefbb8e0a27796d6f43115fc1a0c4\",\"url\":\"android-ndk-r30-darwin.zip\"},{\"host_os\":\"windows\",\"sha1\":\"9bf167a1985fa7d4a036186b78f702eab9179408\",\"url\":\"android-ndk-r30-windows.zip\"}],\"platform-tools\":[{\"host_os\":\"linux\",\"sha1\":\"e1579b288a7ae4e9bc28dedec6a154d78b3c04ed\",\"url\":\"platform-tools_r37.0.3-linux.zip\"},{\"host_os\":\"macosx\",\"sha1\":\"eca4effbe35f4968139b051bbb16753302a3c33c\",\"url\":\"platform-tools_r37.0.3-darwin.zip\"},{\"host_os\":\"windows\",\"sha1\":\"b3fde5239ad89229d5a9178375b81c9887a24172\",\"url\":\"platform-tools_r37.0.3-win.zip\"}],\"platforms;android-37.2\":[{\"host_os\":\"\",\"sha1\":\"d52b3062af96f7c4dfdca5a479cd1db33ae83762\",\"url\":\"platform-37.2_r02.zip\"}]}",
               "remove_files": [
-                "ndk/30.0.16138531/sources/third_party/googletest/test/BUILD.bazel"
+                "ndk/30.0.16248370/sources/third_party/googletest/test/BUILD.bazel"
               ],
               "repository_url": "https://dl.google.com/android/repository/"
             }
@@ -803,8 +805,8 @@
     },
     "@@aspect_tools_telemetry+//:extension.bzl%telemetry": {
       "general": {
-        "bzlTransitiveDigest": "4w9RM0xjdKo1crk5zL20a/TuhqO0P1z1LsuXDneBXD4=",
-        "usagesDigest": "SmYeL1SnYtdns47VjksehGBHLYgEauLuOWlfn1hsGsA=",
+        "bzlTransitiveDigest": "zFgbaCUuPzH6bIE7CBHBVCqjWSJ78/WNXisdzXaKSnU=",
+        "usagesDigest": "Y3CaNC1KvZVcxfru9q7vhYISHrZ870SDWIFb9pw2elY=",
         "recordedInputs": [
           "REPO_MAPPING:aspect_tools_telemetry+,bazel_lib bazel_lib+",
           "REPO_MAPPING:aspect_tools_telemetry+,bazel_skylib bazel_skylib+",
@@ -815,9 +817,8 @@
             "repoRuleId": "@@aspect_tools_telemetry+//:extension.bzl%tel_repository",
             "attributes": {
               "deps": {
-                "aspect_rules_js": "3.4.0",
-                "aspect_rules_ts": "3.10.0",
-                "aspect_tools_telemetry": "0.4.2"
+                "aspect_rules_ts": "3.10.1",
+                "aspect_tools_telemetry": "0.5.1"
               },
               "last_notice": 1
             }
@@ -970,71 +971,10 @@
         }
       }
     },
-    "@@rules_android+//bzlmod_extensions:apksig.bzl%apksig_extension": {
-      "general": {
-        "bzlTransitiveDigest": "xNW2vYQ2NGvweMnSxue40Bhfp5A3ogJIS/tkg7qjKIs=",
-        "usagesDigest": "wLrLUdBOQnztFcFQraEsWu+M4xtuF82/ZGmnhyxO5/Q=",
-        "recordedInputs": [
-          "REPO_MAPPING:rules_android+,bazel_tools bazel_tools"
-        ],
-        "generatedRepoSpecs": {
-          "apksig": {
-            "repoRuleId": "@@bazel_tools//tools/build_defs/repo:http.bzl%http_archive",
-            "attributes": {
-              "urls": [
-                "https://mirror.bazel.build/android.googlesource.com/platform/tools/apksig/+archive/24e3075e68ebe17c0b529bb24bfda819db5e2f3b.tar.gz"
-              ],
-              "sha256": "12e44fdbd219c5e1cc62099c2a01d775957603d2d4f693f8285f9d95d9a04e77",
-              "build_file": "@@rules_android+//bzlmod_extensions:apksig.BUILD"
-            }
-          }
-        }
-      }
-    },
-    "@@rules_android+//bzlmod_extensions:com_android_dex.bzl%com_android_dex_extension": {
-      "general": {
-        "bzlTransitiveDigest": "HYWmRJkl/Bm5qA5Q7vRI52ZfSoxubYxiwbnAS+8ozAU=",
-        "usagesDigest": "QffKrRLRrfyxMU5u/o3mDLJNoWRk/D5i2SIumoSgm3M=",
-        "recordedInputs": [
-          "REPO_MAPPING:rules_android+,bazel_tools bazel_tools"
-        ],
-        "generatedRepoSpecs": {
-          "com_android_dex": {
-            "repoRuleId": "@@bazel_tools//tools/build_defs/repo:http.bzl%http_archive",
-            "attributes": {
-              "urls": [
-                "https://mirror.bazel.build/android.googlesource.com/platform/dalvik/+archive/5a81c499a569731e2395f7c8d13c0e0d4e17a2b6.tar.gz"
-              ],
-              "build_file": "@@rules_android+//bzlmod_extensions:com_android_dex.BUILD",
-              "sha256": "86b4848c038bf687fadc812239cb01fb8d1d15cef3125b480a0448360992b95d"
-            }
-          }
-        }
-      }
-    },
-    "@@rules_android+//rules/android_sdk_repository:rule.bzl%android_sdk_repository_extension": {
-      "general": {
-        "bzlTransitiveDigest": "e3tOg/D2tt+hBZy7tdRaMulk73eDE4SfHBELCMHaSxw=",
-        "usagesDigest": "ii+uuqPQkPrXPWR8oxNXo5YpN4VDb45Z916SdscdZyg=",
-        "recordedInputs": [
-          "REPO_MAPPING:,android_sdk +android_sdk_extension+android_sdk"
-        ],
-        "generatedRepoSpecs": {
-          "androidsdk": {
-            "repoRuleId": "@@rules_android+//rules/android_sdk_repository:rule.bzl%_android_sdk_repository",
-            "attributes": {
-              "api_level": 0,
-              "build_tools_version": "",
-              "sdk": "@@+android_sdk_extension+android_sdk//:files"
-            }
-          }
-        }
-      }
-    },
     "@@rules_android_ndk+//:extension.bzl%android_ndk_repository_extension": {
       "general": {
         "bzlTransitiveDigest": "YckDtjqy7y3LQwPZXa+U2vkmaULrq37h0jIwsa/4UPg=",
-        "usagesDigest": "XJTPk6Abc7d+hcDrpLoLsK9sBE9AQeBHAD2mGOcb9iw=",
+        "usagesDigest": "ZQLSa6fmTuKagn7Z0NRgcRu9fyxVSiYLSJgxzDjgSfw=",
         "recordedInputs": [
           "REPO_MAPPING:,android_sdk +android_sdk_extension+android_sdk"
         ],
@@ -1043,7 +983,7 @@
             "repoRuleId": "@@rules_android_ndk+//:rules.bzl%android_ndk_repository",
             "attributes": {
               "api_level": 0,
-              "ndk": "@@+android_sdk_extension+android_sdk//:ndk/30.0.16138531/files"
+              "ndk": "@@+android_sdk_extension+android_sdk//:ndk/30.0.16248370/files"
             }
           }
         }
@@ -21231,7 +21171,7 @@
     "@@yq.bzl+//yq:extensions.bzl%yq": {
       "general": {
         "bzlTransitiveDigest": "lH0oIGWeh0sI6/jlDMTxYo34YKkvNfvwdiMIhfM532I=",
-        "usagesDigest": "fGouH3lPC52O/rH/BTncx7Tz1gZ1qUQ7LkQZPAOaVAg=",
+        "usagesDigest": "7bybO57wbDhaQJ70xSVbzDREh5kxLwlRYL2kAXWrTfs=",
         "recordedInputs": [
           "REPO_MAPPING:yq.bzl+,bazel_lib bazel_lib+"
         ],
@@ -21315,7 +21255,7 @@
   },
   "facts": {
     "@@aspect_tools_telemetry+//:extension.bzl%telemetry": {
-      "notice_version": "1"
+      "notice_version": "2"
     },
     "@@rules_distroless+//apt:extensions.bzl%apt": {
       "formats": {

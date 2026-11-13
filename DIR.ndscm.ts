@@ -24,10 +24,12 @@ export default {
       bazel: {
         build: "//seed/devprod/format/prettier",
         // The prettier must load plugins from the physical node_modules during
-        // runtime, so we follow the aspect_rules_js approach to set BAZEL_BINDIR
-        // to the directory of the built prettier binary, which contains the
-        // node_modules as sibling.
-        run: 'BAZEL_BINDIR="$(dirname "{{BAZEL_EXECUTABLE}}")" BUILD_WORKING_DIRECTORY="$(pwd)" {{BAZEL_RUN}} --write "{{TARGET}}"',
+        // runtime, so we follow the aspect_rules_js approach to run from the
+        // directory of the built prettier binary, which contains the
+        // node_modules as sibling. Since aspect_rules_js 3.6.0 the launcher
+        // resolves BAZEL_BINDIR relative to $PWD (an absolute path is rejected),
+        // so we cd there first and set BAZEL_BINDIR to ".".
+        run: 'export BUILD_WORKING_DIRECTORY="$(pwd)" && cd "$(dirname "{{BAZEL_EXECUTABLE}}")" && BAZEL_BINDIR=. {{BAZEL_RUN}} --write "{{TARGET}}"',
       },
     },
     cc: {
